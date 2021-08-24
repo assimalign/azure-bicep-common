@@ -1,0 +1,91 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "privateDnsZoneTxtRecords": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "dnsZoneName": {
+                                "type": "string"
+                            },
+                            "ttl": {
+                                "type":"number",
+                                "description": "TTL (Time to Live)",
+                                "default": 3600
+                            },
+                            "values": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "value": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "value"
+                                    ],
+                                    "minItems": 1
+                                },
+                                "minItems": 1
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "ttl",
+                            "values",
+                            "dnsZoneName"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "privateDnsZoneTxtRecord": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "ttl": {
+                    "type":"number",
+                    "description": "TTL (Time to Live)",
+                    "default": 3600
+                },
+                "values": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "value": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": [
+                            "value"
+                        ],
+                        "minItems": 1
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "name",
+                "ttl",
+                "values"
+            ]
+        }
+    }
+}

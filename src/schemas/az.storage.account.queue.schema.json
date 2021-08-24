@@ -1,0 +1,189 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "storageAccountQueueServices": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "default": "default"
+                            },
+                            "storageAccountName": {
+                                "type": "string"
+                            },
+                            "storageAccountResourceGroup": {
+                                "type": "string"
+                            },
+                            "queues": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#definitions/storageAccountQueueServiceQueue"
+                                }
+                            },
+                            "cors": {
+                                "type": "array",
+                                "description": "The cors rules to apply to the Queue Services under a specific Storage Account.",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "allowedOrigins": {
+                                            "type": "string"
+                                        },
+                                        "exposedHeaders": {
+                                            "type": "string"
+                                        },
+                                        "allowedMethods": {
+                                            "type": "string"
+                                        },
+                                        "maxAgeInSeconds":{
+                                            "type": "string"
+                                        },
+                                        "allowedHeaders": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            },
+                            "privateEndpoint": {
+                                "$ref": "#definitions/storageAccountQueueServicePrivateEndpoint"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "storageAccountName",
+                            "storageAccountResourceGroup",
+                            "queues",
+                            "cors",
+                            "privateEndpoint"
+                        ]
+                    }
+                }
+            }
+        },
+        "storageAccountQueueService": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "default": "default"
+                },
+                "queues": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#definitions/storageAccountQueueServiceQueue"
+                    }
+                },
+                "cors": {
+                    "type": "array",
+                    "description": "The cors rules to apply to the Queue Services under a specific Storage Account.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "allowedOrigins": {
+                                "type": "string"
+                            },
+                            "exposedHeaders": {
+                                "type": "string"
+                            },
+                            "allowedMethods": {
+                                "type": "string"
+                            },
+                            "maxAgeInSeconds":{
+                                "type": "string"
+                            },
+                            "allowedHeaders": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "privateEndpoint": {
+                    "$ref": "#definitions/storageAccountQueueServicePrivateEndpoint"
+                }
+            },
+            "required": [
+                "name",
+                "queues",
+                "cors",
+                "privateEndpoint"
+            ]
+        },
+        "storageAccountQueueServiceQueue": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name"
+            ]
+        },
+        "storageAccountQueueServiceQueues": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "name"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "storageAccountQueueServicePrivateEndpoint": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "privateDnsZone": {
+                            "type": "string"
+                        },
+                        "privateDnsZoneResourceGroup": {
+                            "type": "string",
+                            "description": ""
+                        },
+                        "virtualNetwork": {
+                            "type": "string"
+                        },
+                        "virtualNetworkSubnet": {
+                            "type": "string"
+                        },
+                        "virtualNetworkResourceGroup": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "name",
+                        "privateDnsZone",
+                        "privateDnsZoneResourceGroup",
+                        "virtualNetwork",
+                        "virtualNetworkSubnet",
+                        "virtualNetworkResourceGroup"
+                    ]
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        }
+    }
+}

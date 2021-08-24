@@ -1,0 +1,88 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "privateDnsZoneARecords": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "ttl": {
+                                "type": "number",
+                                "description": "TTL (Time to Live)",
+                                "default": 3600
+                            },
+                            "ip4vAddresses": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "ipv4Address": {
+                                            "type": "string",
+                                            "pattern": "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|^[0-9][0-9]|^[0-9])(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}"
+                                        }
+                                    },
+                                    "required": [
+                                        "ipv4Address"
+                                    ]
+                                },
+                                "minItems": 1
+                            },
+                            "dnsZoneName": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "dnsZoneName",
+                            "name",
+                            "ttl",
+                            "ip4vAddresses"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "privateDnsZoneARecord": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "ttl": {
+                    "type": "number",
+                    "description": "TTL (Time to Live)",
+                    "default": 3600
+                },
+                "ip4vAddresses": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "ipv4Address": {
+                                "type": "string",
+                                "pattern": "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|^[0-9][0-9]|^[0-9])(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}"
+                            }
+                        },
+                        "required": [
+                            "ipv4Address"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "name",
+                "ttl",
+                "ip4vAddresses"
+            ],
+            "default": null
+        }
+    }
+}

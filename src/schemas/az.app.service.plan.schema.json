@@ -1,0 +1,94 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "appServicePlans": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "os": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "windows"
+                                    },
+                                    {
+                                        "const": "linux"
+                                    }
+                                ]
+                            },
+                            "sku": {
+                                "type": "object",
+                                "properties": {
+                                    "dev": {
+                                        "type": "string",
+                                        "oneOf": [
+                                            {
+                                                "const": "D1"
+                                            },
+                                            {
+                                                "const": "B1"
+                                            }
+                                        ]
+                                    },
+                                    "qa": {
+                                        "type": "string"
+                                    },
+                                    "uat": {
+                                        "type": "string"
+                                    },
+                                    "prd": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "dev",
+                                    "qa",
+                                    "uat",
+                                    "prd"
+                                ]
+                            },
+                            "aseName": {
+                                "oneOf": [
+                                    {
+                                        "type": "null"
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            "aseResourceGroup": {
+                                "oneOf": [
+                                    {
+                                        "type": "null"
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "os",
+                            "sku",
+                            "aseName",
+                            "aseResourceGroup",
+                            "tags"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        }
+    }
+}

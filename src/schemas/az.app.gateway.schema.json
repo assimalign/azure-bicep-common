@@ -1,0 +1,442 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "appGateways": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "sku": {
+                                "type": "object",
+                                "properties": {
+                                    "dev": {
+                                        "type": "object",
+                                        "properties": {
+                                            "tier": {
+                                                "type": "string",
+                                                "oneOf": [
+                                                    {
+                                                        "const": "Standard"
+                                                    },
+                                                    {
+                                                        "const": "WAF"
+                                                    }
+                                                ]
+                                            },
+                                            "size": {
+                                                "type": "string",
+                                                "oneOf": [
+                                                    {
+                                                        "const": "Small"
+                                                    },
+                                                    {
+                                                        "const": "Medium"
+                                                    },
+                                                    {
+                                                        "const": "Large"
+                                                    }
+                                                ],
+                                                "capacity": {
+                                                    "type": "number"
+                                                }
+                                            }
+                                        },
+                                        "required": [
+                                            "tier",
+                                            "size",
+                                            "capacity"
+                                        ]
+                                    },
+                                    "qa": {
+                                        "type": "object",
+                                        "properties": {
+                                            "tier": {
+                                                "type": "string",
+                                                "oneOf": [
+                                                    {
+                                                        "const": "Standard"
+                                                    },
+                                                    {
+                                                        "const": "WAF"
+                                                    }
+                                                ]
+                                            },
+                                            "size": {
+                                                "type": "string",
+                                                "oneOf": [
+                                                    {
+                                                        "const": "Small"
+                                                    },
+                                                    {
+                                                        "const": "Medium"
+                                                    },
+                                                    {
+                                                        "const": "Large"
+                                                    }
+                                                ],
+                                                "capacity": {
+                                                    "type": "number"
+                                                }
+                                            }
+                                        },
+                                        "required": [
+                                            "tier",
+                                            "size",
+                                            "capacity"
+                                        ]
+                                    },
+                                    "uat": {
+                                        "type": "object",
+                                        "properties": {
+                                            "tier": {
+                                                "type": "string",
+                                                "oneOf": [
+                                                    {
+                                                        "const": "Standard"
+                                                    },
+                                                    {
+                                                        "const": "WAF"
+                                                    }
+                                                ]
+                                            },
+                                            "size": {
+                                                "type": "string",
+                                                "oneOf": [
+                                                    {
+                                                        "const": "Small"
+                                                    },
+                                                    {
+                                                        "const": "Medium"
+                                                    },
+                                                    {
+                                                        "const": "Large"
+                                                    }
+                                                ],
+                                                "capacity": {
+                                                    "type": "number"
+                                                }
+                                            }
+                                        },
+                                        "required": [
+                                            "tier",
+                                            "size",
+                                            "capacity"
+                                        ]
+                                    },
+                                    "prd": {
+                                        "type": "object",
+                                        "properties": {
+                                            "tier": {
+                                                "type": "string",
+                                                "oneOf": [
+                                                    {
+                                                        "const": "Standard"
+                                                    },
+                                                    {
+                                                        "const": "WAF"
+                                                    }
+                                                ]
+                                            },
+                                            "size": {
+                                                "type": "string",
+                                                "oneOf": [
+                                                    {
+                                                        "const": "Small"
+                                                    },
+                                                    {
+                                                        "const": "Medium"
+                                                    },
+                                                    {
+                                                        "const": "Large"
+                                                    }
+                                                ],
+                                                "capacity": {
+                                                    "type": "number"
+                                                }
+                                            }
+                                        },
+                                        "required": [
+                                            "tier",
+                                            "size",
+                                            "capacity"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "dev",
+                                    "qa",
+                                    "uat",
+                                    "prd"
+                                ]
+                            },
+                            "frontend": {
+                                "type": "object",
+                                "properties": {
+                                    "ports": {
+                                        "type": "array",
+                                        "minItems": 1,
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "frontendPort": {
+                                                    "type": "number"
+                                                }
+                                            },
+                                            "required": [
+                                                "name",
+                                                "frontendPort"
+                                            ]
+                                        }
+                                    },
+                                    "privateIp": {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "privateIpSubnet": {
+                                                "type": "string"
+                                            },
+                                            "privateIpVirtualNetwork": {
+                                                "type": "string"
+                                            },
+                                            "privateIpResourceGroup": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "name",
+                                            "privateIpSubnet",
+                                            "privateIpVirtualNetwork",
+                                            "privateIpResourceGroup"
+                                        ]
+                                    },
+                                    "publicIp": {
+                                        "oneOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "publicIpName": {
+                                                        "type": "string"
+                                                    },
+                                                    "publicIpResourceGroup": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "name",
+                                                    "publicIpName",
+                                                    "publicIpResourceGroup"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "listeners": {
+                                        "type": "array",
+                                        "minItems": 1,
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "frontendIp": {
+                                                    "type": "string",
+                                                    "description": "The name of the frontend IP configuration within the 'publicIp' or 'privateIp' properties."
+                                                },
+                                                "frontendPort": {
+                                                    "type": "string"
+                                                },
+                                                "frontendProtocol": {
+                                                    "type": "string",
+                                                    "oneOf": [
+                                                        {
+                                                            "const": "Http"
+                                                        },
+                                                        {
+                                                            "const": "Https"
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "name",
+                                                "frontendIp",
+                                                "frontendPort",
+                                                "frontendProtocol"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "ports",
+                                    "privateIp",
+                                    "publicIp"
+                                ]
+                            },
+                            "backend": {
+                                "type": "object",
+                                "properties": {
+                                    "ports": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "backendPort": {
+                                                    "type": "number"
+                                                },
+                                                "backendProtocol": {
+                                                    "type": "string"
+                                                },
+                                                "backendRequestTimeout": {
+                                                    "type": "number"
+                                                }
+                                            },
+                                            "required": [
+                                                "name",
+                                                "backendPort",
+                                                "backendProtocol",
+                                                "backendRequestTimeout"
+                                            ]
+                                        }
+                                    },
+                                    "receivers": {
+                                        "type": "array",
+                                        "minItems": 1,
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "addresses": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "dev": {
+                                                            "items": {
+                                                                "type": "object",
+                                                                "minItems": 1,
+                                                                "oneOf": [
+                                                                    {
+                                                                        "properties": {
+                                                                            "fqdn": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "fqdn"
+                                                                        ]
+                                                                    },
+                                                                    {
+                                                                        "properties": {
+                                                                            "ipAddress": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "ipAddress"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "dev"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "name",
+                                                "addresses"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "ports",
+                                    "receivers"
+                                ]
+                            },
+                            "routing": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "minItems": 1,
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "routeType": {
+                                            "type": "string"
+                                        },
+                                        "routeFromHttpListener": {
+                                            "type": "string"
+                                        },
+                                        "routeToBackendPool": {
+                                            "type": "string"
+                                        },
+                                        "routeToBackendPort": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "name",
+                                        "routeType",
+                                        "routeFromHttpListener",
+                                        "routeToBackendPool",
+                                        "routeToBackendPort"
+                                    ]
+                                }
+                            },
+                            "tags": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "patternProperties": {
+                                            "^[a-z]": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "minProperties": 1
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "sku",
+                            "frontend",
+                            "backend",
+                            "routing",
+                            "tags"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        }
+    }
+}

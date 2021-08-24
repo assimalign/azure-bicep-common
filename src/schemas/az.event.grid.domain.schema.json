@@ -1,0 +1,167 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "eventGridDomains": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "enableMsi": {
+                                "type": "boolean"
+                            },
+                            "disablePublicAccess": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "sku": {
+                                "type": "object",
+                                "properties": {
+                                    "dev": {
+                                        "type": "string",
+                                        "oneOf": [
+                                            {
+                                                "const": "Basic"
+                                            },
+                                            {
+                                                "const": "Premium"
+                                            }
+                                        ]
+                                    },
+                                    "qa": {
+                                        "type": "string",
+                                        "oneOf": [
+                                            {
+                                                "const": "Basic"
+                                            },
+                                            {
+                                                "const": "Premium"
+                                            }
+                                        ]
+                                    },
+                                    "uat": {
+                                        "type": "string",
+                                        "oneOf": [
+                                            {
+                                                "const": "Basic"
+                                            },
+                                            {
+                                                "const": "Premium"
+                                            }
+                                        ]
+                                    },
+                                    "prd": {
+                                        "type": "string",
+                                        "oneOf": [
+                                            {
+                                                "const": "Basic"
+                                            },
+                                            {
+                                                "const": "Premium"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "dev",
+                                    "qa",
+                                    "uat",
+                                    "prd"
+                                ]
+                            },
+                            "privateEndpoint": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ],
+                                "if": {
+                                    "type": "object"
+                                },
+                                "then": {
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "privateDnsZone": {
+                                            "type": "string"
+                                        },
+                                        "privateDnsZoneResourceGroup": {
+                                            "type": "string",
+                                            "description": "The "
+                                        },
+                                        "virtualNetwork": {
+                                            "type": "string"
+                                        },
+                                        "virtualNetworkSubnet": {
+                                            "type": "string"
+                                        },
+                                        "virtualNetworkResourceGroup": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "name",
+                                        "privateDnsZone",
+                                        "privateDnsZoneResourceGroup",
+                                        "virtualNetwork",
+                                        "virtualNetworkSubnet",
+                                        "virtualNetworkResourceGroup"
+                                    ]
+                                }
+                            },
+                            "topics": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "./az.event.grid.domain.topic.schema.json#definitions/eventGirdDomainTopic"
+                                }
+                            },
+                            "subscriptions": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "./az.event.grid.domain.subscription.schema.json#definitions/eventGridDomainSubscription"
+                                }
+                            },
+                            "tags": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "patternProperties": {
+                                            "^[a-z]": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "minProperties": 1
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "sku",
+                            "tags",
+                            "enableMsi",
+                            "disablePublicAccess",
+                            "privateEndpoint",
+                            "topics",
+                            "subscriptions"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        }
+    }
+}

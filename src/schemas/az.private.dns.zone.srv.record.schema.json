@@ -1,0 +1,105 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "privateDnsZoneSrvRecords": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "dnsZoneName": {
+                                "type": "string"
+                            },
+                            "ttl": {
+                                "type": "number",
+                                "description": "TTL (Time to Live)",
+                                "default": 3600
+                            },
+                            "services": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "priority": {
+                                            "type": "number"
+                                        },
+                                        "weight": {
+                                            "type": "number"
+                                        },
+                                        "port": {
+                                            "type": "number"
+                                        },
+                                        "target": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "priority",
+                                        "weight",
+                                        "port",
+                                        "target"
+                                    ]
+                                }
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "ttl",
+                            "services",
+                            "dnsZoneName"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "privateDnsZoneSrvRecord": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "ttl": {
+                    "type": "number",
+                    "description": "TTL (Time to Live)",
+                    "default": 3600
+                },
+                "services": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "priority": {
+                                "type": "number"
+                            },
+                            "weight": {
+                                "type": "number"
+                            },
+                            "port": {
+                                "type": "number"
+                            },
+                            "target": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "priority",
+                            "weight",
+                            "port",
+                            "target"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "name",
+                "ttl",
+                "services"
+            ]
+        }
+    }
+}

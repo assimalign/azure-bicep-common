@@ -1,0 +1,68 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "serviceBusNamespaceTopicSubscriptions": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type":"object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "namespace": {
+                                "type": "string"
+                            },
+                            "namespaceTopic":{
+                                "type": "string"
+                            },
+                            "settings": {
+                                "properties": {
+                                    "maxDelivery": {
+                                        "type": "number"
+                                    }
+                                },
+                                "required": [
+                                    "maxDelivery"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "settings",
+                            "namespace",
+                            "namespaceTopic"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "serviceBusNamespaceTopicSubscription": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "settings": {
+                    "properties": {
+                        "maxDelivery": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "maxDelivery"
+                    ]
+                }
+            },
+            "required": [
+                "name",
+                "settings"
+            ]
+        }
+    }
+}

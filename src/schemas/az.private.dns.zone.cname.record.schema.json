@@ -1,0 +1,61 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "privateDnsZoneCnameRecords": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "dnsZoneName": {
+                                "type": "string"
+                            },
+                            "ttl": {
+                                "type":"number",
+                                "description": "TTL (Time to Live)",
+                                "default": 3600
+                            },
+                            "cname": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "ttl",
+                            "cname",
+                            "dnsZoneName"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "privateDnsZoneCnameRecord": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "ttl": {
+                    "type":"number",
+                    "description": "TTL (Time to Live)",
+                    "default": 3600
+                },
+                "cname": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "ttl",
+                "cname"
+            ]
+        }
+    }
+}

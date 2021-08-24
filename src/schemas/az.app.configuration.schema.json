@@ -1,0 +1,345 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "appConfigurations": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "enableMsi": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "enableRbac": {
+                                "type": "boolean",
+                                "default": false,
+                                "description": "Will disable Access Key Authentication and use RBAC only. If enabled, App Configuration Keys will not be deployable"
+                            },
+                            "disablePublicAccess": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "privateEndpoint": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "privateDnsZone": {
+                                                "type": "string"
+                                            },
+                                            "privateDnsZoneResourceGroup": {
+                                                "type": "string",
+                                                "description": ""
+                                            },
+                                            "virtualNetwork": {
+                                                "type": "string"
+                                            },
+                                            "virtualNetworkSubnet": {
+                                                "type": "string"
+                                            },
+                                            "virtualNetworkResourceGroup": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "name",
+                                            "privateDnsZone",
+                                            "privateDnsZoneResourceGroup",
+                                            "virtualNetwork",
+                                            "virtualNetworkSubnet",
+                                            "virtualNetworkResourceGroup"
+                                        ]
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ]
+                            },
+                            "keys": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#definitions/appConfigurationKey"
+                                }
+                            },
+                            "tags": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "patternProperties": {
+                                            "^[a-z]": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "minProperties": 1
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        "if": {
+                            "properties": {
+                                "privateEndpoint": {
+                                    "const": null
+                                }
+                            }
+                        },
+                        "then": {
+                            "properties": {
+                                "sku": {
+                                    "type": "object",
+                                    "properties": {
+                                        "dev": {
+                                            "type": "string",
+                                            "oneOf": [
+                                                {
+                                                    "const": "Free"
+                                                },
+                                                {
+                                                    "const": "Standard"
+                                                }
+                                            ]
+                                        },
+                                        "qa": {
+                                            "type": "string",
+                                            "oneOf": [
+                                                {
+                                                    "const": "Free"
+                                                },
+                                                {
+                                                    "const": "Standard"
+                                                }
+                                            ]
+                                        },
+                                        "uat": {
+                                            "type": "string",
+                                            "oneOf": [
+                                                {
+                                                    "const": "Free"
+                                                },
+                                                {
+                                                    "const": "Standard"
+                                                }
+                                            ]
+                                        },
+                                        "prd": {
+                                            "type": "string",
+                                            "oneOf": [
+                                                {
+                                                    "const": "Free"
+                                                },
+                                                {
+                                                    "const": "Standard"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "dev",
+                                        "qa",
+                                        "uat",
+                                        "prd"
+                                    ]
+                                }
+                            }
+                        },
+                        "else": {
+                            "properties": {
+                                "sku": {
+                                    "type": "object",
+                                    "description": "Sku Requirement for private endpoint",
+                                    "properties": {
+                                        "dev": {
+                                            "type": "string",
+                                            "oneOf": [
+                                                {
+                                                    "const": "Standard"
+                                                }
+                                            ]
+                                        },
+                                        "qa": {
+                                            "type": "string",
+                                            "oneOf": [
+                                                {
+                                                    "const": "Standard"
+                                                }
+                                            ]
+                                        },
+                                        "uat": {
+                                            "type": "string",
+                                            "oneOf": [
+                                                {
+                                                    "const": "Standard"
+                                                }
+                                            ]
+                                        },
+                                        "prd": {
+                                            "type": "string",
+                                            "oneOf": [
+                                                {
+                                                    "const": "Standard"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "dev",
+                                        "qa",
+                                        "uat",
+                                        "prd"
+                                    ]
+                                }
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "sku",
+                            "enableMsi",
+                            "enableRbac",
+                            "disablePublicAccess",
+                            "privateEndpoint",
+                            "keys",
+                            "tags"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "appConfigurationKeys": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "appConfigurationName": {
+                                "type": "string"
+                            },
+                            "appConfigurationResourceGroup": {
+                                "type": "string"
+                            },
+                            "key": {
+                                "type": "string",
+                                "description": "The name of the app configuration key"
+                            },
+                            "value": {
+                                "type": "string"
+                            },
+                            "contentType": {
+                                "oneOf": [
+                                    {
+                                        "type": "string",
+                                        "anyOf": [
+                                            {
+                                                "const": "application/json"
+                                            },
+                                            {
+                                                "const": "application/xml"
+                                            },
+                                            {
+                                                "const": "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8"
+                                            },
+                                            {
+                                                "const": "text/css"
+                                            },
+                                            {
+                                                "const": "text/csv"
+                                            },
+                                            {
+                                                "const": "text/html"
+                                            },
+                                            {
+                                                "const": "text/plain"
+                                            },
+                                            {
+                                                "const": "text/xml"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "key",
+                            "value",
+                            "contentType",
+                            "appConfigurationName",
+                            "appConfigurationResourceGroup"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "appConfigurationKey": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                },
+                "contentType": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "anyOf": [
+                                {
+                                    "const": "application/json"
+                                },
+                                {
+                                    "const": "application/xml"
+                                },
+                                {
+                                    "const": "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8"
+                                },
+                                {
+                                    "const": "text/css"
+                                },
+                                {
+                                    "const": "text/csv"
+                                },
+                                {
+                                    "const": "text/html"
+                                },
+                                {
+                                    "const": "text/plain"
+                                },
+                                {
+                                    "const": "text/xml"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "key",
+                "value",
+                "contentType"
+            ]
+        }
+    }
+}

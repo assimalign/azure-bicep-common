@@ -1,0 +1,350 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "eventGridDomainTopicSubscriptions": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "domain": {
+                                "type": "string",
+                                "description": "The name of the Event Grid Domain"
+                            },
+                            "domainTopic": {
+                                "description": "The name of the Event Grid Domain Topic"
+                            },
+                            "endpointType": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "AzureFunction"
+                                    },
+                                    {
+                                        "const": "ServiceBusQueue"
+                                    },
+                                    {
+                                        "const": "ServiceBusTopic"
+                                    },
+                                    {
+                                        "const": "StorageQueue"
+                                    },
+                                    {
+                                        "const": "EventHub"
+                                    },
+                                    {
+                                        "const": "WebHook"
+                                    }
+                                ]
+                            },
+                            "endpointName": {
+                                "type": "string"
+                            },
+                            "endpointResourceGroup": {
+                                "type": "string"
+                            },
+                            "eventTypes": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "eventLabels": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "eventFilters": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "operatorType": {
+                                            "type": "string",
+                                            "oneOf": [
+                                                {
+                                                    "const": "BoolEquals"
+                                                },
+                                                {
+                                                    "const": "IsNotNull"
+                                                },
+                                                {
+                                                    "const": "IsNotNullOrUndefined"
+                                                },
+                                                {
+                                                    "const": "NumberGreaterThan"
+                                                },
+                                                {
+                                                    "const": "NumberGreaterThanOrEquals"
+                                                },
+                                                {
+                                                    "const": "NumberIn"
+                                                },
+                                                {
+                                                    "const": "NumberInRange"
+                                                },
+                                                {
+                                                    "const": "NumberNotIn"
+                                                },
+                                                {
+                                                    "const": "NumberNotInRange"
+                                                },
+                                                {
+                                                    "const": "NumberLessThan"
+                                                },
+                                                {
+                                                    "const": "NumberLessThanOrEquals"
+                                                },
+                                                {
+                                                    "const": "StringBeginsWith"
+                                                },
+                                                {
+                                                    "const": "StringNotBeginsWith"
+                                                },
+                                                {
+                                                    "const": "StringEndsWith"
+                                                },
+                                                {
+                                                    "const": "StringNotEndsWith"
+                                                },
+                                                {
+                                                    "const": "StringContains"
+                                                },
+                                                {
+                                                    "const": "StringNotContains"
+                                                },
+                                                {
+                                                    "const": "StringIn"
+                                                },
+                                                {
+                                                    "const": "StringNotIn"
+                                                }
+                                            ]
+                                        },
+                                        "key": {
+                                            "type": "string",
+                                            "pattern": "^data|^id$|^topic$|^subject$|^eventtype$|^dataversion$"
+                                        },
+                                        "value": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "type": "number"
+                                                },
+                                                {
+                                                    "type": "boolean"
+                                                },
+                                                {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "oneOf": [
+                                                            {
+                                                                "type": "string"
+                                                            },
+                                                            {
+                                                                "type": "number"
+                                                            }
+                                                        ]
+                                                    },
+                                                    "minItems": 1
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "key",
+                                    "operatorType",
+                                    "value"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "domain",
+                            "domainTopic",
+                            "endpointType",
+                            "endpointName",
+                            "endpointResourceGroup",
+                            "eventTypes",
+                            "eventLabels",
+                            "eventFilters"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "eventGirdDomainTopicSubscription": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "endpointType": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "AzureFunction"
+                        },
+                        {
+                            "const": "ServiceBusQueue"
+                        },
+                        {
+                            "const": "ServiceBusTopic"
+                        },
+                        {
+                            "const": "StorageQueue"
+                        },
+                        {
+                            "const": "EventHub"
+                        },
+                        {
+                            "const": "WebHook"
+                        }
+                    ]
+                },
+                "endpointName": {
+                    "type": "string"
+                },
+                "endpointResourceGroup": {
+                    "type": "string"
+                },
+                "eventTypes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "eventLabels": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "eventFilters": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "operatorType": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "BoolEquals"
+                                    },
+                                    {
+                                        "const": "IsNotNull"
+                                    },
+                                    {
+                                        "const": "IsNotNullOrUndefined"
+                                    },
+                                    {
+                                        "const": "NumberGreaterThan"
+                                    },
+                                    {
+                                        "const": "NumberGreaterThanOrEquals"
+                                    },
+                                    {
+                                        "const": "NumberIn"
+                                    },
+                                    {
+                                        "const": "NumberInRange"
+                                    },
+                                    {
+                                        "const": "NumberNotIn"
+                                    },
+                                    {
+                                        "const": "NumberNotInRange"
+                                    },
+                                    {
+                                        "const": "NumberLessThan"
+                                    },
+                                    {
+                                        "const": "NumberLessThanOrEquals"
+                                    },
+                                    {
+                                        "const": "StringBeginsWith"
+                                    },
+                                    {
+                                        "const": "StringNotBeginsWith"
+                                    },
+                                    {
+                                        "const": "StringEndsWith"
+                                    },
+                                    {
+                                        "const": "StringNotEndsWith"
+                                    },
+                                    {
+                                        "const": "StringContains"
+                                    },
+                                    {
+                                        "const": "StringNotContains"
+                                    },
+                                    {
+                                        "const": "StringIn"
+                                    },
+                                    {
+                                        "const": "StringNotIn"
+                                    }
+                                ]
+                            },
+                            "key": {
+                                "type": "string",
+                                "pattern": "^data|^id$|^topic$|^subject$|^eventtype$|^dataversion$"
+                            },
+                            "value": {
+                                "oneOf": [
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "number"
+                                    },
+                                    {
+                                        "type": "boolean"
+                                    },
+                                    {
+                                        "type": "array",
+                                        "items": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "type": "number"
+                                                }
+                                            ]
+                                        },
+                                        "minItems": 1
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "required": [
+                        "key",
+                        "operatorType",
+                        "value"
+                    ]
+                }
+            },
+            "required": [
+                "name",
+                "endpointType",
+                "endpointName",
+                "endpointResourceGroup",
+                "eventTypes",
+                "eventLabels",
+                "eventFilters"
+            ]
+        }
+    }
+}

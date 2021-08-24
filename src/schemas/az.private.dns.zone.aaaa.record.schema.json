@@ -1,0 +1,84 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "privateDnsZoneAaaaRecords": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "dnsZoneName": {
+                                "type": "string"
+                            },
+                            "ttl": {
+                                "type":"number",
+                                "description": "TTL (Time to Live)",
+                                "default": 3600
+                            },
+                            "ip6vAddresses": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "ipv6Address": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "ipv6Address"
+                                    ]
+                                },
+                                "minItems": 1
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "ttl",
+                            "ip6vAddresses",
+                            "dnsZoneName"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "privateDnsZoneAaaaRecord": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "ttl": {
+                    "type":"number",
+                    "description": "TTL (Time to Live)",
+                    "default": 3600
+                },
+                "ip6vAddresses": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "ipv6Address": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "ipv6Address"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "name",
+                "ttl",
+                "ip6vAddresses"
+            ]
+        }
+    }
+}
