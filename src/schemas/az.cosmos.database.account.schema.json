@@ -1,0 +1,205 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "cosmosDatabaseAccounts": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "The name of the Database Account/Server"
+                            },
+                            "enableMsi": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "enableMultiRegionWrites": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "enableFreeTier": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "locations": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "locationName": {
+                                            "type": "string",
+                                            "oneOf": [
+                                                {
+                                                    "const": "centralus"
+                                                },
+                                                {
+                                                    "const": "westus2"
+                                                }
+                                            ]
+                                        },
+                                        "failoverPriority": {
+                                            "type": "number",
+                                            "default": 0
+                                        }
+                                    },
+                                    "required": [
+                                        "locationName",
+                                        "failoverPriority"
+                                    ]
+                                },
+                                "minItems": 1
+                            },
+                            "consistencyPolicy": {
+                                "type": "object",
+                                "properties": {
+                                    "consistencyLevel": {
+                                        "type": "string",
+                                        "oneOf": [
+                                            {
+                                                "const": "BoundedStaleness"
+                                            },
+                                            {
+                                                "const": "ConsistentPrefix"
+                                            },
+                                            {
+                                                "const": "Eventual",
+                                                "description": "Eventual consistency is the weakest form of consistency wherein a client may get the values which are older than the ones it had seen before, over time."
+                                            },
+                                            {
+                                                "const": "Strong",
+                                                "description": "Strong consistency provides the most predictable and intuitive programming model. When you configure your account with strong consistency level, Azure Cosmos DB provides linearizability guarantee."
+                                            },
+                                            {
+                                                "const": "Session",
+                                                "description": "Session consistency is most widely used consistency level both for single region as well as, globally distributed applications."
+                                            }
+                                        ]
+                                    }
+                                },
+                                "if": {
+                                    "enum": [null]
+                                },
+                                "then": {
+
+                                },
+                                "else": {
+                                    "required": [
+                                        "consistencyLevel"
+                                    ]
+                                }
+                            },
+                            "cors": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "allowedOrigins": {
+                                            "type": "string"
+                                        },
+                                        "allowedMethods": {
+                                            "type": "string"
+                                        },
+                                        "allowedHeaders": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "minProperties": 1   
+                                }
+                            },
+                            "databases": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "./az.cosmos.database.account.database.schema.json#definitions/cosmosDatabase"
+                                }
+                            },
+                            "tables": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "name"
+                                    ]
+                                }
+                            },
+                            "tags": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "patternProperties": {
+                                            "^[a-z]": {
+                                                "type":"string"
+                                            }
+                                        },
+                                        "minProperties": 1
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        "anyOf": [
+                            {
+                                "if": {
+                                    "properties": {
+                                        "tables": {
+                                            "contains": {
+                                                "minimum": 1
+                                            }
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "properties": {
+                                        "tables": {
+                                            "items": false
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "if": {
+                                    "properties": {
+                                        "databases": {
+                                            "contains": {
+                                                "minimum": 1
+                                            }
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "properties": {
+                                        "tables": {
+                                            "items": false
+                                        }
+                                    }
+                                }
+                            }
+                        ],
+                        "required": [
+                            "name",
+                            "tags",
+                            "locations",
+                            "enableMsi",
+                            "enableMultiRegionWrites",
+                            "enableFreeTier",
+                            "consistencyPolicy",
+                            "cors"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        }
+    }
+}

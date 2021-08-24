@@ -1,0 +1,321 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "cosmosDatabaseContainers": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "containerName": {
+                                "type": "string"
+                            },
+                            "databaseName": {
+                                "type": "string"
+                            },
+                            "databaseAccountName": {
+                                "type": "string"
+                            },
+                            "partitionKey": {
+                                "type": "object",
+                                "properties": {
+                                    "kind": {
+                                        "type": "string",
+                                        "oneOf": [
+                                            {
+                                                "const": "Hash"
+                                            },
+                                            {
+                                                "const": "MultiHash"
+                                            },
+                                            {
+                                                "const": "Range"
+                                            }
+                                        ]
+                                    },
+                                    "paths": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "pattern": "^/"
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "kind",
+                                    "paths"
+                                ]
+                            },
+                            "uniqueKeyPolicy": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "paths": {
+                                            "type": "array",
+                                            "minItems": 1,
+                                            "items": {
+                                                "type": "string",
+                                                "pattern": "^/"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "paths"
+                                    ]
+                                }
+                            },
+                            "indexingPolicy": {
+                                "properties": {
+                                    "indexingMode": {
+                                        "type": "string",
+                                        "default": "consistent",
+                                        "oneOf": [
+                                            {
+                                                "const": "consistent"
+                                            },
+                                            {
+                                                "const": "lazy"
+                                            },
+                                            {
+                                                "const": "none"
+                                            }
+                                        ]
+                                    },
+                                    "includePaths": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "path": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "default": [
+                                            {
+                                                "path": "/*"
+                                            }
+                                        ]
+                                    },
+                                    "excludePaths": {
+                                        "type": "array",
+                                        "minItems": 1,
+                                        "items": {
+                                            "properties": {
+                                                "path": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "default": [
+                                            {
+                                                "path": "/\"_etag\"/?"
+                                            }
+                                        ]
+                                    },
+                                    "compositeIndexes": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "array",
+                                            "minItems": 2,
+                                            "items": {
+                                                "properties": {
+                                                    "path": {
+                                                        "type": "string"
+                                                    },
+                                                    "order": {
+                                                        "type": "string",
+                                                        "oneOf": [
+                                                            {
+                                                                "const": "ascending"
+                                                            },
+                                                            {
+                                                                "const": "descending"
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "required": [
+                                                    "path",
+                                                    "order"
+                                                ]
+                                            },
+                                            "required": [
+                                                "items"
+                                            ]
+                                        }
+                                    },
+                                    "spatialIndexes": {
+                                        "type": "array"
+                                    }
+                                }
+                            }
+                        },
+                        "required": [
+                            "containerName",
+                            "partitionKey",
+                            "indexingPolicy",
+                            "uniqueKeyPolicy",
+                            "databaseName",
+                            "databaseAccountName"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "cosmosDatabaseContainer": {
+            "type": "object",
+            "properties": {
+                "containerName": {
+                    "type": "string"
+                },
+                "partitionKey": {
+                    "type": "object",
+                    "properties": {
+                        "kind": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Hash"
+                                },
+                                {
+                                    "const": "MultiHash"
+                                },
+                                {
+                                    "const": "Range"
+                                }
+                            ]
+                        },
+                        "paths": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "pattern": "^/"
+                            }
+                        }
+                    },
+                    "required": [
+                        "kind",
+                        "paths"
+                    ]
+                },
+                "uniqueKeyPolicy": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "paths": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "string",
+                                    "pattern": "^/"
+                                }
+                            }
+                        },
+                        "required": [
+                            "paths"
+                        ]
+                    }
+                },
+                "indexingPolicy": {
+                    "properties": {
+                        "indexingMode": {
+                            "type": "string",
+                            "default": "consistent",
+                            "oneOf": [
+                                {
+                                    "const": "consistent"
+                                },
+                                {
+                                    "const": "lazy"
+                                },
+                                {
+                                    "const": "none"
+                                }
+                            ]
+                        },
+                        "includePaths": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "path": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "default": [
+                                {
+                                    "path": "/*"
+                                }
+                            ]
+                        },
+                        "excludePaths": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "properties": {
+                                    "path": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "default": [
+                                {
+                                    "path": "/\"_etag\"/?"
+                                }
+                            ]
+                        },
+                        "compositeIndexes": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "minItems": 2,
+                                "items": {
+                                    "properties": {
+                                        "path": {
+                                            "type": "string"
+                                        },
+                                        "order": {
+                                            "type": "string",
+                                            "oneOf": [
+                                                {
+                                                    "const": "ascending"
+                                                },
+                                                {
+                                                    "const": "descending"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "path",
+                                        "order"
+                                    ]
+                                },
+                                "required": [
+                                    "items"
+                                ]
+                            }
+                        },
+                        "spatialIndexes": {
+                            "type": "array"
+                        }
+                    }
+                }
+            },
+            "required": [
+                "containerName",
+                "partitionKey",
+                "indexingPolicy",
+                "uniqueKeyPolicy"
+            ]
+        }
+    }
+}

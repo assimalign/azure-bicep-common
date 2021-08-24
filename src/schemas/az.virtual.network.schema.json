@@ -1,0 +1,104 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "virtualNetworks": {
+            "type": "object",
+            "description": "An array of Virtual Networks to be deployed",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "addressSpaces": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "pattern": "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|^[0-9][0-9]|^[0-9])(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}(/[1-9]|/1[0-9]|/2[0-9]|/3[0-2])",
+                                    "minLength": 9,
+                                    "maxLength": 18
+                                },
+                                "minItems": 1
+                            },
+                            "subnets": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "description": "The name of the Subnet to create within the virtual network."
+                                        },
+                                        "range": {
+                                            "type": "string",
+                                            "pattern": "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|^[0-9][0-9]|^[0-9])(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}(/[1-9]|/1[0-9]|/2[0-9]|/3[0-2])",
+                                            "minLength": 9,
+                                            "maxLength": 18
+                                        },
+                                        "serviceEndpoints": {
+                                            "type": "array",
+                                            "items":{
+                                                "type": "object",
+                                                "properties":{
+                                                    "service":{
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required":[
+                                                    "service"
+                                                ]
+                                            }
+                                        },
+                                        "privateEndpointNetworkPolicies": {
+                                            "type": "string",
+                                            "oneOf": [
+                                                {
+                                                    "const": "Enabled"
+                                                },
+                                                {
+                                                    "const": "Disabled"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "name",
+                                        "range",
+                                        "serviceEndpoints",
+                                        "privateEndpointNetworkPolicies"
+                                    ]
+                                }
+                            },
+                            "tags": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "patternProperties": {
+                                            "^[a-z]": {
+                                                "type":"string"
+                                            }
+                                        },
+                                        "minProperties": 1
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "addressSpaces",
+                            "subnets",
+                            "tags"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        }
+    }
+}

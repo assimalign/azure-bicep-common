@@ -1,0 +1,83 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "privateDnsZonePtrRecords": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "dnsZoneName": {
+                                "type":"string"
+                            },
+                            "ttl": {
+                                "type":"number",
+                                "description": "TTL (Time to Live)",
+                                "default": 3600
+                            },
+                            "pointers": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "ptrdname": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "ptrdname"
+                                    ]
+                                },
+                                "minItems": 1
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "ttl",
+                            "pointers",
+                            "dnsZoneName"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "privateDnsZonePtrRecord": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "ttl": {
+                    "type":"number",
+                    "description": "TTL (Time to Live)",
+                    "default": 3600
+                },
+                "pointers": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "ptrdname": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "ptrdname"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "name",
+                "ttl",
+                "pointers"
+            ]
+        }
+    }
+}

@@ -1,0 +1,45 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "virtualNetworksPeering": {
+            "type": "object",
+            "description": "An array of Virtual Networks to Peer to each other within the same Resource Group.",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "peeringLinkName": {
+                                "type": "string"
+                            },
+                            "peeringVirtualNetwork": {
+                                "type": "string"
+                            },
+                            "peeringVirtualNetworkResourceGroup": {
+                                "type": "string"
+                            },
+                            "remoteLinkName": {
+                                "type": "string"
+                            },
+                            "remoteVirtualNetwork": {
+                                "type": "string"
+                            },
+                            "remoteVirtualNetworkResourceGroup": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "peeringLinkName",
+                            "peeringVirtualNetwork",
+                            "remoteLinkName",
+                            "remoteVirtualNetwork"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        }
+    }
+}

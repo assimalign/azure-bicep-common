@@ -1,0 +1,139 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "serviceBusNamespaceTopics": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "namespace": {
+                                "type": "string"
+                            },
+                            "namespaceResourceGroup": {
+                                "type": "string"
+                            },
+                            "settings": {
+                                "type": "object",
+                                "properties": {
+                                    "maxSize": {
+                                        "type": "number"
+                                    }
+                                },
+                                "required": [
+                                    "maxSize"
+                                ]
+                            },
+                            "subscriptions": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "az.service.bus.namespace.topic.subscription.schema.json#definitions/serviceBusNamespaceTopicSubscription"
+                                }
+                            },
+                            "policies": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "permissions": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "anyOf": [
+                                                    {
+                                                        "const": "Listen"
+                                                    },
+                                                    {
+                                                        "const": "Manage"
+                                                    },
+                                                    {
+                                                        "const": "Send"
+                                                    }
+                                                ]
+                                            },
+                                            "minItems": 1
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "settings",
+                            "policies",
+                            "namespace",
+                            "namespaceResourceGroup"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "serviceBusNamespaceTopic": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "settings": {
+                    "type": "object",
+                    "properties": {
+                        "maxSize": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "maxSize"
+                    ]
+                },
+                "subscriptions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "az.service.bus.namespace.topic.subscription.schema.json#definitions/serviceBusNamespaceTopicSubscription"
+                    }
+                },
+                "policies": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "permissions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "anyOf": [
+                                        {
+                                            "const": "Listen"
+                                        },
+                                        {
+                                            "const": "Manage"
+                                        },
+                                        {
+                                            "const": "Send"
+                                        }
+                                    ]
+                                },
+                                "minItems": 1
+                            }
+                        }
+                    }
+                }
+            },
+            "required": [
+                "name",
+                "settings",
+                "policies"
+            ]
+        }
+    }
+}
