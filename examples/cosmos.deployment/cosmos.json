@@ -1,0 +1,40 @@
+{
+    "$schema": "../../src/schemas/az.main.schema.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "cosmosDatabaseAccounts": {
+            "value": [
+                {
+                    "databaseAccountName": "",
+                    "databaseAccountConsistencyPolicy": {
+                        "consistencyLevel": "Eventual"
+                    },
+                    "databaseAccountCorsPolicy": [],
+                    "databaseAccountEnableMsi": false,
+                    "databaseAccountEnableFreeTier": false,
+                    "databaseAccountEnableMultiRegionWrites": false,
+                    "databaseAccountLocations": [
+                        {
+                            "locationName": "westus2",
+                            "failoverPriority": 0
+                        }
+                    ],
+                    "databaseAccountType": "",
+                    
+                    "databaseAccountDatabases": [
+                        {
+                            "databaseName": "",
+                            "databaseContainers": []
+                        }
+                    ],
+                    "databaseAccountTables": [
+                        {
+                            "name": ""
+                        }
+                    ],
+                    "tags": null
+                }
+            ]
+        }
+    }
+}

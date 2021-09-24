@@ -52,9 +52,9 @@ resource azDocumentDbAccountDeployment 'Microsoft.DocumentDB/databaseAccounts@20
     }
     // This will enable Table Storage APIs rather than 
     capabilities: any(length(dbAccountTables) > 0 && !empty(first(dbAccountTables)) && empty(first(dbAccountDatabases)) ? [
-       {
-          name: 'EnableTable'
-       }
+      {
+        name: 'EnableTable'
+      }
     ] : [])
     enableMultipleWriteLocations: dbAccountEnableMultiRegionWrites
     locations: dbAccountLocations

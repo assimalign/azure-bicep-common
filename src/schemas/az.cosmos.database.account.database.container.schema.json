@@ -8,16 +8,19 @@
                     "items": {
                         "type": "object",
                         "properties": {
-                            "containerName": {
+                            "databaseContainerName": {
                                 "type": "string"
                             },
                             "databaseName": {
                                 "type": "string"
                             },
-                            "databaseAccountName": {
+                            "databaseAccount": {
                                 "type": "string"
                             },
-                            "partitionKey": {
+                            "databaseAccountResourceGroup": {
+                                "type": "string"
+                            },
+                            "databaseContainerPartitionKey": {
                                 "type": "object",
                                 "properties": {
                                     "kind": {
@@ -47,7 +50,7 @@
                                     "paths"
                                 ]
                             },
-                            "uniqueKeyPolicy": {
+                            "databaseContainerUniqueKeyPolicy": {
                                 "type": "array",
                                 "items": {
                                     "type": "object",
@@ -66,7 +69,7 @@
                                     ]
                                 }
                             },
-                            "indexingPolicy": {
+                            "databaseContainerIndexingPolicy": {
                                 "properties": {
                                     "indexingMode": {
                                         "type": "string",
@@ -154,12 +157,13 @@
                             }
                         },
                         "required": [
-                            "containerName",
-                            "partitionKey",
-                            "indexingPolicy",
-                            "uniqueKeyPolicy",
                             "databaseName",
-                            "databaseAccountName"
+                            "databaseAccount",
+                            "databaseAccountResourceGroup",
+                            "databaseContainerName",
+                            "databaseContainerPartitionKey",
+                            "databaseContainerIndexingPolicy",
+                            "databaseContainerUniqueKeyPolicy"
                         ]
                     }
                 }
@@ -171,10 +175,10 @@
         "cosmosDatabaseContainer": {
             "type": "object",
             "properties": {
-                "containerName": {
+                "databaseContainerName": {
                     "type": "string"
                 },
-                "partitionKey": {
+                "databaseContainerPartitionKey": {
                     "type": "object",
                     "properties": {
                         "kind": {
@@ -204,7 +208,7 @@
                         "paths"
                     ]
                 },
-                "uniqueKeyPolicy": {
+                "databaseContainerUniqueKeyPolicy": {
                     "type": "array",
                     "items": {
                         "type": "object",
@@ -223,7 +227,7 @@
                         ]
                     }
                 },
-                "indexingPolicy": {
+                "databaseContainerIndexingPolicy": {
                     "properties": {
                         "indexingMode": {
                             "type": "string",
@@ -311,10 +315,10 @@
                 }
             },
             "required": [
-                "containerName",
-                "partitionKey",
-                "indexingPolicy",
-                "uniqueKeyPolicy"
+                "databaseContainerName",
+                "databaseContainerPartitionKey",
+                "databaseContainerUniqueKeyPolicy",
+                "databaseContainerIndexingPolicy"
             ]
         }
     }

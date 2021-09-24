@@ -12,17 +12,25 @@
                             "databaseName": {
                                 "type": "string"
                             },
-                            "databaseAccountName": {
+                            "databaseAccount": {
+                                "type": "string",
+                                "description": "The name of the database account in which the database lives in."
+                            },
+                            "databaseAccountResourceGroup": {
                                 "type": "string"
                             },
-                            "containers": {
-                                "$ref": "./az.cosmos.database.account.database.container.schema.json#definitions/cosmosDatabaseContainer"
+                            "databaseContainers": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "./az.cosmos.database.account.database.container.schema.json#definitions/cosmosDatabaseContainer"
+                                }
                             }
                         },
                         "required": [
                             "databaseName",
                             "databaseAccountName",
-                            "containers"
+                            "databaseAccountResourceGroup",
+                            "databaseContainers"
                         ]
                     }
                 }
@@ -37,13 +45,16 @@
                 "databaseName": {
                     "type": "string"
                 },
-                "containers": {
-                    "$ref": "./az.cosmos.database.account.database.container.schema.json#definitions/cosmosDatabaseContainer"
+                "databaseContainers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "./az.cosmos.database.account.database.container.schema.json#definitions/cosmosDatabaseContainer"
+                    }
                 }
             },
             "required": [
                 "databaseName",
-                "containers"
+                "databaseContainers"
             ]
         }
     }

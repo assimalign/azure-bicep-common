@@ -9,25 +9,34 @@
                     "items": {
                         "type": "object",
                         "properties": {
-                            "name": {
+                            "databaseAccountName": {
                                 "type": "string",
                                 "description": "The name of the Database Account/Server"
                             },
-                            "enableMsi": {
+                            "databaseAccountType": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": ""
+                                    }
+                                ]
+                            },
+                            "databaseAccountEnableMsi": {
                                 "type": "boolean",
                                 "default": false
                             },
-                            "enableMultiRegionWrites": {
+                            "databaseAccountEnableMultiRegionWrites": {
                                 "type": "boolean",
                                 "default": false
                             },
-                            "enableFreeTier": {
+                            "databaseAccountEnableFreeTier": {
                                 "type": "boolean",
                                 "default": false
                             },
-                            "locations": {
+                            "databaseAccountLocations": {
                                 "type": "array",
                                 "items": {
+                                    "type": "object",
                                     "properties": {
                                         "locationName": {
                                             "type": "string",
@@ -52,7 +61,7 @@
                                 },
                                 "minItems": 1
                             },
-                            "consistencyPolicy": {
+                            "databaseAccountConsistencyPolicy": {
                                 "type": "object",
                                 "properties": {
                                     "consistencyLevel": {
@@ -91,7 +100,7 @@
                                     ]
                                 }
                             },
-                            "cors": {
+                            "databaseAccountCorsPolicy": {
                                 "type": "array",
                                 "items": {
                                     "type": "object",
@@ -109,13 +118,13 @@
                                     "minProperties": 1   
                                 }
                             },
-                            "databases": {
+                            "databaseAccountDatabases": {
                                 "type": "array",
                                 "items": {
                                     "$ref": "./az.cosmos.database.account.database.schema.json#definitions/cosmosDatabase"
                                 }
                             },
-                            "tables": {
+                            "databaseAccountTables": {
                                 "type": "array",
                                 "items": {
                                     "type": "object",
@@ -185,14 +194,15 @@
                             }
                         ],
                         "required": [
-                            "name",
-                            "tags",
-                            "locations",
-                            "enableMsi",
-                            "enableMultiRegionWrites",
-                            "enableFreeTier",
-                            "consistencyPolicy",
-                            "cors"
+                            "databaseAccountName",
+                            "databaseAccountType",
+                            "databaseAccountLocations",
+                            "databaseAccountEnableMsi",
+                            "databaseAccountEnableMultiRegionWrites",
+                            "databaseAccountEnableFreeTier",
+                            "databaseAccountConsistencyPolicy",
+                            "databaseAccountCorsPolicy",
+                            "tags"
                         ]
                     }
                 }
