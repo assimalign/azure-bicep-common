@@ -1,28 +1,43 @@
+/*
+  NOTICE: This module is a generic parent to all role assignments modules
+*/
+
 @allowed([
   'dev'
   'qa'
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed')
-param environment string
+@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
+param environment string = 'dev'
 
-@description('The Resource Prefix that will be appended to the beginning of the resource name')
-param prefix string
+@description('The location prefix for the resource name')
+param location string = ''
 
 @description('The role id to assign to the resource')
 param resourceRoleName string
 
+@allowed([
+  'Resource'
+  'ResourceGroup'
+])
+@description('')
+param resourceRoleAssignmentScope string
+
 @description('The resource type type to assign the role to')
-param resourceType string
+param resourceTypeAssigningRole string
 
-@description('')
-param resourceName string
+@description('The principal Id reciving the role assignment')
+param resourcePrincipalIdRecievingRole string
 
-@description('')
-param resourceGroupName string
+@description('If scoping resource role assignment to a specific the resource the name of the resource must be specified')
+param resourceToScopeRoleAssignment string = ''
 
-var resourceRoleId = {
+@description('The name of the resource to scope role assignment to')
+param resourceGroupToScopeRoleAssignment string
+
+var ResourceGroup = resourceGroup(replace(replace(resourceGroupToScopeRoleAssignment, '@environment', environment), '@location', location))
+var RoleDefinitionId = {
   AcrPush: '8311e382-0749-4cb8-b61a-304f252e45ec'
   APIManagementServiceContributor: '312a565d-c81f-4fd8-895a-4e21e48d571c'
   AcrPull: '7f951dda-4ed3-4680-a7ca-43fe172d538d'
@@ -54,11 +69,9 @@ var resourceRoleId = {
   CDNEndpointReader: '871e35f6-b5c1-49cc-a043-bde969a0f2cd'
   CDNProfileContributor: 'ec156ff8-a8d1-4d15-830c-5b80698ca432'
   CDNProfileReader: '8f96442b-4075-438f-813d-ad51ab4019af'
-  ClassicNetworkContributor: 'b34d265f-36f7-4a0d-a4d4-e158ca92e90f'
-  ClassicStorageAccountContributor: '86e8f5dc-a6e9-4c67-9d15-de283e8eac25'
-  ClassicStorageAccountKeyOperatorServiceRole: '985d6b00-f706-48f5-a6fe-d0ca12fb668d'
+
   ClearDBMySQLDBContributor: '9106cda0-8a86-4e81-b686-29a22c54effe'
-  ClassicVirtualMachineContributor: 'd73bb868-a0df-4d4d-bd69-98a00b01fccb'
+
   CognitiveServicesUser: 'a97b65f3-24c7-4388-baec-2e87135dc908'
   CognitiveServicesDataReader: 'b59867f0-fa02-499b-be73-45a86b5b3e1c'
   CognitiveServicesContributor: '25fbc0a9-bd7c-42a3-aa1a-3b75d497ee68'
@@ -75,12 +88,11 @@ var resourceRoleId = {
   DevTestLabsUser: '76283e04-6283-4c54-8f91-bcf1374a3c64'
   DocumentDBAccountContributor: '5bd9cd88-fe45-4216-938b-f97437e15450'
   DNSZoneContributor: 'befefa01-2a29-4197-83a8-272ff33ce314'
-  EventGridEventSubscriptionContributor: '428e0ff0-5e57-4d9c-a221-2c70d0e0a443'
-  EventGridEventSubscriptionReader: '2414bbcf-6497-4faf-8c65-045460748405'
+
   GraphOwner: 'b60367af-1334-4454-b71e-769d9a4f83d9'
   HDInsightDomainServicesContributor: '8d8d5a11-05d3-4bda-a417-a08778121c7c'
   IntelligentSystemsAccountContributor: '03a6d094-3444-4b3d-88af-7477090a9e5e'
-  KeyVaultContributor: 'f25e0fa2-a7c8-4377-a976-54943a77a395'
+
   KnowledgeConsumer: 'ee361c5d-f7b5-4119-b4b6-892157c8f64c'
   LabCreator: 'b97fb8bc-a8b2-4522-a38b-dd33c7e65ead'
   LogAnalyticsReader: '73c42c96-874c-492b-b04d-ab87d138a893'
@@ -117,16 +129,9 @@ var resourceRoleId = {
   SQLManagedInstanceContributor: '4939a1f6-9ae0-4e48-a1e0-f2cbe897382d'
   SQLDBContributor: '9b7fa17d-e63e-47b0-bb0a-15c516ac86ec'
   SQLSecurityManager: '056cd41c-7e88-42e1-933e-88ba6a50c9c3'
-  StorageAccountContributor: '17d1049b-9a84-46fb-8f53-869881c3d3ab'
+
   SQLServerContributor: '6d8ee4ec-f05a-4a1d-8b00-a9b17e38b437'
-  StorageAccountKeyOperatorServiceRole: '81a9662b-bebf-436f-a333-f67b29880f12'
-  StorageBlobDataContributor: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
-  StorageBlobDataOwner: 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
-  StorageBlobDataReader: '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1'
-  StorageQueueDataContributor: '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
-  StorageQueueDataMessageProcessor: '8a0f0c08-91a1-4084-bc3d-661d67233fed'
-  StorageQueueDataMessageSender: 'c6a89b2d-59bc-44d0-9896-0f6e12d7b80a'
-  StorageQueueDataReader: '19e7f393-937e-4f77-808e-94535e297925'
+
   SupportRequestContributor: 'cfd33db0-3dd1-45e3-aa9d-cdbdf3b6f24e'
   TrafficManagerContributor: 'a4b10055-b0c7-44c2-b00f-c7b5b3550cf7'
   VirtualMachineAdministratorLogin: '1c0163c0-47e6-4577-8991-ea5c82e286e4'
@@ -146,12 +151,11 @@ var resourceRoleId = {
   AzureEventHubsDataSender: '2b629674-e913-4c01-ae53-ef4638d8f975'
   AzureServiceBusDataReceiver: '4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0'
   AzureServiceBusDataSender: '69a216fc-b8fb-44d8-bc22-1f3c2cd27a39'
-  StorageFileDataSMBShareReader: 'aba4ae5f-2193-4029-9191-0cb91df5e314'
-  StorageFileDataSMBShareContributor: '0c867c2a-1d8c-454a-a3db-ab2ea1bdc8bb'
+
   PrivateDNSZoneContributor: 'b12aa53e-6015-4669-85d0-8515ebb3ae7f'
-  StorageBlobDelegator: 'db58b8e5-c6ad-4a2a-8342-4190687cbf4a'
+
   DesktopVirtualizationUser: '1d18fff3-a72a-46b5-b4a9-0b38a3cd7e63'
-  StorageFileDataSMBShareElevatedContributor: 'a7264617-510b-434b-a828-9731dc254ea7'
+
   BlueprintContributor: '41077137-e803-4205-871c-5a86e6a753b4'
   BlueprintOperator: '437d2ced-4a38-4302-8479-ed2bcb43d090'
   AzureSentinelContributor: 'ab8e14d6-4a74-4a29-9ba8-549422addade'
@@ -165,8 +169,7 @@ var resourceRoleId = {
   AzureConnectedMachineOnboarding: 'b64e21ea-ac4e-4cdf-9dc9-5b892992bee7'
   AzureConnectedMachineResourceAdministrator: 'cd570a14-e51a-42ad-bac8-bafd67325302'
   ManagedServicesRegistrationassignmentDeleteRole: '91c1777a-f3dc-4fae-b103-61d183457e46'
-  AppConfigurationDataOwner: '5ae67dd6-50cb-40e7-96ff-dc2bfa4b606b'
-  AppConfigurationDataReader: '516239f1-63e1-4d78-a4de-a74fb236a071'
+
   KubernetesClusterAzureArcOnboarding: '34e09817-6cbe-4d01-b1a2-e0eac5743d41'
   ExperimentationContributor: '7f646f1b-fa08-80eb-a22b-edd6ce5c915c'
   CognitiveServicesQnAMakerReader: '466ccd10-b268-4a11-b098-b4849f024126'
@@ -195,14 +198,7 @@ var resourceRoleId = {
   CognitiveServicesCustomVisionLabeler: '88424f51-ebe7-446f-bc41-7fa16989e96c'
   CognitiveServicesCustomVisionReader: '93586559-c37d-4a6b-ba08-b9f0940c2d73'
   CognitiveServicesCustomVisionTrainer: '0a5ae4ab-0d65-4eeb-be61-29fc9b54394b'
-  KeyVaultAdministrator: '00482a5a-887f-4fb3-b363-3b7fe8e74483'
-  KeyVaultCryptoOfficer: '14b46e9e-c2b7-41b4-b07b-48a6ebf60603'
-  KeyVaultCryptoUser: '12338af0-0e69-4776-bea7-57ae8d297424'
-  KeyVaultSecretsOfficer: 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7'
-  KeyVaultSecretsUser: '4633458b-17de-408a-b874-0445c86b69e6'
-  KeyVaultCertificatesOfficer: 'a4417e6f-fecd-4de8-b567-7b0420556985'
-  KeyVaultReader: '21090545-7ca7-4776-b22c-e363652d74d2'
-  KeyVaultCryptoServiceEncryptionUser: 'e147488a-f6f5-4113-8e2d-b22465e65bf6'
+
   AzureArcKubernetesViewer: '63f0a09d-1495-4db4-a681-037d84835eb4'
   AzureArcKubernetesWriter: '5b999177-9696-4545-85c7-50de3797e5a1'
   AzureArcKubernetesClusterAdmin: '8393591c-06b9-48a2-a542-1bd6b377f6a2'
@@ -236,7 +232,7 @@ var resourceRoleId = {
   SignalRServiceOwner: '7e4f1700-ea5a-4f59-8f37-079cfe29dce3'
   ReservationPurchaser: 'f7b75c60-3036-4b75-91c3-6b41c27c1689'
   AzureMLMetricsWriter: '635dd51f-9968-44d3-b7fb-6d9a6bd613ae'
-  StorageAccountBackupContributorRole: 'e5e2a7ff-d759-4cd2-bb51-3152d37e2eb1'
+
   ExperimentationMetricContributor: '6188b7c9-7d01-4f99-a59f-c88b630326c0'
   ProjectBabylonDataCurator: '9ef4ef9c-a049-46b0-82ab-dd8ac094c889'
   ProjectBabylonDataReader: 'c8d896ba-346d-4f50-bc1d-7d1c84130446'
@@ -269,7 +265,7 @@ var resourceRoleId = {
   FHIRDataConverter: 'a1705bd2-3a8f-45a5-8683-466fcfd5cc24'
   AzureSentinelAutomationContributor: 'f4c81013-99ee-4d62-a7ee-b3f1f648599a'
   QuotaRequestOperator: '0e5f05e5-9ab9-446b-b98d-1e2157c94125'
-  EventGridContributor: '1e241071-0855-49ea-94dc-649edcd759de'
+
   SecurityDetonationChamberReader: '28241645-39f8-410b-ad48-87863e2951d5'
   ObjectAnchorsAccountReader: '4a167cdf-cb95-4554-9203-2347fe489bd9'
   ObjectAnchorsAccountOwner: 'ca0835dd-bacc-42dd-8ed2-ed5e7230d15b'
@@ -294,46 +290,123 @@ var resourceRoleId = {
   TestBaseReader: '15e0f5a1-3450-4248-8e25-e2afe88a9e85'
   SearchIndexDataReader: '1407120a-92aa-4202-b7e9-c0e197c71c8f'
   SearchIndexDataContributor: '8ebe5a00-799e-43f5-93ac-243d3dce84a7'
-  StorageTableDataReader: '76199698-9eea-4c19-bc75-cec21354c6b6'
-  StorageTableDataContributor: '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'
+
   DICOMDataReader: 'e89c7a3c-2f64-4fa1-a847-3e4c9ba4283a'
   DICOMDataOwner: '58a3b984-7adf-4c20-983a-32417c86fbc8'
-  EventGridDataSender: 'd5a91429-5739-47e2-a06b-3470a27159e7'
+
   AzureMLDataScientist: 'f6c7c914-8db3-469d-8ca1-694a8f32e121'
 }
 
-
-// ************************************************************************** //
-//                 Storage Account Primary Connection String Update
-// ************************************************************************** //
-resource azEventHubRoleResource 'Microsoft.EventHub/namespaces@2021-01-01-preview' existing = if (resourceType == 'Microsoft.EventHub/namespaces') {
-  name: resourceType == 'Microsoft.EventHub/namespaces' ? '${prefix}-${environment}-${resourceName}' : 'no-resource-event-hub'
-  scope: resourceGroup('${prefix}-${environment}-${resourceGroupName}')
+// 1. Check for Azure App Configuration Role Assignment
+module azAppConfigurationRoleAssignment 'az.sec.role.assignment.app.configuration.bicep' = if (resourceTypeAssigningRole == 'Microsoft.AppConfiguration/ConfigurationStores') {
+  name: 'az-appc-role-assign-${guid('${resourceRoleName}-${resourcePrincipalIdRecievingRole}')}'
+  scope: ResourceGroup
+  params: {
+    environment: environment
+    location: location
+    resourceRoleName: resourceRoleName
+    resourceRoleAssignmentScope: resourceRoleAssignmentScope
+    resourceToScopeRoleAssignment: resourceToScopeRoleAssignment
+    resourcePrincipalIdRecievingRole: resourcePrincipalIdRecievingRole
+  }
 }
 
-resource azEventHubRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceType == 'Microsoft.EventHub/namespaces') {
-  name: resourceType == 'Microsoft.EventHub/namespaces' ? guid('${azEventHubRoleResource.id}/${resourceRoleId[resourceRoleName]}') : 'no-resource-guid'
-  scope: resourceGroup()
-  properties: {
-    principalId: resourceType == 'Microsoft.EventHub/namespaces' ? azEventHubRoleResource.identity.principalId : 'no-event-hub-principle-id'
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', resourceRoleId[resourceRoleName])
+// 2. Check for Azure Key Vault Role Assignments
+module azKeyVaultRoleAssignment 'az.sec.role.assignment.key.vault.bicep' = if (resourceTypeAssigningRole == 'Microsoft.KeyVault/Vaults') {
+  name: 'az-kv-role-assign-${guid('${resourceRoleName}-${resourcePrincipalIdRecievingRole}')}'
+  scope: ResourceGroup
+  params: {
+    environment: environment
+    location: location
+    resourceRoleName: resourceRoleName
+    resourceRoleAssignmentScope: resourceRoleAssignmentScope
+    resourceToScopeRoleAssignment: resourceToScopeRoleAssignment
+    resourcePrincipalIdRecievingRole: resourcePrincipalIdRecievingRole
+  }
+}
+
+// 3. Check for Azure Event Grid Role Assignment
+module azEventGridRoleAssignment 'az.sec.role.assignment.event.grid.bicep' = if (resourceTypeAssigningRole == 'Microsoft.EventGrid/Domains') {
+  name: 'az-kv-role-assign-${guid('${resourceRoleName}-${resourcePrincipalIdRecievingRole}')}'
+  scope: ResourceGroup
+  params: {
+    environment: environment
+    location: location
+    resourceRoleName: resourceRoleName
+    resourceRoleAssignmentScope: resourceRoleAssignmentScope
+    resourceToScopeRoleAssignment: resourceToScopeRoleAssignment
+    resourcePrincipalIdRecievingRole: resourcePrincipalIdRecievingRole
+  }
+}
+
+// 4. Check for Azure Storage Account Role Assignment
+module azStorageAccountRoleAssignment 'az.sec.role.assignment.storage.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Storage/StorageAccounts') {
+  name: 'az-stg-role-assign-${guid('${resourceRoleName}-${resourcePrincipalIdRecievingRole}')}'
+  scope: ResourceGroup
+  params: {
+    environment: environment
+    location: location
+    resourceRoleName: resourceRoleName
+    resourceRoleAssignmentScope: resourceRoleAssignmentScope
+    resourceToScopeRoleAssignment: resourceToScopeRoleAssignment
+    resourcePrincipalIdRecievingRole: resourcePrincipalIdRecievingRole
+  }
+}
+
+// 5. Check for Azure Storage Account Blob Services Role Assignment
+module azStorageAccountBlobContainerRoleAssignment 'az.sec.role.assignment.storage.blob.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Storage/StorageAccounts/BlobServices/Containers') {
+  name: 'az-stg-blob-role-assign-${guid('${resourceRoleName}-${resourcePrincipalIdRecievingRole}')}'
+  scope: ResourceGroup
+  params: {
+    environment: environment
+    location: location
+    resourceRoleName: resourceRoleName
+    resourceRoleAssignmentScope: resourceRoleAssignmentScope
+    resourceToScopeRoleAssignment: resourceToScopeRoleAssignment
+    resourcePrincipalIdRecievingRole: resourcePrincipalIdRecievingRole
   }
 }
 
 
-// ************************************************************************** //
-//                 Storage Account Primary Connection String Update
-// ************************************************************************** //
-resource azFunctionAppResource 'Microsoft.Web/sites/functions@2021-01-15' existing = if (resourceType == 'Microsoft.Web/sites/functions') {
-  name: resourceType == 'Microsoft.Web/sites/functions' ? '${prefix}-${environment}-${resourceName}' : 'no-resource-event-hub'
-  scope: resourceGroup('${prefix}-${environment}-${resourceGroupName}')
+// 6. Check for Azure Storage Account File Share Services Role Assignment
+module azStorageFileShareAccountRoleAssignment 'az.sec.role.assignment.storage.fileshare.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Storage/StorageAccounts/FileServices/Shares') {
+  name: 'az-stg-fs-role-assign-${guid('${resourceRoleName}-${resourcePrincipalIdRecievingRole}')}'
+  scope: ResourceGroup
+  params: {
+    environment: environment
+    location: location
+    resourceRoleName: resourceRoleName
+    resourceRoleAssignmentScope: resourceRoleAssignmentScope
+    resourceToScopeRoleAssignment: resourceToScopeRoleAssignment
+    resourcePrincipalIdRecievingRole: resourcePrincipalIdRecievingRole
+  }
 }
 
-resource azFunctionAppRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceType == 'Microsoft.Web/sites/functions') {
-  name: resourceType == 'Microsoft.Web/sites/functions' ? guid('${azFunctionAppResource.id}/${resourceRoleId[resourceRoleName]}') : 'no-function-app-resource-guid'
-  scope: resourceGroup()
-  properties: {
-    principalId: resourceType == 'Microsoft.Web/sites/functions' ? azFunctionAppResource.properties.function_app_id : 'no-function-app-principle-id'
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', resourceRoleId[resourceRoleName])
+
+// 7. Check for Azure EStorage Account Queue Services Role Assignment
+module azStorageAccountQueueRoleAssignment 'az.sec.role.assignment.storage.queue.bicep' = if (resourceTypeAssigningRole == '"Microsoft.Storage/StorageAccounts/QueueServices/Queues') {
+  name: 'az-stg-queue-role-assign-${guid('${resourceRoleName}-${resourcePrincipalIdRecievingRole}')}'
+  scope: ResourceGroup
+  params: {
+    environment: environment
+    location: location
+    resourceRoleName: resourceRoleName
+    resourceRoleAssignmentScope: resourceRoleAssignmentScope
+    resourceToScopeRoleAssignment: resourceToScopeRoleAssignment
+    resourcePrincipalIdRecievingRole: resourcePrincipalIdRecievingRole
+  }
+}
+
+// 3. Check for Azure Storage Account Tables Services Role Assignment
+module azStorageAccountTableRoleAssignment 'az.sec.role.assignment.storage.table.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Storage/StorageAccounts/TableServices/Table') {
+  name: 'az-stg-table-role-assign-${guid('${resourceRoleName}-${resourcePrincipalIdRecievingRole}')}'
+  scope: ResourceGroup
+  params: {
+    environment: environment
+    location: location
+    resourceRoleName: resourceRoleName
+    resourceRoleAssignmentScope: resourceRoleAssignmentScope
+    resourceToScopeRoleAssignment: resourceToScopeRoleAssignment
+    resourcePrincipalIdRecievingRole: resourcePrincipalIdRecievingRole
   }
 }

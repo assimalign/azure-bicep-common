@@ -48,9 +48,15 @@
                             "platformVersion": {
                                 "type": "string"
                             },
-                            "enableMsi": {
+                            "msiEnabled": {
                                 "type": "boolean",
                                 "default": false
+                            },
+                            "msiRoleAssignments": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "az.sec.role.assignment.schema.json#definitions/roleAssignment"
+                                }
                             },
                             "appPlanName": {
                                 "type": "string",
@@ -251,10 +257,29 @@
                                     "properties": {
                                         "name": {
                                             "type": "string"
+                                        },
+                                        "functions" : {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "isEnabled": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "name",
+                                                    "isEnabled"
+                                                ]
+                                            }
                                         }
                                     },
                                     "required": [
-                                        "name"
+                                        "name",
+                                        "functions"
                                     ]
                                 }
                             },
@@ -284,8 +309,9 @@
                             "storageAccountResourceGroup",
                             "insightsName",
                             "insightsResourceGroup",
-                            "slots",
                             "settings",
+                            "msiEnabled",
+                            "msiRoleAssignments",
                             "tags"
                         ]
                     }

@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed')
-param environment string
+@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
+param environment string = 'dev'
+
+@description('A prefix or suffix identifying the deployment location as part of the naming convention of the resource')
+param location string = ''
 
 @description('The name of the Database Account/Server to be deployed')
 param dbAccountName string
@@ -38,7 +41,7 @@ param dbAccountEnableFreeTier bool = true
 
 // 1. Deploy the Document Db Account
 resource azDocumentDbAccountDeployment 'Microsoft.DocumentDB/databaseAccounts@2021-06-15' = {
-  name: replace('${dbAccountName}', '@environment', environment)
+  name: replace(replace('${dbAccountName}', '@environment', environment), '@location', location)
   kind: 'GlobalDocumentDB'
   location: first(dbAccountLocations).locationName
   identity: {

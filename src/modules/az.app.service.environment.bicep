@@ -4,22 +4,22 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed')
-param environment string
+@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
+param environment string = 'dev'
+
+@description('A prefix or suffix identifying the deployment location as part of the naming convention of the resource')
+param location string = ''
 
 @description('The name of the ASE to deploy')
 param aseName string
-// @allowed([
-//   'linux'
-//   'windows'
-// ])
-// param os string = 'windows'
+
 @allowed([
+  'ASEV3'
   'ASEV2'
   'ASEV1'
 ])
 @description('The ASE version to be deployed. Default ASEV2')
-param aseType string = 'ASEV2'
+param aseType string = 'ASEV3'
 
 @description('A list of App Service Plans that will live under the Deployed ASE')
 param aseAppServicePlans array = []

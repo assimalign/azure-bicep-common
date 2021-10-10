@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed')
-param environment string
+@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
+param environment string = 'dev'
+
+@description('A prefix or suffix identifying the deployment location as part of the naming convention of the resource')
+param location string = ''
 
 @description('The Function App Name to be deployed')
 param appName string
@@ -13,7 +16,7 @@ param appName string
 @allowed([
   'web'
   'functionapp'
-  'functionapp,linux' 
+  'functionapp,linux'
 ])
 @description('appType')
 param appType string
@@ -28,11 +31,11 @@ param appType string
 @description('The platform for the Function app: .NET Core, Java, Node.js, etc.,')
 param appPlatform string
 
-@description('The Runtime Version of the specified language')
-param appPlatformVersion string = ''
-
 @description('Turns on System Managed Identity for the creted resources')
-param appEnableMsi bool = false
+param appMsiEnabled bool = false
+
+@description('')
+param appMsiRoleAssignments array = []
 
 @description('Deploys App Slots for the app service')
 param appSlots array = []
@@ -41,7 +44,7 @@ param appSlots array = []
 param appStorageAccountName string
 
 @description('The resource group where the storage account resource group')
-param appStorageAccountResourceGroup string 
+param appStorageAccountResourceGroup string
 
 @description('The Application insights that will be used for logging')
 param appInsightsName string
@@ -58,54 +61,52 @@ param appPlanResourceGroup string = resourceGroup().name
 @description('The settings for the app service deployment')
 param appSettings object
 
-
+@description('Custom Attributes to attach to the app service deployment')
+param appServiceTags object = {}
 
 // **************************************************************************************** //
 //                              Function App Deployment                                     //
 // **************************************************************************************** //
 
+// Format Site Settings 
 var appSiteSettings = [for setting in appSettings.site: {
-  name: replace(setting.name, '@environment', environment)
-  value: replace(setting.value, '@environment', environment)
+  name: replace(replace(setting.name, '@environment', environment), '@location', location)
+  value: replace(replace(setting.value, '@environment', environment), '@location', location)
 }]
-
 
 // 1. Get the existing App Service Plan to attach to the 
 // Note: All web service (Function & Web Apps) have App Service Plans even if it is consumption Y1 Plans
 resource azAppServicePlanResource 'Microsoft.Web/serverfarms@2021-01-01' existing = {
-  name: replace(appPlanName, '@environment', environment)
-  scope: resourceGroup(replace(appPlanResourceGroup, '@environment', environment))
+  name: replace(replace(appPlanName, '@environment', environment), '@location', location)
+  scope: resourceGroup(replace(replace(appPlanResourceGroup, '@environment', environment), '@location', location))
 }
-
 
 // 2. Get existing app storage account resource
 resource azAppServiceStorageResource 'Microsoft.Storage/storageAccounts@2021-04-01' existing = {
-  name: replace(appStorageAccountName, '@environment', environment)
-  scope: resourceGroup(replace(appStorageAccountResourceGroup, '@environment', environment))
+  name: replace(replace(appStorageAccountName, '@environment', environment), '@location', location)
+  scope: resourceGroup(replace(replace(appStorageAccountResourceGroup, '@environment', environment), '@location', location))
 }
-
 
 // 3. Get existing app insights 
 resource azAppServiceInsightsResource 'Microsoft.Insights/components@2020-02-02-preview' existing = {
-  name: replace(appInsightsName, '@environment', environment)
-  scope: resourceGroup(replace(appInsightsResourceGroup, '@environment', environment))
+  name: replace(replace(appInsightsName, '@environment', environment), '@location', location)
+  scope: resourceGroup(replace(replace(appInsightsResourceGroup, '@environment', environment), '@location', location))
 }
 
-
-// 4. Deploy Function App
+// 4.1 Deploy Function App, if applicable
 resource azAppServiceFunctionDeployment 'Microsoft.Web/sites@2021-01-01' = if (appType == 'functionapp' || appType == 'functionapp,linux') {
-  name: appType == 'functionapp' || appType == 'functionapp,linux' ? replace('${appName}', '@environment', environment) : 'no-function-app-to-deploy'
+  name: appType == 'functionapp' || appType == 'functionapp,linux' ? replace(replace('${appName}', '@environment', environment), '@location', location) : 'no-function-app-to-deploy'
   location: resourceGroup().location
   kind: appType
   identity: {
-   type: appEnableMsi == true ? 'SystemAssigned' : 'None'
-  } 
+    type: appMsiEnabled == true ? 'SystemAssigned' : 'None'
+  }
   properties: {
     serverFarmId: azAppServicePlanResource.id
     httpsOnly: appSettings.httpsOnly
     clientAffinityEnabled: false
-    // https://docs.microsoft.com/en-us/azure/app-service/reference-app-settings?tabs=kudu%2Cdotnet
-    siteConfig: {
+    // If there are slots to be deployed then let's have the slots override the site settings
+    siteConfig: any(empty(appSlots) ? { 
       appSettings: union([
         {
           name: 'AzureWebJobsStorage'
@@ -127,27 +128,24 @@ resource azAppServiceFunctionDeployment 'Microsoft.Web/sites@2021-01-01' = if (a
           name: 'FUNCTIONS_EXTENSION_VERSION'
           value: '~3'
         }
-      ], appSiteSettings)
-      // netFrameworkVersion: any(appPlatform == 'dotnet' ? appPlatformVersion: json('null'))
-      // nodeVersion: any(appPlatform == 'node.js' ? appPlatformVersion : json('null'))
-      // pythonVersion: any(appPlatform == 'python' ? appPlatformVersion : json('null'))
-      // phpVersion: any(appPlatform == 'php' ? appPlatformVersion : json('null'))
-    } 
+      ], appSiteSettings) 
+    } : { })
   }
+  tags: appServiceTags
 }
 
-
-// 5. Deploy the Web App Service
+// 4.2 Deploy Web App, if applicable
 resource azAppServiceWebDeployment 'Microsoft.Web/sites@2021-01-01' = if (appType == 'web') {
-  name: appType == 'web' ? replace('${appName}', '@environment', environment) : 'no-web-app-to-deploy'
+  name: appType == 'web' ? replace(replace('${appName}', '@environment', environment), '@location', location) : 'no-web-app-to-deploy'
   location: resourceGroup().location
   kind: appType
   identity: {
-   type: appEnableMsi == true ? 'SystemAssigned' : 'None'
-  } 
+    type: appMsiEnabled == true ? 'SystemAssigned' : 'None'
+  }
   properties: {
-    serverFarmId: azAppServicePlanResource.id    
-    siteConfig: {
+    serverFarmId: azAppServicePlanResource.id
+    // If there are slots to be deployed then let's have the slots override the site settings
+    siteConfig: any(empty(appSlots) ? {
       appSettings: union([
         {
           name: 'AzureWebJobsStorage'
@@ -169,25 +167,22 @@ resource azAppServiceWebDeployment 'Microsoft.Web/sites@2021-01-01' = if (appTyp
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: appPlatform
         }
-        // {
-        //   name: 'WEBSITE_CONTENTSHARE'
-        //   value: 
-        // }
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
           value: '~3'
         }
-      ], appSiteSettings)
-    } 
+      ], appSiteSettings) // If there are slots to be deployed then let's have the slots override the site settings
+    } : {})
   }
+  tags: appServiceTags
 }
 
-
-// Set the Identity Provider if applicable
+// 5. Set the Identity Provider if applicable
 module azAppServiceAuthSettings 'az.app.service.config.auth.v2.settings.bicep' = if (!empty(appSettings.authentication ?? {})) {
   name: !empty(appSettings.authentication ?? {}) ? 'az-app-service-config-auth-${guid(appName)}' : 'no-app-service-auth-settings-to-deploy'
   scope: resourceGroup()
   params: {
+    location: location
     environment: environment
     appName: appName
     appAuthUnauthenticatedAction: appSettings.authentication.action
@@ -197,7 +192,7 @@ module azAppServiceAuthSettings 'az.app.service.config.auth.v2.settings.bicep' =
     appAuthIdentityProviderClientId: appSettings.authentication.identityClientId
     appAuthIdentityProviderOpenIdIssuer: appSettings.authentication.identityOpenIdIssuer
     appAuthIdentityProviderGraphApiVersion: appSettings.authentication.identityGraphApiVersion
-   appAuthIdentityProviderScopes: appSettings.authentication.identityScopes
+    appAuthIdentityProviderScopes: appSettings.authentication.identityScopes
   }
   dependsOn: [
     azAppServiceFunctionDeployment
@@ -206,15 +201,16 @@ module azAppServiceAuthSettings 'az.app.service.config.auth.v2.settings.bicep' =
 }
 
 // 6. Set Web App Metadata 
-module azAppServiceWebMetadataDeployment  'az.app.service.config.app.metadata.bicep' = if (appType == 'web') {
+module azAppServiceWebMetadataDeployment 'az.app.service.config.app.metadata.bicep' = if (appType == 'web') {
   name: 'az-app-service-config-meta-${guid(appName)}'
   scope: resourceGroup()
   params: {
+    location: location
     environment: environment
     appName: appName
     appMetadata: any(appPlatform == 'dotnet' ? {
       CURRENT_STACK: 'dotnetcore'
-    } : any(appPlatform == 'java' ? { 
+    } : any(appPlatform == 'java' ? {
       CURRENT_STACK: 'java'
     } : any(appPlatform == 'php' ? {
       CURRENT_STACK: 'php'
@@ -225,19 +221,29 @@ module azAppServiceWebMetadataDeployment  'az.app.service.config.app.metadata.bi
   dependsOn: [
     azAppServiceWebDeployment
   ]
- }
+}
 
-
-// Deploy app slots
-module azAppServiceSlotDeployment 'az.app.service.slot.bicep' = [for slot in appSlots: if(!empty(slot)) {
-  name: !empty(appSlots) ? 'az-app-service-slot-${guid('${appName}/${slot.name}')}' : 'no-slots-to-deploy'
+// 7. Deploy app slots
+module azAppServiceSlotDeployment 'az.app.service.slot.bicep' = [for slot in appSlots: if (!empty(appSlots)) {
+  name: !empty(appSlots) ? 'az-app-service-slot-${guid('${appName}/${slot.name}')}' : 'no-app-service-slots-to-deploy'
   scope: resourceGroup()
   params: {
+    location: location
     environment: environment
     appName: appName
     appSlotName: slot.name
     appSlotType: appType
-    appSlotEnableMsi: appEnableMsi
+    appSlotFunctions: slot.functions
+    appSlotMsiEnabled: appMsiEnabled
+    appSlotMsiRoleAssignments: appMsiRoleAssignments
+    appSlotInsightsName: appInsightsName
+    appSlotInsightsResourceGroup: appInsightsResourceGroup
+    appSlotPlanName: appPlanName
+    appSlotPlanResourceGroup: appPlanResourceGroup
+    appSlotPlatform: appPlatform
+    appSlotSettings: appSettings
+    appSlotStorageAccountName: appStorageAccountName
+    appSlotStorageAccountResourceGroup: appStorageAccountResourceGroup
   }
   dependsOn: [
     azAppServiceFunctionDeployment
@@ -246,60 +252,27 @@ module azAppServiceSlotDeployment 'az.app.service.slot.bicep' = [for slot in app
 }]
 
 
+// 8. Assignment RBAC Roles, if any, to App Service Slot Service Principal  
+module azAppServiceRoleAssignment 'az.sec.role.assignment.bicep' = [for appRoleAssignment in appMsiRoleAssignments: if (appMsiEnabled == true && !empty(appMsiRoleAssignments)) {
+  name: 'az-app-service-rbac-${guid('${appName}-${appRoleAssignment.resourceRoleName}')}'
+  scope: resourceGroup(replace(replace(appRoleAssignment.resourceGroupToScopeRoleAssignment, '@environment', environment), '@location', location))
+  params: {
+    location: location
+    environment: environment
+    resourceRoleName: appRoleAssignment.resourceRoleName
+    resourceToScopeRoleAssignment: appRoleAssignment.resourceToScopeRoleAssignment
+    resourceGroupToScopeRoleAssignment: appRoleAssignment.resourceGroupToScopeRoleAssignment
+    resourceRoleAssignmentScope: appRoleAssignment.resourceRoleAssignmentScope
+    resourceTypeAssigningRole: appRoleAssignment.resourceTypeAssigningRole
+    resourcePrincipalIdRecievingRole: appType == 'functionapp' || appType == 'functionapp,linux' ? azAppServiceFunctionDeployment.identity.principalId : azAppServiceWebDeployment.identity.principalId
+  }
+  dependsOn: [
+    azAppServiceAuthSettings
+    azAppServiceSlotDeployment
+    azAppServiceWebDeployment
+    azAppServiceFunctionDeployment
+  ]
+}]
 
- // module azAppServiceWebSettingsDeployment 'az.app.service.app.settings.bicep' = if(appType == 'web') {
-//   name: 'az-app-service-web-config-${guid(appName)}'
-//   scope: resourceGroup()
-//   params: {
-//     environment: environment
-//     appName: appName
-//     appSettings: {
-//       XDT_MicrosoftApplicationInsights_Mode: 'recommended'
-//       APPINSIGHTS_PROFILERFEATURE_VERSION: '1.0.0'
-//       APPINSIGHTS_SNAPSHOTFEATURE_VERSION: '1.0.0'
-//       ApplicationInsightsAgent_EXTENSION_VERSION: '~2'
-//       DiagnosticServices_EXTENSION_VERSION: '~3'
-//       InstrumentationEngine_EXTENSION_VERSION: 'disabled'
-//       SnapshotDebugger_EXTENSION_VERSION: 'disabled'
-//       XDT_MicrosoftApplicationInsights_BaseExtensions: 'disabled'
-//     }
-//   }
-//   dependsOn: [
-//     azAppServiceDeployment
-//   ]
-// }
-
-// module azAppServiceNodeSettingsDeployment 'az.app.service.app.settings.bicep' = if(appPlatform == 'node') {
-//   name: 'az-app-service-node-config-${guid(appName)}'
-//   scope: resourceGroup()
-//   params: {
-//     environment: environment
-//     appName: appName
-//     appSettings: {
-//       FUNCTIONS_WORKER_RUNTIME: appPlatform
-//       WEBSITE_NODE_DEFAULT_VERSION: '~${appPlatformVersion}'
-//     }
-//   }
-//   dependsOn: [
-//     azAppServiceDeployment
-//   ]
-// }
-
-// module azAppServiceNodeWebSettingsDeployment 'az.app.service.app.settings.bicep' = if(appPlatform == 'node' && appType == 'web') {
-//   name: 'az-app-service-node-web-config-${guid(appName)}'
-//   scope: resourceGroup()
-//   params: {
-//     environment: environment
-//     appName: appName
-//     appSettings: {
-//       XDT_MicrosoftApplicationInsights_NodeJS: '1'
-//       WEBSITE_NODE_DEFAULT_VERSION: '~${appPlatformVersion}'
-//     }
-//   }
-//   dependsOn: [
-//     azAppServiceDeployment
-//   ]
-// }
-
-
+// 9. Return Deployment Output
 output resource object = appType == 'web' ? azAppServiceWebDeployment : azAppServiceFunctionDeployment

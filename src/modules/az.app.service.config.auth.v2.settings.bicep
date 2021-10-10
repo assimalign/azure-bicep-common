@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed')
-param environment string
+@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
+param environment string = 'dev'
+
+@description('A prefix or suffix identifying the deployment location as part of the naming convention of the resource')
+param location string = ''
 
 @description('The Function App Name to be deployed')
 param appName string
@@ -53,12 +56,12 @@ param appAuthIdentityProviderGraphApiVersion string = ''
 
 // Get the existing app resource 
 resource azAppServiceResource 'Microsoft.Web/sites@2021-01-15' existing = {
-  name: replace(appName, '@environment', environment)
-  scope: resourceGroup(replace(appResourceGroup, '@environment', environment))
+  name: replace(replace(appName, '@environment', environment), '@location', location)
+  scope: resourceGroup(replace(replace(appResourceGroup, '@environment', environment), '@location', location))
 }
 
 resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/config@2021-01-15' = {
-  name: replace('${appName}/authsettingsV2', '@environment', environment)
+  name: replace(replace('${appName}/authsettingsV2', '@environment', environment), '@location', location)
   properties: {
     globalValidation: {
       requireAuthentication: true

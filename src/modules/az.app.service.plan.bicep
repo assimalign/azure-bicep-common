@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed')
-param environment string
+@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
+param environment string = 'dev'
+
+@description('A prefix or suffix identifying the deployment location as part of the naming convention of the resource')
+param location string = ''
 
 @description('The name of the app service plan to deploy')
 param appServicePlanName string
@@ -36,16 +39,17 @@ param appServicePlanAseResourceGroup string = resourceGroup().name
 // **************************************************************************************** //
 //               App Service Plan, App Insights, App Storage Act, and Apps Deploy           //
 // **************************************************************************************** //
-// 1. Get Existing ASE Environment if applicable
-resource azAppServicePlanAseResource 'Microsoft.Web/hostingEnvironments@2021-01-01' existing = if (!empty(appServicePlanAseName)) {
-  name: replace(appServicePlanAseName, '@environment', environment)
-  scope: resourceGroup(replace(appServicePlanAseResourceGroup, '@environment', environment))
-}
 
+
+// 1. Get Existing ASE Environment if applicable
+resource azAppServicePlanAseResource 'Microsoft.Web/hostingEnvironments@2021-01-15' existing = if (!empty(appServicePlanAseName)) {
+  name: replace(replace(appServicePlanAseName, '@environment', environment), '@location', location)
+  scope: resourceGroup(replace(replace(appServicePlanAseResourceGroup, '@environment', environment), '@location', location))
+}
 
 // 2. Creates an app service plan under an ASE if applicable
 resource azAppServicePlanDeployment 'Microsoft.Web/serverfarms@2021-01-01' = {
-  name: replace('${appServicePlanName}', '@environment', environment)
+  name: replace(replace('${appServicePlanName}', '@environment', environment), '@location', location)
   location: resourceGroup().location
   properties:  {
     hostingEnvironmentProfile: any(!empty(appServicePlanAseName) ? {
@@ -65,3 +69,6 @@ resource azAppServicePlanDeployment 'Microsoft.Web/serverfarms@2021-01-01' = {
     name: 'D1'
   })))) 
 }
+
+// 3. Return Deployment Output
+output resource object = azAppServicePlanDeployment

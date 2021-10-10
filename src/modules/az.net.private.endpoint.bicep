@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed')
-param environment string
+@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
+param environment string = 'dev'
+
+@description('A prefix or suffix identifying the deployment location as part of the naming convention of the resource')
+param location string = ''
 
 @description('The name of the private endpoint to be deployed')
 param privateEndpointName string
@@ -36,29 +39,31 @@ param privateEndpointPrivateDnsZoneResourceGroup string
 
 
 
+var subnetName = replace(replace('${privateEndpointSubnetVirtualNetwork}/${privateEndpointSubnet}', '@environment', environment), '@location', location)
+var subnetResourceGroup = resourceGroup(replace(replace('${privateEndpointSubnetResourceGroup}', '@environment', environment), '@location', location))
+var dnsZoneName = resourceGroup(replace(replace('${privateEndpointPrivateDnsZoneResourceGroup}', '@environment', environment), '@location', location))
+var endpointName = replace(replace('${privateEndpointName}', '@environment', environment), '@location', location)
 
 // 1. Get Existing Subnet Resource within a virtual network
 resource azVirtualNetworkSubnetResource 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
-  name: replace('${privateEndpointSubnetVirtualNetwork}/${privateEndpointSubnet}', '@environment', environment)
-  scope: resourceGroup(replace('${privateEndpointSubnetResourceGroup}', '@environment', environment))
+  name: subnetName
+  scope: subnetResourceGroup
 }
-
 
 // 2. Get the Private DNS Zone to attach toe Private DNS Zone Group in the endpoint
 resource azPrivateDnsZoneResource 'Microsoft.Network/privateDnsZones@2020-06-01' existing = {
   name: privateEndpointPrivateDnsZone
-  scope: resourceGroup(replace('${privateEndpointPrivateDnsZoneResourceGroup}', '@environment', environment))
+  scope: dnsZoneName
 }
-
 
 // 3. Deploy the private endpoint
 resource azPrivateEndpointDeployment 'Microsoft.Network/privateEndpoints@2021-02-01' = {
-  name: replace('${privateEndpointName}', '@environment', environment)
+  name: endpointName
   location: resourceGroup().location
   properties: {
     privateLinkServiceConnections: [
       {
-        name: replace('${privateEndpointName}', '@environment', environment)
+        name: endpointName
         properties: {
           privateLinkServiceId: privateEndpointLinkServiceId
           groupIds: privateEndpointGroupIds
@@ -91,3 +96,6 @@ resource azPrivateEndpointDeployment 'Microsoft.Network/privateEndpoints@2021-02
     ]
   }
 }
+
+// 4. Return Deployment ouput
+output resource object = azPrivateEndpointDeployment

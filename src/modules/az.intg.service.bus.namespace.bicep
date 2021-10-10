@@ -4,7 +4,7 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed')
+@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
 param environment string = 'dev'
 
 @description('The name of the service bus to deploy')

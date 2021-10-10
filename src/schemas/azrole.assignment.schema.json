@@ -1,0 +1,1078 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "roleAssignments": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "resourceRoleName": {
+                        "$ref": "#definitions/roleAssignmentDefinitions"
+                    },
+                    "resourceTypeAssigningRole": {
+                        "$ref": "#definitions/roleAssignmentResourceTypes"
+                    },
+                    "resourceRoleAssignmentScope": {
+                        "type": "string",
+                        "oneOf": [
+                            {
+                                "const": "Resource"
+                            },
+                            {
+                                "const": "ResourceGroup"
+                            }
+                        ]
+                    },
+                    "resourceToScopeRoleAssignment": {
+                        "type": "string",
+                        "description": "If scoping the role assignment to resource, then specify the name of the resource the role will be scoped to."
+                    },
+                    "resourceGroupToScopeRoleAssignment": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "resourceRoleName",
+                    "resourceRoleAssignmentScope"
+                ]
+            }
+        },
+        "roleAssignment": {
+            "type": "object",
+            "description": "Schema for assigning RBAC roles as part of a nested resource deployment. This means that the service principal should be accessible from the resource deployment.",
+            "properties": {
+                "resourceTypeAssigningRole": {
+                    "$ref": "#definitions/roleAssignmentResourceTypes"
+                },
+                "resourceRoleAssignmentScope": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "Resource"
+                        },
+                        {
+                            "const": "ResourceGroup"
+                        }
+                    ]
+                },
+                "resourceToScopeRoleAssignment": {
+                    "type": "string",
+                    "description": "If scoping the role assignment to resource, then specify the name of the resource the role will be scoped to."
+                },
+                "resourceGroupToScopeRoleAssignment": {
+                    "type": "string"
+                }
+            },
+            "$ref": "#definitions/roleAssignmentDefinitions",
+            "required": [
+                "resourceRoleName",
+                "resourceTypeAssigningRole",
+                "resourceRoleAssignmentScope",
+                "resourceToScopeRoleAssignment",
+                "resourceGroupToScopeRoleAssignment"
+            ]
+        },
+        "roleAssignmentResourceTypes": {
+            "type": "string",
+            "oneOf": [
+                {
+                    "const": "Microsoft.AppConfiguration/ConfigurationStores"
+                },
+                {
+                    "const": "Microsoft.KeyVault/Vaults"
+                },
+                {
+                    "const": "Microsoft.EventGrid/Domains"
+                },
+                {
+                    "const": "Microsoft.ServiceBus/Namespaces"
+                },
+                {
+                    // Grants Role Access to Child Data Stores in Storage Account
+                    "const": "Microsoft.Storage/StorageAccounts"
+                },
+                {
+                    // Grants Role Access to Individual Blob Containers
+                    "const": "Microsoft.Storage/StorageAccounts/BlobServices/Containers"
+                },
+                {
+                    // Grants Role Access to Individual File Shares
+                    "const": "Microsoft.Storage/StorageAccounts/FileServices/Shares"
+                },
+                {
+                    // Grants Role Access to Individual Queues
+                    "const": "Microsoft.Storage/StorageAccounts/QueueServices/Queues"
+                },
+                {
+                    // Grants Role Access to Individual Tables
+                    "const": "Microsoft.Storage/StorageAccounts/TableServices/Tables"
+                }
+            ]
+        },
+        "roleAssignmentDefinitions": {
+            "type": "string",
+            "anyOf": [
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "const": "Microsoft.AppConfiguration/ConfigurationStores"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "AppConfigurationDataOwner"
+                                    },
+                                    {
+                                        "const": "AppConfigurationDataReader"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "const": "Microsoft.KeyVault/Vaults"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "KeyVaultContributor"
+                                    },
+                                    {
+                                        "const": "KeyVaultAdministrator"
+                                    },
+                                    {
+                                        "const": "KeyVaultCryptoOfficer"
+                                    },
+                                    {
+                                        "const": "KeyVaultCryptoUser"
+                                    },
+                                    {
+                                        "const": "KeyVaultSecretsOfficer"
+                                    },
+                                    {
+                                        "const": "KeyVaultSecretsUser"
+                                    },
+                                    {
+                                        "const": "KeyVaultCertificatesOfficer"
+                                    },
+                                    {
+                                        "const": "KeyVaultReader"
+                                    },
+                                    {
+                                        "const": "KeyVaultCryptoServiceEncryptionUser"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "const": "Microsoft.EventGrid/Domains"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "EventGridContributor"
+                                    },
+                                    {
+                                        "const": "EventGridDataSender"
+                                    },
+                                    {
+                                        "const": "EventGridEventSubscriptionContributor"
+                                    },
+                                    {
+                                        "const": "EventGridEventSubscriptionReader"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "const": "Microsoft.Storage/StorageAccounts"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "StorageAccountContributor"
+                                    },
+                                    {
+                                        "const": "StorageFileDataSMBShareReader"
+                                    },
+                                    {
+                                        "const": "StorageFileDataSMBShareContributor"
+                                    },
+                                    {
+                                        "const": "StorageAccountKeyOperatorServiceRole"
+                                    },
+                                    {
+                                        "const": "StorageBlobDataContributor"
+                                    },
+                                    {
+                                        "const": "StorageBlobDataOwner"
+                                    },
+                                    {
+                                        "const": "StorageBlobDataReader"
+                                    },
+                                    {
+                                        "const": "StorageQueueDataContributor"
+                                    },
+                                    {
+                                        "const": "StorageQueueDataMessageProcessor"
+                                    },
+                                    {
+                                        "const": "StorageQueueDataMessageSender"
+                                    },
+                                    {
+                                        "const": "StorageQueueDataReader"
+                                    },
+                                    {
+                                        "const": "StorageBlobDelegator"
+                                    },
+                                    {
+                                        "const": "StorageFileDataSMBShareElevatedContributor"
+                                    },
+                                    {
+                                        "const": "StorageAccountBackupContributorRole"
+                                    },
+                                    {
+                                        "const": "StorageTableDataReader"
+                                    },
+                                    {
+                                        "const": "StorageTableDataContributor"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+            // "type": "string",
+            // "oneOf": [
+            // {
+            //     "const": "KnowledgeConsumer"
+            // },
+            //     {
+            //         "const": "AcrPush"
+            //     },
+            //     {
+            //         "const": "APIManagementServiceContributor"
+            //     },
+            //     {
+            //         "const": "AcrPull"
+            //     },
+            //     {
+            //         "const": "AcrImageSigner"
+            //     },
+            //     {
+            //         "const": "AcrDelete"
+            //     },
+            //     {
+            //         "const": "AcrQuarantineReader"
+            //     },
+            //     {
+            //         "const": "AcrQuarantineWriter"
+            //     },
+            //     {
+            //         "const": "APIManagementServiceOperatorRole"
+            //     },
+            //     {
+            //         "const": "APIManagementServiceReaderRole"
+            //     },
+            //     {
+            //         "const": "ApplicationInsightsComponentContributor"
+            //     },
+            //     {
+            //         "const": "ApplicationInsightsSnapshotDebugger"
+            //     },
+            //     {
+            //         "const": "AttestationReader"
+            //     },
+            //     {
+            //         "const": "AutomationJobOperator"
+            //     },
+            //     {
+            //         "const": "AutomationRunbookOperator"
+            //     },
+            //     {
+            //         "const": "AutomationOperator"
+            //     },
+            //     {
+            //         "const": "AvereContributor"
+            //     },
+            //     {
+            //         "const": "AvereOperator"
+            //     },
+            //     {
+            //         "const": "AzureKubernetesServiceClusterAdminRole"
+            //     },
+            //     {
+            //         "const": "AzureKubernetesServiceClusterUserRole"
+            //     },
+            //     {
+            //         "const": "AzureMapsDataReader"
+            //     },
+            //     {
+            //         "const": "AzureStackRegistrationOwner"
+            //     },
+            //     {
+            //         "const": "BackupContributor"
+            //     },
+            //     {
+            //         "const": "BillingReader"
+            //     },
+            //     {
+            //         "const": "BackupOperator"
+            //     },
+            //     {
+            //         "const": "BackupReader"
+            //     },
+            //     {
+            //         "const": "BlockchainMemberNodeAccess(Preview)"
+            //     },
+            //     {
+            //         "const": "BizTalkContributor"
+            //     },
+            //     {
+            //         "const": "CDNEndpointContributor"
+            //     },
+            //     {
+            //         "const": "CDNEndpointReader"
+            //     },
+            //     {
+            //         "const": "CDNProfileContributor"
+            //     },
+            //     {
+            //         "const": "CDNProfileReader"
+            //     },
+            //     {
+            //         "const": "ClearDBMySQLDBContributor"
+            //     },
+            //     {
+            //         "const": "CognitiveServicesUser"
+            //     },
+            //     {
+            //         "const": "CognitiveServicesDataReader(Preview)"
+            //     },
+            //     {
+            //         "const": "CognitiveServicesContributor"
+            //     },
+            //     {
+            //         "const": "CosmosBackupOperator"
+            //     },
+            //     {
+            //         "const": "Contributor"
+            //     },
+            //     {
+            //         "const": "CosmosDBAccountReaderRole"
+            //     },
+            //     {
+            //         "const": "CostManagementContributor"
+            //     },
+            //     {
+            //         "const": "CostManagementReader"
+            //     },
+            //     {
+            //         "const": "DataBoxContributor"
+            //     },
+            //     {
+            //         "const": "DataBoxReader"
+            //     },
+            //     {
+            //         "const": "DataFactoryContributor"
+            //     },
+            //     {
+            //         "const": "DataPurger"
+            //     },
+            //     {
+            //         "const": "DataLakeAnalyticsDeveloper"
+            //     },
+            //     {
+            //         "const": "DevTestLabsUser"
+            //     },
+            //     {
+            //         "const": "DocumentDBAccountContributor"
+            //     },
+            //     {
+            //         "const": "DNSZoneContributor"
+            //     },
+            //     {
+            //         "const": "GraphOwner"
+            //     },
+            //     {
+            //         "const": "HDInsightDomainServicesContributor"
+            //     },
+            //     {
+            //         "const": "IntelligentSystemsAccountContributor"
+            //     },
+            //     {
+            //         "const": "LabCreator"
+            //     },
+            //     {
+            //         "const": "LogAnalyticsReader"
+            //     },
+            //     {
+            //         "const": "LogAnalyticsContributor"
+            //     },
+            //     {
+            //         "const": "LogicAppOperator"
+            //     },
+            //     {
+            //         "const": "LogicAppContributor"
+            //     },
+            //     {
+            //         "const": "ManagedApplicationOperatorRole"
+            //     },
+            //     {
+            //         "const": "ManagedApplicationsReader"
+            //     },
+            //     {
+            //         "const": "ManagedIdentityOperator"
+            //     },
+            //     {
+            //         "const": "ManagedIdentityContributor"
+            //     },
+            //     {
+            //         "const": "ManagementGroupContributor"
+            //     },
+            //     {
+            //         "const": "ManagementGroupReader"
+            //     },
+            //     {
+            //         "const": "MonitoringMetricsPublisher"
+            //     },
+            //     {
+            //         "const": "MonitoringReader"
+            //     },
+            //     {
+            //         "const": "NetworkContributor"
+            //     },
+            //     {
+            //         "const": "MonitoringContributor"
+            //     },
+            //     {
+            //         "const": "NewRelicAPMAccountContributor"
+            //     },
+            //     {
+            //         "const": "Owner"
+            //     },
+            //     {
+            //         "const": "Reader"
+            //     },
+            //     {
+            //         "const": "RedisCacheContributor"
+            //     },
+            //     {
+            //         "const": "ReaderandDataAccess"
+            //     },
+            //     {
+            //         "const": "ResourcePolicyContributor"
+            //     },
+            //     {
+            //         "const": "SchedulerJobCollectionsContributor"
+            //     },
+            //     {
+            //         "const": "SearchServiceContributor"
+            //     },
+            //     {
+            //         "const": "SecurityAdmin"
+            //     },
+            //     {
+            //         "const": "SecurityManager(Legacy)"
+            //     },
+            //     {
+            //         "const": "SecurityReader"
+            //     },
+            //     {
+            //         "const": "SpatialAnchorsAccountContributor"
+            //     },
+            //     {
+            //         "const": "SiteRecoveryContributor"
+            //     },
+            //     {
+            //         "const": "SiteRecoveryOperator"
+            //     },
+            //     {
+            //         "const": "SpatialAnchorsAccountReader"
+            //     },
+            //     {
+            //         "const": "SiteRecoveryReader"
+            //     },
+            //     {
+            //         "const": "SpatialAnchorsAccountOwner"
+            //     },
+            //     {
+            //         "const": "SQLManagedInstanceContributor"
+            //     },
+            //     {
+            //         "const": "SQLDBContributor"
+            //     },
+            //     {
+            //         "const": "SQLSecurityManager"
+            //     },
+            //     {
+            //         "const": "SQLServerContributor"
+            //     },
+            //     {
+            //         "const": "SupportRequestContributor"
+            //     },
+            //     {
+            //         "const": "TrafficManagerContributor"
+            //     },
+            //     {
+            //         "const": "VirtualMachineAdministratorLogin"
+            //     },
+            //     {
+            //         "const": "UserAccessAdministrator"
+            //     },
+            //     {
+            //         "const": "VirtualMachineUserLogin"
+            //     },
+            //     {
+            //         "const": "VirtualMachineContributor"
+            //     },
+            //     {
+            //         "const": "WebPlanContributor"
+            //     },
+            //     {
+            //         "const": "WebsiteContributor"
+            //     },
+            //     {
+            //         "const": "AzureServiceBusDataOwner"
+            //     },
+            //     {
+            //         "const": "AzureEventHubsDataOwner"
+            //     },
+            //     {
+            //         "const": "AttestationContributor"
+            //     },
+            //     {
+            //         "const": "HDInsightClusterOperator"
+            //     },
+            //     {
+            //         "const": "CosmosDBOperator"
+            //     },
+            //     {
+            //         "const": "HybridServerResourceAdministrator"
+            //     },
+            //     {
+            //         "const": "HybridServerOnboarding"
+            //     },
+            //     {
+            //         "const": "AzureEventHubsDataReceiver"
+            //     },
+            //     {
+            //         "const": "AzureEventHubsDataSender"
+            //     },
+            //     {
+            //         "const": "AzureServiceBusDataReceiver"
+            //     },
+            //     {
+            //         "const": "AzureServiceBusDataSender"
+            //     },
+            //     {
+            //         "const": "PrivateDNSZoneContributor"
+            //     },
+            //     {
+            //         "const": "DesktopVirtualizationUser"
+            //     },
+            //     {
+            //         "const": "BlueprintContributor"
+            //     },
+            //     {
+            //         "const": "BlueprintOperator"
+            //     },
+            //     {
+            //         "const": "AzureSentinelContributor"
+            //     },
+            //     {
+            //         "const": "AzureSentinelResponder"
+            //     },
+            //     {
+            //         "const": "AzureSentinelReader"
+            //     },
+            //     {
+            //         "const": "WorkbookReader"
+            //     },
+            //     {
+            //         "const": "WorkbookContributor"
+            //     },
+            //     {
+            //         "const": "PolicyInsightsDataWriter(Preview)"
+            //     },
+            //     {
+            //         "const": "SignalRAccessKeyReader"
+            //     },
+            //     {
+            //         "const": "SignalR/WebPubSubContributor"
+            //     },
+            //     {
+            //         "const": "AzureConnectedMachineOnboarding"
+            //     },
+            //     {
+            //         "const": "AzureConnectedMachineResourceAdministrator"
+            //     },
+            //     {
+            //         "const": "ManagedServicesRegistrationassignmentDeleteRole"
+            //     },
+            //     {
+            //         "const": "AppConfigurationDataOwner"
+            //     },
+            //     {
+            //         "const": "AppConfigurationDataReader"
+            //     },
+            //     {
+            //         "const": "KubernetesCluster-AzureArcOnboarding"
+            //     },
+            //     {
+            //         "const": "ExperimentationContributor"
+            //     },
+            //     {
+            //         "const": "CognitiveServicesQnAMakerReader"
+            //     },
+            //     {
+            //         "const": "CognitiveServicesQnAMakerEditor"
+            //     },
+            //     {
+            //         "const": "ExperimentationAdministrator"
+            //     },
+            //     {
+            //         "const": "RemoteRenderingAdministrator"
+            //     },
+            //     {
+            //         "const": "RemoteRenderingClient"
+            //     },
+            //     {
+            //         "const": "ManagedApplicationContributorRole"
+            //     },
+            //     {
+            //         "const": "SecurityAssessmentContributor"
+            //     },
+            //     {
+            //         "const": "TagContributor"
+            //     },
+            //     {
+            //         "const": "IntegrationServiceEnvironmentDeveloper"
+            //     },
+            //     {
+            //         "const": "IntegrationServiceEnvironmentContributor"
+            //     },
+            //     {
+            //         "const": "AzureKubernetesServiceContributorRole"
+            //     },
+            //     {
+            //         "const": "AzureDigitalTwinsDataReader"
+            //     },
+            //     {
+            //         "const": "AzureDigitalTwinsDataOwner"
+            //     },
+            //     {
+            //         "const": "HierarchySettingsAdministrator"
+            //     },
+            //     {
+            //         "const": "FHIRDataContributor"
+            //     },
+            //     {
+            //         "const": "FHIRDataExporter"
+            //     },
+            //     {
+            //         "const": "FHIRDataReader"
+            //     },
+            //     {
+            //         "const": "FHIRDataWriter"
+            //     },
+            //     {
+            //         "const": "ExperimentationReader"
+            //     },
+            //     {
+            //         "const": "ObjectUnderstandingAccountOwner"
+            //     },
+            //     {
+            //         "const": "AzureMapsDataContributor"
+            //     },
+            //     {
+            //         "const": "CognitiveServicesCustomVisionContributor"
+            //     },
+            //     {
+            //         "const": "CognitiveServicesCustomVisionDeployment"
+            //     },
+            //     {
+            //         "const": "CognitiveServicesCustomVisionLabeler"
+            //     },
+            //     {
+            //         "const": "CognitiveServicesCustomVisionReader"
+            //     },
+            //     {
+            //         "const": "CognitiveServicesCustomVisionTrainer"
+            //     },
+            //     {
+            //         "const": "AzureArcKubernetesViewer"
+            //     },
+            //     {
+            //         "const": "AzureArcKubernetesWriter"
+            //     },
+            //     {
+            //         "const": "AzureArcKubernetesClusterAdmin"
+            //     },
+            //     {
+            //         "const": "AzureArcKubernetesAdmin"
+            //     },
+            //     {
+            //         "const": "AzureKubernetesServiceRBACClusterAdmin"
+            //     },
+            //     {
+            //         "const": "AzureKubernetesServiceRBACAdmin"
+            //     },
+            //     {
+            //         "const": "AzureKubernetesServiceRBACReader"
+            //     },
+            //     {
+            //         "const": "AzureKubernetesServiceRBACWriter"
+            //     },
+            //     {
+            //         "const": "ServicesHubOperator"
+            //     },
+            //     {
+            //         "const": "ObjectUnderstandingAccountReader"
+            //     },
+            //     {
+            //         "const": "AzureArcEnabledKubernetesClusterUserRole"
+            //     },
+            //     {
+            //         "const": "SignalRAppServer(Preview)"
+            //     },
+            //     {
+            //         "const": "SignalRRESTAPIOwner"
+            //     },
+            //     {
+            //         "const": "CollaborativeDataContributor"
+            //     },
+            //     {
+            //         "const": "DeviceUpdateReader"
+            //     },
+            //     {
+            //         "const": "DeviceUpdateAdministrator"
+            //     },
+            //     {
+            //         "const": "DeviceUpdateContentAdministrator"
+            //     },
+            //     {
+            //         "const": "DeviceUpdateDeploymentsAdministrator"
+            //     },
+            //     {
+            //         "const": "DeviceUpdateDeploymentsReader"
+            //     },
+            //     {
+            //         "const": "DeviceUpdateContentReader"
+            //     },
+            //     {
+            //         "const": "CognitiveServicesMetricsAdvisorAdministrator"
+            //     },
+            //     {
+            //         "const": "CognitiveServicesMetricsAdvisorUser"
+            //     },
+            //     {
+            //         "const": "SchemaRegistryReader(Preview)"
+            //     },
+            //     {
+            //         "const": "SchemaRegistryContributor(Preview)"
+            //     },
+            //     {
+            //         "const": "AgFoodPlatformServiceReader"
+            //     },
+            //     {
+            //         "const": "AgFoodPlatformServiceContributor"
+            //     },
+            //     {
+            //         "const": "AgFoodPlatformServiceAdmin"
+            //     },
+            //     {
+            //         "const": "ManagedHSMcontributor"
+            //     },
+            //     {
+            //         "const": "SecurityDetonationChamberSubmitter"
+            //     },
+            //     {
+            //         "const": "SignalRRESTAPIReader"
+            //     },
+            //     {
+            //         "const": "SignalRServiceOwner"
+            //     },
+            //     {
+            //         "const": "ReservationPurchaser"
+            //     },
+            //     {
+            //         "const": "AzureMLMetricsWriter(preview)"
+            //     },
+            //     {
+            //         "const": "ExperimentationMetricContributor"
+            //     },
+            //     {
+            //         "const": "ProjectBabylonDataCurator"
+            //     },
+            //     {
+            //         "const": "ProjectBabylonDataReader"
+            //     },
+            //     {
+            //         "const": "ProjectBabylonDataSourceAdministrator"
+            //     },
+            //     {
+            //         "const": "PurviewDataCurator(Legacy)"
+            //     },
+            //     {
+            //         "const": "PurviewDataReader(Legacy)"
+            //     },
+            //     {
+            //         "const": "PurviewDataSourceAdministrator(Legacy)"
+            //     },
+            //     {
+            //         "const": "ApplicationGroupContributor"
+            //     },
+            //     {
+            //         "const": "DesktopVirtualizationReader"
+            //     },
+            //     {
+            //         "const": "DesktopVirtualizationContributor"
+            //     },
+            //     {
+            //         "const": "DesktopVirtualizationWorkspaceContributor"
+            //     },
+            //     {
+            //         "const": "DesktopVirtualizationUserSessionOperator"
+            //     },
+            //     {
+            //         "const": "DesktopVirtualizationSessionHostOperator"
+            //     },
+            //     {
+            //         "const": "DesktopVirtualizationHostPoolReader"
+            //     },
+            //     {
+            //         "const": "DesktopVirtualizationHostPoolContributor"
+            //     },
+            //     {
+            //         "const": "DesktopVirtualizationApplicationGroupReader"
+            //     },
+            //     {
+            //         "const": "DesktopVirtualizationApplicationGroupContributor"
+            //     },
+            //     {
+            //         "const": "DesktopVirtualizationWorkspaceReader"
+            //     },
+            //     {
+            //         "const": "DiskBackupReader"
+            //     },
+            //     {
+            //         "const": "AutonomousDevelopmentPlatformDataContributor(Preview)"
+            //     },
+            //     {
+            //         "const": "AutonomousDevelopmentPlatformDataReader(Preview)"
+            //     },
+            //     {
+            //         "const": "AutonomousDevelopmentPlatformDataOwner(Preview)"
+            //     },
+            //     {
+            //         "const": "DiskRestoreOperator"
+            //     },
+            //     {
+            //         "const": "DiskSnapshotContributor"
+            //     },
+            //     {
+            //         "const": "Microsoft.Kubernetesconnectedclusterrole"
+            //     },
+            //     {
+            //         "const": "SecurityDetonationChamberSubmissionManager"
+            //     },
+            //     {
+            //         "const": "SecurityDetonationChamberPublisher"
+            //     },
+            //     {
+            //         "const": "CollaborativeRuntimeOperator"
+            //     },
+            //     {
+            //         "const": "CosmosRestoreOperator"
+            //     },
+            //     {
+            //         "const": "FHIRDataConverter"
+            //     },
+            //     {
+            //         "const": "AzureSentinelAutomationContributor"
+            //     },
+            //     {
+            //         "const": "QuotaRequestOperator"
+            //     },
+            //     {
+            //         "const": "SecurityDetonationChamberReader"
+            //     },
+            //     {
+            //         "const": "ObjectAnchorsAccountReader"
+            //     },
+            //     {
+            //         "const": "ObjectAnchorsAccountOwner"
+            //     },
+            //     {
+            //         "const": "WorkloadBuilderMigrationAgentRole"
+            //     },
+            //     {
+            //         "const": "WebPubSubServiceOwner(Preview)"
+            //     },
+            //     {
+            //         "const": "WebPubSubServiceReader(Preview)"
+            //     },
+            //     {
+            //         "const": "AzureSpringCloudDataReader"
+            //     },
+            //     {
+            //         "const": "CognitiveServicesSpeechUser"
+            //     },
+            //     {
+            //         "const": "CognitiveServicesSpeechContributor"
+            //     },
+            //     {
+            //         "const": "CognitiveServicesFaceRecognizer"
+            //     },
+            //     {
+            //         "const": "MediaServicesAccountAdministrator"
+            //     },
+            //     {
+            //         "const": "MediaServicesLiveEventsAdministrator"
+            //     },
+            //     {
+            //         "const": "MediaServicesMediaOperator"
+            //     },
+            //     {
+            //         "const": "MediaServicesPolicyAdministrator"
+            //     },
+            //     {
+            //         "const": "MediaServicesStreamingEndpointsAdministrator"
+            //     },
+            //     {
+            //         "const": "StreamAnalyticsQueryTester"
+            //     },
+            //     {
+            //         "const": "AnyBuildBuilder"
+            //     },
+            //     {
+            //         "const": "IoTHubDataReader"
+            //     },
+            //     {
+            //         "const": "IoTHubTwinContributor"
+            //     },
+            //     {
+            //         "const": "IoTHubRegistryContributor"
+            //     },
+            //     {
+            //         "const": "IoTHubDataContributor"
+            //     },
+            //     {
+            //         "const": "TestBaseReader"
+            //     },
+            //     {
+            //         "const": "SearchIndexDataReader"
+            //     },
+            //     {
+            //         "const": "SearchIndexDataContributor"
+            //     },
+            //     {
+            //         "const": "DICOMDataReader"
+            //     },
+            //     {
+            //         "const": "DICOMDataOwner"
+            //     },
+            //     {
+            //         "const": "DiskPoolOperator"
+            //     },
+            //     {
+            //         "const": "AzureMLDataScientist"
+            //     },
+            //     {
+            //         "const": "GrafanaAdmin"
+            //     },
+            //     {
+            //         "const": "AzureConnectedSQLServerOnboarding"
+            //     },
+            //     {
+            //         "const": "AzureRelaySender"
+            //     },
+            //     {
+            //         "const": "AzureRelayOwner"
+            //     },
+            //     {
+            //         "const": "AzureRelayListener"
+            //     },
+            //     {
+            //         "const": "GrafanaViewer"
+            //     },
+            //     {
+            //         "const": "GrafanaEditor"
+            //     },
+            //     {
+            //         "const": "AutomationContributor"
+            //     },
+            //     {
+            //         "const": "KubernetesExtensionContributor"
+            //     },
+            //     {
+            //         "const": "DeviceProvisioningServiceDataReader"
+            //     },
+            //     {
+            //         "const": "DeviceProvisioningServiceDataContributor"
+            //     },
+            //     {
+            //         "const": "CodeSigningCertificateProfileSigner"
+            //     },
+            //     {
+            //         "const": "AzureSpringCloudServiceRegistryReader"
+            //     },
+            //     {
+            //         "const": "AzureSpringCloudServiceRegistryContributor"
+            //     },
+            //     {
+            //         "const": "AzureSpringCloudConfigServerReader"
+            //     },
+            //     {
+            //         "const": "AzureSpringCloudConfigServerContributor"
+            //     },
+            //     {
+            //         "const": "AzureVMManagedidentitiesrestoreContributor"
+            //     },
+            //     {
+            //         "const": "AzureMapsSearchandRenderDataReader"
+            //     },
+            //     {
+            //         "const": "AzureMapsContributor"
+            //     }
+            // ]
+        }
+    }
+}

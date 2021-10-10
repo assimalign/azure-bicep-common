@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed')
-param environment string
+@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
+param environment string = 'dev'
+
+@description('A prefix or suffix identifying the deployment location as part of the naming convention of the resource')
+param location string = ''
 
 @description('The name of the static site')
 param staticSiteName string
@@ -18,16 +21,14 @@ param staticSiteName string
   'westeurope'
 ])
 @description('The static site location')
-param staticSiteLocation string 
+param staticSiteLocation string
 
 @description('The pricing tier for the static site')
 param staticSiteSku object
 
 
-
-
 resource azStaticSiteDeployment 'Microsoft.Web/staticSites@2021-01-15' = {
-  name: replace(staticSiteName, '@environment', environment)
+  name: replace(replace(staticSiteName, '@environment', environment), '@location', location)
   location: staticSiteLocation
   sku: any(environment == 'dev' ? {
     name: staticSiteSku.dev
@@ -45,7 +46,5 @@ resource azStaticSiteDeployment 'Microsoft.Web/staticSites@2021-01-15' = {
     name: 'Free'
     tier: 'Free'
   }))))
-  properties: {
-    
-  }
+  properties: {}
 }
