@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
+
+@description('The location prefix or suffix for the resource name')
+param location string = ''
 
 @description('The name of an existing key vault')
 param keyVaultName string
@@ -19,25 +22,25 @@ param resourceName string
 @description('The resource group name of the resource with sensitive information to upload into the key vault for secure access')
 param resourceGroupName string
 
-
-
-resource azNotificationNamespaceExistingResource 'Microsoft.NotificationHubs/namespaces/AuthorizationRules@2017-04-01' existing =  {
-  name: replace('${resourceName}', '@environment', environment)
-  scope: resourceGroup(replace('${resourceGroupName}', '@environment', environment))
+// 1. Get the existing Notification Hub Namespace Authorization Rule Resource
+resource azNotificationNamespaceExistingResource 'Microsoft.NotificationHubs/namespaces/AuthorizationRules@2017-04-01' existing = {
+  name: replace(replace('${resourceName}', '@environment', environment), '@location', location)
+  scope: resourceGroup(replace(replace('${resourceGroupName}', '@environment', environment), '@location', location))
 }
 
-resource azKeyVaultExistingResource 'Microsoft.KeyVault/vaults@2021-04-01-preview' existing =  {
-  name: replace(keyVaultName, '@environment', environment)
+// 2. Create or Update Key Vault Secret with Notification Hub Namespace Authorization Rule Primary Key & Connection String
+resource azKeyVaultExistingResource 'Microsoft.KeyVault/vaults@2021-04-01-preview' existing = {
+  name: replace(replace(keyVaultName, '@environment', environment), '@location', location)
   resource azNotificationNamespaceAuthPolicyConnectionStringSecret 'secrets@2021-04-01-preview' = {
     name: '${keyVaultSecretName}-connection-string'
     properties: {
-      value: listKeys(azNotificationNamespaceExistingResource.id, azNotificationNamespaceExistingResource.apiVersion).primaryConnectionString 
+      value: listKeys(azNotificationNamespaceExistingResource.id, azNotificationNamespaceExistingResource.apiVersion).primaryConnectionString
     }
   }
   resource azNotificationNamespaceAuthPolicyPrimaryKeySecret 'secrets@2021-04-01-preview' = {
     name: '${keyVaultSecretName}-primary-key'
     properties: {
-      value: listKeys(azNotificationNamespaceExistingResource.id, azNotificationNamespaceExistingResource.apiVersion).primaryKey 
+      value: listKeys(azNotificationNamespaceExistingResource.id, azNotificationNamespaceExistingResource.apiVersion).primaryKey
     }
   }
 }

@@ -264,7 +264,7 @@ module azAppServiceRoleAssignment 'az.sec.role.assignment.bicep' = [for appRoleA
     resourceGroupToScopeRoleAssignment: appRoleAssignment.resourceGroupToScopeRoleAssignment
     resourceRoleAssignmentScope: appRoleAssignment.resourceRoleAssignmentScope
     resourceTypeAssigningRole: appRoleAssignment.resourceTypeAssigningRole
-    resourcePrincipalIdRecievingRole: appType == 'functionapp' || appType == 'functionapp,linux' ? azAppServiceFunctionDeployment.identity.principalId : azAppServiceWebDeployment.identity.principalId
+    resourcePrincipalIdReceivingRole: appType == 'functionapp' || appType == 'functionapp,linux' ? azAppServiceFunctionDeployment.identity.principalId : azAppServiceWebDeployment.identity.principalId
   }
   dependsOn: [
     azAppServiceAuthSettings

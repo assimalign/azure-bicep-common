@@ -4,8 +4,8 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
 
 @description('The location prefix or suffix for the resource name')
 param location string = ''
@@ -21,12 +21,12 @@ param resourceRoleName string
 param resourceRoleAssignmentScope string = 'ResourceGroup'
 
 @description('The principal Id reciving the role assignment')
-param resourcePrincipalIdRecievingRole string
+param resourcePrincipalIdReceivingRole string
 
 @description('If scoping resource role assignment to a specific the resource the name of the resource must be specified')
 param resourceToScopeRoleAssignment string = ''
 
-
+// A collection of available roles to assign to service principals for Key Vault
 var RoleDefinitionId = {
   KeyVaultContributor: 'f25e0fa2-a7c8-4377-a976-54943a77a395'
   KeyVaultAdministrator: '00482a5a-887f-4fb3-b363-3b7fe8e74483'
@@ -39,32 +39,27 @@ var RoleDefinitionId = {
   KeyVaultCryptoServiceEncryptionUser: 'e147488a-f6f5-4113-8e2d-b22465e65bf6'
 }
 
-
-
-
 // 1. Get an existing resource to scope the resource role assignment to, if applicable
-resource azKeyVaultExistingResource 'Microsoft.KeyVault/vaults@2021-06-01-preview' existing = if(resourceRoleAssignmentScope == 'Resource') {
+resource azKeyVaultExistingResource 'Microsoft.KeyVault/vaults@2021-06-01-preview' existing = if (resourceRoleAssignmentScope == 'Resource') {
   name: replace(replace(resourceToScopeRoleAssignment, '@environment', environment), '@location', location)
 }
 
-
 // 2. Assign Resource Role Scoped to the resource
-resource azKeyVaultResourceScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if(resourceRoleAssignmentScope == 'Resource') {
-  name: guid('${resourcePrincipalIdRecievingRole}/${RoleDefinitionId[resourceRoleName]}')
+resource azKeyVaultResourceScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'Resource') {
+  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
   scope: azKeyVaultExistingResource
   properties: {
-    principalId: resourcePrincipalIdRecievingRole 
+    principalId: resourcePrincipalIdReceivingRole
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', RoleDefinitionId[resourceRoleName])
   }
 }
 
-
 // 3. Assign Resource Role Scoped to the Resource Group
-resource azKeyVaultResourceGroupScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if(resourceRoleAssignmentScope == 'ResourceGroup') {
-  name: guid('${resourcePrincipalIdRecievingRole}/${RoleDefinitionId[resourceRoleName]}')
+resource azKeyVaultResourceGroupScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'ResourceGroup') {
+  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
   scope: resourceGroup()
   properties: {
-    principalId: resourcePrincipalIdRecievingRole 
+    principalId: resourcePrincipalIdReceivingRole
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', RoleDefinitionId[resourceRoleName])
   }
 }

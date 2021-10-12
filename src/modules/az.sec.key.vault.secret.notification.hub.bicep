@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
+
+@description('The location prefix or suffix for the resource name')
+param location string = ''
 
 @description('The name of an existing key vault')
 param keyVaultName string
@@ -20,14 +23,15 @@ param resourceName string
 param resourceGroupName string
 
 
-
+// 1. Get an existing Notification Hub Authorization Rule resource
 resource azNotificationHubExistingResource 'Microsoft.NotificationHubs/namespaces/notificationHubs/AuthorizationRules@2017-04-01' existing =  {
-  name: replace('${resourceName}', '@environment', environment)
-  scope: resourceGroup(replace('${resourceGroupName}', '@environment', environment))
+  name: replace(replace('${resourceName}', '@environment', environment), '@location', location)
+  scope: resourceGroup(replace(replace('${resourceGroupName}', '@environment', environment), '@location', location))
 }
 
+// 2. Create or Update Key Vault with Notification Hub Connection String & Primary Key
 resource azKeyVaultExistingResource 'Microsoft.KeyVault/vaults@2021-04-01-preview' existing =  {
-  name: replace(keyVaultName, '@environment', environment)
+  name: replace(replace(keyVaultName, '@environment', environment), '@location', location)
 
   resource azNotificationHubAuthPolicyConnectionStringSecret 'secrets@2021-04-01-preview' = {
     name: '${keyVaultSecretName}-connection-string'

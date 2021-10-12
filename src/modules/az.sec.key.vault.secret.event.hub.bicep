@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
+
+@description('The location prefix or suffix for the resource name')
+param location string = ''
 
 @description('The name of an existing key vault')
 param keyVaultName string
@@ -19,15 +22,15 @@ param resourceName string
 @description('The resource group name of the resource with sensitive information to upload into the key vault for secure access')
 param resourceGroupName string
 
-
-
-
+// 1. Get the existing Event Hub Authorization Rule Resource
 resource azEventHubNamespaceExistingResource 'Microsoft.EventHub/namespaces/authorizationRules@2021-01-01-preview' existing = {
-  name: replace('${resourceName}', '@environment', environment)
-  scope: resourceGroup('${resourceGroupName}')
+  name: replace(replace('${resourceName}', '@environment', environment), '@location', location)
+  scope: resourceGroup(replace(replace('${resourceGroupName}', '@environment', environment), '@location', location))
 }
+
+// 2. Create or Update Key Vault Secret with Event Hub Authorization Rule Primary Key & Connection String
 resource azEventHubNamespaceKeyVaultSecretDeployment 'Microsoft.KeyVault/vaults@2021-04-01-preview' existing = {
-  name: replace(keyVaultName, '@environment', environment)
+  name: replace(replace(keyVaultName, '@environment', environment), '@location', location)
   resource azEventHubNamespaceConnectionStringSecret 'secrets@2021-04-01-preview' = {
     name: '${keyVaultSecretName}-connection-string'
     properties: {
@@ -35,9 +38,9 @@ resource azEventHubNamespaceKeyVaultSecretDeployment 'Microsoft.KeyVault/vaults@
     }
   }
   resource azEventHubNamespacePrimaryKeySecret 'secrets@2021-04-01-preview' = {
-    name:  '${keyVaultSecretName}-primary-key' 
+    name: '${keyVaultSecretName}-primary-key'
     properties: {
-      value: listKeys(azEventHubNamespaceExistingResource.id, azEventHubNamespaceExistingResource.apiVersion).primaryKey 
+      value: listKeys(azEventHubNamespaceExistingResource.id, azEventHubNamespaceExistingResource.apiVersion).primaryKey
     }
   }
 }

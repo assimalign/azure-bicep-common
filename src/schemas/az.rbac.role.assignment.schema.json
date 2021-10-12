@@ -1,0 +1,639 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "roleAssignments": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "$ref": "#definitions/roleAssignmentResourceTypes"
+                            },
+                            "resourceRoleAssignmentScope": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "Resource"
+                                    },
+                                    {
+                                        "const": "ResourceGroup"
+                                    }
+                                ]
+                            },
+                            "resourceToScopeRoleAssignment": {
+                                "type": "string",
+                                "description": "If scoping the role assignment to resource, then specify the name of the resource the role will be scoped to."
+                            },
+                            "resourceGroupToScopeRoleAssignment": {
+                                "type": "string"
+                            },
+                            "resourcePrincipalIdReceivingRole": {
+                                "type": "string"
+                            }
+                        },
+                        "$ref": "#definitions/roleAssignmentDefinitions",
+                        "required": [
+                            "resourceRoleName",
+                            "resourceTypeAssigningRole",
+                            "resourceRoleAssignmentScope",
+                            "resourceToScopeRoleAssignment",
+                            "resourceGroupToScopeRoleAssignment",
+                            "resourcePrincipalIdReceivingRole"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "roleAssignment": {
+            "type": "object",
+            "description": "Schema for assigning RBAC roles as part of a nested resource deployment. This means that the service principal should be accessible from the resource deployment.",
+            "properties": {
+                "resourceTypeAssigningRole": {
+                    "$ref": "#definitions/roleAssignmentResourceTypes"
+                },
+                "resourceRoleAssignmentScope": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "Resource"
+                        },
+                        {
+                            "const": "ResourceGroup"
+                        }
+                    ]
+                },
+                "resourceToScopeRoleAssignment": {
+                    "type": "string",
+                    "description": "If scoping the role assignment to resource, then specify the name of the resource the role will be scoped to."
+                },
+                "resourceGroupToScopeRoleAssignment": {
+                    "type": "string"
+                }
+            },
+            "$ref": "#definitions/roleAssignmentDefinitions",
+            "required": [
+                "resourceRoleName",
+                "resourceTypeAssigningRole",
+                "resourceRoleAssignmentScope",
+                "resourceToScopeRoleAssignment",
+                "resourceGroupToScopeRoleAssignment"
+            ]
+        },
+        "roleAssignmentResourceTypes": {
+            "type": "string",
+            "oneOf": [
+                {
+                    "const": "Microsoft.AppConfiguration/ConfigurationStores"
+                },
+                {
+                    "const": "Microsoft.KeyVault/Vaults"
+                },
+                {
+                    "const": "Microsoft.EventGrid/Domains"
+                },
+                {
+                    "const": "Microsoft.ServiceBus/Namespaces"
+                },
+                {
+                    // Grants Role Access to Child Data Stores in Storage Account
+                    "const": "Microsoft.Storage/StorageAccounts"
+                },
+                {
+                    // Grants Role Access to Individual Blob Containers
+                    "const": "Microsoft.Storage/StorageAccounts/BlobServices/Containers"
+                },
+                {
+                    // Grants Role Access to Individual File Shares
+                    "const": "Microsoft.Storage/StorageAccounts/FileServices/Shares"
+                },
+                {
+                    // Grants Role Access to Individual Queues
+                    "const": "Microsoft.Storage/StorageAccounts/QueueServices/Queues"
+                },
+                {
+                    // Grants Role Access to Individual Tables
+                    "const": "Microsoft.Storage/StorageAccounts/TableServices/Tables"
+                },
+                {
+                    "const": "Microsoft.ServiceBus/Namespaces"
+                },
+                {
+                    "const": "Microsoft.ServiceBus/Namespaces/Topics"
+                },
+                {
+                    "const": "Microsoft.ServiceBus/Namespaces/Queues"
+                },
+                {
+                    "const": "Microsoft.DocumentDB/DatabaseAccounts"
+                },
+                {
+                    "const": "Microsoft.Sql/Servers"
+                },
+                {
+                    "const": "Microsoft.Sql/ManagedInstances"
+                },
+                {
+                    "const": "Microsoft.Media/MediaServices"
+                }
+            ]
+        },
+        "roleAssignmentDefinitions": {
+            "type": "string",
+            "anyOf": [
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "const": "Microsoft.AppConfiguration/ConfigurationStores"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "AppConfigurationDataOwner"
+                                    },
+                                    {
+                                        "const": "AppConfigurationDataReader"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "const": "Microsoft.KeyVault/Vaults"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "KeyVaultContributor"
+                                    },
+                                    {
+                                        "const": "KeyVaultAdministrator"
+                                    },
+                                    {
+                                        "const": "KeyVaultCryptoOfficer"
+                                    },
+                                    {
+                                        "const": "KeyVaultCryptoUser"
+                                    },
+                                    {
+                                        "const": "KeyVaultSecretsOfficer"
+                                    },
+                                    {
+                                        "const": "KeyVaultSecretsUser"
+                                    },
+                                    {
+                                        "const": "KeyVaultCertificatesOfficer"
+                                    },
+                                    {
+                                        "const": "KeyVaultReader"
+                                    },
+                                    {
+                                        "const": "KeyVaultCryptoServiceEncryptionUser"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "const": "Microsoft.EventGrid/Domains"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "EventGridContributor"
+                                    },
+                                    {
+                                        "const": "EventGridDataSender"
+                                    },
+                                    {
+                                        "const": "EventGridEventSubscriptionContributor"
+                                    },
+                                    {
+                                        "const": "EventGridEventSubscriptionReader"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "const": "Microsoft.Storage/StorageAccounts"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "StorageAccountContributor"
+                                    },
+                                    {
+                                        "const": "StorageFileDataSMBShareReader"
+                                    },
+                                    {
+                                        "const": "StorageFileDataSMBShareContributor"
+                                    },
+                                    {
+                                        "const": "StorageAccountKeyOperatorServiceRole"
+                                    },
+                                    {
+                                        "const": "StorageBlobDataContributor"
+                                    },
+                                    {
+                                        "const": "StorageBlobDataOwner"
+                                    },
+                                    {
+                                        "const": "StorageBlobDataReader"
+                                    },
+                                    {
+                                        "const": "StorageQueueDataContributor"
+                                    },
+                                    {
+                                        "const": "StorageQueueDataMessageProcessor"
+                                    },
+                                    {
+                                        "const": "StorageQueueDataMessageSender"
+                                    },
+                                    {
+                                        "const": "StorageQueueDataReader"
+                                    },
+                                    {
+                                        "const": "StorageBlobDelegator"
+                                    },
+                                    {
+                                        "const": "StorageFileDataSMBShareElevatedContributor"
+                                    },
+                                    {
+                                        "const": "StorageAccountBackupContributorRole"
+                                    },
+                                    {
+                                        "const": "StorageTableDataReader"
+                                    },
+                                    {
+                                        "const": "StorageTableDataContributor"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "const": "Microsoft.Storage/StorageAccounts/BlobServices/Containers"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "StorageBlobDataContributor"
+                                    },
+                                    {
+                                        "const": "StorageBlobDataOwner"
+                                    },
+                                    {
+                                        "const": "StorageBlobDataReader"
+                                    },
+                                    {
+                                        "const": "StorageBlobDelegator"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "const": "Microsoft.Storage/StorageAccounts/FileServices/Shares"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "StorageFileDataSMBShareReader"
+                                    },
+                                    {
+                                        "const": "StorageFileDataSMBShareContributor"
+                                    },
+                                    {
+                                        "const": "StorageFileDataSMBShareElevatedContributor"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "const": "Microsoft.Storage/StorageAccounts/QueueServices/Queues"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "StorageQueueDataContributor"
+                                    },
+                                    {
+                                        "const": "StorageQueueDataMessageProcessor"
+                                    },
+                                    {
+                                        "const": "StorageQueueDataMessageSender"
+                                    },
+                                    {
+                                        "const": "StorageQueueDataReader"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "const": "Microsoft.Storage/StorageAccounts/TableServices/Tables"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "StorageTableDataReader"
+                                    },
+                                    {
+                                        "const": "StorageTableDataContributor"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "oneOf": [
+                                    {
+                                        "const": "Microsoft.ServiceBus/Namespaces"
+                                    },
+                                    {
+                                        "const": "Microsoft.ServiceBus/Namespaces/Topics"
+                                    },
+                                    {
+                                        "const": "Microsoft.ServiceBus/Namespaces/Queues"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "AzureServiceBusDataReceiver"
+                                    },
+                                    {
+                                        "const": "AzureServiceBusDataSender"
+                                    },
+                                    {
+                                        "const": "AzureServiceBusDataOwner"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "const": "Microsoft.DocumentDB/DatabaseAccounts"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "CosmosDBOperator"
+                                    },
+                                    {
+                                        "const": "CosmosBackupOperator"
+                                    },
+                                    {
+                                        "const": "CosmosDBAccountReaderRole"
+                                    },
+                                    {
+                                        "const": "DocumentDBAccountContributor"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "const": "Microsoft.Sql/Servers"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "SQLDBContributor"
+                                    },
+                                    {
+                                        "const": "SQLServerContributor"
+                                    },
+                                    {
+                                        "const": "SQLSecurityManager"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "const": "Microsoft.Sql/ManagedInstances"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "SQLManagedInstanceContributor"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "const": "Microsoft.Media/MediaServices"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "MediaServicesMediaOperator"
+                                    },
+                                    {
+                                        "const": "MediaServicesLiveEventsAdministrator"
+                                    },
+                                    {
+                                        "const": "MediaServicesPolicyAdministrator"
+                                    },
+                                    {
+                                        "const": "MediaServicesAccountAdministrator"
+                                    },
+                                    {
+                                        "const": "MediaServicesStreamingEndpointsAdministrator"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "resourceTypeAssigningRole": {
+                                "const": "Microsoft.CognitiveServices/Accounts"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "resourceRoleName": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "CognitiveServicesCustomVisionContributor"
+                                    },
+                                    {
+                                        "const": "CognitiveServicesCustomVisionDeployment"
+                                    },
+                                    {
+                                        "const": "CognitiveServicesCustomVisionLabeler"
+                                    },
+                                    {
+                                        "const": "CognitiveServicesCustomVisionReader"
+                                    },
+                                    {
+                                        "const": "CognitiveServicesCustomVisionTrainer"
+                                    },
+                                    {
+                                        "const": "CognitiveServicesQnAMakerReader"
+                                    },
+                                    {
+                                        "const": "CognitiveServicesQnAMakerEditor"
+                                    },
+                                    {
+                                        "const": "CognitiveServicesMetricsAdvisorAdministrator"
+                                    },
+                                    {
+                                        "const": "CognitiveServicesMetricsAdvisorUser"
+                                    },
+                                    {
+                                        "const": "CognitiveServicesSpeechUser"
+                                    },
+                                    {
+                                        "const": "CognitiveServicesSpeechContributor"
+                                    },
+                                    {
+                                        "const": "CognitiveServicesFaceRecognizer"
+                                    },
+                                    {
+                                        "const": "CognitiveServicesUser"
+                                    },
+                                    {
+                                        "const": "CognitiveServicesDataReader"
+                                    },
+                                    {
+                                        "const": "CognitiveServicesContributor"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

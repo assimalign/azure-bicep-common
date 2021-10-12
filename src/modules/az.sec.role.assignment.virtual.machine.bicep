@@ -26,34 +26,36 @@ param resourcePrincipalIdReceivingRole string
 @description('If scoping resource role assignment to a specific the resource the name of the resource must be specified')
 param resourceToScopeRoleAssignment string = ''
 
-// A collection of available roles to assign to service principals for Storage Account File Share Services
+
 var RoleDefinitionId = {
-  StorageFileDataSMBShareReader: 'aba4ae5f-2193-4029-9191-0cb91df5e314'
-  StorageFileDataSMBShareContributor: '0c867c2a-1d8c-454a-a3db-ab2ea1bdc8bb'
-  StorageFileDataSMBShareElevatedContributor: 'a7264617-510b-434b-a828-9731dc254ea7'
+  VirtualMachineAdministratorLogin: '1c0163c0-47e6-4577-8991-ea5c82e286e4'
+  VirtualMachineUserLogin: 'fb879df8-f326-4884-b1cf-06f3ad86be52'
+  VirtualMachineContributor: '9980e02c-c2be-4d73-94e8-173b1dc7cf3c'
 }
 
-// 1. If applicable, get existing Storage Account File Share Services Share to scope role assignment
-resource azStorageAccountFileShareExistingResource 'Microsoft.Storage/storageAccounts/fileServices/shares@2021-04-01' existing = if (resourceRoleAssignmentScope == 'Resource') {
+
+resource azVirtualMachineExistingResource 'Microsoft.Compute/virtualMachines@2021-04-01' existing = if(resourceRoleAssignmentScope == 'Resource') {
   name: replace(replace(resourceToScopeRoleAssignment, '@environment', environment), '@location', location)
 }
 
-// 2. Assign Resource Role Scoped to the Resource
-resource azStorageAccountFileSharerResourceScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'Resource') {
+
+// 2. Assign Resource Role Scoped to the resource
+resource azVirtualMachineResourceScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if(resourceRoleAssignmentScope == 'Resource') {
   name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
-  scope: azStorageAccountFileShareExistingResource
+  scope: azVirtualMachineExistingResource
   properties: {
-    principalId: resourcePrincipalIdReceivingRole
+    principalId: resourcePrincipalIdReceivingRole 
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', RoleDefinitionId[resourceRoleName])
   }
 }
 
+
 // 3. Assign Resource Role Scoped to the Resource Group
-resource azStorageAccountFileShareResourceGroupScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'ResourceGroup') {
+resource azVirtualMachineResourceGroupScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if(resourceRoleAssignmentScope == 'ResourceGroup') {
   name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
   scope: resourceGroup()
   properties: {
-    principalId: resourcePrincipalIdReceivingRole
+    principalId: resourcePrincipalIdReceivingRole 
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', RoleDefinitionId[resourceRoleName])
   }
 }

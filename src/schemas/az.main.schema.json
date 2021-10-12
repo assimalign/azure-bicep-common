@@ -177,6 +177,9 @@
                 },
                 "keyVaults": {
                     "$ref": "az.key.vault.schema.json#definitions/keyVaults"
+                },
+                "roleAssignments": {
+                    "$ref": "az.rbac.role.assignment.schema.json#definitions/roleAssignments"
                 }
             }
         }

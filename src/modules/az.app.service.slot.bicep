@@ -229,7 +229,7 @@ module azAppServiceFunctionRoleAssignment 'az.sec.role.assignment.bicep' = [for 
     resourceGroupToScopeRoleAssignment: appSlotRoleAssignment.resourceGroupToScopeRoleAssignment
     resourceRoleAssignmentScope: appSlotRoleAssignment.resourceRoleAssignmentScope
     resourceTypeAssigningRole: appSlotRoleAssignment.resourceTypeAssigningRole
-    resourcePrincipalIdRecievingRole: appSlotType == 'functionapp' || appSlotType == 'functionapp,linux' ? azAppServiceFunctionSlotDeployment.identity.principalId : azAppServiceWebSlotDeployment.identity.principalId
+    resourcePrincipalIdReceivingRole: appSlotType == 'functionapp' || appSlotType == 'functionapp,linux' ? azAppServiceFunctionSlotDeployment.identity.principalId : azAppServiceWebSlotDeployment.identity.principalId
   }
   dependsOn: [
     azAppServiceAuthSettings

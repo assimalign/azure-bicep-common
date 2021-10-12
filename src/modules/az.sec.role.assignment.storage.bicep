@@ -4,8 +4,8 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
 
 @description('The location prefix or suffix for the resource name')
 param location string = ''
@@ -21,13 +21,12 @@ param resourceRoleName string
 param resourceRoleAssignmentScope string = 'ResourceGroup'
 
 @description('The principal Id reciving the role assignment')
-param resourcePrincipalIdRecievingRole string
+param resourcePrincipalIdReceivingRole string
 
 @description('If scoping resource role assignment to a specific the resource the name of the resource must be specified')
 param resourceToScopeRoleAssignment string = ''
 
-
-
+// A collection of available roles to assign to service principals for Storage Account
 var RoleDefinitionId = {
   StorageBlobDataContributor: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
   StorageBlobDataOwner: 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
@@ -47,30 +46,27 @@ var RoleDefinitionId = {
   StorageAccountKeyOperatorServiceRole: '81a9662b-bebf-436f-a333-f67b29880f12'
 }
 
-
-
-resource azStorageAccountExistingResource 'Microsoft.Storage/storageAccounts@2021-04-01' existing = if(resourceRoleAssignmentScope == 'Resource') {
+// 1. If applicable, get existing storage account resource to scope role assignment
+resource azStorageAccountExistingResource 'Microsoft.Storage/storageAccounts@2021-04-01' existing = if (resourceRoleAssignmentScope == 'Resource') {
   name: replace(replace(resourceToScopeRoleAssignment, '@environment', environment), '@location', location)
 }
 
-
 // 2. Assign Resource Role Scoped to the resource
-resource azStorageAccountResourceScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if(resourceRoleAssignmentScope == 'Resource') {
-  name: guid('${resourcePrincipalIdRecievingRole}/${RoleDefinitionId[resourceRoleName]}')
+resource azStorageAccountResourceScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'Resource') {
+  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
   scope: azStorageAccountExistingResource
   properties: {
-    principalId: resourcePrincipalIdRecievingRole 
+    principalId: resourcePrincipalIdReceivingRole
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', RoleDefinitionId[resourceRoleName])
   }
 }
 
-
 // 3. Assign Resource Role Scoped to the Resource Group
-resource azStorageAccountResourceGroupScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if(resourceRoleAssignmentScope == 'ResourceGroup') {
-  name: guid('${resourcePrincipalIdRecievingRole}/${RoleDefinitionId[resourceRoleName]}')
+resource azStorageAccountResourceGroupScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'ResourceGroup') {
+  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
   scope: resourceGroup()
   properties: {
-    principalId: resourcePrincipalIdRecievingRole 
+    principalId: resourcePrincipalIdReceivingRole
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', RoleDefinitionId[resourceRoleName])
   }
 }

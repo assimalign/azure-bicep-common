@@ -4,8 +4,8 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
 
 @description('The location prefix for the resource name')
 param location string = ''
@@ -21,7 +21,7 @@ param resourceRoleName string
 param resourceRoleAssignmentScope string = 'ResourceGroup'
 
 @description('The principal Id reciving the role assignment')
-param resourcePrincipalIdRecievingRole string
+param resourcePrincipalIdReceivingRole string
 
 @description('If scoping resource role assignment to a specific the resource the name of the resource must be specified')
 param resourceToScopeRoleAssignment string = ''
@@ -39,20 +39,20 @@ resource azAppConfigurationExistingResource 'Microsoft.AppConfiguration/configur
 
 // 2. Assign Resource Role Scoped to the resource
 resource azAppConfigurationResourceScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'Resource') {
-  name: guid('${resourcePrincipalIdRecievingRole}/${RoleDefinitionId[resourceRoleName]}')
+  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
   scope: azAppConfigurationExistingResource
   properties: {
-    principalId: resourcePrincipalIdRecievingRole
+    principalId: resourcePrincipalIdReceivingRole
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', RoleDefinitionId[resourceRoleName])
   }
 }
 
 // 3. Assign Resource Role Scoped to the Resource Group
 resource azAppConfigurationResourceGroupScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'ResourceGroup') {
-  name: guid('${resourcePrincipalIdRecievingRole}/${RoleDefinitionId[resourceRoleName]}')
+  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
   scope: resourceGroup()
   properties: {
-    principalId: resourcePrincipalIdRecievingRole
+    principalId: resourcePrincipalIdReceivingRole
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', RoleDefinitionId[resourceRoleName])
   }
 }
