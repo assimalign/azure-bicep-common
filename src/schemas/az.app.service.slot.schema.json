@@ -1,0 +1,284 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "appServiceSlots": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "type": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "web"
+                                    },
+                                    {
+                                        "const": "functionapp"
+                                    },
+                                    {
+                                        "const": "functionapp,linux"
+                                    }
+                                ]
+                            },
+                            "platform": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "dotnet"
+                                    },
+                                    {
+                                        "const": "java"
+                                    },
+                                    {
+                                        "const": "node"
+                                    },
+                                    {
+                                        "const": "python"
+                                    },
+                                    {
+                                        "const": "php"
+                                    }
+                                ]
+                            },
+                            "platformVersion": {
+                                "type": "string"
+                            },
+                            "enableMsi": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "appPlanName": {
+                                "type": "string",
+                                "description": "The name of the App Service Plan"
+                            },
+                            "appPlanResourceGroup": {
+                                "type": "string",
+                                "description": "The name of the resource group in which the App Service Plan lives in"
+                            },
+                            "storageAccountName": {
+                                "type": "string"
+                            },
+                            "storageAccountResourceGroup": {
+                                "type": "string"
+                            },
+                            "insightsName": {
+                                "type": "string"
+                            },
+                            "insightsResourceGroup": {
+                                "type": "string"
+                            },
+                            "settings": {
+                                "type": "object",
+                                "properties": {
+                                    "httpsOnly": {
+                                        "type": "boolean",
+                                        "default": true
+                                    },
+                                    "site": {
+                                        "type": "array",
+                                        "description": "The site settings for the app service",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "value": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "name",
+                                                "value"
+                                            ]
+                                        }
+                                    },
+                                    "authentication": {
+                                        "oneOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "type": "object",
+                                                "default": {
+                                                    "azureIdentity": {
+                                                        "clientId": "",
+                                                        "clientSecretName": "",
+                                                        "openIdIssuer": "https://sts.windows.net/{tenant Id} or https://login.microsoft.com/{tenant Id}"
+                                                    }
+                                                },
+                                                "properties": {
+                                                    "action": {
+                                                        "type": "string",
+                                                        "description": "The unauthenticated action",
+                                                        "oneOf": [
+                                                            {
+                                                                "const": "RedirectToLoginPage"
+                                                            }, 
+                                                            {
+                                                                "const": "AllowAnonymous"
+                                                            }, 
+                                                            {
+                                                                "const": "Return401"
+                                                            }, 
+                                                            {
+                                                                "const": "Return403"
+                                                            }
+                                                        ]
+                                                    },
+                                                    "identityProvider": {
+                                                        "type": "string",
+                                                        "oneOf": [
+                                                            {
+                                                                "const": "AzureAD"
+                                                            },
+                                                            {
+                                                                "const": "Google"
+                                                            },
+                                                            {
+                                                                "const": "Github"
+                                                            },
+                                                            {
+                                                                "const": "Facebook"
+                                                            }
+                                                        ]
+                                                    },
+                                                    "identityClientSecretName": {
+                                                        "type": "string"
+                                                    },
+                                                    "identityClientId": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "dev": {
+                                                                "type": "string"
+                                                            },
+                                                            "qa": {
+                                                                "type": "string"
+                                                            },
+                                                            "uat": {
+                                                                "type": "string"
+                                                            },
+                                                            "prd": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "dev",
+                                                            "qa",
+                                                            "uat",
+                                                            "prd"
+                                                        ]
+                                                    },
+                                                    "identityOpenIdIssuer": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "dev": {
+                                                                "type": "string"
+                                                            },
+                                                            "qa": {
+                                                                "type": "string"
+                                                            },
+                                                            "uat": {
+                                                                "type": "string"
+                                                            },
+                                                            "prd": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "dev",
+                                                            "qa",
+                                                            "uat",
+                                                            "prd"
+                                                        ]
+                                                    },
+                                                    "identityScopes": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "identityAudiences": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "identityGraphApiVersion": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "action",
+                                                    "identityProvider",
+                                                    "identityClientId",
+                                                    "identityClientSecretName",
+                                                    "identityOpenIdIssuer",
+                                                    "identityScopes",
+                                                    "identityAudiences",
+                                                    "identityGraphApiVersion"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "metadata": {
+                                        "oneOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "type": "object"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "site",
+                                    "authentication",
+                                    "httpsOnly",
+                                    "metadata"
+                                ]
+                            },
+                            "tags": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "patternProperties": {
+                                            "^[a-z]": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "minProperties": 1
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "type",
+                            "platform",
+                            "platformVersion",
+                            "storageAccountName",
+                            "storageAccountResourceGroup",
+                            "insightsName",
+                            "insightsResourceGroup",
+                            "settings",
+                            "tags"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        }
+    }
+}

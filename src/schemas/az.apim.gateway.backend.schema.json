@@ -1,0 +1,164 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "apimGatewayBackends": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "apimName": {
+                                "type": "string"
+                            },
+                            "apimResourceGroupName": {
+                                "type": "string"
+                            },
+                            "apimBackendType": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "FunctionApp"
+                                    },
+                                    {
+                                        "const": "WebApp"
+                                    },
+                                    {
+                                        "const": "CustomUrl"
+                                    }
+                                ]
+                            },
+                            "apimBackendName": {
+                                "type": "string"
+                            },
+                            "apimBackendRuntimeUrl": {
+                                "type": "string"
+                            },
+                            "apimBackendSiteResourceName": {
+                                "type": "string"
+                            },
+                            "apimBackendSiteResourceGroupName": {
+                                "type": "string"
+                            }
+                        },
+                        "if": {
+                            "properties": {
+                                "apimBackenType": {
+                                    "oneOf": [
+                                        {
+                                            "const": "FunctionApp"
+                                        },
+                                        {
+                                            "const": "WebApp"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        "then": {
+                            "required": [
+                                "apimName",
+                                "apimResourceGroupName",
+                                "apimBackendType",
+                                "apimBackendName",
+                                "apimBackendRuntimeUrl",
+                                "apimBackendSiteResourceName",
+                                "apimBackendSiteResourceGroupName"
+                            ]
+                        },
+                        "else": {
+                            "required": [
+                                "apimName",
+                                "apimResourceGroupName",
+                                "apimBackendType",
+                                "apimBackendName",
+                                "apimBackendRuntimeUrl"
+                            ]
+                        }
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "apimGatewayBackend": {
+            "type": "object",
+            "properties": {
+                "apimBackendType": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "FunctionApp"
+                        },
+                        {
+                            "const": "WebApp"
+                        },
+                        {
+                            "const": "CustomUrl"
+                        }
+                    ]
+                },
+                "apimBackendName": {
+                    "type": "string"
+                },
+                "apimBackendRuntimeUrl": {
+                    "type": "string"
+                },
+                "apimBackendSiteResourceName": {
+                    "type": "string"
+                },
+                "apimBackendSiteResourceGroupName": {
+                    "type": "string"
+                }
+            },
+            "if": {
+                "properties": {
+                    "apimBackenType": {
+                        "oneOf": [
+                            {
+                                "const": "FunctionApp"
+                            },
+                            {
+                                "const": "WebApp"
+                            }
+                        ]
+                    }
+                }
+            },
+            "then": {
+                "required": [
+                    "apimName",
+                    "apimResourceGroupName",
+                    "apimBackendType",
+                    "apimBackendName",
+                    "apimBackendRuntimeUrl",
+                    "apimBackendSiteResourceName",
+                    "apimBackendSiteResourceGroupName"
+                ]
+            },
+            "else": {
+                "required": [
+                    "apimName",
+                    "apimResourceGroupName",
+                    "apimBackendType",
+                    "apimBackendName",
+                    "apimBackendRuntimeUrl"
+                ]
+            }
+        }
+    }
+}
+// "apimGatewayBackends": {
+//     "value": [
+//         {
+//             "apimName": "es2-apim-app-@environment-@location-01",
+//             "apimResourceGroupName": "es2-rg-@environment-@location-apim",
+//             "apimBackendType": "FunctionApp",
+//             "apimBackendName": "es2-func-app-@environment-@location-comms",
+//             "apimBackendRuntimeUrl": "https://es2-func-app-@environment-@location-comms.es2-ase-app-@environment-@location-01.appserviceenvironment.net/api",
+//             "apimBackendSiteResourceName": "es2-func-app-@environment-@location-comms",
+//             "apimBackendSiteResourceGroupName": "es2-rg-app-@environment-@location-01"
+//         }
+//     ]
+// }

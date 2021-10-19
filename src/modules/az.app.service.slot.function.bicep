@@ -4,10 +4,10 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
 
-@description('A prefix or suffix identifying the deployment location as part of the naming convention of the resource')
+@description('The location prefix or suffix for the resource name')
 param location string = ''
 
 @description('The Function App Name to be deployed')

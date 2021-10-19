@@ -1,0 +1,88 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "apimGatewayApis": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "apimName": {
+                                "type": "string"
+                            },
+                            "apimResourceGroupName": {
+                                "type": "string"
+                            },
+                            "apimApiName": {
+                                "type": "string"
+                            },
+                            "apimApiPath": {
+                                "type": "string"
+                            },
+                            "apimApiDescription": {
+                                "type": "string"
+                            },
+                            "apimApiSubscriptionRequired":{
+                                "type": "boolean"
+                            },
+                            "apimApiProtocols": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "oneOf": [
+                                        {
+                                            "const": "https"
+                                        }
+                                    ]
+                                }
+                            },
+                            "apimApiPolicies": {
+                                "type": "string"
+                            },
+                            "apimApiOperations": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "az.apim.gateway.apis.operation.schema.json#definitions/apimGatewayApiOperations"
+                                }
+                            }
+                        },
+                        "required": [
+                            "apimName",
+                            "apimResourceGroupName",
+                            "apimApiName",
+                            "apimApiPath",
+                            "apimApiDescription",
+                            "apimApiSubscriptionRequired",
+                            "apimApiProtocols",
+                            "apimApiOperations"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "apimGatewayApi": {
+            "type": "object",
+            "properties": {
+
+            },
+            "required": [
+                
+            ]
+        }
+    }
+}
+
+// "apimName": "es2-apim-app-@environment-@location-01",
+// "apimResourceGroupName": "es2-rg-@environment-@location-apim",
+// "apimApiName": "es2-func-app-@environment-@location-comms",
+// "apimApiPath": "es2-func-app-@environment-@location-comms",
+// "apimApiDescription": "",
+// "apimApiSubscriptionRequired": false,
+// "apimApiProtocols": [
+//     "https"
+// ],

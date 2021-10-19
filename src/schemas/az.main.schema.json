@@ -78,18 +78,18 @@
                     "description": "For deploying individual Tables under Tables Services in a Storage Account.",
                     "$ref": "./az.storage.account.table.schema.json#definitions/storageAccountTableServiceTables"
                 },  
-                "appServiceEnvironments": {
+                "appServicesEnvironments": {
                     "$ref": "./az.app.service.environment.schema.json#definitions/appServiceEnvironments"
                 },
-                "appServicePlans": {
+                "appServicesPlans": {
                     "$ref": "./az.app.service.plan.schema.json#definitions/appServicePlans"
                 },
                 "appServices": {
                     "$ref": "./az.app.service.schema.json#definitions/appServices",
                     "description": "Parameters for a list of App Service Deployments. Existing App Service Plan, Storage Account, and Application Insights needed for this deployment."
                 },
-                "appServiceSlots": {
-
+                "appServicesSlots": {
+                    "$ref": "az.app.service.slot.schema.json#definitions/appServiceSlots"
                 },
                 "appGateways": {
                     "$ref": "./az.app.gateway.schema.json#definitions/appGateways"
@@ -180,6 +180,15 @@
                 },
                 "roleAssignments": {
                     "$ref": "az.rbac.role.assignment.schema.json#definitions/roleAssignments"
+                },
+                "apimGatewayApis": {
+                    "$ref": "az.apim.gateway.apis.schema.json#definitions/apimGatewayApis"
+                },
+                "apimGatewayApisOperations": {
+
+                },
+                "apimGatewayBackends": {
+                    "$ref": "az.apim.gateway.backend.schema.json#definitions/apimGatewayBackends"
                 }
             }
         }

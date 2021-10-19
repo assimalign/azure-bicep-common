@@ -4,10 +4,10 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
 
-@description('A prefix or suffix identifying the deployment location as part of the naming convention of the resource')
+@description('The location prefix or suffix for the resource name')
 param location string = ''
 
 @description('The Function App Name to be deployed')
@@ -32,13 +32,13 @@ param appAuthUnauthenticatedAction string
   'Google'
   'Twitter'
 ])
-@description('')
+@description('The identity provider issuign the Oath token')
 param appAuthIdentityProviderType string = 'AzureAD'
 
-@description('')
+@description('The Client Id associated with the identity provider')
 param appAuthIdentityProviderClientId object
 
-@description('')
+@description('The issuer for the security token')
 param appAuthIdentityProviderOpenIdIssuer object 
 
 @description('')
@@ -50,16 +50,17 @@ param appAuthIdentityProviderAudiences array = []
 @description('')
 param appAuthIdentityProviderScopes array = []
 
-@description('The Graph API Version provider is for Facebook identity provider only')
+@description('For Facebook')
 param appAuthIdentityProviderGraphApiVersion string = ''
 
 
-// Get the existing app resource 
+//  1. Get the existing app resource to add the host 
 resource azAppServiceResource 'Microsoft.Web/sites@2021-01-15' existing = {
   name: replace(replace(appName, '@environment', environment), '@location', location)
   scope: resourceGroup(replace(replace(appResourceGroup, '@environment', environment), '@location', location))
 }
 
+// 2. 
 resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/config@2021-01-15' = {
   name: replace(replace('${appName}/authsettingsV2', '@environment', environment), '@location', location)
   properties: {
@@ -165,55 +166,11 @@ resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/config@2021-01-
           ],appAuthIdentityProviderAudiences)
         }
       } : json('null'))
-
-      // twitter: {
-      //   enabled: boolean
-      //   registration: {
-      //     consumerKey: string
-      //     consumerSecretSettingName: string
-      //   }
-      // }
-      // customOpenIdConnectProviders: {
-      //   enabled: boolean
-      //   registration: {
-      //     clientId: string
-      //     clientCredential: {
-      //       method: string
-      //     }
-      //     clientSecretSettingName: string
-      //     openIdConnectConfiguration: {
-      //       authorizationEndpoint: string
-      //       tokenEndpoint: string
-      //       issuer: string
-      //       certificationUri: string
-      //       wellKnownOpenIdConfiguration: string
-      //     }
-      //   }
-      //   login: {
-      //     tokenStore: {
-      //       enabled: true
-      //     }
-      //   }
-      // }
     }
     login: {
-      // routes: {
-      //   logoutEndpoint: 'string'
-      // }
       tokenStore: {
         enabled: true
       }
     }
-    // httpSettings: {
-    //   requireHttps: bool
-    //   routes: {
-    //     apiPrefix: 'string'
-    //   }
-    //   forwardProxy: {
-    //     convention: 'string'
-    //     customHostHeaderName: 'string'
-    //     customProtoHeaderName: 'string'
-    //   }
-    // }
   }
 }

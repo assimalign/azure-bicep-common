@@ -72,8 +72,6 @@ param storageAccountFileShareServices object = {}
 @description('The tags to attach to the resource when deployed')
 param storageAccountTags object = {}
 
-
-
 // Setup the Virtual Networks Allowed or Denied for the Storage Account
 var virtualNetworks = [for network in storageAccountVirtualNetworks: {
   action: network.allowAccess == true ? 'Allow' : null
@@ -91,44 +89,43 @@ var resourceAccess = [for resource in storageAccountResourceAccess: {
   resourceId: replace(resourceId('${resource.resource}', 'Microsoft.Network/virtualNetworks/subnet', '${resource.resourceName}'), '@environment', environment)
 }]
 
-
 // 1. Deploy Azure Storage Account
-resource azStorageAccountDeployment 'Microsoft.Storage/storageAccounts@2021-04-01' =  {
- name: replace(storageAccountName, '@environment', environment)
- kind:  storageAccountType
- location: resourceGroup().location
- sku:  any((environment == 'dev') ? {
-  name: '${storageAccountTier.dev}_${toUpper(storageAccountRedundancy.dev)}'
-  tier: storageAccountTier.dev
- }  : any((environment) == 'qa') ? {
-  name: '${storageAccountTier.qa}_${toUpper(storageAccountRedundancy.qa)}'
-  tier: storageAccountTier.qa
- }  : any((environment == 'uat') ? {
-  name: '${storageAccountTier.uat}_${toUpper(storageAccountRedundancy.uat)}'
-  tier: storageAccountTier.uat
- }  : any((environment == 'prd') ? {
-  name: '${storageAccountTier.prd}_${toUpper(storageAccountRedundancy.prd)}'
-  tier: storageAccountTier.prd
- }  : {
-  name: '${storageAccountTier.dev}_${storageAccountRedundancy.dev}'
-  tier: storageAccountTier.dev
- })))
- properties: {
-   accessTier: storageAccountAccessTier
-   minimumTlsVersion: storageAccountTlsVersion
-   networkAcls: {
-     defaultAction: storageAccountDefaultNetworkAccess
-     virtualNetworkRules: virtualNetworks
-     resourceAccessRules: resourceAccess
-     ipRules: ipRules
-     bypass: storageAccountVirtualNetworkBypass
-   }
- }
- tags: storageAccountTags
+resource azStorageAccountDeployment 'Microsoft.Storage/storageAccounts@2021-04-01' = {
+  name: replace(storageAccountName, '@environment', environment)
+  kind: storageAccountType
+  location: resourceGroup().location
+  sku: any((environment == 'dev') ? {
+    name: '${storageAccountTier.dev}_${toUpper(storageAccountRedundancy.dev)}'
+    tier: storageAccountTier.dev
+  } : any((environment) == 'qa') ? {
+    name: '${storageAccountTier.qa}_${toUpper(storageAccountRedundancy.qa)}'
+    tier: storageAccountTier.qa
+  } : any((environment == 'uat') ? {
+    name: '${storageAccountTier.uat}_${toUpper(storageAccountRedundancy.uat)}'
+    tier: storageAccountTier.uat
+  } : any((environment == 'prd') ? {
+    name: '${storageAccountTier.prd}_${toUpper(storageAccountRedundancy.prd)}'
+    tier: storageAccountTier.prd
+  } : {
+    name: '${storageAccountTier.dev}_${storageAccountRedundancy.dev}'
+    tier: storageAccountTier.dev
+  })))
+  properties: {
+    accessTier: storageAccountAccessTier
+    minimumTlsVersion: storageAccountTlsVersion
+    networkAcls: {
+      defaultAction: storageAccountDefaultNetworkAccess
+      virtualNetworkRules: virtualNetworks
+      resourceAccessRules: resourceAccess
+      ipRules: ipRules
+      bypass: storageAccountVirtualNetworkBypass
+    }
+  }
+  tags: storageAccountTags
 }
 
 // 2. Deploy Azure Storage Blob Services
-module azStorageAccountBlobServiceDeployment 'az.data.storage.blob.services.bicep' = if(!empty(storageAccountBlobServices) && (startsWith(storageAccountType, 'Storage') || startsWith(storageAccountType, 'Blob')) ) {
+module azStorageAccountBlobServiceDeployment 'az.data.storage.blob.services.bicep' = if (!empty(storageAccountBlobServices) && (startsWith(storageAccountType, 'Storage') || startsWith(storageAccountType, 'Blob'))) {
   name: !empty(storageAccountBlobServices) ? toLower('az-stg-blob-services-${guid('${azStorageAccountDeployment.id}/blob-service-deployment')}') : 'no-stg-blob-service-to-deploy'
   scope: resourceGroup()
   params: {
@@ -137,18 +134,18 @@ module azStorageAccountBlobServiceDeployment 'az.data.storage.blob.services.bice
     storageAccountBlobServiceName: 'default'
     storageAccountBlobServiceContainers: storageAccountBlobServices.containers
     storageAccountBlobServicePrivateEndpoint: storageAccountBlobServices.privateEndpoint ?? {}
-    storageAccountBlobServiceEnableSnapshot: storageAccountBlobServices.enableSnapshot 
+    storageAccountBlobServiceEnableSnapshot: storageAccountBlobServices.enableSnapshot
     storageAccountBlobServiceEnableVersioning: storageAccountBlobServices.enableVersioning
     storageAccountBlobServiceRestorePolicy: storageAccountBlobServices.restorePolicy ?? {}
     storageAccountBlobServiceRetentionPolicy: storageAccountBlobServices.retentionPolicy ?? {}
   }
   dependsOn: [
-     azStorageAccountDeployment
+    azStorageAccountDeployment
   ]
 }
 
 // 3. Deploy Azure File Share Services
-module azStorageAccountFileShareServiceDeployment 'az.data.storage.fileshare.services.bicep' = if(!empty(storageAccountFileShareServices) && (startsWith(storageAccountType, 'Storage') || startsWith(storageAccountType, 'FileStorage'))) {
+module azStorageAccountFileShareServiceDeployment 'az.data.storage.fileshare.services.bicep' = if (!empty(storageAccountFileShareServices) && (startsWith(storageAccountType, 'Storage') || startsWith(storageAccountType, 'FileStorage'))) {
   name: !empty(storageAccountFileShareServices) ? toLower('az-stg-fs-service-${guid('${azStorageAccountDeployment.id}/file-share-service-deployment')}') : 'no-stg-fs-service-to-deploy'
   scope: resourceGroup()
   params: {
@@ -159,12 +156,12 @@ module azStorageAccountFileShareServiceDeployment 'az.data.storage.fileshare.ser
     storageAccountFileShareServicePrivateEndpoint: storageAccountFileShareServices.privateEndpoint ?? {}
   }
   dependsOn: [
-     azStorageAccountDeployment
+    azStorageAccountDeployment
   ]
 }
 
 // 4. Deploy Azure Queue Services
-module azStorageAccountQueueServiceDeployment 'az.data.storage.queue.services.bicep' = if(!empty(storageAccountQueueServices) && startsWith(storageAccountType, 'Storage')) {
+module azStorageAccountQueueServiceDeployment 'az.data.storage.queue.services.bicep' = if (!empty(storageAccountQueueServices) && startsWith(storageAccountType, 'Storage')) {
   name: !empty(storageAccountQueueServices) ? toLower('az-stg-queue-services-${guid('${azStorageAccountDeployment.id}/queues-service-deployment')}') : 'no-stg-queues-service-to-deploy'
   scope: resourceGroup()
   params: {
@@ -176,12 +173,12 @@ module azStorageAccountQueueServiceDeployment 'az.data.storage.queue.services.bi
     storageAccountQueueServicePrivateEndpoint: storageAccountQueueServices.privateEndpoint ?? {}
   }
   dependsOn: [
-     azStorageAccountDeployment
+    azStorageAccountDeployment
   ]
 }
 
 // 5. Deploy Azure Queue Services
-module azStorageAccountTableServiceDeployment 'az.data.storage.table.services.bicep' = if(!empty(storageAccountTableServices) && startsWith(storageAccountType, 'Storage')) {
+module azStorageAccountTableServiceDeployment 'az.data.storage.table.services.bicep' = if (!empty(storageAccountTableServices) && startsWith(storageAccountType, 'Storage')) {
   name: !empty(storageAccountTableServices) ? toLower('az-stg-table-services-${guid('${azStorageAccountDeployment.id}/table-service-deployment')}') : 'no-stg-table-service-to-deploy'
   scope: resourceGroup()
   params: {
@@ -192,10 +189,9 @@ module azStorageAccountTableServiceDeployment 'az.data.storage.table.services.bi
     storageAccountTableServicePrivateEndpoint: storageAccountTableServices.privateEndpoint ?? {}
   }
   dependsOn: [
-     azStorageAccountDeployment
+    azStorageAccountDeployment
   ]
 }
-
 
 output resource object = {
   resourceId: azStorageAccountDeployment.id
@@ -207,4 +203,3 @@ output resource object = {
   kind: azStorageAccountDeployment.kind
   apiVersion: azStorageAccountDeployment.apiVersion
 }
-

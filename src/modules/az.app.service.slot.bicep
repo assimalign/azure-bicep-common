@@ -4,10 +4,10 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
 
-@description('A prefix or suffix identifying the deployment location as part of the naming convention of the resource')
+@description('The location prefix or suffix for the resource name')
 param location string = ''
 
 @description('The Function App Name to be deployed')
@@ -69,7 +69,7 @@ param appSlotTags object = {}
 
 
 
-// Format App Site Settings 
+
 var appSiteSettings = [for setting in appSlotSettings.site: {
   name: replace(replace(setting.name, '@environment', environment), '@location', location)
   value: replace(replace(setting.value, '@environment', environment), '@location', location)
@@ -131,7 +131,7 @@ resource azAppServiceFunctionSlotDeployment 'Microsoft.Web/sites/slots@2021-01-0
       ], appSiteSettings)
     }
   }
-  tags: appSlotTags
+  tags: appSlotTags 
 }
 
 // 4.2 Deploy Web App, if applicable
@@ -174,8 +174,6 @@ resource azAppServiceWebSlotDeployment 'Microsoft.Web/sites/slots@2021-01-01' = 
   }
   tags: appSlotTags
 }
-
-
 
 // 5. Configure Custom Function Settings (Will use this to disable functions in slots such as: Service Bus Listeners, Timers, etc.,)
 module azAppServiceFunctionSlotFunctionsDeployment 'az.app.service.slot.function.bicep' = [for function in appSlotFunctions: if (!empty(appSlotFunctions) && (appSlotType == 'functionapp' || appSlotType == 'functionapp,linux')) {

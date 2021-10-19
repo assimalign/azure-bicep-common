@@ -4,10 +4,10 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
 
-@description('A prefix or suffix identifying the deployment location as part of the naming convention of the resource')
+@description('The location prefix or suffix for the resource name')
 param location string = ''
 
 @description('The Function App Name to be deployed')
@@ -39,6 +39,9 @@ param appMsiRoleAssignments array = []
 
 @description('Deploys App Slots for the app service')
 param appSlots array = []
+
+@description('Adds specific names to to identify slot specific settings')
+param appSlotsConfigNames object = {}
 
 @description('An Object specifying the storage specs for the deployment')
 param appStorageAccountName string
@@ -106,7 +109,7 @@ resource azAppServiceFunctionDeployment 'Microsoft.Web/sites@2021-01-01' = if (a
     httpsOnly: appSettings.httpsOnly
     clientAffinityEnabled: false
     // If there are slots to be deployed then let's have the slots override the site settings
-    siteConfig: any(empty(appSlots) ? { 
+    siteConfig: any(empty(appSlots) ? {
       appSettings: union([
         {
           name: 'AzureWebJobsStorage'
@@ -132,11 +135,20 @@ resource azAppServiceFunctionDeployment 'Microsoft.Web/sites@2021-01-01' = if (a
     } : { })
   }
   tags: appServiceTags
+
+  resource azAppServiceLinkApim 'config' = if (!empty(appSettings) && !empty(appSettings.apim ?? {})) {
+    name: 'web'
+     properties: {
+        apiManagementConfig: {
+          id: replace(replace(resourceId(appSettings.apim.apimResourceGroupName, 'Microsoft.ApiManagement/service/apis', appSettings.apim.apimName, appSettings.apim.apimApiName), '@environment', environment), '@location', location)
+        }
+     }
+  }
 }
 
 // 4.2 Deploy Web App, if applicable
 resource azAppServiceWebDeployment 'Microsoft.Web/sites@2021-01-01' = if (appType == 'web') {
-  name: appType == 'web' ? replace(replace('${appName}', '@environment', environment), '@location', location) : 'no-web-app-to-deploy'
+  name: appType == 'web' ? replace('${appName}', '@environment', environment) : 'no-web-app-to-deploy'
   location: resourceGroup().location
   kind: appType
   identity: {
@@ -175,6 +187,15 @@ resource azAppServiceWebDeployment 'Microsoft.Web/sites@2021-01-01' = if (appTyp
     } : {})
   }
   tags: appServiceTags
+
+  resource azAppServiceLinkApim 'config' = if (!empty(appSettings) && !empty(appSettings.apim ?? {})) {
+    name: 'web'
+     properties: {
+        apiManagementConfig: {
+          id: replace(replace(resourceId(appSettings.apim.apimResourceGroupName,'MMicrosoft.ApiManagement/apis', appSettings.apim.apimName, appSettings.apim.apimApiName), '@environment', environment), '@location', location)
+        }
+     }
+  }
 }
 
 // 5. Set the Identity Provider if applicable
@@ -223,7 +244,25 @@ module azAppServiceWebMetadataDeployment 'az.app.service.config.app.metadata.bic
   ]
 }
 
-// 7. Deploy app slots
+// 7. Sets App Service Config Names only
+module azAppServiceSlotSpecificSettingsDeployment 'az.app.service.slot.config.names.bicep' = if (!empty(appSlotsConfigNames)) {
+  name: 'az-app-slot-setting-${guid('${appName}/slotConfigNames')}'
+  scope: resourceGroup()
+  params: {
+    location: location
+    environment: environment
+    appName: appName
+    appSlotSettingNames: appSlotsConfigNames.appSettingNames
+    appSlotConnectionStringNames: appSlotsConfigNames.connectionStringSettingNames
+    appSlotAzureStorageConfigNames: appSlotsConfigNames.storageAccountSettingNames
+  }
+  dependsOn: [
+    azAppServiceFunctionDeployment
+    azAppServiceWebDeployment
+  ]
+}
+
+// 8. Deploy app slots
 module azAppServiceSlotDeployment 'az.app.service.slot.bicep' = [for slot in appSlots: if (!empty(appSlots)) {
   name: !empty(appSlots) ? 'az-app-service-slot-${guid('${appName}/${slot.name}')}' : 'no-app-service-slots-to-deploy'
   scope: resourceGroup()
@@ -246,13 +285,11 @@ module azAppServiceSlotDeployment 'az.app.service.slot.bicep' = [for slot in app
     appSlotStorageAccountResourceGroup: appStorageAccountResourceGroup
   }
   dependsOn: [
-    azAppServiceFunctionDeployment
-    azAppServiceWebDeployment
+    azAppServiceSlotSpecificSettingsDeployment
   ]
 }]
-
-
-// 8. Assignment RBAC Roles, if any, to App Service Slot Service Principal  
+ 
+// 9.  Assignment RBAC Roles, if any, to App Service Slot Service Principal  
 module azAppServiceRoleAssignment 'az.sec.role.assignment.bicep' = [for appRoleAssignment in appMsiRoleAssignments: if (appMsiEnabled == true && !empty(appMsiRoleAssignments)) {
   name: 'az-app-service-rbac-${guid('${appName}-${appRoleAssignment.resourceRoleName}')}'
   scope: resourceGroup(replace(replace(appRoleAssignment.resourceGroupToScopeRoleAssignment, '@environment', environment), '@location', location))
@@ -274,5 +311,5 @@ module azAppServiceRoleAssignment 'az.sec.role.assignment.bicep' = [for appRoleA
   ]
 }]
 
-// 9. Return Deployment Output
+// 10. Return Deployment Output
 output resource object = appType == 'web' ? azAppServiceWebDeployment : azAppServiceFunctionDeployment
