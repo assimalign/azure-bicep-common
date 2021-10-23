@@ -78,18 +78,21 @@
                     "description": "For deploying individual Tables under Tables Services in a Storage Account.",
                     "$ref": "./az.storage.account.table.schema.json#definitions/storageAccountTableServiceTables"
                 },  
-                "appServicesEnvironments": {
+                "appServiceEnvironments": {
                     "$ref": "./az.app.service.environment.schema.json#definitions/appServiceEnvironments"
                 },
-                "appServicesPlans": {
+                "appServicePlans": {
                     "$ref": "./az.app.service.plan.schema.json#definitions/appServicePlans"
                 },
                 "appServices": {
                     "$ref": "./az.app.service.schema.json#definitions/appServices",
                     "description": "Parameters for a list of App Service Deployments. Existing App Service Plan, Storage Account, and Application Insights needed for this deployment."
                 },
-                "appServicesSlots": {
-                    "$ref": "az.app.service.slot.schema.json#definitions/appServiceSlots"
+                "appServiceSlots": {
+                    "$ref": "./az.app.service.slot.schema.json#definitions/appServiceSlots"
+                },
+                "appServiceSlotsConfigNames": {
+                    "$ref": "az.app.service.slot.config.name.schema.json#definitions/appSlotConfigNames"
                 },
                 "appGateways": {
                     "$ref": "./az.app.gateway.schema.json#definitions/appGateways"

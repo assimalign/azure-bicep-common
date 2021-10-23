@@ -439,7 +439,7 @@ module azMediaServicesRoleAssignment 'az.sec.role.assignment.media.services.bice
 
 // 16. Check for Azure Media Services Role Assignment
 module azCognitiveServicesRoleAssignment 'az.sec.role.assignment.cognitive.services.bicep' = if (resourceTypeAssigningRole == 'Microsoft.CognitiveServices/Accounts') {
-  name: 'az-media-role-assign-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
+  name: 'az-cognitive-role-assign-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
     environment: environment

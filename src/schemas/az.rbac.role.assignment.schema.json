@@ -98,9 +98,6 @@
                     "const": "Microsoft.EventGrid/Domains"
                 },
                 {
-                    "const": "Microsoft.ServiceBus/Namespaces"
-                },
-                {
                     // Grants Role Access to Child Data Stores in Storage Account
                     "const": "Microsoft.Storage/StorageAccounts"
                 },

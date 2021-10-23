@@ -4,29 +4,38 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
 
-@description('')
+@description('The location prefix or suffix for the resource name')
+param location string = ''
+
+@description('The name of an existing Event Grid Domain to deploy the new Subscription to')
 param eventGridDomainName string
 
-@description('')
-param eventGridDomainTopicName string 
+@description('The name of an existing Event Grid Domain Topic to deploy the new Subscription to')
+param eventGridDomainTopicName string
 
-@description('')
+@description('The name of the new Subscriptio to deploy')
 param eventGridSubscriptionName string
 
-@description('')
+@description('Custom tags for events being delivered to the subscription')
 param eventGridEventTypes array = []
 
-@description('')
+@description('Custom query for filtering event message to subscription')
 param eventGridEventFilters array = []
 
-@description('')
+@description('Cusom labels to categorize the event grid subscriptions')
 param eventGridEventLabels array = []
 
+@description('')
+param eventGridEventDeliveryHeaders array = []
+
+@description('The storage account blob container to dead letter undeliverable event messages')
+param eventGridDeadLetterDestination object = {}
+
 @allowed([
-  'AzureFunction' 
+  'AzureFunction'
   'EventHub'
   'HybridConnection'
   'ServiceBusQueue'
@@ -34,96 +43,155 @@ param eventGridEventLabels array = []
   'StorageQueue'
   'WebHook'
 ])
+@description('The event grid handler to receive the event subscription message')
 param eventGridSubscriptionEndpointType string
 
-@description('')
+@description('The name of the event grid handler')
 param eventGridSubscriptionEndpointName string
 
-@description('')
+@description('the name of the resource group the event event grid handler lives in')
 param eventGridSubscriptionEndpointResourceGroup string
 
+@description('')
+param eventGridSubscriptionUseMsi bool = false
 
 
-// a. Get Event Grid Domain Resource
-resource azEventGridDomainTopicResource 'Microsoft.EventGrid/domains/topics@2020-10-15-preview' existing = {
- name: replace('${eventGridDomainName}/${eventGridDomainTopicName}', '@environment', environment)
+var headers = [for header in eventGridEventDeliveryHeaders: {
+  type: header.type
+  name: header.name
+  properties: any(header.type == 'Dynamic' ? {
+    sourceField: header.value
+  } : {
+    value: header.value
+    isSecret: false
+  })
+}]
+
+// 1. Get an Existing Event Grid Domain Resource
+resource azEventGridDomainTopicResource 'Microsoft.EventGrid/domains/topics@2021-06-01-preview' existing = {
+  name: replace(replace('${eventGridDomainName}/${eventGridDomainTopicName}', '@environment', environment), '@location', location)
 }
 
-// 3. If applicable, get Service Bus Queue Resource
-resource azServiceBusQueueResource 'Microsoft.ServiceBus/namespaces/queues@2021-01-01-preview' existing = if(eventGridSubscriptionEndpointType == 'ServiceBusQueue') {
-  name: eventGridSubscriptionEndpointType == 'ServiceBusQueue' ? replace('${eventGridSubscriptionEndpointName}', '@environment', environment) : 'no-namespace/no-queue'
-  scope: resourceGroup(replace('${eventGridSubscriptionEndpointResourceGroup}', '@environment', environment))
-}
-
-// 4. If applicable, get Service Bus Topic Resource
-resource azServiceBusTopicResource 'Microsoft.ServiceBus/namespaces/topics@2021-01-01-preview' existing = if(eventGridSubscriptionEndpointType == 'ServiceBusTopic') {
-  name: eventGridSubscriptionEndpointType == 'ServiceBusTopic' ? replace('${eventGridSubscriptionEndpointName}', '@environment', environment) : 'no-namespace/no-topic'
-  scope: resourceGroup(replace('${eventGridSubscriptionEndpointResourceGroup}', '@environment', environment))
-}
-
-// 5. If applicable, get Event Hub Resource
-resource azEventHubResource 'Microsoft.EventHub/namespaces/eventhubs@2017-04-01' existing = if(eventGridSubscriptionEndpointType == 'EventHub') {
-  name: eventGridSubscriptionEndpointType == 'EventHub' ? replace('${eventGridSubscriptionEndpointName}', '@environment', environment) : 'no-namespace/no-event-hub'
-  scope: resourceGroup(replace('${eventGridSubscriptionEndpointResourceGroup}', '@environment', environment))
-}
-
-// 6. If applicable, get Event Hub Resource
-resource azEventGridFunctionAppResource 'Microsoft.Web/sites/functions@2021-01-01' existing = if(eventGridSubscriptionEndpointType == 'AzureFunction') {
-  name: eventGridSubscriptionEndpointType == 'AzureFunction' ? replace('${eventGridSubscriptionEndpointName}', '@environment', environment) : 'no-function-app/no-function'
-  scope: resourceGroup(replace('${eventGridSubscriptionEndpointResourceGroup}', '@environment', environment))
-}
-
-// 7. If applicable, get Event Hub Resource
-resource azStorageAccountQueueResource 'Microsoft.Storage/storageAccounts@2021-04-01' existing = if(eventGridSubscriptionEndpointType == 'StorageQueue') {
-  name: eventGridSubscriptionEndpointType == 'StorageQueue' ? replace(toLower(replace(first(split('${eventGridSubscriptionEndpointName}', '/')), '-', '')), '@environment', environment): 'no-function-app/default/no-function'
-  scope: resourceGroup(replace('${eventGridSubscriptionEndpointResourceGroup}', '@environment', environment))
-}
-
-
-
-resource azEventGridDomainSubscriptionDeployment 'Microsoft.EventGrid/eventSubscriptions@2020-10-15-preview' = {
-  name: replace(eventGridSubscriptionName, '@environment', environment)
+// 2. Deploy the Event Grid Subscription to the Event Grid Domain Topic
+resource azEventGridDomainWithMsiSubscriptionDeployment 'Microsoft.EventGrid/eventSubscriptions@2021-06-01-preview' = if(eventGridSubscriptionUseMsi == true) {
+  name: eventGridSubscriptionUseMsi == true ? replace(replace(eventGridSubscriptionName, '@environment', environment), '@location', location) : 'no-egd-subscription-with-msi'
   scope: azEventGridDomainTopicResource
   properties: {
-   labels: eventGridEventLabels
-   eventDeliverySchema: 'EventGridSchema'
-   deliveryWithResourceIdentity: {
-     destination: any(eventGridSubscriptionEndpointType == 'ServiceBusQueue' ? {
-        endpointType: eventGridSubscriptionEndpointType
+    labels: eventGridEventLabels
+    eventDeliverySchema: 'EventGridSchema'
+    deliveryWithResourceIdentity: {
+      destination: any(eventGridSubscriptionEndpointType == 'AzureFunction' ? {
+        endpointType: 'AzureFunction'
         properties: {
-          resourceId: azServiceBusQueueResource.id
+          deliveryAttributeMappings: headers
+          resourceId: replace(replace(az.resourceId(eventGridSubscriptionEndpointResourceGroup, 'Microsoft.Web/sites/functions', split(eventGridSubscriptionEndpointName, '/')[0], split(eventGridSubscriptionEndpointName, '/')[1]), '@environment', environment), '@location', location)
+        }
+      } : any(eventGridSubscriptionEndpointType == 'ServiceBusQueue' ? {
+        endpointType: 'ServiceBusQueue'
+        properties: {
+          deliveryAttributeMappings: headers
+          resourceId: replace(replace(az.resourceId(eventGridSubscriptionEndpointResourceGroup, 'Microsoft.ServiceBus/namespaces/queues', split(eventGridSubscriptionEndpointName, '/')[0], split(eventGridSubscriptionEndpointName, '/')[1]), '@environment', environment), '@location', location)
         }
       } : any(eventGridSubscriptionEndpointType == 'ServiceBusTopic' ? {
-        endpointType: eventGridSubscriptionEndpointType
+        endpointType: 'ServiceBusTopic'
         properties: {
-          resourceId: azServiceBusTopicResource.id
+          deliveryAttributeMappings: headers
+          resourceId: replace(replace(az.resourceId(eventGridSubscriptionEndpointResourceGroup, 'Microsoft.ServiceBus/namespaces/topics', split(eventGridSubscriptionEndpointName, '/')[0], split(eventGridSubscriptionEndpointName, '/')[1]), '@environment', environment), '@location', location)
         }
       } : any(eventGridSubscriptionEndpointType == 'EventHub' ? {
-        endpointType: eventGridSubscriptionEndpointType
+        endpointType: 'EventHub'
         properties: {
-          resourceId: azEventHubResource.id
-        }
-      } : any(eventGridSubscriptionEndpointType == 'AzureFunction' ? {
-        endpointType: eventGridSubscriptionEndpointType
-        properties: {
-          resourceId: azEventGridFunctionAppResource.id
+          deliveryAttributeMappings: headers
+          resourceId: replace(replace(az.resourceId(eventGridSubscriptionEndpointResourceGroup, 'Microsoft.EventHub/namespaces/eventhubs', split(eventGridSubscriptionEndpointName, '/')[0], split(eventGridSubscriptionEndpointName, '/')[1]), '@environment', environment), '@location', location)
         }
       } : any(eventGridSubscriptionEndpointType == 'StorageQueue' ? {
-        endpointType: eventGridSubscriptionEndpointType
+        endpointType: 'StorageQueue'
         properties: {
+          deliveryAttributeMappings: headers
           queueName: replace(last(split('${eventGridSubscriptionEndpointName}', '/')), '@environment', environment)
-          resourceId: azStorageAccountQueueResource.id
+          resourceId: replace(replace(az.resourceId(eventGridSubscriptionEndpointResourceGroup, 'Microsoft.Storage/storageAccounts', first(split(eventGridSubscriptionEndpointName, '/'))), '@environment', environment), '@location', location)
         }
       } : {})))))
       identity: {
-        type:  'SystemAssigned'
+        type: 'SystemAssigned'
       }
-   }
-   filter: any(empty(eventGridEventTypes) ? {
-    advancedFilters: eventGridEventFilters
-   } : {
-    advancedFilters: eventGridEventFilters
-    includedEventTypes: eventGridEventTypes
-   })
+    }
+    deadLetterWithResourceIdentity: !empty(eventGridDeadLetterDestination) ? {
+      deadLetterDestination: {
+        endpointType: 'StorageBlob'
+        properties: {
+          blobContainerName: eventGridDeadLetterDestination.storageAccountContainerName
+          resourceId: replace(replace(az.resourceId(eventGridDeadLetterDestination.storageAccountResourceGroupName, 'Microsoft.Storage/storageAccounts', eventGridDeadLetterDestination.storageAccountName), '@environment', environment), '@location', location)
+        }
+      }
+      identity: {
+        type: 'SystemAssigned'
+      }
+    } : json('null')
+    filter: any(empty(eventGridEventTypes) ? {
+      advancedFilters: eventGridEventFilters
+    } : {
+      advancedFilters: eventGridEventFilters
+      includedEventTypes: eventGridEventTypes
+    })
   }
 }
+
+
+resource azEventGridDomainWithoutMsiSubscriptionDeployment 'Microsoft.EventGrid/eventSubscriptions@2021-06-01-preview' = if(eventGridSubscriptionUseMsi == false) {
+  name: eventGridSubscriptionUseMsi == false ? replace(replace(eventGridSubscriptionName, '@environment', environment), '@location', location) : 'no-egd-subscription-without-msi'
+  scope: azEventGridDomainTopicResource
+  properties: {
+    labels: eventGridEventLabels
+    eventDeliverySchema: 'EventGridSchema'
+    destination:  any(eventGridSubscriptionEndpointType == 'AzureFunction' ? {
+      endpointType: 'AzureFunction'
+      properties: {
+        deliveryAttributeMappings: headers
+        resourceId: replace(replace(az.resourceId(eventGridSubscriptionEndpointResourceGroup, 'Microsoft.Web/sites/functions', split(eventGridSubscriptionEndpointName, '/')[0], split(eventGridSubscriptionEndpointName, '/')[1]), '@environment', environment), '@location', location)
+      }
+    } : any(eventGridSubscriptionEndpointType == 'ServiceBusQueue' ? {
+      endpointType: 'ServiceBusQueue'
+      properties: {
+        deliveryAttributeMappings: headers
+        resourceId: replace(replace(az.resourceId(eventGridSubscriptionEndpointResourceGroup, 'Microsoft.ServiceBus/namespaces/queues', split(eventGridSubscriptionEndpointName, '/')[0], split(eventGridSubscriptionEndpointName, '/')[1]), '@environment', environment), '@location', location)
+      }
+    } : any(eventGridSubscriptionEndpointType == 'ServiceBusTopic' ? {
+      endpointType: 'ServiceBusTopic'
+      properties: {
+        deliveryAttributeMappings: headers
+        resourceId: replace(replace(az.resourceId(eventGridSubscriptionEndpointResourceGroup, 'Microsoft.ServiceBus/namespaces/topics', split(eventGridSubscriptionEndpointName, '/')[0], split(eventGridSubscriptionEndpointName, '/')[1]), '@environment', environment), '@location', location)
+      }
+    } : any(eventGridSubscriptionEndpointType == 'EventHub' ? {
+      endpointType: 'EventHub'
+      properties: {
+        deliveryAttributeMappings: headers
+        resourceId: replace(replace(az.resourceId(eventGridSubscriptionEndpointResourceGroup, 'Microsoft.EventHub/namespaces/eventhubs', split(eventGridSubscriptionEndpointName, '/')[0], split(eventGridSubscriptionEndpointName, '/')[1]), '@environment', environment), '@location', location)
+      }
+    } : any(eventGridSubscriptionEndpointType == 'StorageQueue' ? {
+      endpointType: 'StorageQueue'
+      properties: {
+        deliveryAttributeMappings: headers
+        queueName: replace(last(split('${eventGridSubscriptionEndpointName}', '/')), '@environment', environment)
+        resourceId: replace(replace(az.resourceId(eventGridSubscriptionEndpointResourceGroup, 'Microsoft.Storage/storageAccounts', first(split(eventGridSubscriptionEndpointName, '/'))), '@environment', environment), '@location', location)
+      }
+    } : {})))))
+    deadLetterDestination: !empty(eventGridDeadLetterDestination) ? {
+      endpointType: 'StorageBlob'
+      properties: {
+        deliveryAttributeMappings: headers
+        blobContainerName: eventGridDeadLetterDestination.storageAccountContainerName
+        resourceId: replace(replace(az.resourceId(eventGridDeadLetterDestination.storageAccountResourceGroupName, 'Microsoft.Storage/storageAccounts', eventGridDeadLetterDestination.storageAccountName), '@environment', environment), '@location', location)
+      }
+    } : json('null')
+    filter: any(empty(eventGridEventTypes) ? {
+      advancedFilters: eventGridEventFilters
+    } : {
+      advancedFilters: eventGridEventFilters
+      includedEventTypes: eventGridEventTypes
+    })
+  }
+}
+
+// 8. Return Deployment Output
+output resource object = eventGridSubscriptionUseMsi == true ? azEventGridDomainWithMsiSubscriptionDeployment : azEventGridDomainWithoutMsiSubscriptionDeployment

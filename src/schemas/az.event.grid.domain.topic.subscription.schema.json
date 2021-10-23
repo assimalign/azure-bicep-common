@@ -11,12 +11,15 @@
                             "name": {
                                 "type": "string"
                             },
+                            "domainTopic": {
+                                "description": "The name of the Event Grid Domain Topic"
+                            },
                             "domain": {
                                 "type": "string",
                                 "description": "The name of the Event Grid Domain"
                             },
-                            "domainTopic": {
-                                "description": "The name of the Event Grid Domain Topic"
+                            "domainResourceGroup": {
+                                "type": "string"
                             },
                             "endpointType": {
                                 "type": "string",
@@ -163,12 +166,43 @@
                                     "operatorType",
                                     "value"
                                 ]
+                            },
+                            "eventHeaders": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "oneOf": [
+                                                {
+                                                    "const": "Static"
+                                                },
+                                                {
+                                                    "const": "Dynamic"
+                                                }
+                                            ]
+                                        },
+                                        "value": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "name",
+                                        "type",
+                                        "value"
+                                    ]
+                                }
                             }
                         },
                         "required": [
                             "name",
                             "domain",
                             "domainTopic",
+                            "domainResourceGroup",
                             "endpointType",
                             "endpointName",
                             "endpointResourceGroup",
@@ -334,6 +368,36 @@
                         "operatorType",
                         "value"
                     ]
+                },
+                "eventHeaders": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "type": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "Static"
+                                    },
+                                    {
+                                        "const": "Dynamic"
+                                    }
+                                ]
+                            },
+                            "value": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "type",
+                            "value"
+                        ]
+                    }
                 }
             },
             "required": [
@@ -343,7 +407,8 @@
                 "endpointResourceGroup",
                 "eventTypes",
                 "eventLabels",
-                "eventFilters"
+                "eventFilters",
+                "eventHeaders"
             ]
         }
     }

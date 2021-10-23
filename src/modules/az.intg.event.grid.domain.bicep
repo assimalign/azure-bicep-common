@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
+
+@description('The location prefix or suffix for the resource name')
+param location string = ''
 
 @description('The name of the Event Grid Domain to deploy')
 param eventGridName string
@@ -23,20 +26,22 @@ param eventGridSubscriptions array = []
 param eventGridPrivateEndpoint object = {}
 
 @description('A flag to indicate whether System Managed Identity should be enabled for this resource')
-param eventGridEnableMsi bool = false
+param eventGridMsiEnabled bool = false
+
+@description('A flag to indicate whether System Managed Identity should be enabled for this resource')
+param eventGridMsiRoleAssignments array = []
 
 @description('Disables or Enables Public Network Access to the event grid domain')
 param eventGridPublicAccess bool = false
 
 
 
-
 // 1. Deploy Event Grid Domain
-resource azEventGridDomainDeployment 'Microsoft.EventGrid/domains@2020-10-15-preview' = {
-  name: replace('${eventGridName}', '@environment', environment)
+resource azEventGridDomainDeployment 'Microsoft.EventGrid/domains@2021-06-01-preview' = {
+  name: replace(replace('${eventGridName}', '@environment', environment), '@location', location)
   location: resourceGroup().location
   identity: {
-    type: eventGridEnableMsi == true ? 'SystemAssigned'  : 'None'
+    type: eventGridMsiEnabled == true ? 'SystemAssigned'  : 'None'
   }
   sku: any(environment == 'dev' ? {
     name: eventGridSku.dev
@@ -60,6 +65,7 @@ module azEventGridTopicSubscriptionDeployment 'az.intg.event.grid.domain.topic.b
   name: !empty(eventGridTopics) ? toLower('az-egd-topic-${guid('${azEventGridDomainDeployment.id}/${topic.name}')}')  : 'no-eg-topics-to-deploy'
   scope: resourceGroup()
   params: {
+    location: location
     environment: environment
     eventGridDomainName: eventGridName
     eventGridDomainTopicName: topic.name 
@@ -75,6 +81,7 @@ module azEventGridSubscriptionDeployment 'az.intg.event.grid.domain.subscription
   name: !empty(eventGridSubscriptions) ? toLower('az-egd-subscription-${guid('${azEventGridDomainDeployment.id}/${subscription.name}')}')  : 'no-eg-subscriptions-to-deploy'
   scope: resourceGroup()
   params: {
+    location: location
     environment: environment
     eventGridDomainName: eventGridName
     eventGridSubscriptionName: subscription.name 
@@ -91,9 +98,10 @@ module azEventGridSubscriptionDeployment 'az.intg.event.grid.domain.subscription
 
 // 4. Deploy Private Endpoint if applicable
 module azEventGridPrivateEndpointDeployment 'az.net.private.endpoint.bicep' = if(!empty(eventGridPrivateEndpoint)) {
-  name: !empty(eventGridPrivateEndpoint) ? toLower('az-egd-private-endpoint-${guid('${azEventGridDomainDeployment.id}/${eventGridPrivateEndpoint.name}')}') : 'no-eg-private-endpoint-to-deploy'
+  name: !empty(eventGridPrivateEndpoint) ? toLower('az-egd-priv-endpoint-${guid('${azEventGridDomainDeployment.id}/${eventGridPrivateEndpoint.name}')}') : 'no-egd-private-endpoint-to-deploy'
   scope: resourceGroup()
   params: {
+    location: location
     environment: environment
     privateEndpointName: eventGridPrivateEndpoint.name
     privateEndpointPrivateDnsZone: eventGridPrivateEndpoint.privateDnsZone
@@ -111,3 +119,25 @@ module azEventGridPrivateEndpointDeployment 'az.net.private.endpoint.bicep' = if
     azEventGridDomainDeployment
   ]
 }
+
+
+// 9.  Assignment RBAC Roles, if any, to App Service Slot Service Principal  
+module azAppServiceRoleAssignment 'az.sec.role.assignment.bicep' = [for roleAssignment in eventGridMsiRoleAssignments: if (eventGridMsiEnabled == true && !empty(eventGridMsiRoleAssignments)) {
+  name: 'az-egd-rbac-${guid('${azEventGridDomainDeployment.name}-${roleAssignment.resourceRoleName}')}'
+  scope: resourceGroup(replace(replace(roleAssignment.resourceGroupToScopeRoleAssignment, '@environment', environment), '@location', location))
+  params: {
+    location: location
+    environment: environment
+    resourceRoleName: roleAssignment.resourceRoleName
+    resourceToScopeRoleAssignment: roleAssignment.resourceToScopeRoleAssignment
+    resourceGroupToScopeRoleAssignment: roleAssignment.resourceGroupToScopeRoleAssignment
+    resourceRoleAssignmentScope: roleAssignment.resourceRoleAssignmentScope
+    resourceTypeAssigningRole: roleAssignment.resourceTypeAssigningRole
+    resourcePrincipalIdReceivingRole: azEventGridDomainDeployment.identity.principalId
+  }
+  dependsOn: [
+    azEventGridDomainDeployment
+    azEventGridTopicSubscriptionDeployment
+    azEventGridSubscriptionDeployment
+  ]
+}]

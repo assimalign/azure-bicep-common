@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
+@description('The environment in which the resource(s) will be deployed')
 param environment string = 'dev'
+
+@description('The location prefix for the resource name')
+param location string = ''
 
 @description('The name of the service bus to deploy')
 param serviceBusName string
@@ -25,14 +28,13 @@ param serviceBusEnableMsi bool = false
 @description('')
 param serviceBusPolicies array = []
 
-
 // 1. Deploy Service Bus Namespace
 resource azServiceBusNamespaceDeployment 'Microsoft.ServiceBus/namespaces@2018-01-01-preview' = {
-  name: replace('${serviceBusName}', '@environment', environment)
+  name: replace(replace('${serviceBusName}', '@environment', environment), '@location', location)
   location: resourceGroup().location
   identity: any(serviceBusEnableMsi ? {
     type: 'SystemAssigned'
-  }: {})
+  } : {})
   sku: any(environment == 'dev' ? {
     name: serviceBusSku.dev
     tier: serviceBusSku.dev
@@ -52,22 +54,23 @@ resource azServiceBusNamespaceDeployment 'Microsoft.ServiceBus/namespaces@2018-0
 
   // Neet to use a different API version version than parent since preview supports managed identity while auth rules are supported up to 2017-04-01
   resource azServiceBusNamespaceAuthorizationRulesDeployment 'AuthorizationRules@2017-04-01' = [for policy in serviceBusPolicies: if (!empty(policy)) {
-    name: !empty(serviceBusPolicies) ? policy.name : 'no-sb-policies-to-deploy' 
+    name: !empty(serviceBusPolicies) ? policy.name : 'no-sb-policies-to-deploy'
     properties: {
-      rights: policy.permissions 
+      rights: policy.permissions
     }
   }]
 }
 
 // 2. Deploy Servic Bus Queues if applicable
-module azServiceBusNamespaceQueuesDeployment 'az.intg.service.bus.queue.bicep' = [for queue in serviceBusQueues: if(!empty(queue)) {
-  name: !empty(serviceBusQueues) ? toLower('az-sbn-queue-${guid('${azServiceBusNamespaceDeployment.id}/${queue.name}')}')  : 'no-sb-queues-to-deploy'
+module azServiceBusNamespaceQueuesDeployment 'az.intg.service.bus.queue.bicep' = [for queue in serviceBusQueues: if (!empty(queue)) {
+  name: !empty(serviceBusQueues) ? toLower('az-sbn-queue-${guid('${azServiceBusNamespaceDeployment.id}/${queue.name}')}') : 'no-sb-queues-to-deploy'
   scope: resourceGroup()
   params: {
+    location: location
     environment: environment
     serviceBusName: serviceBusName
-    serviceBusQueueName: queue.name 
-    serviceBusQueuePolicies: queue.policies 
+    serviceBusQueueName: queue.name
+    serviceBusQueuePolicies: queue.policies
     serviceBusQueueSettings: queue.settings
   }
   dependsOn: [
@@ -77,15 +80,16 @@ module azServiceBusNamespaceQueuesDeployment 'az.intg.service.bus.queue.bicep' =
 
 // 3. Deploy Servic Bus Topics & Subscriptions if applicable
 module azServiceBusTopicsNamespaceDeployment 'az.intg.service.bus.topic.bicep' = [for topic in serviceBusTopics: if (!empty(topic)) {
-  name: !empty(serviceBusTopics) ? toLower('az-sbn-topic-${guid('${azServiceBusNamespaceDeployment.id}/${topic.name}')}')  : 'no-sb-topic-to-deploy'
+  name: !empty(serviceBusTopics) ? toLower('az-sbn-topic-${guid('${azServiceBusNamespaceDeployment.id}/${topic.name}')}') : 'no-sb-topic-to-deploy'
   scope: resourceGroup()
   params: {
+    location: location
     environment: environment
     serviceBusName: serviceBusName
-    serviceBusTopicName: topic.name 
-    serviceBusTopicSubscriptions: topic.subscriptions 
-    serviceBusTopicPolicies: topic.policies 
-    serviceBusTopicSettings: topic.settings 
+    serviceBusTopicName: topic.name
+    serviceBusTopicSubscriptions: topic.subscriptions
+    serviceBusTopicPolicies: topic.policies
+    serviceBusTopicSettings: topic.settings
   }
   dependsOn: [
     azServiceBusNamespaceDeployment

@@ -1,13 +1,14 @@
+
 @allowed([
   'dev'
   'qa'
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
 
-@description('A prefix or suffix identifying the deployment location as part of the naming convention of the resource')
+@description('The location prefix or suffix for the resource name')
 param location string = ''
 
 @description('The name of the Analytic Log Workbook')
@@ -31,6 +32,9 @@ param publicNetworkAccessForQuery string = 'Enabled'
 @description('Tags to attach with the workspace deployment')
 param workspaceTags object = {}
 
+
+
+
 resource azAppLogAnalyticsWorkspaceDeployment 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   name: replace(replace(workspaceName, '@environment', environment), '@location', location)
   location: resourceGroup().location
@@ -42,18 +46,19 @@ resource azAppLogAnalyticsWorkspaceDeployment 'Microsoft.OperationalInsights/wor
     }
     retentionInDays: workspaceRetention
     sku: any(environment == 'dev' ? {
-      name: workspaceSku.dev
+      name: workspaceSku.dev 
     } : any(environment == 'qa' ? {
-      name: workspaceSku.qa
+      name: workspaceSku.qa 
     } : any(environment == 'uat' ? {
-      name: workspaceSku.uat
+      name: workspaceSku.uat 
     } : any(environment == 'prd' ? {
-      name: workspaceSku.prd
+      name: workspaceSku.prd 
     } : {
       name: 'PerGB2018'
     }))))
   }
   tags: workspaceTags
 }
+
 
 output resource object = azAppLogAnalyticsWorkspaceDeployment

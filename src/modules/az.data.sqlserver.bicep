@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
+
+@description('The location prefix or suffix for the resource name')
+param location string = ''
 
 @description('The name of the Sql Server Instance')
 param sqlServerName string
@@ -26,7 +29,7 @@ param sqlServerEnableMsi bool = false
 
 // 1. Deploys a Sql Server Instance
 resource azSqlServerInstanceDeployment 'Microsoft.Sql/servers@2021-02-01-preview' = {
-  name: replace('${sqlServerName}', '@environment', environment)
+  name: replace(replace('${sqlServerName}', '@environment', environment), '@location', location)
   location: resourceGroup().location
   identity: {
      type: sqlServerEnableMsi == true ? 'SystemAssigned' : 'None' 
@@ -40,9 +43,10 @@ resource azSqlServerInstanceDeployment 'Microsoft.Sql/servers@2021-02-01-preview
 
 // 2. Deploy Sql Server Database under instance
 module azSqlServerInstanceDatabaseDeployment 'az.data.sqlserver.database.bicep' = [for database in sqlServerDatabases: if(!empty(database)) {
-  name: !empty(sqlServerDatabases) ? toLower('eh-namespace-policy-${guid('${azSqlServerInstanceDeployment.id}/${database.name}')}') : 'no-sql-server/no-database-to-deploy'
+  name: !empty(sqlServerDatabases) ? toLower('az-sqlserver-db-${guid('${azSqlServerInstanceDeployment.id}/${database.name}')}') : 'no-sql-server/no-database-to-deploy'
   scope: resourceGroup()
   params: {
+    location: location
     environment: environment
     sqlServerName: sqlServerName
     sqlServerDatabaseName: database.name

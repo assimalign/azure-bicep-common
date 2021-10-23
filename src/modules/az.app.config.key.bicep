@@ -4,10 +4,10 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
 
-@description('A prefix or suffix identifying the deployment location as part of the naming convention of the resource')
+@description('The location prefix or suffix for the resource name')
 param location string = ''
 
 @description('The name of the app configuration')
@@ -23,13 +23,12 @@ param appConfigurationValue string
 @description('The content type of the configuration value')
 param appConfigurationContentType string = ''
 
-var configKey = replace(replace('${appConfigurationName}/${appConfigurationKeyName}', '@environment', environment), '@location', location)
-var configValue = replace(replace(appConfigurationValue, '@environment', environment), '@location', location)
+
 
 resource azAppConfigurationKeyValuesDeployment 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-03-01-preview' = {
-  name: configKey
+  name: replace(replace('${appConfigurationName}/${appConfigurationKeyName}', '@environment', environment), '@location', location)
   properties: {
-    value: configValue
+    value: replace(replace(appConfigurationValue, '@environment', environment), '@location', location)
     contentType: empty(appConfigurationContentType) ? json('null') : appConfigurationContentType
   }
 }

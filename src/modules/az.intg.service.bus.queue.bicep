@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
+@description('The environment in which the resource(s) will be deployed')
 param environment string = 'dev'
+
+@description('The location prefix or suffix for the resource name')
+param location string = ''
 
 @description('The name of the Service Bus to deploy the Topic to')
 param serviceBusName string
@@ -21,7 +24,7 @@ param serviceBusQueuePolicies array = []
 
 
 resource azServiceBusTopicsDeployment 'Microsoft.ServiceBus/namespaces/queues@2017-04-01' = {
-  name: replace('${serviceBusName}/${serviceBusQueueName}', '@environment', environment)
+  name: replace(replace('${serviceBusName}/${serviceBusQueueName}', '@environment', environment), '@location', location)
   properties: any(!empty(serviceBusQueueSettings) ? {
     maxSizeInMegabytes: serviceBusQueueSettings.maxSize ?? 1024  
   } : {})
@@ -32,6 +35,7 @@ module azServiceBusTopicAuthPolicyDeployment  'az.intg.service.bus.queue.authori
   name: !empty(serviceBusQueuePolicies) ? toLower('az-sbn-queue-policy-${guid('${azServiceBusTopicsDeployment.id}/${policy.name}')}') : 'no-sbq-policy-to-deploy'
   scope: resourceGroup()
   params: {
+    location: location
     environment: environment
     serviceBusName : serviceBusName
     serviceBusQueueName: serviceBusQueueName

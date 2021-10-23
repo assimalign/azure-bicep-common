@@ -8,10 +8,10 @@
                     "items": {
                         "type": "object",
                         "properties": {
-                            "databaseContainerName": {
+                            "databaseContainer": {
                                 "type": "string"
                             },
-                            "databaseName": {
+                            "database": {
                                 "type": "string"
                             },
                             "databaseAccount": {
@@ -157,10 +157,10 @@
                             }
                         },
                         "required": [
-                            "databaseName",
+                            "database",
                             "databaseAccount",
                             "databaseAccountResourceGroup",
-                            "databaseContainerName",
+                            "databaseContainer",
                             "databaseContainerPartitionKey",
                             "databaseContainerIndexingPolicy",
                             "databaseContainerUniqueKeyPolicy"
@@ -175,7 +175,7 @@
         "cosmosDatabaseContainer": {
             "type": "object",
             "properties": {
-                "databaseContainerName": {
+                "databaseContainer": {
                     "type": "string"
                 },
                 "databaseContainerPartitionKey": {
@@ -315,7 +315,7 @@
                 }
             },
             "required": [
-                "databaseContainerName",
+                "databaseContainer",
                 "databaseContainerPartitionKey",
                 "databaseContainerUniqueKeyPolicy",
                 "databaseContainerIndexingPolicy"

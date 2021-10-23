@@ -4,10 +4,10 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
 
-@description('A prefix or suffix identifying the deployment location as part of the naming convention of the resource')
+@description('The location prefix or suffix for the resource name')
 param location string = ''
 
 @description('The name of the app service plan to deploy')
@@ -42,7 +42,7 @@ param appServicePlanAseResourceGroup string = resourceGroup().name
 
 
 // 1. Get Existing ASE Environment if applicable
-resource azAppServicePlanAseResource 'Microsoft.Web/hostingEnvironments@2021-01-15' existing = if (!empty(appServicePlanAseName)) {
+resource azAppServicePlanAseResource 'Microsoft.Web/hostingEnvironments@2021-01-01' existing = if (!empty(appServicePlanAseName)) {
   name: replace(replace(appServicePlanAseName, '@environment', environment), '@location', location)
   scope: resourceGroup(replace(replace(appServicePlanAseResourceGroup, '@environment', environment), '@location', location))
 }

@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
+
+@description('The location prefix or suffix for the resource name')
+param location string = ''
 
 @description('The name of the Notification Namespace to deploy')
 param notificationNamespaceName string
@@ -19,13 +22,11 @@ param notificationNamespaceSku object = {}
 @description('The access policies to the Notification Namespace')
 param notificationNamespacePolicies array = []
 
-
-
-
+// 1. Deploy the Notification Namespace
 resource azNotificationNamespaceDeployment 'Microsoft.NotificationHubs/namespaces@2017-04-01' = {
-  name: replace('${notificationNamespaceName}', '@environment', environment)
+  name: replace(replace('${notificationNamespaceName}', '@environment', environment), '@location', location)
   properties: {
-      namespaceType: 'NotificationHub'
+    namespaceType: 'NotificationHub'
   }
   location: resourceGroup().location
   sku: any(environment == 'dev' && !empty(notificationNamespaceSku) ? {
@@ -40,6 +41,7 @@ resource azNotificationNamespaceDeployment 'Microsoft.NotificationHubs/namespace
     name: 'Free'
   }))))
 
+  // 1.1 If applicable, deploy authorization rules
   resource azNotificationNamespaceAuthPolicyDeployment 'AuthorizationRules' = [for policy in notificationNamespacePolicies: if (!empty(policy)) {
     name: !empty(notificationNamespacePolicies) ? policy.name : 'no-nh-polcies-to-deploy'
     properties: {
@@ -48,11 +50,12 @@ resource azNotificationNamespaceDeployment 'Microsoft.NotificationHubs/namespace
   }]
 }
 
-
-module azNotificationNamespaceHubsDeployment 'az.intg.notification.namespace.hub.bicep' = [for hub in notificationNamespaceHubs: if (!empty(hub)){
-  name: !empty(notificationNamespaceHubs) ? replace(hub.name, '@environment', environment) : 'no-hubs-to-deploy'
+// 2. Deploy the Notification Namespace Hubs, if any
+module azNotificationNamespaceHubsDeployment 'az.intg.notification.namespace.hub.bicep' = [for hub in notificationNamespaceHubs: if (!empty(hub)) {
+  name: !empty(notificationNamespaceHubs) ? replace(replace(hub.name, '@environment', environment), '@location', location) : 'no-hubs-to-deploy'
   scope: resourceGroup()
   params: {
+    location: location
     environment: environment
     notificationNamespaceName: notificationNamespaceName
     notificationNamespaceHubName: hub.name

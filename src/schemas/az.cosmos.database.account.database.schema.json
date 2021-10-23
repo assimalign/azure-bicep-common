@@ -9,7 +9,7 @@
                     "items": {
                         "type": "object",
                         "properties": {
-                            "databaseName": {
+                            "database": {
                                 "type": "string"
                             },
                             "databaseAccount": {
@@ -27,8 +27,8 @@
                             }
                         },
                         "required": [
-                            "databaseName",
-                            "databaseAccountName",
+                            "database",
+                            "databaseAccount",
                             "databaseAccountResourceGroup",
                             "databaseContainers"
                         ]
@@ -42,7 +42,7 @@
         "cosmosDatabase": {
             "type": "object",
             "properties": {
-                "databaseName": {
+                "database": {
                     "type": "string"
                 },
                 "databaseContainers": {
@@ -53,7 +53,7 @@
                 }
             },
             "required": [
-                "databaseName",
+                "database",
                 "databaseContainers"
             ]
         }

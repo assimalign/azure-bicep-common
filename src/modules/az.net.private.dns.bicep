@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
+
+@description('The location prefix for the resource name')
+param location string = ''
 
 @description('The name of the Private DNS Zone')
 param privateDnsZoneName string
@@ -161,6 +164,7 @@ module azPrivateDnsVirtualLinksDeployment 'az.net.private.dns.link.bicep' = [for
  name: !empty(privateDnsZoneNetworkLinks) ? toLower('az-virtual-network-link-${guid('${azPrivateDnsDeployment.name}/${link.virtualLinkName}')}') : 'no-virtual-network-link-to-deploy'
  scope: resourceGroup()
  params: {
+    location: location
     environment: environment
     privateDnsName: azPrivateDnsDeployment.name
     privateDnsNameVirtualLinkName: link.virtualLinkName 

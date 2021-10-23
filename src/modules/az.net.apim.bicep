@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
+
+@description('The location prefix or suffix for the resource name')
+param location string = ''
 
 @description('The name of the API Management resource')
 param apimName string
@@ -44,12 +47,12 @@ param apimApis array = []
 
 
 resource azVirtualNetworkSubnetResource 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = if(apimVirtualNetworkType != 'None') {
-  name: replace('${apimVirtualNetwork}/${apimVirtualNetworkSubnet}', '@environment', environment)
-  scope: resourceGroup(replace(apimVirtualNetworkResourceGroup, '@environment', environment))
+  name: replace(replace('${apimVirtualNetwork}/${apimVirtualNetworkSubnet}', '@environment', environment), '@location', location)
+  scope: resourceGroup(replace(replace(apimVirtualNetworkResourceGroup, '@environment', environment), '@location', location))
 }
 
-resource azApiManagementInstanceDeployment 'Microsoft.ApiManagement/service@2020-12-01' = {
-  name: replace(apimName, '@environment', environment)
+resource azApiManagementInstanceDeployment 'Microsoft.ApiManagement/service@2021-01-01-preview' = {
+  name: replace(replace(apimName, '@environment', environment), '@location', location)
   location: resourceGroup().location
   identity: {
    type: apimEnableMsi == true ? 'SystemAssigned' : 'None'
@@ -57,16 +60,16 @@ resource azApiManagementInstanceDeployment 'Microsoft.ApiManagement/service@2020
   sku: any(environment == 'dev' ? {
     name: apimSku.dev.name
     capacity: apimSku.dev.capacity
-  } : any(environment == 'qa' ? {
+  }  : any(environment == 'qa' ? {
     name: apimSku.qa.name
     capacity: apimSku.qa.capacity
-  } : any(environment == 'uat' ? {
+  }  : any(environment == 'uat' ? {
     name: apimSku.uat.name
     capacity: apimSku.uat.capacity
-  } : any(environment == 'prd' ? {
+  }  : any(environment == 'prd' ? {
     name: apimSku.prd.name
     capacity: apimSku.prd.capacity
-  } : {
+  }  : {
     name: 'Developer'
     capacity: 1
   }))))
@@ -83,15 +86,15 @@ resource azApiManagementInstanceDeployment 'Microsoft.ApiManagement/service@2020
 
 
 
-module azApimApisDeployment 'az.net.apim.apis.bicep' = [for api in apimApis: if(!empty(api)) {
+module azApimApisDeployment 'az.net.apim.apis.bicep' = [for api in apimApis: if(!empty(apimApis)) {
   name: !empty(apimApis) ? 'az-apim-apis-${guid('${apimName}/${api.name}')}' : 'no-apim-apis-to-deploy'
   scope: resourceGroup()
   params: {
+    location: location
     environment: environment
     apimName: apimName
     apimApiName: api.name
     apimApiPath: api.path
-    apimApiEndpoint: api.endpoint
     apimApiDescription: api.description
   }
   dependsOn: [

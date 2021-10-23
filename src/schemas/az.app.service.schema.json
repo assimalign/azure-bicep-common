@@ -55,7 +55,7 @@
                             "msiRoleAssignments": {
                                 "type": "array",
                                 "items": {
-                                    "$ref": "az.sec.role.assignment.schema.json#definitions/roleAssignment"
+                                    "$ref": "az.rbac.role.assignment.schema.json#definitions/roleAssignment"
                                 }
                             },
                             "appPlanName": {
@@ -125,13 +125,13 @@
                                                         "oneOf": [
                                                             {
                                                                 "const": "RedirectToLoginPage"
-                                                            }, 
+                                                            },
                                                             {
                                                                 "const": "AllowAnonymous"
-                                                            }, 
+                                                            },
                                                             {
                                                                 "const": "Return401"
-                                                            }, 
+                                                            },
                                                             {
                                                                 "const": "Return403"
                                                             }
@@ -241,10 +241,37 @@
                                                 "type": "object"
                                             }
                                         ]
+                                    },
+                                    "apim": {
+                                        "oneOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "type": "object",
+                                                "properties": {
+                                                    "apimApiName": {
+                                                        "type": "string"
+                                                    },
+                                                    "apimName": {
+                                                        "type": "string"
+                                                    },
+                                                    "apimResourceGroupName": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "apimApiName",
+                                                    "apimName",
+                                                    "apimResourceGroupName"
+                                                ]
+                                            }
+                                        ]
                                     }
                                 },
                                 "required": [
                                     "site",
+                                    "apim",
                                     "authentication",
                                     "httpsOnly",
                                     "metadata"
@@ -258,7 +285,7 @@
                                         "name": {
                                             "type": "string"
                                         },
-                                        "functions" : {
+                                        "functions": {
                                             "type": "array",
                                             "items": {
                                                 "type": "object",
@@ -282,6 +309,9 @@
                                         "functions"
                                     ]
                                 }
+                            },
+                            "slotsConfigNames": {
+                                "$ref": "az.app.service.slot.config.name.schema.json#definitions/appSlotConfigName"
                             },
                             "tags": {
                                 "oneOf": [
@@ -310,6 +340,7 @@
                             "insightsName",
                             "insightsResourceGroup",
                             "settings",
+                            "slots",
                             "msiEnabled",
                             "msiRoleAssignments",
                             "tags"

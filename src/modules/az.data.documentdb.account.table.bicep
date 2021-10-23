@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
+
+@description('The location prefix or suffix for the resource name')
+param location string = ''
 
 @description('The name of the Database Account for the storage table')
 param dbAccountName string
@@ -15,9 +18,8 @@ param dbAccountTableName string
 
 
 
-
 resource azDocumentDbAccountDatabaseTableDeployment 'Microsoft.DocumentDB/databaseAccounts/tables@2021-06-15' = {
-  name: replace('${dbAccountName}/${dbAccountTableName}', '@environment', environment)
+  name: replace(replace('${dbAccountName}/${dbAccountTableName}', '@environment', environment), '@location', location)
   properties: {
     resource: {
       id: dbAccountTableName

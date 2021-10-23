@@ -30,7 +30,7 @@ resource azDocumentDbAccountExistingResource 'Microsoft.DocumentDB/databaseAccou
 
 // 2. Create or Update Key Vault Secret with Cosmos DB Primary Key & Connection String
 resource azDocumentDbAccountKeyVaultSecretDeployment 'Microsoft.KeyVault/vaults@2021-04-01-preview' existing = {
-  name: replace(replace(keyVaultName, '@environment', environment), 'location', location)
+  name: replace(replace(keyVaultName, '@environment', environment), '@location', location)
   resource azDocumentDbConnectionStringSecret 'secrets@2021-04-01-preview' = {
     name: '${keyVaultSecretName}-connection-string'
     properties: {

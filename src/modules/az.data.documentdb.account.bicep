@@ -4,10 +4,10 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
 
-@description('A prefix or suffix identifying the deployment location as part of the naming convention of the resource')
+@description('The location prefix for the resource name')
 param location string = ''
 
 @description('The name of the Database Account/Server to be deployed')
@@ -37,7 +37,8 @@ param dbAccountEnableMultiRegionWrites bool = false
 @description('Enables free compute up to certain amount. Only good for one resource per subscription.')
 param dbAccountEnableFreeTier bool = true
 
-
+@description('Custom attributes to attach to the document db deployment')
+param dbAccountTags object = {}
 
 // 1. Deploy the Document Db Account
 resource azDocumentDbAccountDeployment 'Microsoft.DocumentDB/databaseAccounts@2021-06-15' = {
@@ -45,7 +46,7 @@ resource azDocumentDbAccountDeployment 'Microsoft.DocumentDB/databaseAccounts@20
   kind: 'GlobalDocumentDB'
   location: first(dbAccountLocations).locationName
   identity: {
-    type: dbAccountEnableMsi == true ? 'SystemAssigned'  : 'None'
+    type: dbAccountEnableMsi == true ? 'SystemAssigned' : 'None'
   }
   properties: {
     enableFreeTier: dbAccountEnableFreeTier
@@ -61,38 +62,41 @@ resource azDocumentDbAccountDeployment 'Microsoft.DocumentDB/databaseAccounts@20
     ] : [])
     enableMultipleWriteLocations: dbAccountEnableMultiRegionWrites
     locations: dbAccountLocations
-    cors: dbAccountCorsPolicy 
+    cors: dbAccountCorsPolicy
   }
+  tags: dbAccountTags
 }
 
-
-module azDocumentDbAccounTableDeployment 'az.data.documentdb.account.table.bicep' = [for table in dbAccountTables: if(!empty(table)){
-  name: !empty(dbAccountTables) ? toLower('az-documentdb-tableapi-${guid('${azDocumentDbAccountDeployment.id}/${table.name}')}') : 'no-documentdb-tables-to-deploy'
+// 2. 
+module azDocumentDbAccounTableDeployment 'az.data.documentdb.account.table.bicep' = [for table in dbAccountTables: if (!empty(table)) {
+  name: !empty(dbAccountTables) ? toLower('az-docdb-table-api-${guid('${azDocumentDbAccountDeployment.id}/${table.name}')}') : 'no-docdb-tables-api-to-deploy'
   scope: resourceGroup()
   params: {
-     environment: environment
-     dbAccountName: dbAccountName
-     dbAccountTableName: table.name 
+    location: location
+    environment: environment
+    dbAccountName: dbAccountName
+    dbAccountTableName: table.name
   }
   dependsOn: [
     azDocumentDbAccountDeployment
   ]
 }]
 
-
+// 3. 
 module azDocumentDbAccountDatabaseDeployment 'az.data.documentdb.account.database.bicep' = [for database in dbAccountDatabases: if (!empty(database)) {
-  name: !empty(dbAccountDatabases) ? toLower('az-documentdb-database-${guid('${azDocumentDbAccountDeployment.id}/${database.name}')}') : 'no-documentdb-databases-to-deploy'
+  name: !empty(dbAccountDatabases) ? toLower('az-docdb-database-${guid('${azDocumentDbAccountDeployment.id}/${database.database}')}') : 'no-documentdb-databases-to-deploy'
   scope: resourceGroup()
   params: {
-     environment: environment
-     dbAccountName: dbAccountName
-     dbAccountDatabaseName: database.name 
-     dbAccountDatabaseContainers: database.containers
+    location: location
+    environment: environment
+    dbAccountName: dbAccountName
+    dbAccountDatabaseName: database.database
+    dbAccountDatabaseContainers: database.databaseContainers
   }
   dependsOn: [
     azDocumentDbAccountDeployment
   ]
 }]
 
-
+// 4. Return Deployment Output
 output resource object = azDocumentDbAccountDeployment

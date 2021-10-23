@@ -11,8 +11,14 @@
                             "name": {
                                 "type": "string"
                             },
-                            "enableMsi": {
+                            "msiEnabled": {
                                 "type": "boolean"
+                            },
+                            "msiRoleAssignments": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "az.rbac.role.assignment.schema.json#definitions/roleAssignment"
+                                }
                             },
                             "disablePublicAccess": {
                                 "type": "boolean",
@@ -150,7 +156,6 @@
                             "name",
                             "sku",
                             "tags",
-                            "enableMsi",
                             "disablePublicAccess",
                             "privateEndpoint",
                             "topics",

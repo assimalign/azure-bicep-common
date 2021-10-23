@@ -6,7 +6,7 @@
             "properties": {
                 "value": {
                     "type": "array",
-                    "items": {
+                    "items": { 
                         "type": "object",
                         "properties": {
                             "name": {
@@ -160,11 +160,11 @@
                                 ]
                             },
                             "virtualNetworkDefaultAccess": {
-                                "type": "string",
+                                "type":"string",
                                 "default": "Allow",
                                 "oneOf": [
                                     {
-                                        "const": "Allow"
+                                        "const":"Allow"
                                     },
                                     {
                                         "const": "Deny"
@@ -172,22 +172,22 @@
                                 ]
                             },
                             "virtualNetworks": {
-                                "type": "array",
-                                "items": {
+                                "type":"array",
+                                "items":{
                                     "type": "object",
-                                    "properties": {
+                                    "properties":{
                                         "allowAccess": {
                                             "type": "boolean",
                                             "default": true
                                         },
-                                        "virtualNetwork": {
-                                            "type": "string"
+                                        "virtualNetwork":{
+                                            "type":"string"
                                         },
-                                        "virtualNetworkSubnet": {
-                                            "type": "string"
+                                        "virtualNetworkSubnet":{
+                                            "type":"string"
                                         },
-                                        "virtualNetworkResourceGroup": {
-                                            "type": "string"
+                                        "virtualNetworkResourceGroup":{
+                                            "type":"string"
                                         }
                                     },
                                     "required": [
@@ -217,17 +217,17 @@
                                 ]
                             },
                             "resourceAccess": {
-                                "type": "array",
-                                "items": {
+                                "type":"array",
+                                "items":{
                                     "type": "object",
-                                    "properties": {
-                                        "resourceName": {
+                                    "properties":{
+                                        "resourceName":{
+                                            "type":"string"
+                                        },
+                                        "resourceType":{
                                             "type": "string"
                                         },
-                                        "resourceType": {
-                                            "type": "string"
-                                        },
-                                        "resourceGroup": {
+                                        "resourceGroup":{
                                             "type": "string"
                                         }
                                     },
@@ -235,23 +235,6 @@
                                         "resourceName",
                                         "resourceType",
                                         "resourceGroup"
-                                    ]
-                                }
-                            },
-                            "ipRules": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "ipAddress": {
-                                            "type": "string",
-                                            "pattern": "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|^[0-9][0-9]|^[0-9])(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}",
-                                            "minLength": 9,
-                                            "maxLength": 18
-                                        }
-                                    },
-                                    "required": [
-                                        "ipAddress"
                                     ]
                                 }
                             },
@@ -273,7 +256,7 @@
                                         "type": "object",
                                         "patternProperties": {
                                             "^[a-z]": {
-                                                "type": "string"
+                                                "type":"string"
                                             }
                                         },
                                         "minProperties": 1
@@ -533,7 +516,6 @@
                             "tags",
                             "accessTier",
                             "tlsVersion",
-                            "ipRules",
                             "virtualNetworks",
                             "virtualNetworkBypass",
                             "virtualNetworkDefaultAccess",

@@ -4,22 +4,21 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
 
-@description('A prefix or suffix identifying the deployment location as part of the naming convention of the resource')
+@description('The location prefix or suffix for the resource name')
 param location string = ''
 
 @description('The name of the ASE to deploy')
 param aseName string
 
 @allowed([
-  'ASEV3'
   'ASEV2'
   'ASEV1'
 ])
 @description('The ASE version to be deployed. Default ASEV2')
-param aseType string = 'ASEV3'
+param aseType string = 'ASEV2'
 
 @description('A list of App Service Plans that will live under the Deployed ASE')
 param aseAppServicePlans array = []
@@ -30,13 +29,13 @@ param aseNetworkSettings object
 
 // 1. Get the virtual network to attach to the ASE
 resource azAppServiceEnvironmentVirtualNetwork 'Microsoft.Network/virtualNetworks@2021-02-01' existing = {
-  name: replace('${aseNetworkSettings.name}', '@environment', environment)
-  scope: resourceGroup('${environment}-${aseNetworkSettings.resourceGroup}')
+  name: replace(replace('${aseNetworkSettings.name}', '@environment', environment), '@location', location)
+  scope: resourceGroup(replace(replace('${environment}-${aseNetworkSettings.resourceGroup}', '@environment', environment), '@location', location))
 }
 
 // 2. Begin Deployment of App Service Environment
 resource azAppServiceEnvironmentDeployment 'Microsoft.Web/hostingEnvironments@2021-01-01' = {
-  name: replace('${aseName}', '@environment', environment)
+  name: replace(replace('${aseName}', '@environment', environment), '@location', location)
   location: resourceGroup().location
   kind: aseType
   properties: {
@@ -60,7 +59,7 @@ module azAppServiceEnvironmentAppPlansDeployment 'az.app.service.plan.bicep' = [
     appServicePlanSku: !empty(plan) ? plan.sku : {}
     appServicePlanStorage: {
       storageAccountName: plan.storage
-      storageAccountResourceGroup: 
+      storageAccountResourceGroup: plan.storageResourceGroup
     } !empty(plan) ? plan.storage : {}
     appServicePlanFunctionApps: !empty(plan) ? plan.funcapps : []
     appServicePlanWebApps: !empty(plan) ? plan.webapps : []
@@ -75,5 +74,5 @@ module azAppServiceEnvironmentAppPlansDeployment 'az.app.service.plan.bicep' = [
   ]
 }]
 
-
+// 4. Return Deployment ouput
 output resource object = azAppServiceEnvironmentDeployment

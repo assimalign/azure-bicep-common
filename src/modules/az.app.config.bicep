@@ -4,10 +4,10 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed')
+param environment string
 
-@description('A prefix or suffix identifying the deployment location as part of the naming convention of the resource')
+@description('The location prefix or suffix for the resource name')
 param location string = ''
 
 @description('The name of the app configuration')
@@ -28,7 +28,7 @@ param appConfigurationEnableMsi bool = false
 @description('Disables public network access to the resource')
 param appConfigurationDisablePublicAccess bool = true
 
-@description('')
+@description('Enables RBAC over access policies')
 param appConfigurationEnableRbac bool = false
 
 @description('The tags to attach to the resource when deployed')
@@ -40,33 +40,36 @@ param appConfigurationTags object = {}
 //                          Azure App Configuration Deployment                              //
 // **************************************************************************************** //
 
+var appConfigSku = any((environment == 'dev') ? {
+  name: appConfigurationSku.dev
+} : any((environment == 'qa') ? {
+  name: appConfigurationSku.qa
+} : any((environment == 'uat') ? {
+  name: appConfigurationSku.uat
+} : any((environment == 'prd') ? {
+  name: appConfigurationSku.prd
+} : {
+  name: 'Free'
+})))) 
 
-// 1. Deployees a single instance of Azure App Configuration
+
+// 1. Deploys a single instance of Azure App Configuration
 resource azAppConfigurationDeployment 'Microsoft.AppConfiguration/configurationStores@2021-03-01-preview' = {
   name: replace(replace('${appConfigurationName}', '@environment', environment), '@location', location)
   location: resourceGroup().location
-  sku: any((environment == 'dev') ? {
-    name: appConfigurationSku.dev
-  } : any((environment == 'qa') ? {
-    name: appConfigurationSku.qa
-  } : any((environment == 'uat') ? {
-    name: appConfigurationSku.uat
-  } : any((environment == 'prd') ? {
-    name: appConfigurationSku.prd
-  } : {
-    name: 'Free'
-  }))))
+  sku: appConfigSku
   identity: {
-      type:  appConfigurationEnableMsi == true ? 'SystemAssigned' : 'None'
+    type: appConfigurationEnableMsi == true ? 'SystemAssigned' : 'None'
   }
   properties: {
-     disableLocalAuth: appConfigurationEnableRbac
-     publicNetworkAccess: appConfigurationDisablePublicAccess == true ? 'Disabled' : 'Enabled'
+    disableLocalAuth: appConfigurationEnableRbac
+    publicNetworkAccess: appConfigurationDisablePublicAccess == true ? 'Disabled' : 'Enabled'
   }
   tags: appConfigurationTags
 
-  resource azAppConfigurationKeyValuesDeployment 'keyValues' =  [for key in appConfigurationKeys: if (!empty(key) && appConfigurationEnableRbac == false) {
-    name: !empty(appConfigurationKeys) ? key.key : 'no-app-config-key-to-deploy'
+  // 1.1 Child Deployment for Azure App configuration
+  resource azAppConfigurationKeyValuesDeployment 'keyValues' =  [for key in appConfigurationKeys: if (!empty(appConfigurationKeys) && appConfigurationEnableRbac == false) {
+    name: !empty(appConfigurationKeys) ? key.key : 'no-app-config-keys-to-deploy'
     properties: {
       value: !empty(appConfigurationKeys) ? replace(replace(key.value, '@environment', environment), '@location', location) : 'no-app-config-value-to-deploy'
       contentType: !empty(appConfigurationKeys) ? key.contentType ?? json('null') : ''
@@ -74,8 +77,9 @@ resource azAppConfigurationDeployment 'Microsoft.AppConfiguration/configurationS
   }]
 }
 
+// 2. Deploys a private endpoint, if applicable, for an instance of Azure App Configuration
 module azEventGridPrivateEndpointDeployment 'az.net.private.endpoint.bicep' = if(!empty(appConfigurationPrivateEndpoint)) {
-  name: !empty(appConfigurationPrivateEndpoint) ? toLower('az-app-config-pri-endpoint-${guid('${azAppConfigurationDeployment.id}/${appConfigurationPrivateEndpoint.name}')}') : 'no-eg-private-endpoint-to-deploy'
+  name: !empty(appConfigurationPrivateEndpoint) ? toLower('az-app-cfg-pri-endp-${guid('${azAppConfigurationDeployment.id}/${appConfigurationPrivateEndpoint.name}')}') : 'no-app-cfg-pri-endp-to-deploy'
   scope: resourceGroup()
   params: {
     location: location
@@ -94,8 +98,8 @@ module azEventGridPrivateEndpointDeployment 'az.net.private.endpoint.bicep' = if
   }
   dependsOn: [
     azAppConfigurationDeployment
-    //azAppConfigurationKeyValuesDeployment
   ]
 }
 
+// 3. Return Deployment ouput
 output resource object = azAppConfigurationDeployment

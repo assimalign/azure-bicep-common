@@ -1,10 +1,4 @@
-@allowed([
-  'dev'
-  'qa'
-  'uat'
-  'prd'
-])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
+@description('The environment in which the resource(s) will be deployed')
 param environment string = 'dev'
 
 @description('')
