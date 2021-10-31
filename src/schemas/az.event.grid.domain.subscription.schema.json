@@ -102,6 +102,65 @@
                                     "operatorType",
                                     "value"
                                 ]
+                            },
+                            "eventHeaders": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "oneOf": [
+                                                {
+                                                    "const": "Static"
+                                                },
+                                                {
+                                                    "const": "Dynamic"
+                                                }
+                                            ]
+                                        },
+                                        "value": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "name",
+                                        "type",
+                                        "value"
+                                    ]
+                                }
+                            },
+                            "eventMsiEnabled": {
+                                "type": "boolean"
+                            },
+                            "eventDeadLetterDestination": {
+                                "oneOf": [
+                                    {
+                                        "type": "null"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "storageAccountContainerName": {
+                                                "type": "string"
+                                            },
+                                            "storageAccountName": {
+                                                "type": "string"
+                                            },
+                                            "storageAccountResourceGroupName":{
+                                                "type": "string"
+                                            } 
+                                        },
+                                        "required": [
+                                            "storageAccountContainerName",
+                                            "storageAccountName",
+                                            "storageAccountResourceGroupName"
+                                        ]
+                                    }
+                                ]
                             }
                         },
                         "required": [
@@ -214,6 +273,65 @@
                         "operatorType",
                         "value"
                     ]
+                },
+                "eventHeaders": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "type": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "Static"
+                                    },
+                                    {
+                                        "const": "Dynamic"
+                                    }
+                                ]
+                            },
+                            "value": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "type",
+                            "value"
+                        ]
+                    }
+                },
+                "eventMsiEnabled": {
+                    "type": "boolean"
+                },
+                "eventDeadLetterDestination": {
+                    "oneOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "storageAccountContainerName": {
+                                    "type": "string"
+                                },
+                                "storageAccountName": {
+                                    "type": "string"
+                                },
+                                "storageAccountResourceGroupName":{
+                                    "type": "string"
+                                } 
+                            },
+                            "required": [
+                                "storageAccountContainerName",
+                                "storageAccountName",
+                                "storageAccountResourceGroupName"
+                            ]
+                        }
+                    ]
                 }
             },
             "required": [
@@ -223,7 +341,9 @@
                 "endpointResourceGroup",
                 "eventTypes",
                 "eventLabels",
-                "eventFilters"
+                "eventFilters",
+                "eventDeadLetterDestination",
+                "eventMsiEnabled"
             ]
         },
         "eventGridEventFilters": {

@@ -56,9 +56,11 @@ param appSlotAuthIdentityProviderScopes array = []
 param appSlotAuthIdentityProviderGraphApiVersion string = ''
 
 
+var audiences = [for audience in appSlotAuthIdentityProviderAudiences: replace(replace(audience, '@environment', environment), '@location', location)]
+
 // Get the existing app resource 
-resource azAppServiceResource 'Microsoft.Web/sites/slots@2021-01-15' existing = {
-  name: replace(replace('${appName}/${appSlotName}', '@environment', environment), '@location', location)
+resource azAppServiceResource 'Microsoft.Web/sites@2021-01-15' existing = {
+  name: replace(replace(appName, '@environment', environment), '@location', location)
   scope: resourceGroup(replace(replace(appResourceGroup, '@environment', environment), '@location', location))
 }
 
@@ -92,7 +94,7 @@ resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/slots/config@20
         validation: {
           allowedAudiences: union([
             'https://${azAppServiceResource.properties.defaultHostName}'
-          ],appSlotAuthIdentityProviderAudiences) 
+          ], audiences) 
         }
         isAutoProvisioned: false
         login: {
@@ -164,7 +166,7 @@ resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/slots/config@20
         validation: {
           allowedAudiences: union([
             'https://${azAppServiceResource.properties.defaultHostName}'
-          ],appSlotAuthIdentityProviderAudiences)
+          ], audiences)
         }
       } : json('null'))
     }

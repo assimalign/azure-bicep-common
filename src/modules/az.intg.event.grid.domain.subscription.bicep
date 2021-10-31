@@ -20,10 +20,10 @@ param eventGridEventTypes array = []
 param eventGridEventLabels array = []
 
 @description('')
-param eventGridEventDeliveryHeaders array = []
+param eventGridEventFilters array = []
 
 @description('')
-param eventGridEventFilters array = []
+param eventGridEventDeliveryHeaders array = []
 
 @description('')
 param eventGridSubscriptionName string
@@ -63,10 +63,13 @@ var headers = [for header in eventGridEventDeliveryHeaders: {
   })
 }]
 
+
+
 // 1. Get Event Grid Domain Resource
 resource azEventGridDomainResource 'Microsoft.EventGrid/domains@2020-10-15-preview' existing = {
   name: replace('${eventGridDomainName}', '@environment', environment)
 }
+
 
 // 2. Deploy the Event Grid Subscription to the Event Grid Domain Topic
 resource azEventGridDomainWithMsiSubscriptionDeployment 'Microsoft.EventGrid/eventSubscriptions@2021-06-01-preview' = if(eventGridSubscriptionUseMsi == true) {
@@ -133,7 +136,7 @@ resource azEventGridDomainWithMsiSubscriptionDeployment 'Microsoft.EventGrid/eve
   }
 }
 
-// 3.
+
 resource azEventGridDomainWithoutMsiSubscriptionDeployment 'Microsoft.EventGrid/eventSubscriptions@2021-06-01-preview' = if(eventGridSubscriptionUseMsi == false) {
   name: eventGridSubscriptionUseMsi == false ? replace(replace(eventGridSubscriptionName, '@environment', environment), '@location', location) : 'no-egd-subscription-without-msi'
   scope: azEventGridDomainResource
@@ -189,5 +192,6 @@ resource azEventGridDomainWithoutMsiSubscriptionDeployment 'Microsoft.EventGrid/
   }
 }
 
-// 4. Return Deployment Output
+// 8. Return Deployment Output
 output resource object = eventGridSubscriptionUseMsi == true ? azEventGridDomainWithMsiSubscriptionDeployment : azEventGridDomainWithoutMsiSubscriptionDeployment
+

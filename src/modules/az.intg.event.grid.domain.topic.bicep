@@ -42,6 +42,9 @@ module azEventGridDomainTopicSubscriptionsDeployment 'az.intg.event.grid.domain.
     eventGridSubscriptionEndpointType: subscription.endpointType
     eventGridEventFilters: subscription.eventFilters
     eventGridEventLabels: subscription.eventTypes
+    eventGridDeadLetterDestination: subscription.eventDeadLetterDestination
+    eventGridEventDeliveryHeaders: subscription.eventHeaders
+    eventGridSubscriptionUseMsi: subscription.eventMsiEnabled
   }
   dependsOn: [
     azEventGridTopicDomainDeployment

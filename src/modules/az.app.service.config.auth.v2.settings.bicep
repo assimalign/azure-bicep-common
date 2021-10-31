@@ -54,6 +54,8 @@ param appAuthIdentityProviderScopes array = []
 param appAuthIdentityProviderGraphApiVersion string = ''
 
 
+var audiences = [for audience in appAuthIdentityProviderAudiences: replace(replace(audience, '@environment', environment), '@location', location)]
+
 //  1. Get the existing app resource to add the host 
 resource azAppServiceResource 'Microsoft.Web/sites@2021-01-15' existing = {
   name: replace(replace(appName, '@environment', environment), '@location', location)
@@ -91,7 +93,7 @@ resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/config@2021-01-
         validation: {
           allowedAudiences: union([
             'https://${azAppServiceResource.properties.defaultHostName}'
-          ],appAuthIdentityProviderAudiences) 
+          ], audiences) 
         }
         isAutoProvisioned: false
         login: {
@@ -163,7 +165,7 @@ resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/config@2021-01-
         validation: {
           allowedAudiences: union([
             'https://${azAppServiceResource.properties.defaultHostName}'
-          ],appAuthIdentityProviderAudiences)
+          ], audiences)
         }
       } : json('null'))
     }

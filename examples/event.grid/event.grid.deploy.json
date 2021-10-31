@@ -1,0 +1,20 @@
+{
+    "$schema": "../../src/schemas/az.main.schema.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "eventGridDomains": {
+            "value": [
+                {
+                    "name": "",
+                    "disablePublicAccess": true,
+                    ""
+                    "subscriptions": [
+                        {
+                            ""
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

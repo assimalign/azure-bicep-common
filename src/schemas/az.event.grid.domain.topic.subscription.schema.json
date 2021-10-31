@@ -196,6 +196,35 @@
                                         "value"
                                     ]
                                 }
+                            },
+                            "eventMsiEnabled": {
+                                "type": "boolean"
+                            },
+                            "eventDeadLetterDestination": {
+                                "oneOf": [
+                                    {
+                                        "type": "null"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "storageAccountContainerName": {
+                                                "type": "string"
+                                            },
+                                            "storageAccountName": {
+                                                "type": "string"
+                                            },
+                                            "storageAccountResourceGroupName":{
+                                                "type": "string"
+                                            } 
+                                        },
+                                        "required": [
+                                            "storageAccountContainerName",
+                                            "storageAccountName",
+                                            "storageAccountResourceGroupName"
+                                        ]
+                                    }
+                                ]
                             }
                         },
                         "required": [
@@ -398,6 +427,35 @@
                             "value"
                         ]
                     }
+                },
+                "eventMsiEnabled": {
+                    "type": "boolean"
+                },
+                "eventDeadLetterDestination": {
+                    "oneOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "storageAccountContainerName": {
+                                    "type": "string"
+                                },
+                                "storageAccountName": {
+                                    "type": "string"
+                                },
+                                "storageAccountResourceGroupName":{
+                                    "type": "string"
+                                } 
+                            },
+                            "required": [
+                                "storageAccountContainerName",
+                                "storageAccountName",
+                                "storageAccountResourceGroupName"
+                            ]
+                        }
+                    ]
                 }
             },
             "required": [
@@ -408,7 +466,9 @@
                 "eventTypes",
                 "eventLabels",
                 "eventFilters",
-                "eventHeaders"
+                "eventHeaders",
+                "eventMsiEnabled",
+                "eventDeadLetterDestination"
             ]
         }
     }

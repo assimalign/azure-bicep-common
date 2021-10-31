@@ -35,7 +35,7 @@ param dbAccountDatabaseContainerIndexingPolicy object = {}
 // 1. Deploy Document DB Container
 resource azDocumentDbAccountDatabaseDeployment 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2021-06-15' = {
   name: replace(replace('${dbAccountName}/${dbAccountDatabaseName}/${dbAccountDatabaseContainerName}', '@environment', environment), '@location', location)
-  properties: {    
+  properties: {   
     resource: any(dbAccountDatabaseContainerTtl > 0 ? {
       defaultTtl: dbAccountDatabaseContainerTtl
       id: dbAccountDatabaseContainerName

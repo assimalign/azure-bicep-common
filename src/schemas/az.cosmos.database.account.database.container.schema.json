@@ -154,6 +154,10 @@
                                         "type": "array"
                                     }
                                 }
+                            },
+                            "databaseContainerTtl": {
+                                "type": "number",
+                                "minimum": 1
                             }
                         },
                         "required": [
@@ -312,6 +316,10 @@
                             "type": "array"
                         }
                     }
+                },
+                "databaseContainerTtl": {
+                    "type": "number",
+                    "minimum": 1
                 }
             },
             "required": [

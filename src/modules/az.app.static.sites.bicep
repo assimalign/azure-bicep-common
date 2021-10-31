@@ -47,7 +47,7 @@ resource azStaticSiteDeployment 'Microsoft.Web/staticSites@2021-01-15' = {
     tier: 'Free'
   }))))
   properties: {
-    
+     
   }
 }
 
