@@ -1,0 +1,425 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "service-bus-namespaces": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "serviceBusName": {
+                                "type": "string"
+                            },
+                            "serviceBusEnableMsi": {
+                                "type": "boolean"
+                            },
+                            "serviceBusSku": {
+                                "type": "object",
+                                "default": {
+                                    "dev": "Basic",
+                                    "qa": "Basic",
+                                    "uat": "Standard",
+                                    "prd": "Premium"
+                                },
+                                "properties": {
+                                    "dev": {
+                                        "type": "string",
+                                        "oneOf": [
+                                            {
+                                                "const": "Basic"
+                                            },
+                                            {
+                                                "const": "Standard"
+                                            },
+                                            {
+                                                "const": "Premium"
+                                            }
+                                        ]
+                                    },
+                                    "qa": {
+                                        "oneOf": [
+                                            {
+                                                "const": "Basic"
+                                            },
+                                            {
+                                                "const": "Standard"
+                                            },
+                                            {
+                                                "const": "Premium"
+                                            }
+                                        ]
+                                    },
+                                    "uat": {
+                                        "type": "string",
+                                        "oneOf": [
+                                            {
+                                                "const": "Basic"
+                                            },
+                                            {
+                                                "const": "Standard"
+                                            },
+                                            {
+                                                "const": "Premium"
+                                            }
+                                        ]
+                                    },
+                                    "prd": {
+                                        "type": "string",
+                                        "oneOf": [
+                                            {
+                                                "const": "Basic"
+                                            },
+                                            {
+                                                "const": "Standard"
+                                            },
+                                            {
+                                                "const": "Premium"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "dev",
+                                    "qa",
+                                    "uat",
+                                    "prd"
+                                ]
+                            },
+                            "serviceBusQueues": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/service-bus-namespace-queue"
+                                }
+                            },
+                            "serviceBusTopics": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/service-bus-namespace-topic"
+                                }
+                            },
+                            "serviceBusPolicies": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/service-bus-policy"
+                                }
+                            },
+                            "serviceBusTags": {
+                                "type": "object",
+                                "patternProperties": {
+                                    "^[a-z]": {
+                                        "type": "string"
+                                    }
+                                },
+                                "minProperties": 1
+                            }
+                        },
+                        "required": [
+                            "serviceBusName",
+                            "serviceBusSku",
+                            "serviceBusEnableMsi",
+                            "serviceBusQueues",
+                            "serviceBusTopics",
+                            "serviceBusPolicies"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "service-bus-namespace-queues": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "serviceBusQueueName": {
+                                "type": "string"
+                            },
+                            "serviceBusName": {
+                                "type": "string",
+                                "description": "The name of the Azure Service Bus Namespace."
+                            },
+                            "serviceBusResourceGroup": {
+                                "type": "string",
+                                "description": "The name of the resource group the Azure Service Bus Belongs to."
+                            },
+                            "serviceBusQueueSettings": {
+                                "type": "object",
+                                "properties": {
+                                    "maxSize": {
+                                        "type": "number"
+                                    },
+                                    "maxDelivery": {
+                                        "type": "number"
+                                    }
+                                },
+                                "required": [
+                                    "maxSize",
+                                    "maxDelivery"
+                                ]
+                            },
+                            "serviceBusQueuePolicies": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/service-bus-policy"
+                                }
+                            }
+                        },
+                        "required": [
+                            "serviceBusQueueName",
+                            "serviceBusQueueSettings",
+                            "serviceBusQueuePolicies",
+                            "serviceBusName",
+                            "serviceBusResourceGroup"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "service-bus-namespace-queue": {
+            "type": "object",
+            "properties": {
+                "serviceBusQueueName": {
+                    "type": "string"
+                },
+                "serviceBusQueueSettings": {
+                    "type": "object",
+                    "properties": {
+                        "maxSize": {
+                            "type": "number"
+                        },
+                        "maxDelivery": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "maxSize",
+                        "maxDelivery"
+                    ]
+                },
+                "serviceBusQueuePolicies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/service-bus-policy"
+                    }
+                }
+            },
+            "required": [
+                "serviceBusQueueName",
+                "serviceBusQueueSettings",
+                "serviceBusQueuePolicies"
+            ]
+        },
+        "service-bus-namespace-topics": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "serviceBusTopicName": {
+                                "type": "string"
+                            },
+                            "serviceBusName": {
+                                "type": "string"
+                            },
+                            "serviceBusResourceGroup": {
+                                "type": "string"
+                            },
+                            "serviceBusTopicSettings": {
+                                "$ref": "#/definitions/service-bus-namespace-common-settings"
+                            },
+                            "serviceBusTopicSubscriptions": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/service-bus-namespace-topic-subscription"
+                                }
+                            },
+                            "serviceBusTopicPolicies": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/service-bus-policy"
+                                }
+                            }
+                        },
+                        "required": [
+                            "serviceBusTopicSettings",
+                            "serviceBusTopicPolicies",
+                            "serviceBusTopicSubscriptions",
+                            "serviceBusTopicName",
+                            "serviceBusName",
+                            "serviceBusResourceGroup"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "service-bus-namespace-topic": {
+            "type": "object",
+            "properties": {
+                "serviceBusTopicName": {
+                    "type": "string"
+                },
+                "serviceBusTopicSettings": {
+                    "$ref": "#/definitions/service-bus-namespace-common-settings"
+                },
+                "serviceBusTopicSubscriptions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/service-bus-namespace-topic-subscription"
+                    }
+                },
+                "serviceBusTopicPolicies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/service-bus-policy"
+                    }
+                }
+            },
+            "required": [
+                "serviceBusTopicName",
+                "serviceBusTopicSettings",
+                "serviceBusTopicPolicies",
+                "serviceBusTopicSubscriptions"
+            ]
+        },
+        "service-bus-namespace-topic-subscriptions": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "serviceBusTopicSubscriptionName": {
+                                "type": "string"
+                            },
+                            "serviceBusTopicName": {
+                                "type": "string"
+                            },
+                            "serviceBusName": {
+                                "type": "string"
+                            },
+                            "serviceBusResourceGroup": {
+                                "type": "string"
+                            },
+                            "serviceBusTopicSubscriptionSettings": {
+                                "$ref": "#/definitions/service-bus-namespace-common-settings"
+                            }
+                        },
+                        "required": [
+                            "serviceBusTopicSubscriptionName",
+                            "serviceBusTopicName",
+                            "serviceBusTopicSubscriptionSettings",
+                            "serviceBusName",
+                            "serviceBusResourceGroup"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "service-bus-namespace-topic-subscription": {
+            "type": "object",
+            "properties": {
+                "serviceBusTopicSubscriptionName": {
+                    "type": "string"
+                },
+                "serviceBusTopicSubscriptionSettings": {
+                    "$ref": "#/definitions/service-bus-namespace-common-settings"
+                }
+            },
+            "required": [
+                "serviceBusTopicSubscriptionName",
+                "serviceBusTopicSubscriptionSettings"
+            ]
+        },
+        "service-bus-namespace-common-settings": {
+            "type": "object",
+            "properties": {
+                "maxDelivery": {
+                    "type": "number"
+                },
+                "forwardTo": {
+                    "type": "object",
+                    "properties": {
+                        "serviceBusName": {
+                            "type": "string"
+                        },
+                        "serviceBusResourceGroup": {
+                            "type": "string",
+                            "description": "The name of the resource group the Azure Service Bus belongs to."
+                        },
+                        "serviceBusQueueName": {
+                            "type": "string"
+                        },
+                        "serviceBusTopicName": {
+                            "type": "string"
+                        }
+                    },
+                    "oneOf": [
+                        {
+                            "required": [
+                                "serviceBusQueueName"
+                            ]
+                        },
+                        {
+                            "required": [
+                                "serviceBusTopicName"
+                            ]
+                        }
+                    ],
+                    "required": [
+                        "maxDelivery"
+                    ]
+                }
+            }
+        },
+        "service-bus-policy": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The name of the Service Bus (Namespace, Queue, or Topic) Policy for the Azure Service Bus Namespace."
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "anyOf": [
+                            {
+                                "const": "Listen"
+                            },
+                            {
+                                "const": "Manage"
+                            },
+                            {
+                                "const": "Send"
+                            }
+                        ]
+                    },
+                    "minItems": 1
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,57 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "resource-groups": {
+            "type": "object",
+            "description": "The Resource Group in which all resource will be deployed under.",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "resourceGroupName": {
+                                "type": "string"
+                            },
+                            "resourceGroupLocation": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "eastus"
+                                    },
+                                    {
+                                        "const": "westus"
+                                    }
+                                ]
+                            },
+                            "resourceGroupTags": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "patternProperties": {
+                                            "^[a-z]": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "minProperties": 1
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "minItems": 1,
+                    "required": [
+                        "resourceGroupName",
+                        "resourceGroupLocation"
+                    ]
+                }
+            },
+            "required": [
+                "value"
+            ]
+        }
+    }
+}

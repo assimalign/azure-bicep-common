@@ -1,0 +1,236 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Assimalign Modularized Parameter Schema for Azure Bicep Deployments",
+    "type": "object",
+    "properties": {
+        "contentVersion": {
+            "type": "string",
+            "description": "A 4 number format for the version number of this parameter file. For example, 1.0.0.0",
+            "const": "1.0.0.0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "resourceGroups": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.resource.group/v1.0/parameters.json#/definitions/resource-groups"
+                        }
+                    ]
+                },
+                "cosmosAccounts": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts-database-accounts"
+                        }
+                    ]
+                },
+                "cosmosAccountsDatabases": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts-databases"
+                        }
+                    ]
+                },
+                "cosmosAccountsDatabaseContainers": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts-database-containers"
+                        }
+                    ]
+                },
+                "cosmosAccountsDatabaseTables": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts-database-tables"
+                        }
+                    ]
+                },
+                // "sqlServerAccounts": {
+                //     "$ref": "./az.sql.server.account.schema.json#definitions/sqlServerAccounts"
+                // },
+                // "sqlServerDatabases": {
+                //     "$ref": "./az.sql.server.account.database.schema.json#definitions/sqlServerDatabases"
+                // },
+                // "storageAccounts": {
+                //     "$ref": "./az.storage.account.schema.json#definitions/storageAccounts"
+                // },
+                // "storageAccountBlobServices": {
+                //     "$ref": "./az.storage.account.blob.schema.json#definitions/storageAccountBlobServices"
+                // },
+                // "storageAccountBlobServiceContainers": {
+                //     "description": "For deploying individual Containers under Blob Services in a Storage Account.",
+                //     "$ref": "./az.storage.account.blob.schema.json#definitions/storageAccountBlobServiceContainers"
+                // },
+                // "storageAccountFileShareServices": {
+                //     "$ref": "./az.storage.account.fileshare.schema.json#definitions/storageAccountFileShareServices"
+                // },
+                // "storageAccountFileShareServiceShares" : {
+                //     "description": "For deploying individual File Shares under File Share Services in a Storage Account.",
+                //     "$ref": "./az.storage.account.fileshare.schema.json#definitions/storageAccountFileShareServiceShares"
+                // },
+                // "storageAccountQueueServices": {
+                //     "$ref": "./az.storage.account.queue.schema.json#definitions/storageAccountQueueServices"
+                // },
+                // "storageAccountQueueServiceQueues": {
+                //     "description": "For deploying individual Queues under Queue Services in a Storage Account.",
+                //     "$ref": "./az.storage.account.queue.schema.json#definitions/storageAccountQueueServiceQueues"
+                // },
+                // "storageAccountTableServices": {
+                //     "$ref": "./az.storage.account.table.schema.json#definitions/storageAccountTableServices"
+                // },
+                // "storageAccountTableServiceTables": {
+                //     "description": "For deploying individual Tables under Tables Services in a Storage Account.",
+                //     "$ref": "./az.storage.account.table.schema.json#definitions/storageAccountTableServiceTables"
+                // },  
+                // "appServiceEnvironments": {
+                //     "$ref": "./az.app.service.environment.schema.json#definitions/appServiceEnvironments"
+                // },
+                // "appServicePlans": {
+                //     "$ref": "./az.app.service.plan.schema.json#definitions/appServicePlans"
+                // },
+                // "appServices": {
+                //     "$ref": "./az.app.service.schema.json#definitions/appServices",
+                //     "description": "Parameters for a list of App Service Deployments. Existing App Service Plan, Storage Account, and Application Insights needed for this deployment."
+                // },
+                // "appServiceSlots": {
+                //     "$ref": "./az.app.service.slot.schema.json#definitions/appServiceSlots"
+                // },
+                // "appServiceSlotsConfigNames": {
+                //     "$ref": "az.app.service.slot.config.name.schema.json#definitions/appSlotConfigNames"
+                // },
+                // "appGateways": {
+                //     "$ref": "./az.app.gateway.schema.json#definitions/appGateways"
+                // },
+                "appConfigurations": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.app.configuration/v1.0/parameters.json#/definitions/app-configurations"
+                        }
+                    ]
+                },
+                "appConfigurationKeys": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.app.configuration/v1.0/parameters.json#/definitions/app-configurations-keys"
+                        }
+                    ]
+                },
+                "appInsights": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.app.insights/v1.0/parameters.json#/definitions/app-insights"
+                        }
+                    ]
+                },
+                // "staticSites": {
+                //     "$ref": "./az.static.site.schema.json#definitions/staticSites"
+                // },
+                // "logAnalyticWorkspaces": {
+                //     "$ref": "./az.log.analytics.workspace.schema.json#definitions/logAnalyticWorkspaces"
+                // },
+                // "virtualNetworks": {
+                //     "$ref": "./az.virtual.network.schema.json#definitions/virtualNetworks"
+                // },
+                // "virtualNetworksPeering": {
+                //     "$ref": "./az.virtual.network.peering.schema.json#definitions/virtualNetworksPeering"
+                // },
+                // "virtualPrivateNetworkGateways": {
+                //     "$ref": "./az.virtual.private.network.gateway.schema.json#definitions/virtualPrivateNetworkGateways"
+                // },
+                // "publicIpAddresses": {
+                //     "$ref": "./az.public.ip.address.schema.json#definitions/publicIpAddresses"
+                // },
+                // "privateDnsZones": {
+                //     "$ref": "az.private.dns.zone.schema.json#definitions/privateDnsZones"
+                // },
+                // "privateDnsZoneARecords": {
+                //     "$ref": "az.private.dns.zone.a.record.schema.json#definitions/privateDnsZoneARecords"
+                // },
+                // "privateDnsZoneAaaaRecords": {
+                //     "$ref": "az.private.dns.zone.aaaa.record.schema.json#definitions/privateDnsZoneAaaaRecords"
+                // },
+                // "privateDnsZoneCnameRecords": {
+                //     "$ref": "az.private.dns.zone.cname.record.schema.json#definitions/privateDnsZoneCnameRecords"
+                // },
+                // "privateDnsZoneMxRecord": {
+                //     "$ref": "az.private.dns.zone.mx.record.schema.json#definitions/privateDnsZoneMxRecords"
+                // },
+                // "privateDnsZonePtrRecords": {
+                //     "$ref": "az.private.dns.zone.ptr.record.schema.json#definitions/privateDnsZonePtrRecords"
+                // },
+                // "privateDnsZoneTxtRecords": {
+                //     "$ref": "az.private.dns.zone.txt.record.schema.json#definitions/privateDnsZoneTxtRecords"
+                // },
+                // "privateDnsZoneSrvRecords": {
+                //     "$ref": "az.private.dns.zone.mx.record.schema.json#definitions/privateDnsZoneMxRecords"
+                // },
+                // "eventGridDomains": {
+                //     "$ref": "az.event.grid.domain.schema.json#definitions/eventGridDomains"
+                // },
+                // "eventGridDomainTopics": {
+                //     "$ref": "az.event.grid.domain.topic.schema.json#definitions/eventGridDomainTopics"
+                // },
+                // "eventGridDomainTopicSubscriptions": {
+                //     "$ref": "az.event.grid.domain.topic.subscription.schema.json#definitions/eventGridDomainTopicSubscriptions"
+                // },
+                // "eventGridDomainSubscriptions": {
+                //     "$ref": "az.event.grid.domain.subscription.schema.json#definitions/eventGridDomainSubscriptions"
+                // },  
+                "serviceBusNamespaces": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.service.bus/v1.0/parameters.json#/definitions/service-bus-namespaces"
+                        }
+                    ]
+                },
+                "serviceBusNamespaceQueues": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.service.bus/v1.0/parameters.json#/definitions/service-bus-namespace-queues"
+                        }
+                    ]
+                },
+                "serviceBusNamespaceTopics": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.service.bus/v1.0/parameters.json#/definitions/service-bus-namespace-topics"
+                        }
+                    ]
+                },
+                "serviceBusNamespaceTopicSubscriptions": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.service.bus/v1.0/parameters.json#/definitions/service-bus-namespace-topic-subscriptions"
+                        }
+                    ]
+                }
+                // "notificationNamespaces": {
+                //     "$ref": "az.notification.namespace.schema.json#definitions/notificationNamespaces"
+                // },
+                // "notificationNamespaceHubs": {
+                //     "$ref": "az.notification.namespace.hub.schema.json#definitions/notificationNamespaceHubs"
+                // },
+                // "keyVaults": {
+                //     "$ref": "az.key.vault.schema.json#definitions/keyVaults"
+                // },
+                // "roleAssignments": {
+                //     "$ref": "az.rbac.role.assignment.schema.json#definitions/roleAssignments"
+                // },
+                // "apimGatewayApis": {
+                //     "$ref": "az.apim.gateway.apis.schema.json#definitions/apimGatewayApis"
+                // },
+                // "apimGatewayApisOperations": {
+
+                // },
+                // "apimGatewayBackends": {
+                //     "$ref": "az.apim.gateway.backend.schema.json#definitions/apimGatewayBackends"
+                // }
+            }
+        }
+    },
+    "required": [
+        "contentVersion",
+        "parameters"
+    ]
+}

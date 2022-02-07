@@ -1,0 +1,361 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "app-configurations": {
+            "type": "object",
+            "$schema": "http://json-schema.org/draft-07/schema",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "oneOf": [
+                            {
+                                "properties": {
+                                    "appConfigurationName": {
+                                        "type": "string",
+                                        "description": "The name of the Azure App Configuration instance to be deployed."
+                                    },
+                                    "appConfigurationResourceGroup": {
+                                        "type": "string"
+                                    },
+                                    "appConfigurationEnableMsi": {
+                                        "type": "boolean",
+                                        "default": false,
+                                        "description": "Enables Managed System Identity for connecting to the deployed instance of Azure App Configuration."
+                                    },
+                                    "appConfigurationEnableRbac": {
+                                        "type": "boolean",
+                                        "default": false,
+                                        "description": "Will disable Access Key Authentication and use RBAC only. If enabled, App Configuration Keys will not be deployable"
+                                    },
+                                    "appConfigurationDisablePublicAccess": {
+                                        "type": "boolean",
+                                        "default": false
+                                    },
+                                    "appConfigurationKeys": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/definitions/app-configuration-key"
+                                        },
+                                        "minItems": 1,
+                                        "description": "Configuration Keys to deploy with the instance of Azure App Configuration."
+                                    },
+                                    "appConfigurationTags": {
+                                        "type": "object",
+                                        "patternProperties": {
+                                            "^[a-z]": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "minProperties": 1
+                                    },
+                                    "appConfigurationPrivateEndpoint": {
+                                        "$ref": "#/definitions/app-configuration-private-endpoint"
+                                    },
+                                    "appConfigurationSku": {
+                                        "type": "object",
+                                        "description": "Sku Requirement for private endpoint",
+                                        "default": {
+                                            "dev": "Free",
+                                            "qa": "Standard",
+                                            "uat": "Standard",
+                                            "prd": "Standard"
+                                        },
+                                        "properties": {
+                                            "dev": {
+                                                "type": "string",
+                                                "oneOf": [
+                                                    {
+                                                        "const": "Standard"
+                                                    }
+                                                ]
+                                            },
+                                            "qa": {
+                                                "type": "string",
+                                                "oneOf": [
+                                                    {
+                                                        "const": "Standard"
+                                                    }
+                                                ]
+                                            },
+                                            "uat": {
+                                                "type": "string",
+                                                "oneOf": [
+                                                    {
+                                                        "const": "Standard"
+                                                    }
+                                                ]
+                                            },
+                                            "prd": {
+                                                "type": "string",
+                                                "oneOf": [
+                                                    {
+                                                        "const": "Standard"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "dev",
+                                            "qa",
+                                            "uat",
+                                            "prd"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "appConfigurationName",
+                                    "appConfigurationSku",
+                                    "appConfigurationEnableMsi",
+                                    "appConfigurationEnableRbac",
+                                    "appConfigurationPrivateEndpoint",
+                                    "appConfigurationDisablePublicAccess"
+                                ]
+                            },
+                            {
+                                "properties": {
+                                    "appConfigurationName": {
+                                        "type": "string",
+                                        "description": "The name of the Azure App Configuration instance to be deployed."
+                                    },
+                                    "appConfigurationResourceGroup": {
+                                        "type": "string"
+                                    },
+                                    "appConfigurationEnableMsi": {
+                                        "type": "boolean",
+                                        "default": false,
+                                        "description": "Enables Managed System Identity for connecting to the deployed instance of Azure App Configuration."
+                                    },
+                                    "appConfigurationEnableRbac": {
+                                        "type": "boolean",
+                                        "default": false,
+                                        "description": "Will disable Access Key Authentication and use RBAC only. If enabled, App Configuration Keys will not be deployable"
+                                    },
+                                    "appConfigurationDisablePublicAccess": {
+                                        "type": "boolean",
+                                        "default": false
+                                    },
+                                    "appConfigurationKeys": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/definitions/app-configuration-key"
+                                        },
+                                        "minItems": 1,
+                                        "description": "Configuration Keys to deploy with the instance of Azure App Configuration."
+                                    },
+                                    "appConfigurationTags": {
+                                        "type": "object",
+                                        "patternProperties": {
+                                            "^[a-z]": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "minProperties": 1
+                                    },
+                                    "appConfigurationSku": {
+                                        "type": "object",
+                                        "default": {
+                                            "dev": "Free",
+                                            "qa": "Standard",
+                                            "uat": "Standard",
+                                            "prd": "Standard"
+                                        },
+                                        "properties": {
+                                            "dev": {
+                                                "type": "string",
+                                                "oneOf": [
+                                                    {
+                                                        "const": "Free"
+                                                    },
+                                                    {
+                                                        "const": "Standard"
+                                                    }
+                                                ]
+                                            },
+                                            "qa": {
+                                                "type": "string",
+                                                "oneOf": [
+                                                    {
+                                                        "const": "Free"
+                                                    },
+                                                    {
+                                                        "const": "Standard"
+                                                    }
+                                                ]
+                                            },
+                                            "uat": {
+                                                "type": "string",
+                                                "oneOf": [
+                                                    {
+                                                        "const": "Free"
+                                                    },
+                                                    {
+                                                        "const": "Standard"
+                                                    }
+                                                ]
+                                            },
+                                            "prd": {
+                                                "type": "string",
+                                                "oneOf": [
+                                                    {
+                                                        "const": "Free"
+                                                    },
+                                                    {
+                                                        "const": "Standard"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "dev",
+                                            "qa",
+                                            "uat",
+                                            "prd"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "appConfigurationName",
+                                    "appConfigurationSku",
+                                    "appConfigurationEnableMsi",
+                                    "appConfigurationEnableRbac",
+                                    "appConfigurationDisablePublicAccess"
+                                ]
+                            }
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-configurations-keys": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/app-configuration-key"
+                            }
+                        ],
+                        "properties": {
+                            "appConfigurationName": {
+                                "type": "string",
+                                "description": "The name of the deployed Azure App Configuration instance."
+                            },
+                            "appConfigurationResourceGroup": {
+                                "type": "string",
+                                "description": "The name of the Azure Resource Group the Azure App Configuration instance belongs to."
+                            }
+                        },
+                        "required": [
+                            "appConfigurationName",
+                            "appConfigurationResourceGroup"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-configuration-key": {
+            "type": "object",
+            "properties": {
+                "appConfigurationKey": {
+                    "type": "string"
+                },
+                "appConfigurationValue": {
+                    "type": "string"
+                },
+                "appConfigurationLabels": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "minItems": 1
+                },
+                "appConfigurationValueContentType": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "anyOf": [
+                                {
+                                    "const": "application/json"
+                                },
+                                {
+                                    "const": "application/xml"
+                                },
+                                {
+                                    "const": "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8"
+                                },
+                                {
+                                    "const": "text/css"
+                                },
+                                {
+                                    "const": "text/csv"
+                                },
+                                {
+                                    "const": "text/html"
+                                },
+                                {
+                                    "const": "text/plain"
+                                },
+                                {
+                                    "const": "text/xml"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "appConfigurationKey",
+                "appConfigurationValue",
+                "appConfigurationValueContentType"
+            ]
+        },
+        "app-configuration-private-endpoint": {
+            "type": "object",
+            "properties": {
+                "privateEndpointName": {
+                    "type": "string"
+                },
+                "privateEndpointDnsZoneName": {
+                    "type": "string"
+                },
+                "privateEndpointDnsZoneResourceGroup": {
+                    "type": "string",
+                    "description": "The Azure Resource Group the the private DNS Zone belongs to."
+                },
+                "privateEndpointVirtualNetwork": {
+                    "type": "string"
+                },
+                "privateEndpointVirtualNetworkSubnet": {
+                    "type": "string"
+                },
+                "privateEndpointVirtualNetworkResourceGroup": {
+                    "type": "string"
+                }
+
+            },
+            "required": [
+                "privateEndpointName",
+                "privateEndpointDnsZoneName",
+                "privateEndpointDnsZoneResourceGroup",
+                "privateEndpointVirtualNetwork",
+                "privateEndpointVirtualNetworkSubnet",
+                "privateEndpointVirtualNetworkResourceGroup"
+            ]
+        }
+    }
+}

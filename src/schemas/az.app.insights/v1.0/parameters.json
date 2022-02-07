@@ -1,0 +1,62 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "app-insights": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "appInsightsName": {
+                                "type": "string"
+                            },
+                            "appInsightsLogAnalyticsWorkspace": {
+                                "type": "object",
+                                "description": "The name of the Log Analytics Workspace to deploy the App Insights resource on",
+                                "properties": {
+                                    "logAnalyticsWorkspaceName": {
+                                        "type": "string"
+                                    },
+                                    "logAnalyticsWorkspaceResourceGroup": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "logAnalyticsWorkspaceName",
+                                    "logAnalyticsWorkspaceResourceGroup"
+                                ]
+                            },
+                            "appInsightsTags": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "patternProperties": {
+                                            "^[a-z]": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "minProperties": 1
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "appInsightsName",
+                            "appInsightsLogAnalyticsWorkspace",
+                            "appInsightsTags"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        }
+    }
+}

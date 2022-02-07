@@ -1,0 +1,613 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "cosmos-accounts": {
+            "$schema": "http://json-schema.org/draft-07/schema",
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "cosmosAccountName": {
+                                "type": "string",
+                                "description": "The name of the Database Account/Server"
+                            },
+                            "cosmosAccountEnableMsi": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "cosmosAccountEnableMultiRegionWrites": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "cosmosAccountEnableFreeTier": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "cosmosAccountLocations": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "locationName": {
+                                            "type": "string",
+                                            "oneOf": [
+                                                {
+                                                    "const": "centralus"
+                                                },
+                                                {
+                                                    "const": "westus2"
+                                                }
+                                            ]
+                                        },
+                                        "failoverPriority": {
+                                            "type": "number",
+                                            "default": 0
+                                        }
+                                    },
+                                    "required": [
+                                        "locationName",
+                                        "failoverPriority"
+                                    ]
+                                },
+                                "minItems": 1
+                            },
+                            "cosmosAccountConsistencyPolicy": {
+                                "type": "object",
+                                "properties": {
+                                    "consistencyLevel": {
+                                        "type": "string",
+                                        "oneOf": [
+                                            {
+                                                "const": "BoundedStaleness"
+                                            },
+                                            {
+                                                "const": "ConsistentPrefix"
+                                            },
+                                            {
+                                                "const": "Eventual",
+                                                "description": "Eventual consistency is the weakest form of consistency wherein a client may get the values which are older than the ones it had seen before, over time."
+                                            },
+                                            {
+                                                "const": "Strong",
+                                                "description": "Strong consistency provides the most predictable and intuitive programming model. When you configure your account with strong consistency level, Azure Cosmos DB provides linearizability guarantee."
+                                            },
+                                            {
+                                                "const": "Session",
+                                                "description": "Session consistency is most widely used consistency level both for single region as well as, globally distributed applications."
+                                            }
+                                        ]
+                                    }
+                                },
+                                "if": {
+                                    "enum": [null]
+                                },
+                                "then": {
+
+                                },
+                                "else": {
+                                    "required": [
+                                        "consistencyLevel"
+                                    ]
+                                }
+                            },
+                            "cosmosAccountCorsPolicy": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "allowedOrigins": {
+                                            "type": "string"
+                                        },
+                                        "allowedMethods": {
+                                            "type": "string"
+                                        },
+                                        "allowedHeaders": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "minProperties": 1   
+                                }
+                            },
+                            "cosmosAccountDatabases": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/cosmos-accounts-database"
+                                }
+                            },
+                            "cosmosAccountTables": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "name"
+                                    ]
+                                }
+                            },
+                            "cosmosAccountTags": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "patternProperties": {
+                                            "^[a-z]": {
+                                                "type":"string"
+                                            }
+                                        },
+                                        "minProperties": 1
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ]
+                            }
+                        },
+                        "anyOf": [
+                            {
+                                "if": {
+                                    "properties": {
+                                        "cosmosAccountTables": {
+                                            "contains": {
+                                                "minimum": 1
+                                            }
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "properties": {
+                                        "cosmosAccountTables": {
+                                            "items": false
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "if": {
+                                    "properties": {
+                                        "cosmosAccountDatabases": {
+                                            "contains": {
+                                                "minimum": 1
+                                            }
+                                        }
+                                    }
+                                },
+                                "then": {
+                                    "properties": {
+                                        "cosmosAccountTables": {
+                                            "items": false
+                                        }
+                                    }
+                                }
+                            }
+                        ],
+                        "required": [
+                            "cosmosAccountName",
+                            "cosmosAccountLocations",
+                            "cosmosAccountEnableMsi",
+                            "cosmosAccountEnableMultiRegionWrites",
+                            "cosmosAccountEnableFreeTier",
+                            "cosmosAccountConsistencyPolicy",
+                            "cosmosAccountCorsPolicy",
+                            "cosmosAccountTags"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "cosmos-accounts-databases": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "description": "A list of databases to deploy with the Document DB Account. NOTE: Tables CANNOT be included it deploying Documents",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "cosmosDatabaseName": {
+                                "type": "string",
+                                "description": "The name of the Database."
+                            },
+                            "cosmosDatabaseAccountName": {
+                                "type": "string",
+                                "description": "The name of the database account in which the database lives in."
+                            },
+                            "cosmosDatabaseAccountResourceGroup": {
+                                "type": "string",
+                                "description": "The name of the resource group the Database Account belongs to."
+                            },
+                            "cosmosDatabaseContainers": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/cosmos-accounts-database-container"
+                                }
+                            }
+                        },
+                        "required": [
+                            "cosmosDatabaseName",
+                            "cosmosDatabaseAccountName",
+                            "cosmosDatabaseAccountResourceGroup",
+                            "cosmosDatabaseContainers"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "cosmos-accounts-database": {
+            "type": "object",
+            "properties": {
+                "cosmosDatabaseName": {
+                    "type": "string"
+                },
+                "cosmosDatabaseContainers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/cosmos-accounts-database-container"
+                    }
+                }
+            },
+            "required": [
+                "cosmosDatabaseName",
+                "cosmosDatabaseContainers"
+            ]
+        },
+        "cosmos-accounts-database-containers": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "cosmosDatabaseContainerName": {
+                                "type": "string"
+                            },
+                            "cosmosDatabaseName": {
+                                "type": "string"
+                            },
+                            "cosmosDatabaseAccountName": {
+                                "type": "string"
+                            },
+                            "cosmosDatabaseAccountResourceGroup": {
+                                "type": "string",
+                                "description": "The name of the Azure Resource Group the Database Account belongs to."
+                            },
+                            "cosmosDatabaseContainerPartitionKey": {
+                                "type": "object",
+                                "properties": {
+                                    "kind": {
+                                        "type": "string",
+                                        "oneOf": [
+                                            {
+                                                "const": "Hash"
+                                            },
+                                            {
+                                                "const": "MultiHash"
+                                            },
+                                            {
+                                                "const": "Range"
+                                            }
+                                        ]
+                                    },
+                                    "paths": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "pattern": "^/"
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "kind",
+                                    "paths"
+                                ]
+                            },
+                            "cosmosDatabaseContainerUniqueKeyPolicy": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "paths": {
+                                            "type": "array",
+                                            "minItems": 1,
+                                            "items": {
+                                                "type": "string",
+                                                "pattern": "^/"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "paths"
+                                    ]
+                                }
+                            },
+                            "cosmosDatabaseContainerIndexingPolicy": {
+                                "properties": {
+                                    "indexingMode": {
+                                        "type": "string",
+                                        "default": "consistent",
+                                        "oneOf": [
+                                            {
+                                                "const": "consistent"
+                                            },
+                                            {
+                                                "const": "lazy"
+                                            },
+                                            {
+                                                "const": "none"
+                                            }
+                                        ]
+                                    },
+                                    "includePaths": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "path": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "default": [
+                                            {
+                                                "path": "/*"
+                                            }
+                                        ]
+                                    },
+                                    "excludePaths": {
+                                        "type": "array",
+                                        "minItems": 1,
+                                        "items": {
+                                            "properties": {
+                                                "path": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "default": [
+                                            {
+                                                "path": "/\"_etag\"/?"
+                                            }
+                                        ]
+                                    },
+                                    "compositeIndexes": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "array",
+                                            "minItems": 2,
+                                            "items": {
+                                                "properties": {
+                                                    "path": {
+                                                        "type": "string"
+                                                    },
+                                                    "order": {
+                                                        "type": "string",
+                                                        "oneOf": [
+                                                            {
+                                                                "const": "ascending"
+                                                            },
+                                                            {
+                                                                "const": "descending"
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "required": [
+                                                    "path",
+                                                    "order"
+                                                ]
+                                            },
+                                            "required": [
+                                                "items"
+                                            ]
+                                        }
+                                    },
+                                    "spatialIndexes": {
+                                        "type": "array"
+                                    }
+                                }
+                            },
+                            "cosmosDatabaseContainerTtl": {
+                                "type": "number",
+                                "minimum": 1
+                            }
+                        },
+                        "required": [
+                            "cosmosDatabaseName",
+                            "cosmosDatabaseAccountName",
+                            "cosmosDatabaseAccountResourceGroup",
+                            "cosmosDatabaseContainerName",
+                            "cosmosDatabaseContainerPartitionKey",
+                            "cosmosDatabaseContainerIndexingPolicy",
+                            "cosmosDatabaseContainerUniqueKeyPolicy"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "cosmos-accounts-database-container": {
+            "type": "object",
+            "properties": {
+                "cosmosDatabaseContainerName": {
+                    "type": "string"
+                },
+                "cosmosDatabaseContainerPartitionKey": {
+                    "type": "object",
+                    "properties": {
+                        "kind": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Hash"
+                                },
+                                {
+                                    "const": "MultiHash"
+                                },
+                                {
+                                    "const": "Range"
+                                }
+                            ]
+                        },
+                        "paths": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "pattern": "^/"
+                            }
+                        }
+                    },
+                    "required": [
+                        "kind",
+                        "paths"
+                    ]
+                },
+                "cosmosDatabaseContainerUniqueKeyPolicy": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "paths": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "string",
+                                    "pattern": "^/"
+                                }
+                            }
+                        },
+                        "required": [
+                            "paths"
+                        ]
+                    }
+                },
+                "cosmosDatabaseContainerIndexingPolicy": {
+                    "properties": {
+                        "indexingMode": {
+                            "type": "string",
+                            "default": "consistent",
+                            "oneOf": [
+                                {
+                                    "const": "consistent"
+                                },
+                                {
+                                    "const": "lazy"
+                                },
+                                {
+                                    "const": "none"
+                                }
+                            ]
+                        },
+                        "includePaths": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "path": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "default": [
+                                {
+                                    "path": "/*"
+                                }
+                            ]
+                        },
+                        "excludePaths": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "properties": {
+                                    "path": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "default": [
+                                {
+                                    "path": "/\"_etag\"/?"
+                                }
+                            ]
+                        },
+                        "compositeIndexes": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "minItems": 2,
+                                "items": {
+                                    "properties": {
+                                        "path": {
+                                            "type": "string"
+                                        },
+                                        "order": {
+                                            "type": "string",
+                                            "oneOf": [
+                                                {
+                                                    "const": "ascending"
+                                                },
+                                                {
+                                                    "const": "descending"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "path",
+                                        "order"
+                                    ]
+                                },
+                                "required": [
+                                    "items"
+                                ]
+                            }
+                        },
+                        "spatialIndexes": {
+                            "type": "array"
+                        }
+                    }
+                },
+                "cosmosDatabaseContainerTtl": {
+                    "type": "number",
+                    "minimum": 1
+                }
+            },
+            "required": [
+                "cosmosDatabaseContainerName",
+                "cosmosDatabaseContainerPartitionKey",
+                "cosmosDatabaseContainerUniqueKeyPolicy",
+                "cosmosDatabaseContainerIndexingPolicy"
+            ]
+        },
+        "cosmos-account-database-tables": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            
+                        }
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        }
+    }
+}
