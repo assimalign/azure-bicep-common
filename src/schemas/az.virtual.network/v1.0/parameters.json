@@ -9,10 +9,10 @@
                     "type": "array",
                     "items": {
                         "properties": {
-                            "name": {
+                            "virtualNetworkName": {
                                 "type": "string"
                             },
-                            "addressSpaces": {
+                            "virtualNetworkAddressSpaces": {
                                 "type": "array",
                                 "items": {
                                     "type": "string",
@@ -22,7 +22,7 @@
                                 },
                                 "minItems": 1
                             },
-                            "subnets": {
+                            "virtualNetworkSubnets": {
                                 "type": "array",
                                 "items": {
                                     "properties": {
@@ -38,14 +38,14 @@
                                         },
                                         "serviceEndpoints": {
                                             "type": "array",
-                                            "items":{
+                                            "items": {
                                                 "type": "object",
-                                                "properties":{
-                                                    "service":{
+                                                "properties": {
+                                                    "service": {
                                                         "type": "string"
                                                     }
                                                 },
-                                                "required":[
+                                                "required": [
                                                     "service"
                                                 ]
                                             }
@@ -70,30 +70,63 @@
                                     ]
                                 }
                             },
-                            "tags": {
-                                "oneOf": [
-                                    {
-                                        "type": "object",
-                                        "patternProperties": {
-                                            "^[a-z]": {
-                                                "type":"string"
-                                            }
-                                        },
-                                        "minProperties": 1
-                                    },
-                                    {
-                                        "type": "null"
+                            "virtualNetworkTags": {
+                                "type": "object",
+                                "patternProperties": {
+                                    "^[a-z]": {
+                                        "type": "string"
                                     }
-                                ]
+                                },
+                                "minProperties": 1
                             }
                         },
                         "required": [
-                            "name",
-                            "addressSpaces",
-                            "subnets",
-                            "tags"
+                            "virtualNetworkName",
+                            "virtualNetworkAddressSpaces"
                         ]
-                    }
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "virtual-networks-peering": {
+            "type": "object",
+            "description": "An array of Virtual Networks to Peer to each other within the same Resource Group.",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "peeringLinkName": {
+                                "type": "string"
+                            },
+                            "peeringVirtualNetwork": {
+                                "type": "string"
+                            },
+                            "peeringVirtualNetworkResourceGroup": {
+                                "type": "string"
+                            },
+                            "remoteLinkName": {
+                                "type": "string"
+                            },
+                            "remoteVirtualNetwork": {
+                                "type": "string"
+                            },
+                            "remoteVirtualNetworkResourceGroup": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "peeringLinkName",
+                            "peeringVirtualNetwork",
+                            "remoteLinkName",
+                            "remoteVirtualNetwork"
+                        ]
+                    },
+                    "minItems": 1
                 }
             },
             "required": [

@@ -129,42 +129,82 @@
                 // "logAnalyticWorkspaces": {
                 //     "$ref": "./az.log.analytics.workspace.schema.json#definitions/logAnalyticWorkspaces"
                 // },
-                // "virtualNetworks": {
-                //     "$ref": "./az.virtual.network.schema.json#definitions/virtualNetworks"
-                // },
-                // "virtualNetworksPeering": {
-                //     "$ref": "./az.virtual.network.peering.schema.json#definitions/virtualNetworksPeering"
-                // },
+                "virtualNetworks": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.virtual.network/v1.0/parameters.json#/definitions/virtual-networks"
+                        }
+                    ]
+                },
+                "virtualNetworksPeering": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.virtual.network/v1.0/parameters.json#/definitions/virtual-networks-peering"
+                        }
+                    ]
+                },
                 // "virtualPrivateNetworkGateways": {
                 //     "$ref": "./az.virtual.private.network.gateway.schema.json#definitions/virtualPrivateNetworkGateways"
                 // },
                 // "publicIpAddresses": {
                 //     "$ref": "./az.public.ip.address.schema.json#definitions/publicIpAddresses"
                 // },
-                // "privateDnsZones": {
-                //     "$ref": "az.private.dns.zone.schema.json#definitions/privateDnsZones"
-                // },
-                // "privateDnsZoneARecords": {
-                //     "$ref": "az.private.dns.zone.a.record.schema.json#definitions/privateDnsZoneARecords"
-                // },
-                // "privateDnsZoneAaaaRecords": {
-                //     "$ref": "az.private.dns.zone.aaaa.record.schema.json#definitions/privateDnsZoneAaaaRecords"
-                // },
-                // "privateDnsZoneCnameRecords": {
-                //     "$ref": "az.private.dns.zone.cname.record.schema.json#definitions/privateDnsZoneCnameRecords"
-                // },
-                // "privateDnsZoneMxRecord": {
-                //     "$ref": "az.private.dns.zone.mx.record.schema.json#definitions/privateDnsZoneMxRecords"
-                // },
-                // "privateDnsZonePtrRecords": {
-                //     "$ref": "az.private.dns.zone.ptr.record.schema.json#definitions/privateDnsZonePtrRecords"
-                // },
-                // "privateDnsZoneTxtRecords": {
-                //     "$ref": "az.private.dns.zone.txt.record.schema.json#definitions/privateDnsZoneTxtRecords"
-                // },
-                // "privateDnsZoneSrvRecords": {
-                //     "$ref": "az.private.dns.zone.mx.record.schema.json#definitions/privateDnsZoneMxRecords"
-                // },
+                "privateDnsZones": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.private.dns/v1.0/parameters.json#/definitions/private-dns-zones"
+                        }
+                    ]
+                },
+                "privateDnsZoneARecords": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.private.dns/v1.0/parameters.json#/definitions/private-dns-zone-a-records"
+                        }
+                    ]
+                },
+                "privateDnsZoneAaaaRecords": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.private.dns/v1.0/parameters.json#/definitions/private-dns-zone-aaaa-records"
+                        }
+                    ]
+                },
+                "privateDnsZoneCnameRecords": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.private.dns/v1.0/parameters.json#/definitions/private-dns-zone-cname-records"
+                        }
+                    ]
+                },
+                "privateDnsZoneMxRecord": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.private.dns/v1.0/parameters.json#/definitions/private-dns-zone-mx-records"
+                        }
+                    ]
+                },
+                "privateDnsZonePtrRecords": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.private.dns/v1.0/parameters.json#/definitions/private-dns-zone-ptr-records"
+                        }
+                    ]
+                },
+                "privateDnsZoneTxtRecords": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.private.dns/v1.0/parameters.json#/definitions/private-dns-zone-txt-records"
+                        }
+                    ]
+                },
+                "privateDnsZoneSrvRecords": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.private.dns/v1.0/parameters.json#/definitions/private-dns-zone-srv-records"
+                        }
+                    ]
+                },
                 // "eventGridDomains": {
                 //     "$ref": "az.event.grid.domain.schema.json#definitions/eventGridDomains"
                 // },
@@ -204,16 +244,20 @@
                             "$ref": "../az.service.bus/v1.0/parameters.json#/definitions/service-bus-namespace-topic-subscriptions"
                         }
                     ]
-                }
+                },
                 // "notificationNamespaces": {
                 //     "$ref": "az.notification.namespace.schema.json#definitions/notificationNamespaces"
                 // },
                 // "notificationNamespaceHubs": {
                 //     "$ref": "az.notification.namespace.hub.schema.json#definitions/notificationNamespaceHubs"
                 // },
-                // "keyVaults": {
-                //     "$ref": "az.key.vault.schema.json#definitions/keyVaults"
-                // },
+                "keyVaults": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.key.vault/v1.0/parameters.json#/definitions/key-vaults"
+                        }
+                    ]
+                }
                 // "roleAssignments": {
                 //     "$ref": "az.rbac.role.assignment.schema.json#definitions/roleAssignments"
                 // },

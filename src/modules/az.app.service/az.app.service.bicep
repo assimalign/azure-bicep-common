@@ -34,7 +34,7 @@ param appServicePlatform string
 @description('Turns on System Managed Identity for the creted resources')
 param appServiceMsiEnabled bool = false
 
-@description('')
+@description('Azure RBAC Role Assignment for Managed System Identity.')
 param appServiceMsiRoleAssignments array = []
 
 @description('Deploys App Slots for the app service')
@@ -47,13 +47,13 @@ param appServiceSlotsConfigNames object = {}
 param appServiceStorageAccountName string
 
 @description('The resource group where the storage account resource group')
-param appServiceStorageAccountResourceGroup string
+param appServiceStorageAccountResourceGroup string = resourceGroup().name
 
 @description('The Application insights that will be used for logging')
 param appServiceAppInsightsName string
 
 @description('The resource group where the app insights lives in.')
-param appServiceAppInsightsResourceGroup string
+param appServiceAppInsightsResourceGroup string = resourceGroup().name
 
 @description('The App Service Plan for the application resource')
 param appServicePlanName string
@@ -75,7 +75,7 @@ param appServiceTags object = {}
 // **************************************************************************************** //
 
 // Format Site Settings 
-var appSiteSettings = [for setting in appServiceSettings.site: {
+var appServiceSiteSettings = [for setting in appServiceSettings.appServiceSiteSettings ?? []: {
   name: replace(replace(setting.name, '@environment', environment), '@location', location)
   value: replace(replace(setting.value, '@environment', environment), '@location', location)
 }]
@@ -131,7 +131,7 @@ resource azAppServiceFunctionDeployment 'Microsoft.Web/sites@2021-02-01' = if (a
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: appServicePlatform
         }
-      ], appSiteSettings)
+      ], appServiceSiteSettings)
     } : {})
   }
   tags: appServiceTags
@@ -178,7 +178,7 @@ resource azAppServiceWebDeployment 'Microsoft.Web/sites@2021-01-01' = if (appSer
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: appServicePlatform
         }
-      ], appSiteSettings) // If there are slots to be deployed then let's have the slots override the site settings
+      ], appServiceSiteSettings) // If there are slots to be deployed then let's have the slots override the site settings
     } : {})
   }
   tags: appServiceTags

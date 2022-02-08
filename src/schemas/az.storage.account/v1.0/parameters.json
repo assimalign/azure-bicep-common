@@ -763,6 +763,389 @@
                 "value"
             ]
         },
+        "storage-account-file-share-services": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "default": "default"
+                            },
+                            "storageAccountName": {
+                                "type": "string"
+                            },
+                            "storageAccountResourceGroup": {
+                                "type": "string"
+                            },
+                            "shares": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#definitions/storageAccountFileShareServiceShare"
+                                }
+                            },
+                            "privateEndpoint": {
+                                "$ref": "#definitions/storageAccountFileShareServicePrivateEndpoint"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "storageAccountName",
+                            "storageAccountResourceGroup",
+                            "shares",
+                            "privateEndpoint"
+                        ]
+                    }
+                }
+            }
+        },
+        "storage-account-file-share-service": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "default": "default"
+                },
+                "shares": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#definitions/storageAccountFileShareServiceShare"
+                    }
+                },
+                "privateEndpoint": {
+                    "$ref": "#definitions/storageAccountFileShareServicePrivateEndpoint"
+                }
+            },
+            "required": [
+                "name",
+                "privateEndpoint",
+                "shares"
+            ]
+        },
+        "storage-account-file-share-service-share": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "accessTier": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "Cools"
+                        },
+                        {
+                            "const": "Hot"
+                        },
+                        {
+                            "const": "Premium"
+                        },
+                        {
+                            "const": "TransactionOptimized"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "name",
+                "accessTier"
+            ]
+        },
+        "storage-account-file-share-service-shares": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "storageAccountName": {
+                                "type": "string"
+                            },
+                            "storageAccountFileShareServiceName": {
+                                "type": "string"
+                            },
+                            "storageAccountResourceGroup": {
+                                "type": "string"
+                            },
+                            "accessTier": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "Cools"
+                                    },
+                                    {
+                                        "const": "Hot"
+                                    },
+                                    {
+                                        "const": "Premium"
+                                    },
+                                    {
+                                        "const": "TransactionOptimized"
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "accessTier",
+                            "storageAccountName",
+                            "storageAccountFileShareServiceName",
+                            "storageAccountResourceGroup"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "storage-account-blob-services": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "default": "default"
+                            },
+                            "storageAccountName": {
+                                "type": "string"
+                            },
+                            "storageAccountResourceGroup": {
+                                "type": "string"
+                            },
+                            "enableVersioning": {
+                                "type": "boolean"
+                            },
+                            "enableSnapshot": {
+                                "type": "boolean"
+                            },
+                            "retentionPolicy": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "days": {
+                                                "type": "number"
+                                            }
+                                        },
+                                        "required": [
+                                            "days"
+                                        ]
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ]
+                            },
+                            "restorePolicy": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "days": {
+                                                "type": "number"
+                                            }
+                                        },
+                                        "required": [
+                                            "days"
+                                        ]
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ]
+                            },
+                            "containers": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#definitions/storageAccountBlobServiceContainer"
+                                }
+                            },
+                            "privateEndpoint": {
+                                "$ref": "#definitions/storageAccountBlobServicePrivateEndpoint"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "storageAccountName",
+                            "storageAccountResourceGroup",
+                            "retentionPolicy",
+                            "restorePolicy",
+                            "enableSnapshot",
+                            "enableVersioning",
+                            "containers",
+                            "privateEndpoint"
+                        ]
+                    }
+                }
+            }
+        },
+        "storage-account-blob-service": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "default": "default"
+                },
+                "enableVersioning": {
+                    "type": "boolean"
+                },
+                "enableSnapshot": {
+                    "type": "boolean"
+                },
+                "retentionPolicy": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "days": {
+                                    "type": "number"
+                                }
+                            },
+                            "required": [
+                                "days"
+                            ]
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "restorePolicy": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "days": {
+                                    "type": "number"
+                                }
+                            },
+                            "required": [
+                                "days"
+                            ]
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "containers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#definitions/storageAccountBlobServiceContainer"
+                    }
+                },
+                "privateEndpoint": {
+                    "$ref": "#definitions/storageAccountBlobServicePrivateEndpoint"
+                }
+            },
+            "required": [
+                "name",
+                "containers",
+                "retentionPolicy",
+                "restorePolicy",
+                "enableSnapshot",
+                "enableVersioning",
+                "privateEndpoint"
+            ]
+        },
+        "storage-account-blob-service-containers": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "storageAccountName": {
+                                "type": "string"
+                            },
+                            "storageAccountBlobServiceName": {
+                                "type": "string"
+                            },
+                            "storageAccountResourceGroup": {
+                                "type": "string"
+                            },
+                            "enableVersioning": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "accessLevel": {
+                                "type": "string",
+                                "default": "None",
+                                "oneOf": [
+                                    {
+                                        "const": "None"
+                                    },
+                                    {
+                                        "const": "Blob"
+                                    },
+                                    {
+                                        "const": "Container"
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "storageAccountName",
+                            "storageAccountBlobServiceName",
+                            "storageAccountResourceGroup",
+                            "accessLevel",
+                            "enableVersioning"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "storage-account-blob-service-container": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "enableVersioning": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "accessLevel": {
+                    "type": "string",
+                    "default": "None",
+                    "oneOf": [
+                        {
+                            "const": "None"
+                        },
+                        {
+                            "const": "Blob"
+                        },
+                        {
+                            "const": "Container"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "name",
+                "accessLevel",
+                "enableVersioning"
+            ]
+        },
         "storage-account-common-private-endpoint": {
             "oneOf": [
                 {

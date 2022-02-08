@@ -17,19 +17,20 @@ param keyVaultName string
 param keyVaultSecretName string
 
 @description('The name of the resource with sensitive information to upload into the key vault for secure access')
-param resourceName string
-
-@description('The resource group name of the resource with sensitive information to upload into the key vault for secure access')
-param resourceGroupName string
+param keyVaultSecretResourceName string
 
 @description('The resource type tells what azure resource keys need to be obtained')
-param resourceType  string 
+param keyVaultSecretResourceType  string 
+
+@description('The resource group name of the resource with sensitive information to upload into the key vault for secure access')
+param keyVaultSecretResourceGroupOfResource string
+
 
 
 // ************************************************************************** //
 //                 Service Bus Primary Connection String Update
 // ************************************************************************** //
-module azServiceBusKeyVaultSecretDeployment 'az.key.vault.secret.service.bus.bicep' = if (resourceType == 'Microsoft.ServiceBus/namespaces/authorizationRules') {
+module azServiceBusKeyVaultSecretDeployment 'az.key.vault.secret.service.bus.bicep' = if (keyVaultSecretResourceType == 'Microsoft.ServiceBus/namespaces/authorizationRules') {
   name: 'az-kv-secret-sb-${guid('${keyVaultSecretName}/Microsoft.ServiceBus/namespaces/authorizationRules')}'
   scope: resourceGroup()
   params: {
@@ -37,8 +38,8 @@ module azServiceBusKeyVaultSecretDeployment 'az.key.vault.secret.service.bus.bic
     environment: environment
     keyVaultName: keyVaultName
     keyVaultSecretName: keyVaultSecretName
-    resourceName: resourceName
-    resourceGroupName: resourceGroupName
+    resourceName: keyVaultSecretResourceName
+    resourceGroupName: keyVaultSecretResourceGroupOfResource
   }
 }
 
@@ -46,7 +47,7 @@ module azServiceBusKeyVaultSecretDeployment 'az.key.vault.secret.service.bus.bic
 // ************************************************************************** //
 //                 Storage Account Primary Connection String Update
 // ************************************************************************** //
-module azStorageAccountKeyVaultSecretDeployment 'az.key.vault.secret.storage.bicep' = if (resourceType == 'Microsoft.Storage/storageAccounts') {
+module azStorageAccountKeyVaultSecretDeployment 'az.key.vault.secret.storage.bicep' = if (keyVaultSecretResourceType == 'Microsoft.Storage/storageAccounts') {
   name: 'az-kv-secret-stg-${guid('${keyVaultSecretName}/Microsoft.Storage/storageAccounts')}'
   scope: resourceGroup()
   params: {
@@ -54,8 +55,8 @@ module azStorageAccountKeyVaultSecretDeployment 'az.key.vault.secret.storage.bic
     environment: environment
     keyVaultName: keyVaultName
     keyVaultSecretName: keyVaultSecretName
-    resourceName: resourceName
-    resourceGroupName: resourceGroupName
+    resourceName: keyVaultSecretResourceName
+    resourceGroupName: keyVaultSecretResourceGroupOfResource
   }
 }
 
@@ -63,7 +64,7 @@ module azStorageAccountKeyVaultSecretDeployment 'az.key.vault.secret.storage.bic
 // ************************************************************************** //
 //              Document Db Primary Connection String & Key Update
 // ************************************************************************** //
-module azDocumentDbKeyVaultSecretDeployment 'az.key.vault.secret.documentdb.bicep' = if (resourceType == 'Microsoft.DocumentDB/databaseAccounts') {
+module azDocumentDbKeyVaultSecretDeployment 'az.key.vault.secret.documentdb.bicep' = if (keyVaultSecretResourceType == 'Microsoft.DocumentDB/databaseAccounts') {
   name: 'az-kv-secret-cosmos-${guid('${keyVaultSecretName}/Microsoft.DocumentDB/databaseAccounts')}'
   scope: resourceGroup()
   params: {
@@ -71,8 +72,8 @@ module azDocumentDbKeyVaultSecretDeployment 'az.key.vault.secret.documentdb.bice
     environment: environment
     keyVaultName: keyVaultName
     keyVaultSecretName: keyVaultSecretName
-    resourceName: resourceName
-    resourceGroupName: resourceGroupName
+    resourceName: keyVaultSecretResourceName
+    resourceGroupName: keyVaultSecretResourceGroupOfResource
   }
 }
 
@@ -80,7 +81,7 @@ module azDocumentDbKeyVaultSecretDeployment 'az.key.vault.secret.documentdb.bice
 // ************************************************************************** //
 //                       Event Grid Domain Key Update
 // ************************************************************************** //
-module azEventGridKeyVaultSecretDeployment 'az.key.vault.secret.event.grid.bicep' = if (resourceType == 'Microsoft.EventGrid/domains') {
+module azEventGridKeyVaultSecretDeployment 'az.key.vault.secret.event.grid.bicep' = if (keyVaultSecretResourceType == 'Microsoft.EventGrid/domains') {
   name: 'az-kv-secret-egd-${guid('${keyVaultSecretName}/Microsoft.EventGrid/domains')}'
   scope: resourceGroup()
   params: {
@@ -88,8 +89,8 @@ module azEventGridKeyVaultSecretDeployment 'az.key.vault.secret.event.grid.bicep
     environment: environment
     keyVaultName: keyVaultName
     keyVaultSecretName: keyVaultSecretName
-    resourceName: resourceName
-    resourceGroupName: resourceGroupName
+    resourceName: keyVaultSecretResourceName
+    resourceGroupName: keyVaultSecretResourceGroupOfResource
   }
 }
 
@@ -97,7 +98,7 @@ module azEventGridKeyVaultSecretDeployment 'az.key.vault.secret.event.grid.bicep
 // ************************************************************************** //
 //                       Event Hub Namespace Key Update
 // ************************************************************************** //
-module azEventHubKeyVaultSecretDeployment 'az.key.vault.secret.event.hub.bicep' = if (resourceType == 'Microsoft.EventHub/namespaces/authorizationRules') {
+module azEventHubKeyVaultSecretDeployment 'az.key.vault.secret.event.hub.bicep' = if (keyVaultSecretResourceType == 'Microsoft.EventHub/namespaces/authorizationRules') {
   name: 'az-kv-secret-ehn-${guid('${keyVaultSecretName}/Microsoft.EventHub/namespaces/authorizationRules')}'
   scope: resourceGroup()
   params: {
@@ -105,8 +106,8 @@ module azEventHubKeyVaultSecretDeployment 'az.key.vault.secret.event.hub.bicep' 
     environment: environment
     keyVaultName: keyVaultName
     keyVaultSecretName: keyVaultSecretName
-    resourceName: resourceName
-    resourceGroupName: resourceGroupName
+    resourceName: keyVaultSecretResourceName
+    resourceGroupName: keyVaultSecretResourceGroupOfResource
   }
 }
 
@@ -114,7 +115,7 @@ module azEventHubKeyVaultSecretDeployment 'az.key.vault.secret.event.hub.bicep' 
 // ************************************************************************** //
 //                       Notification Hub Key Update
 // ************************************************************************** //
-module azNotificationHubKeyVaultSecretDeployment 'az.key.vault.secret.notification.hub.bicep' = if (resourceType == 'Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules') {
+module azNotificationHubKeyVaultSecretDeployment 'az.key.vault.secret.notification.hub.bicep' = if (keyVaultSecretResourceType == 'Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules') {
   name: 'az-kv-secret-nhn-${guid('${keyVaultSecretName}/Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules')}'
   scope: resourceGroup()
   params: {
@@ -122,8 +123,8 @@ module azNotificationHubKeyVaultSecretDeployment 'az.key.vault.secret.notificati
     environment: environment
     keyVaultName: keyVaultName
     keyVaultSecretName: keyVaultSecretName
-    resourceName: resourceName
-    resourceGroupName: resourceGroupName
+    resourceName: keyVaultSecretResourceName
+    resourceGroupName: keyVaultSecretResourceGroupOfResource
   }
 }
 
@@ -132,7 +133,7 @@ module azNotificationHubKeyVaultSecretDeployment 'az.key.vault.secret.notificati
 // ************************************************************************** //
 //                       Notificaiton Hub Namespace Key Update
 // ************************************************************************** //
-module azNotificationNamespaceKeyVaultSecretDeployment 'az.key.vault.secret.notification.namespace.bicep' = if (resourceType == 'Microsoft.NotificationHubs/namespaces/authorizationRules') {
+module azNotificationNamespaceKeyVaultSecretDeployment 'az.key.vault.secret.notification.namespace.bicep' = if (keyVaultSecretResourceType == 'Microsoft.NotificationHubs/namespaces/authorizationRules') {
   name: 'az-kv-secret-nh-${guid('${keyVaultSecretName}/Microsoft.NotificationHubs/namespaces/authorizationRules')}'
   scope: resourceGroup()
   params: {
@@ -140,7 +141,7 @@ module azNotificationNamespaceKeyVaultSecretDeployment 'az.key.vault.secret.noti
     environment: environment
     keyVaultName: keyVaultName
     keyVaultSecretName: keyVaultSecretName
-    resourceName: resourceName
-    resourceGroupName: resourceGroupName
+    resourceName: keyVaultSecretResourceName
+    resourceGroupName: keyVaultSecretResourceGroupOfResource
   }
 }

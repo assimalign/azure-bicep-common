@@ -42,7 +42,7 @@ resource azSqlServerInstanceDeployment 'Microsoft.Sql/servers@2021-05-01-preview
 
 
 // 2. Deploy Sql Server Database under instance
-module azSqlServerInstanceDatabaseDeployment 'az.data.sqlserver.database.bicep' = [for database in sqlServerDatabases: if(!empty(database)) {
+module azSqlServerInstanceDatabaseDeployment 'az.sqlserver.database.bicep' = [for database in sqlServerDatabases: if(!empty(database)) {
   name: !empty(sqlServerDatabases) ? toLower('az-sqlserver-db-${guid('${azSqlServerInstanceDeployment.id}/${database.name}')}') : 'no-sql-server/no-database-to-deploy'
   scope: resourceGroup()
   params: {

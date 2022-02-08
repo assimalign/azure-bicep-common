@@ -1,0 +1,273 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "apim-gateways" : {
+
+        },
+        "apim-gateway-backends": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "apimName": {
+                                "type": "string"
+                            },
+                            "apimResourceGroupName": {
+                                "type": "string"
+                            },
+                            "apimBackendType": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "FunctionApp"
+                                    },
+                                    {
+                                        "const": "WebApp"
+                                    },
+                                    {
+                                        "const": "CustomUrl"
+                                    }
+                                ]
+                            },
+                            "apimBackendName": {
+                                "type": "string"
+                            },
+                            "apimBackendRuntimeUrl": {
+                                "type": "string"
+                            },
+                            "apimBackendSiteResourceName": {
+                                "type": "string"
+                            },
+                            "apimBackendSiteResourceGroupName": {
+                                "type": "string"
+                            }
+                        },
+                        "if": {
+                            "properties": {
+                                "apimBackenType": {
+                                    "oneOf": [
+                                        {
+                                            "const": "FunctionApp"
+                                        },
+                                        {
+                                            "const": "WebApp"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        "then": {
+                            "required": [
+                                "apimName",
+                                "apimResourceGroupName",
+                                "apimBackendType",
+                                "apimBackendName",
+                                "apimBackendRuntimeUrl",
+                                "apimBackendSiteResourceName",
+                                "apimBackendSiteResourceGroupName"
+                            ]
+                        },
+                        "else": {
+                            "required": [
+                                "apimName",
+                                "apimResourceGroupName",
+                                "apimBackendType",
+                                "apimBackendName",
+                                "apimBackendRuntimeUrl"
+                            ]
+                        }
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "apim-gateway-backend": {
+            "type": "object",
+            "properties": {
+                "apimBackendType": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "FunctionApp"
+                        },
+                        {
+                            "const": "WebApp"
+                        },
+                        {
+                            "const": "CustomUrl"
+                        }
+                    ]
+                },
+                "apimBackendName": {
+                    "type": "string"
+                },
+                "apimBackendRuntimeUrl": {
+                    "type": "string"
+                },
+                "apimBackendSiteResourceName": {
+                    "type": "string"
+                },
+                "apimBackendSiteResourceGroupName": {
+                    "type": "string"
+                }
+            },
+            "if": {
+                "properties": {
+                    "apimBackendType": {
+                        "oneOf": [
+                            {
+                                "const": "FunctionApp"
+                            },
+                            {
+                                "const": "WebApp"
+                            }
+                        ]
+                    }
+                }
+            },
+            "then": {
+                "required": [
+                    "apimName",
+                    "apimResourceGroupName",
+                    "apimBackendType",
+                    "apimBackendName",
+                    "apimBackendRuntimeUrl",
+                    "apimBackendSiteResourceName",
+                    "apimBackendSiteResourceGroupName"
+                ]
+            },
+            "else": {
+                "required": [
+                    "apimName",
+                    "apimResourceGroupName",
+                    "apimBackendType",
+                    "apimBackendName",
+                    "apimBackendRuntimeUrl"
+                ]
+            }
+        },
+        "apim-gateway-apis": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "apimName": {
+                                "type": "string"
+                            },
+                            "apimResourceGroupName": {
+                                "type": "string"
+                            },
+                            "apimApiName": {
+                                "type": "string"
+                            },
+                            "apimApiPath": {
+                                "type": "string"
+                            },
+                            "apimApiDescription": {
+                                "type": "string"
+                            },
+                            "apimApiSubscriptionRequired":{
+                                "type": "boolean"
+                            },
+                            "apimApiProtocols": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "oneOf": [
+                                        {
+                                            "const": "https"
+                                        }
+                                    ]
+                                }
+                            },
+                            "apimApiPolicies": {
+                                "type": "string"
+                            },
+                            "apimApiOperations": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "az.apim.gateway.apis.operation.schema.json#definitions/apimGatewayApiOperations"
+                                }
+                            }
+                        },
+                        "required": [
+                            "apimName",
+                            "apimResourceGroupName",
+                            "apimApiName",
+                            "apimApiPath",
+                            "apimApiDescription",
+                            "apimApiSubscriptionRequired",
+                            "apimApiProtocols",
+                            "apimApiOperations"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "apim-gateway-api-operations": {
+            "properties": {
+                "apimApiOperationName": {
+                    "type":"string"
+                },
+                "apimApiOperationDisplayName": {
+                    "type":"string"
+                },
+                "apimApiOperationDescription": {
+                    "type":"string"
+                },
+                "apimApiOperationMethod": {
+                    "type":"string"
+                },
+                "apimApiOperationUrlTemplate": {
+                    "type":"string"
+                },
+                "apimApiOperationTemplateParameters": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "type": {
+                                "type": "string"
+                            },
+                            "required": {
+                                "type": "boolean"
+                            },
+                            "values": {
+                                "type": "array"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "type",
+                            "required",
+                            "values"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "apimApiOperationName",
+                "apimApiOperationDisplayName",
+                "apimApiOperationDescription",
+                "apimApiOperationMethod",
+                "apimApiOperationUrlTemplate",
+                "apimApiOperationTemplateParameters"
+            ]
+        }
+    }
+}

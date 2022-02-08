@@ -100,26 +100,26 @@ resource azKeyVaultDeployment 'Microsoft.KeyVault/vaults@2019-09-01' = {
       virtualNetworkRules: virtualNetworks
     }
   }
-  tags: keyVaultTags ?? {}
+  tags: keyVaultTags
 }
 
 
-module azKeyVaultSecretDeployment 'az.key.vault.secret.bicep' = [for secret in keyVaultSecrets: if (!empty(secret)) {
-  name: !empty(keyVaultSecrets) ? toLower('az-kv-secret-${guid('${azKeyVaultDeployment.id}/${secret.name}')}') : 'no-key-vault-secrets-to-deploy'
+module azKeyVaultSecretDeployment 'az.key.vault.secret.bicep' = [for secret in keyVaultSecrets: if (!empty(keyVaultSecrets)) {
+  name: !empty(keyVaultSecrets) ? toLower('az-kv-secret-${guid('${azKeyVaultDeployment.id}/${secret.keyVaultSecretName}')}') : 'no-key-vault-secrets-to-deploy'
   scope: resourceGroup()
   params: {
     location: location
     environment: environment
     keyVaultName: keyVaultName
-    keyVaultSecretName: secret.name
-    resourceName: secret.resourceName
-    resourceGroupName: secret.resourceGroup
-    resourceType: secret.resourceType
+    keyVaultSecretName: secret.keyVaultSecretName
+    keyVaultSecretResourceName: secret.keyVaultSecretResourceName
+    keyVaultSecretResourceType: secret.keyVaultSecretResourceType
+    keyVaultSecretResourceGroupOfResource: secret.keyVaultSecretResourceGroupOfResource
   }
 }]
 
 
-module azKeyVaultKeyDeployment 'az.key.vault.key.bicep' = [for key in keyVaultKeys: if (!empty(key)) {
+module azKeyVaultKeyDeployment 'az.key.vault.key.bicep' = [for key in keyVaultKeys: if (!empty(keyVaultKeys)) {
   name: !empty(keyVaultKeys) ? toLower('az-kv-key-${guid('${azKeyVaultDeployment.id}/${key.name}')}') : 'no-key-vault-keys-to-deploy'
   scope: resourceGroup()
   params: {

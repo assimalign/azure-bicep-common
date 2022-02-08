@@ -118,29 +118,22 @@
                                         ]
                                     },
                                     "appServiceApimSettings": {
-                                        "oneOf": [
-                                            {
-                                                "type": "null"
+                                        "type": "object",
+                                        "properties": {
+                                            "apimApiName": {
+                                                "type": "string"
                                             },
-                                            {
-                                                "type": "object",
-                                                "properties": {
-                                                    "apimApiName": {
-                                                        "type": "string"
-                                                    },
-                                                    "apimName": {
-                                                        "type": "string"
-                                                    },
-                                                    "apimResourceGroupName": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "apimApiName",
-                                                    "apimName",
-                                                    "apimResourceGroupName"
-                                                ]
+                                            "apimName": {
+                                                "type": "string"
+                                            },
+                                            "apimResourceGroupName": {
+                                                "type": "string"
                                             }
+                                        },
+                                        "required": [
+                                            "apimApiName",
+                                            "apimName",
+                                            "apimResourceGroupName"
                                         ]
                                     }
                                 }
@@ -205,9 +198,7 @@
                             "appServicePlatform",
                             "appServicePlatformVersion",
                             "appServiceStorageAccountName",
-                            "appServiceStorageAccountResourceGroup",
                             "appServiceAppInsightsName",
-                            "appServiceAppInsightsResourceGroup",
                             "appServiceMsiEnabled"
                         ]
                     }
@@ -382,25 +373,25 @@
                     "items": {
                         "type": "object",
                         "properties": {
-                            "appName": {
+                            "appServiceSlotName": {
                                 "type": "string"
                             },
-                            "appResourceGroupName": {
+                            "appServiceSlotResourceGroupName": {
                                 "type": "string"
                             },
-                            "appSettingNames": {
+                            "appServiceSlotSettingNames": {
                                 "type": "array",
                                 "items": {
                                     "type": "string"
                                 }
                             },
-                            "appConnectionStringSettingNames": {
+                            "appServiceSlotConnectionStringSettingNames": {
                                 "type": "array",
                                 "items": {
                                     "type": "string"
                                 }
                             },
-                            "appStorageAccountSettingNames": {
+                            "appServiceSlotStorageAccountSettingNames": {
                                 "type": "array",
                                 "items": {
                                     "type": "string"
@@ -408,11 +399,11 @@
                             }
                         },
                         "required": [
-                            "appName",
-                            "appResourceGroupName",
-                            "appSettingNames",
-                            "appConnectionStringSettingNames",
-                            "appStorageAccountSettingNames"
+                            "appServiceSlotName",
+                            "appServiceSlotResourceGroupName",
+                            "appServiceSlotSettingNames",
+                            "appServiceSlotConnectionStringSettingNames",
+                            "appServiceSlotStorageAccountSettingNames"
                         ]
                     }
                 }

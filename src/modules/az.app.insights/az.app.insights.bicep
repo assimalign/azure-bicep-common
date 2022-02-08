@@ -35,7 +35,7 @@ resource azAppInsightsComponentsDeployment 'Microsoft.Insights/components@2020-0
   location: resourceGroup().location
   kind: 'web'
   properties: {
-    Application_Type: 'web'
+    Application_Type:  'web'
     WorkspaceResourceId: azAppLogAnalyticsWorkspaceDeployment.id
   }
   tags: appInsightsTags

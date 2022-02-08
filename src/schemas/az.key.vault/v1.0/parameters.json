@@ -1,25 +1,25 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "definitions": {
-        "keyVaults": {
+        "key-vaults": {
             "properties": {
                 "value": {
                     "type": "array",
                     "items": {
                         "type": "object",
                         "properties": {
-                            "name": {
+                            "keyVaultName": {
                                 "type": "string"
                             },
-                            "enableRbacAuthorization": {
+                            "keyVaultEnableRbac": {
                                 "type": "boolean",
                                 "default": false
                             },
-                            "enableSoftDelete": {
+                            "keyVaultEnableSoftDelete": {
                                 "type": "boolean",
                                 "default": true
                             },
-                            "creationMode": {
+                            "keyVaultCreationMode": {
                                 "type": "string",
                                 "oneOf": [
                                     {
@@ -27,11 +27,11 @@
                                     },
                                     {
 
-                                        "const": "reccovery"
+                                        "const": "recovery"
                                     }
                                 ]
                             },
-                            "sku": {
+                            "keyVaultSku": {
                                 "type" : "object",
                                 "properties": {
                                 "dev": {
@@ -80,7 +80,7 @@
                                 } 
                                 }
                             },
-                            "defaultNetworkAccess": {
+                            "keyVaultDefaultNetworkAccess": {
                                 "type":"string",
                                 "default": "Allow",
                                 "oneOf": [
@@ -92,38 +92,38 @@
                                     }
                                 ]
                             },
-                            "privateEndpoint": {
+                            "keyVaultPrivateEndpoint": {
                                 "oneOf": [
                                     {
                                         "type": "object",
                                         "properties": {
-                                            "name": {
+                                            "privateEndpointName": {
                                                 "type": "string"
                                             },
-                                            "privateDnsZone": {
+                                            "privateEndpointDnsZone": {
                                                 "type": "string"
                                             },
-                                            "privateDnsZoneResourceGroup": {
+                                            "privateEndpointDnsZoneResourceGroup": {
                                                 "type": "string",
-                                                "description": ""
+                                                "description": "The resource group in which the Azure Private DNS Zone belongs to."
                                             },
-                                            "virtualNetwork": {
+                                            "privateEndpointVirtualNetwork": {
                                                 "type": "string"
                                             },
-                                            "virtualNetworkSubnet": {
+                                            "privateEndpointVirtualNetworkSubnet": {
                                                 "type": "string"
                                             },
-                                            "virtualNetworkResourceGroup": {
+                                            "privateEndpointVirtualNetworkResourceGroup": {
                                                 "type": "string"
                                             }
                                         },
                                         "required": [
-                                            "name",
-                                            "privateDnsZone",
-                                            "privateDnsZoneResourceGroup",
-                                            "virtualNetwork",
-                                            "virtualNetworkSubnet",
-                                            "virtualNetworkResourceGroup"
+                                            "privateEndpointName",
+                                            "privateEndpointDnsZone",
+                                            "privateEndpointDnsZoneResourceGroup",
+                                            "privateEndpointVirtualNetwork",
+                                            "privateEndpointVirtualNetworkSubnet",
+                                            "privateEndpointVirtualNetworkResourceGroup"
                                         ]
                                     },
                                     {
@@ -131,7 +131,7 @@
                                     }
                                 ]
                             },
-                            "virtualNetworks": {
+                            "keyVaultVirtualNetworks": {
                                 "type":"array",
                                 "items":{
                                     "type": "object",
@@ -154,18 +154,18 @@
 
                                 }
                             },
-                            "secrets": {
+                            "keyVaultSecrets": {
                                 "type": "array",
                                 "description": "Upsert other azure resource secrets, keys, and connection strings into key vault on deployment by referencing those resources",
                                 "items": {
                                     "properties": {
-                                        "name": {
+                                        "keyVaultSecretName": {
                                             "type": "string"
                                         },
-                                        "resourceName": {
+                                        "keyVaultSecretResourceName": {
                                             "type": "string"
                                         },
-                                        "resourceType": {
+                                        "keyVaultSecretResourceType": {
                                             "type": "string",
                                             "oneOf": [
                                                 {
@@ -191,19 +191,19 @@
                                                 }
                                             ]
                                         },
-                                        "resourceGroup": {
+                                        "keyVaultSecretResourceGroupOfResource": {
                                             "type": "string"
                                         }
                                     },
                                     "required": [
-                                        "name",
-                                        "resourceName",
-                                        "resourceType",
-                                        "resourceGroup"
+                                        "keyVaultSecretName",
+                                        "keyVaultSecretResourceName",
+                                        "keyVaultSecretResourceType",
+                                        "keyVaultSecretResourceGroupOfResource"
                                     ]
                                 }
                             },
-                            "keys": {
+                            "keyVaultKeys": {
                                 "type": "array",
                                 "items": {
                                     "properties": {
@@ -211,7 +211,7 @@
                                     }
                                 }
                             },
-                            "tags": {
+                            "keyVaultTags": {
                                 "oneOf": [
                                     {
                                         "type": "object",
@@ -230,14 +230,14 @@
                         },
                         "if": {
                             "properties": {
-                                "enableRbacAuthorization": {
+                                "keyVaultEnableRbac": {
                                     "const": true
                                 }
                             }
                         },
                         "then": {
                             "properties": {
-                                "policies" : {
+                                "keyVaultPolicies" : {
                                     "type": "array",
                                     "maxItems": 0
                                 }
@@ -245,7 +245,7 @@
                         },
                         "else": {
                             "properties": {
-                                "policies": {
+                                "keyVaultPolicies": {
                                     "type": "array",
                                     "items": {
                                         "type": "object",
@@ -316,20 +316,17 @@
                             }
                         },
                         "required": [
-                            "name",
-                            "creationMode",
-                            "defaultNetworkAccess",
-                            "enableSoftDelete",
-                            "enableRbacAuthorization",
-                            "virtualNetworks",
-                            "sku",
-                            "privateEndpoint",
-                            "policies",
-                            "secrets",
-                            "keys",
-                            "tags"
+                            "keyVaultName",
+                            "keyVaultCreationMode",
+                            "keyVaultDefaultNetworkAccess",
+                            "keyVaultEnableSoftDelete",
+                            "keyVaultEnableRbac",
+                            "keyVaultVirtualNetworks",
+                            "keyVaultSku",
+                            "keyVaultPolicies"
                         ]
-                    }
+                    },
+                    "minItems": 1
                 }
             },
             "required": [

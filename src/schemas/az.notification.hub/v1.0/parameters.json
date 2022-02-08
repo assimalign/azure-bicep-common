@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "definitions": {
-        "notificationNamespaces": {
+        "notification-hub-namespaces": {
             "type": "object",
             "properties": {
                 "value": {
@@ -142,6 +142,38 @@
             },
             "required": [
                 "value"
+            ]
+        },
+        "notification-hub-namespace-hubs": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the Notification Namespace Hub"
+                    },
+                    "namespace": {
+                        "type": "string",
+                        "description": "The name of the notification Namespace."
+                    }
+                },
+                "required": [
+                    "name",
+                    "namespace"
+                ]
+            }
+        },
+        "notification-hub-namespace-hub": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The name of the Notification Namespace Hub"
+                }
+            },
+            "required": [
+                "name"
             ]
         }
     }

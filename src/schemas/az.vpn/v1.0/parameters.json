@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "definitions": {
-        "virtualPrivateNetworkGateways": {
+        "vpn-gateways": {
             "type": "object",
             "description": "An array of VPN Gateways to deploy the within a specified Virtual Network.",
             "properties": {
