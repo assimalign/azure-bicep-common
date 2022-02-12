@@ -3,18 +3,19 @@ param appConfigurations array
 
 targetScope = 'subscription'
 
-module azResourceGroupDeployment '../../src/modules/az.resource.group.bicep' = [for group in resourceGroups: {
-  name: 'az-rg-deploy-${guid(group.resourceGroupName)}'
-  params: {
-    location: 'est'
-    environment: 'dev'
-    resourceGroupName: group.resourceGroupName
-    resourceGroupLocation: group.resourceGroupLocation
-    resourceGroupTags: contains(group, 'resourceGroupTags') ? group.resourceGroupTags : {}
-  }
-}]
 
-module azAppConfigurationDeployment '../../src/modules/az.app.configuration.bicep' = [for config in appConfigurations: {
+// module azResourceGroupDeployment '../../src/modules/az.resource.group/az.resource.group.bicep' = [for group in resourceGroups: {
+//   name: 'az-rg-deploy-${guid(group.resourceGroupName)}'
+//   params: {
+//     location: 'est'
+//     environment: 'dev'
+//     resourceGroupName: group.resourceGroupName
+//     resourceGroupLocation: group.resourceGroupLocation
+//     resourceGroupTags: contains(group, 'resourceGroupTags') ? group.resourceGroupTags : {}
+//   }
+// }]
+
+module azAppConfigurationDeployment 'br/assimalign:modules/az.app.configuration.bicep:v1.0' = [for config in appConfigurations: {
   name: 'az-'
   scope: resourceGroup(replace(replace(config.appConfigurationResourceGroup, '@environment', 'dev'), '@location', 'est'))
   params: {
@@ -27,9 +28,9 @@ module azAppConfigurationDeployment '../../src/modules/az.app.configuration.bice
     appConfigurationEnableRbac: config.appConfigurationEnableRbac
     appConfigurationKeys: config.appConfigurationKeys
   }
-  dependsOn: [
-    azResourceGroupDeployment
-  ]
+  // dependsOn: [
+  //   azResourceGroupDeployment
+  // ]
 }]
 
 

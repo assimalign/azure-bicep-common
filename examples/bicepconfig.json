@@ -1,0 +1,17 @@
+{
+    "moduleAliases": {
+        "ts": {},
+        "br": {
+            "assimalign": {
+                "registry": "asalbicep.azurecr.io"
+            }
+        }
+    },
+    
+    "cloud": {
+        "currentProfile": "AzureCloud",
+        "credentialPrecedence": [
+            "AzurePowerShell"
+        ]
+      }
+}
