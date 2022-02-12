@@ -21,7 +21,7 @@
                 "cosmosAccounts": {
                     "oneOf": [
                         {
-                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts-database-accounts"
+                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts"
                         }
                     ]
                 },
@@ -86,22 +86,42 @@
                 // "appServiceEnvironments": {
                 //     "$ref": "./az.app.service.environment.schema.json#definitions/appServiceEnvironments"
                 // },
-                // "appServicePlans": {
-                //     "$ref": "./az.app.service.plan.schema.json#definitions/appServicePlans"
-                // },
-                // "appServices": {
-                //     "$ref": "./az.app.service.schema.json#definitions/appServices",
-                //     "description": "Parameters for a list of App Service Deployments. Existing App Service Plan, Storage Account, and Application Insights needed for this deployment."
-                // },
-                // "appServiceSlots": {
-                //     "$ref": "./az.app.service.slot.schema.json#definitions/appServiceSlots"
-                // },
-                // "appServiceSlotsConfigNames": {
-                //     "$ref": "az.app.service.slot.config.name.schema.json#definitions/appSlotConfigNames"
-                // },
-                // "appGateways": {
-                //     "$ref": "./az.app.gateway.schema.json#definitions/appGateways"
-                // },
+                "appServicePlans": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.app.service/v1.0/parameters.json#/definitions/app-services-plans"
+                        }
+                    ]
+                },
+                "appServices": {
+                    "description": "Parameters for a list of App Service Deployments. Existing App Service Plan, Storage Account, and Application Insights needed for this deployment.",
+                    "oneOf": [
+                        {
+                            "$ref": "../az.app.service/v1.0/parameters.json#/definitions/app-services"
+                        }
+                    ]
+                },
+                "appServiceSlots": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.app.service/v1.0/parameters.json#/definitions/app-services-slots"
+                        }
+                    ]
+                },
+                "appServiceSlotsConfigNames": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.app.service/v1.0/parameters.json#/definitions/app-services-slots-config-names"
+                        }
+                    ]
+                },
+                "appGateways": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.app.gateway/v1.0/parameters.json#/definitions/app-gateways"
+                        }
+                    ]
+                },
                 "appConfigurations": {
                     "oneOf": [
                         {
@@ -120,6 +140,27 @@
                     "oneOf": [
                         {
                             "$ref": "../az.app.insights/v1.0/parameters.json#/definitions/app-insights"
+                        }
+                    ]
+                },
+                "appInsightsActionGroup": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.app.insights/v1.0/parameters.json#/definitions/app-insights-action-groups"
+                        }
+                    ]
+                },
+                "appInsightsActivityLogAlerts": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.app.insights/v1.0/parameters.json#/definitions/app-insights-activity-log-alerts"
+                        }
+                    ]
+                },
+                "appInsightsAlertRules": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.app.insights/v1.0/parameters.json#/definitions/app-insights-alert-rules"
                         }
                     ]
                 },

@@ -9,10 +9,10 @@
                     "items": {
                         "type": "object",
                         "properties": {
-                            "name": {
+                            "appGatewayName": {
                                 "type": "string"
                             },
-                            "sku": {
+                            "appGatewaySku": {
                                 "type": "object",
                                 "properties": {
                                     "dev": {
@@ -175,7 +175,7 @@
                                     "prd"
                                 ]
                             },
-                            "frontend": {
+                            "appGatewayFrontend": {
                                 "type": "object",
                                 "properties": {
                                     "ports": {
@@ -289,7 +289,7 @@
                                     "publicIp"
                                 ]
                             },
-                            "backend": {
+                            "appGatewayBackend": {
                                 "type": "object",
                                 "properties": {
                                     "ports": {
@@ -376,7 +376,7 @@
                                     "receivers"
                                 ]
                             },
-                            "routing": {
+                            "appGatewayRouting": {
                                 "type": "array",
                                 "items": {
                                     "type": "object",
@@ -407,7 +407,7 @@
                                     ]
                                 }
                             },
-                            "tags": {
+                            "appGatewayTags": {
                                 "oneOf": [
                                     {
                                         "type": "object",
@@ -425,12 +425,12 @@
                             }
                         },
                         "required": [
-                            "name",
-                            "sku",
-                            "frontend",
-                            "backend",
-                            "routing",
-                            "tags"
+                            "appGatewayName",
+                            "appGatewaySku",
+                            "appGatewayFrontend",
+                            "appGatewayBackend",
+                            "appGatewayRouting",
+                            "appGatewayTags"
                         ]
                     },
                     "minItems": 1

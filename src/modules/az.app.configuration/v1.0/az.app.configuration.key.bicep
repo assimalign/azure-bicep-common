@@ -20,7 +20,7 @@ param appConfigurationKeyName string
 @description('The value of the App configuration to create or update')
 param appConfigurationValue string
 
-@description('')
+@description('Labels to append to App Configuration Key')
 param appConfigurationValueLabels array = []
 
 @description('The content type of the configuration value')

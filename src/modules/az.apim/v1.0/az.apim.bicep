@@ -7,8 +7,8 @@
 @description('The environment in which the resource(s) will be deployed')
 param environment string
 
-@description('The location prefix or suffix for the resource name')
-param location string = ''
+@description('The region prefix or suffix for the resource name, if applicable.')
+param region string = ''
 
 @description('The name of the API Management resource')
 param apimName string
@@ -47,12 +47,12 @@ param apimApis array = []
 
 
 resource azVirtualNetworkSubnetResource 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = if(apimVirtualNetworkType != 'None') {
-  name: replace(replace('${apimVirtualNetwork}/${apimVirtualNetworkSubnet}', '@environment', environment), '@location', location)
-  scope: resourceGroup(replace(replace(apimVirtualNetworkResourceGroup, '@environment', environment), '@location', location))
+  name: replace(replace('${apimVirtualNetwork}/${apimVirtualNetworkSubnet}', '@environment', environment), '@region', region)
+  scope: resourceGroup(replace(replace(apimVirtualNetworkResourceGroup, '@environment', environment), '@region', region))
 }
 
 resource azApiManagementInstanceDeployment 'Microsoft.ApiManagement/service@2021-01-01-preview' = {
-  name: replace(replace(apimName, '@environment', environment), '@location', location)
+  name: replace(replace(apimName, '@environment', environment), '@region', region)
   location: resourceGroup().location
   identity: {
    type: apimEnableMsi == true ? 'SystemAssigned' : 'None'
@@ -90,7 +90,7 @@ module azApimApisDeployment 'az.apim.apis.bicep' = [for api in apimApis: if(!emp
   name: !empty(apimApis) ? 'az-apim-apis-${guid('${apimName}/${api.name}')}' : 'no-apim-apis-to-deploy'
   scope: resourceGroup()
   params: {
-    location: location
+    location: region
     environment: environment
     apimName: apimName
     apimApiName: api.name

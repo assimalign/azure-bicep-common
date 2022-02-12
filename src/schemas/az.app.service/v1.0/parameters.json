@@ -78,14 +78,17 @@
                             "appServiceAppInsightsResourceGroup": {
                                 "type": "string"
                             },
-                            "appServiceSettings": {
+                            "appServiceSiteConfigs": {
                                 "type": "object",
                                 "properties": {
-                                    "httpsOnly": {
+                                    "siteHttpsOnly": {
                                         "type": "boolean",
                                         "default": true
                                     },
-                                    "appServiceSiteSettings": {
+                                    "siteAlwaysOn": {
+                                        "type": "boolean"
+                                    },
+                                    "siteSettings": {
                                         "type": "array",
                                         "description": "The site settings for the app service",
                                         "items": {
@@ -104,20 +107,10 @@
                                             ]
                                         }
                                     },
-                                    "appServiceAuthSettings": {
-                                        "$ref": "#/definitions/app-service-auth-settings"
+                                    "siteAuthSettings": {
+                                        "$ref": "#/definitions/app-services-auth-settings"
                                     },
-                                    "appServiceMetadataSettings": {
-                                        "oneOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "object"
-                                            }
-                                        ]
-                                    },
-                                    "appServiceApimSettings": {
+                                    "siteApimSettings": {
                                         "type": "object",
                                         "properties": {
                                             "apimApiName": {
@@ -136,15 +129,10 @@
                                             "apimResourceGroupName"
                                         ]
                                     }
-                                }
-                            },
-                            "appServiceConfigs": {
-                                "type": "object",
-                                "properties": {
-                                    "alwaysOn": {
-                                        "type": "boolean"
-                                    }
-                                }
+                                },
+                                "required": [
+                                    "siteSettings"
+                                ]
                             },
                             "appServiceSlots": {
                                 "type": "array",
@@ -180,7 +168,7 @@
                                 }
                             },
                             "appServiceSlotsConfigNames": {
-                                "$ref": "#/definitions/app-slot-config-name"
+                                "$ref": "#/definitions/app-services-slots-config-name"
                             },
                             "appServiceTags": {
                                 "type": "object",
@@ -199,7 +187,7 @@
                             "appServicePlatformVersion",
                             "appServiceStorageAccountName",
                             "appServiceAppInsightsName",
-                            "appServiceMsiEnabled"
+                            "appServiceSiteConfigs"
                         ]
                     }
                 }
@@ -208,17 +196,21 @@
                 "value"
             ]
         },
-        "app-service-slots": {
+        "app-services-slots": {
             "properties": {
                 "value": {
                     "type": "array",
                     "items": {
                         "type": "object",
                         "properties": {
+                            "appServiceName": {
+                                "type": "string",
+                                "description": "The Azure App Service in which the slot will rollup under."
+                            },
                             "appServiceSlotName": {
                                 "type": "string"
                             },
-                            "type": {
+                            "appServiceSlotType": {
                                 "type": "string",
                                 "oneOf": [
                                     {
@@ -255,9 +247,15 @@
                             "appServiceSlotPlatformVersion": {
                                 "type": "string"
                             },
-                            "appServiceSlotEnableMsi": {
+                            "appServiceSlotMsiEnabled": {
                                 "type": "boolean",
                                 "default": false
+                            },
+                            "appServiceSlotMsiRoleAssignments": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "../../az.rbac/v1.0/parameters.json#/definitions/roleAssignment"
+                                }
                             },
                             "appServiceSlotPlanName": {
                                 "type": "string",
@@ -279,14 +277,17 @@
                             "appServiceSlotAppInsightsResourceGroup": {
                                 "type": "string"
                             },
-                            "appServiceSlotSettings": {
+                            "appServiceSlotSiteConfigs": {
                                 "type": "object",
                                 "properties": {
-                                    "httpsOnly": {
+                                    "siteHttpsOnly": {
                                         "type": "boolean",
                                         "default": true
                                     },
-                                    "appServiceSlotSiteSettings": {
+                                    "siteAlwaysOn": {
+                                        "type": "boolean"
+                                    },
+                                    "siteSettings": {
                                         "type": "array",
                                         "description": "The site settings for the app service",
                                         "items": {
@@ -305,20 +306,10 @@
                                             ]
                                         }
                                     },
-                                    "appServiceSlotAuthSettings": {
-                                        "$ref": "#/definitions/app-service-auth-settings"
+                                    "siteAuthSettings": {
+                                        "$ref": "#/definitions/app-services-auth-settings"
                                     },
-                                    "appServiceSlotMetadataSettings": {
-                                        "oneOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "object"
-                                            }
-                                        ]
-                                    },
-                                    "appServiceSlotApimSettings": {
+                                    "siteApimSettings": {
                                         "type": "object",
                                         "properties": {
                                             "apimApiName": {
@@ -337,7 +328,10 @@
                                             "apimResourceGroupName"
                                         ]
                                     }
-                                }
+                                },
+                                "required": [
+                                    "siteSettings"
+                                ]
                             },
                             "appServiceSlotTags": {
                                 "type": "object",
@@ -350,23 +344,24 @@
                             }
                         },
                         "required": [
+                            "appServiceName",
                             "appServiceSlotName",
                             "appServiceSlotType",
                             "appServiceSlotPlatform",
                             "appServiceSlotPlatformVersion",
                             "appServiceSlotStorageAccountName",
-                            "appServiceSlotStorageAccountResourceGroup",
                             "appServiceSlotAppInsightsName",
-                            "appServiceSlotAppInsightsResourceGroup"
+                            "appServiceSlotSiteConfigs"
                         ]
-                    }
+                    },
+                    "minItems": 1
                 }
             },
             "required": [
                 "value"
             ]
         },
-        "app-slot-config-names": {
+        "app-services-slots-config-names": {
             "properties": {
                 "value": {
                     "type": "array",
@@ -412,7 +407,7 @@
                 "value"
             ]
         },
-        "app-slot-config-name": {
+        "app-services-slots-config-name": {
             "description": "Specify configurations names to be recognized as slot only settings.",
             "properties": {
                 "appSettingNames": {
@@ -440,7 +435,7 @@
                 "storageAccountSettingNames"
             ]
         },
-        "app-service-plans": {
+        "app-services-plans": {
             "type": "object",
             "properties": {
                 "value": {
@@ -448,10 +443,10 @@
                     "items": {
                         "type": "object",
                         "properties": {
-                            "name": {
+                            "appServicePlanName": {
                                 "type": "string"
                             },
-                            "os": {
+                            "appServicePlanOs": {
                                 "type": "string",
                                 "oneOf": [
                                     {
@@ -462,28 +457,24 @@
                                     }
                                 ]
                             },
-                            "sku": {
+                            "appServicePlanSku": {
                                 "type": "object",
                                 "properties": {
                                     "dev": {
                                         "type": "string",
-                                        "oneOf": [
-                                            {
-                                                "const": "D1"
-                                            },
-                                            {
-                                                "const": "B1"
-                                            }
-                                        ]
+                                        "$ref": "#/definitions/app-service-plan-sku"
                                     },
                                     "qa": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "$ref": "#/definitions/app-service-plan-sku"
                                     },
                                     "uat": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "$ref": "#/definitions/app-service-plan-sku"
                                     },
                                     "prd": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "$ref": "#/definitions/app-service-plan-sku"
                                     }
                                 },
                                 "required": [
@@ -493,36 +484,29 @@
                                     "prd"
                                 ]
                             },
-                            "aseName": {
-                                "oneOf": [
-                                    {
-                                        "type": "null"
-                                    },
-                                    {
-                                        "type": "string"
-                                    }
-                                ]
+                            "appServicePlanAseName": {
+                                "type":"string"
                             },
-                            "aseResourceGroup": {
-                                "oneOf": [
-                                    {
-                                        "type": "null"
-                                    },
-                                    {
+                            "appServicePlanAseResourceGroup": {
+                                "type":"string"
+                            },
+                            "appServicePlanTags": {
+                                "type": "object",
+                                "patternProperties": {
+                                    "^[a-z]": {
                                         "type": "string"
                                     }
-                                ]
+                                },
+                                "minProperties": 1
                             }
                         },
                         "required": [
-                            "name",
-                            "os",
-                            "sku",
-                            "aseName",
-                            "aseResourceGroup",
-                            "tags"
+                            "appServicePlanName",
+                            "appServicePlanOs",
+                            "appServicePlanSku"
                         ]
-                    }
+                    },
+                    "maxItems": 1
                 }
             },
             "required": [
@@ -1327,7 +1311,7 @@
                 "value"
             ]
         },
-        "app-service-auth-settings": {
+        "app-services-auth-settings": {
             "oneOf": [
                 {
                     "type": "null"
@@ -1452,6 +1436,21 @@
                         "appServiceAuthIdentityAudiences",
                         "appServiceAuthIdentityGraphApiVersion"
                     ]
+                }
+            ]
+        },
+        "app-service-plan-sku": {
+            "oneOf": [
+                {
+                    "const": "D1"
+                },
+                {
+                    "const": "B1",
+                    "description": "$12.41 USD/Month"
+                },
+                {
+                    "const": "B2",
+                    "description": "$24.82 USD/Month"
                 }
             ]
         }

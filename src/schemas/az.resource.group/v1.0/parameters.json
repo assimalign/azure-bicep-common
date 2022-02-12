@@ -20,7 +20,52 @@
                                         "const": "eastus"
                                     },
                                     {
+                                        "const": "eastus2"
+                                    },
+                                    {
                                         "const": "westus"
+                                    },
+                                    {
+                                        "const": "westus2"
+                                    },
+                                    {
+                                        "const": "westus3"
+                                    },
+                                    {
+                                        "const": "westcentralus"
+                                    },
+                                    {
+                                        "const": "southcentralus"
+                                    },
+                                    {
+                                        "const": "northcentralus"
+                                    },
+                                    {
+                                        "const": "northeurope"
+                                    },
+                                    {
+                                        "const": "swedencentral"
+                                    },
+                                    {
+                                        "const": "uksouth"
+                                    },
+                                    {
+                                        "const": "ukwest"
+                                    },
+                                    {
+                                        "const": "westeurope"
+                                    },
+                                    {
+                                        "const": "francecentral"
+                                    },
+                                    {
+                                        "const": "germanywestcentral"
+                                    },
+                                    {
+                                        "const": "norwayeast"
+                                    },
+                                    {
+                                        "const": "switzerlandnorth"
                                     }
                                 ]
                             },

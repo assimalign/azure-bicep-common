@@ -51,7 +51,6 @@ param eventGridDeadLetterDestination object = {}
 @description('')
 param eventGridSubscriptionUseMsi bool = false
 
-
 var headers = [for header in eventGridEventDeliveryHeaders: {
   type: header.type
   name: header.name
@@ -63,16 +62,13 @@ var headers = [for header in eventGridEventDeliveryHeaders: {
   })
 }]
 
-
-
 // 1. Get Event Grid Domain Resource
 resource azEventGridDomainResource 'Microsoft.EventGrid/domains@2020-10-15-preview' existing = {
   name: replace('${eventGridDomainName}', '@environment', environment)
 }
 
-
 // 2. Deploy the Event Grid Subscription to the Event Grid Domain Topic
-resource azEventGridDomainWithMsiSubscriptionDeployment 'Microsoft.EventGrid/eventSubscriptions@2021-06-01-preview' = if(eventGridSubscriptionUseMsi == true) {
+resource azEventGridDomainWithMsiSubscriptionDeployment 'Microsoft.EventGrid/eventSubscriptions@2021-06-01-preview' = if (eventGridSubscriptionUseMsi == true) {
   name: eventGridSubscriptionUseMsi == true ? replace(replace(eventGridSubscriptionName, '@environment', environment), '@region', region) : 'no-egd-subscription-with-msi'
   scope: azEventGridDomainResource
   properties: {
@@ -136,14 +132,13 @@ resource azEventGridDomainWithMsiSubscriptionDeployment 'Microsoft.EventGrid/eve
   }
 }
 
-
-resource azEventGridDomainWithoutMsiSubscriptionDeployment 'Microsoft.EventGrid/eventSubscriptions@2021-06-01-preview' = if(eventGridSubscriptionUseMsi == false) {
+resource azEventGridDomainWithoutMsiSubscriptionDeployment 'Microsoft.EventGrid/eventSubscriptions@2021-06-01-preview' = if (eventGridSubscriptionUseMsi == false) {
   name: eventGridSubscriptionUseMsi == false ? replace(replace(eventGridSubscriptionName, '@environment', environment), '@region', region) : 'no-egd-subscription-without-msi'
   scope: azEventGridDomainResource
   properties: {
     labels: eventGridEventLabels
     eventDeliverySchema: 'EventGridSchema'
-    destination:  any(eventGridSubscriptionEndpointType == 'AzureFunction' ? {
+    destination: any(eventGridSubscriptionEndpointType == 'AzureFunction' ? {
       endpointType: 'AzureFunction'
       properties: {
         deliveryAttributeMappings: headers
@@ -194,4 +189,3 @@ resource azEventGridDomainWithoutMsiSubscriptionDeployment 'Microsoft.EventGrid/
 
 // 8. Return Deployment Output
 output resource object = eventGridSubscriptionUseMsi == true ? azEventGridDomainWithMsiSubscriptionDeployment : azEventGridDomainWithoutMsiSubscriptionDeployment
-

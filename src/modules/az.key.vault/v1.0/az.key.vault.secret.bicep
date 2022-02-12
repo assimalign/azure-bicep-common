@@ -64,7 +64,7 @@ module azStorageAccountKeyVaultSecretDeployment 'az.key.vault.secret.storage.bic
 // ************************************************************************** //
 //              Document Db Primary Connection String & Key Update
 // ************************************************************************** //
-module azDocumentDbKeyVaultSecretDeployment 'az.key.vault.secret.documentdb.bicep' = if (keyVaultSecretResourceType == 'Microsoft.DocumentDB/databaseAccounts') {
+module azDocumentDbKeyVaultSecretDeployment 'az.key.vault.secret.cosmosdb.bicep' = if (keyVaultSecretResourceType == 'Microsoft.DocumentDB/databaseAccounts') {
   name: 'az-kv-secret-cosmos-${guid('${keyVaultSecretName}/Microsoft.DocumentDB/databaseAccounts')}'
   scope: resourceGroup()
   params: {

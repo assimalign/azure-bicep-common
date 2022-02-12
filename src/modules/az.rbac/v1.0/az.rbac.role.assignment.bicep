@@ -24,10 +24,10 @@ param resourceRoleName string
 @description('')
 param resourceRoleAssignmentScope string
 
-@description('The resource type type to assign the role to')
+@description('The resource type to assign the role to')
 param resourceTypeAssigningRole string
 
-@description('The principal Id reciving the role assignment')
+@description('The Principal Id reciving the role assignment')
 param resourcePrincipalIdReceivingRole string
 
 @description('If scoping resource role assignment to a specific the resource the name of the resource must be specified')

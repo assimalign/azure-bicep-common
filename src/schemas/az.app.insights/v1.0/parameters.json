@@ -12,43 +12,48 @@
                             "appInsightsName": {
                                 "type": "string"
                             },
-                            "appInsightsLogAnalyticsWorkspace": {
-                                "type": "object",
-                                "description": "The name of the Log Analytics Workspace to deploy the App Insights resource on",
-                                "properties": {
-                                    "logAnalyticsWorkspaceName": {
-                                        "type": "string"
+                            "appInsightsKind": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "web"
                                     },
-                                    "logAnalyticsWorkspaceResourceGroup": {
+                                    {
+                                        "const": "ios"
+                                    },
+                                    {
+                                        "const": "other"
+                                    },
+                                    {
+                                        "const": "store"
+                                    },
+                                    {
+                                        "const": "java"
+                                    },
+                                    {
+                                        "const": "phone"
+                                    }
+                                ]
+                            },
+                            "appInsightsAnalyticWorkspaceName": {
+                                "type": "string"
+                            },
+                            "appInsightsAnalyticWorkspaceResourceGroup": {
+                                "type": "string"
+                            },
+                            "appInsightsTags": {
+                                "type": "object",
+                                "patternProperties": {
+                                    "^[a-z]": {
                                         "type": "string"
                                     }
                                 },
-                                "required": [
-                                    "logAnalyticsWorkspaceName",
-                                    "logAnalyticsWorkspaceResourceGroup"
-                                ]
-                            },
-                            "appInsightsTags": {
-                                "oneOf": [
-                                    {
-                                        "type": "object",
-                                        "patternProperties": {
-                                            "^[a-z]": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "minProperties": 1
-                                    },
-                                    {
-                                        "type": "null"
-                                    }
-                                ]
+                                "minProperties": 1
                             }
                         },
                         "required": [
                             "appInsightsName",
-                            "appInsightsLogAnalyticsWorkspace",
-                            "appInsightsTags"
+                            "appInsightsAnalyticWorkspaceName"
                         ]
                     },
                     "minItems": 1
@@ -57,6 +62,276 @@
             "required": [
                 "value"
             ]
+        },
+        "app-insights-action-groups": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "appInsightsActionGroupName": {
+                                "type": "string"
+                            },
+                            "appInsightsActionGroupShortName": {
+                                "type": "string"
+                            },
+                            "appInsightsActionGroupEnabled": {
+                                "type": "boolean"
+                            },
+                            "appInsightsActionGroupReceivers": {
+                                "type": "object",
+                                "properties": {
+                                    "azureAppPushReceivers": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "emailAddress": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "emailAddress",
+                                                "name"
+                                            ]
+                                        },
+                                        "minItems": 1
+                                    },
+                                    "emailReceivers": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "emailAddress": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "emailAddress",
+                                                "name"
+                                            ]
+                                        },
+                                        "minItems": 1
+                                    },
+                                    "smsReceivers": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "countryCode": {
+                                                    "type": "string",
+                                                    "oneOf": [
+                                                        {
+                                                            "const": "1"
+                                                        }
+                                                    ]
+                                                },
+                                                "phoneNumber": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "countryCode",
+                                                "phoneNumber",
+                                                "name"
+                                            ]
+                                        },
+                                        "minItems": 1
+                                    },
+                                    "armRoleReceivers": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "roleId": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "minItems": 1
+                                    }
+                                },
+                                "minProperties": 1
+                            }
+                        },
+                        "required": [
+                            "appInsightsActionGroupName",
+                            "appInsightsActionGroupReceivers"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-insights-activity-log-alerts": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "appInsightsActivityLogAlertName": {
+                                "type": "string"
+                            },
+                            "appInsightsActivityLogAlertDescription": {
+                                "type": "string"
+                            },
+                            "appInsightsActivityLogAlertEnabled": {
+                                "type": "boolean"
+                            },
+                            "appInsightsActivityLogAlertActionGroups": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "description": "The name or the Action Group."
+                                        },
+                                        "webhookProperties": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "name"
+                                    ]
+                                },
+                                "minItems": 1
+                            },
+                            "appInsightsActivityLogAlertConditions": {
+                                "$ref": "#/definitions/app-insights-conditions"
+                            }
+                        },
+                        "required": [
+                            "appInsightsActivityLogAlertName",
+                            "appInsightsActivityLogAlertActionGroups",
+                            "appInsightsActivityLogAlertConditions"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-insights-alert-rules": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "appInsightsAlertRuleName": {
+                                "type": "string"
+                            },
+                            "appInsightsAlertRuleDescription": {
+                                "type": "string"
+                            },
+                            "appInsightsAlertRuleEnabled": {
+                                "type": "boolean"
+                            },
+                            "appInsightsAlertRuleActionGroups": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "description": "The name or the Action Group."
+                                        },
+                                        "webhookProperties": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "name"
+                                    ]
+                                },
+                                "minItems": 1
+                            },
+                            "appInsightsAlertRuleConditions": {
+                                "$ref": "#/definitions/app-insights-conditions"
+                            }
+                        },
+                        "required": [
+                            "appInsightsAlertRuleName",
+                            "appInsightsAlertRuleActionGroups",
+                            "appInsightsAlertRuleConditions"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-insights-conditions": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/app-insights-condition"
+            },
+            "minItems": 1
+        },
+        "app-insights-condition": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "type": "string"
+                },
+                "equals": {
+                    "type": "string"
+                },
+                "containsAny": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "anyOf": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/app-insights-any-of-condition"
+                    },
+                    "minItems": 1
+                }
+            }
+        },
+        "app-insights-any-of-condition": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "type": "string"
+                },
+                "equals": {
+                    "type": "string"
+                },
+                "containsAny": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
         }
     }
 }

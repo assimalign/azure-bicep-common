@@ -61,11 +61,8 @@ param appServicePlanName string
 @description('The resource group name in which the app service plan lives')
 param appServicePlanResourceGroup string = resourceGroup().name
 
-@description('The settings for the app service deployment')
-param appServiceSettings object = {}
-
 @description('')
-param appServiceConfigs object = {}
+param appServiceSiteConfigs object = {}
 
 @description('Custom Attributes to attach to the app service deployment')
 param appServiceTags object = {}
@@ -75,7 +72,7 @@ param appServiceTags object = {}
 // **************************************************************************************** //
 
 // Format Site Settings 
-var appServiceSiteSettings = [for setting in appServiceSettings.appServiceSiteSettings ?? []: {
+var siteSettings = [for setting in appServiceSiteConfigs.siteSettings: {
   name: replace(replace(setting.name, '@environment', environment), '@region', region)
   value: replace(replace(setting.value, '@environment', environment), '@region', region)
 }]
@@ -109,11 +106,11 @@ resource azAppServiceFunctionDeployment 'Microsoft.Web/sites@2021-02-01' = if (a
   }
   properties: {
     serverFarmId: azAppServicePlanResource.id
-    httpsOnly: appServiceSettings.httpsOnly
+    httpsOnly: contains(appServiceSiteConfigs, 'siteHttpsOnly') ? appServiceSiteConfigs.siteHttpsOnly : false
     clientAffinityEnabled: false
     // If there are slots to be deployed then let's have the slots override the site settings
     siteConfig: any(empty(appServiceSlots) ? {
-      alwaysOn: contains(appServiceConfigs, 'alwaysOn') ? appServiceConfigs.alowaysOn : false
+      alwaysOn: contains(appServiceSiteConfigs, 'siteAlwaysOn') ? appServiceSiteConfigs.siteAlwaysOn : false
       appSettings: union([
         {
           name: 'AzureWebJobsStorage'
@@ -131,15 +128,15 @@ resource azAppServiceFunctionDeployment 'Microsoft.Web/sites@2021-02-01' = if (a
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: appServicePlatform
         }
-      ], appServiceSiteSettings)
+      ], siteSettings)
     } : {})
   }
   tags: appServiceTags
-  resource azAppServiceLinkApim 'config' = if (contains(appServiceSettings, 'appServiceApimSettings')) {
+  resource azAppServiceLinkApim 'config' = if (contains(appServiceSiteConfigs, 'siteApimSettings')) {
     name: 'web'
     properties: {
       apiManagementConfig: {
-        id: replace(replace(resourceId(appServiceSettings.appServiceApimSettings.apimResourceGroupName, 'MMicrosoft.ApiManagement/apis', appServiceSettings.appServiceApimSettings.apimName, appServiceSettings.appServiceApimSettings.apimApiName), '@environment', environment), '@region', region)
+        id: replace(replace(resourceId(appServiceSiteConfigs.siteApimSettings.apimResourceGroupName, 'MMicrosoft.ApiManagement/apis', appServiceSiteConfigs.siteApimSettings.apimName, appServiceSiteConfigs.siteApimSettings.apimApiName), '@environment', environment), '@region', region)
       }
     }
   }
@@ -155,8 +152,10 @@ resource azAppServiceWebDeployment 'Microsoft.Web/sites@2021-01-01' = if (appSer
   }
   properties: {
     serverFarmId: azAppServicePlanResource.id
+    httpsOnly: contains(appServiceSiteConfigs, 'siteHttpsOnly') ? appServiceSiteConfigs.siteHttpsOnly : false
     // If there are slots to be deployed then let's have the slots override the site settings
     siteConfig: any(empty(appServiceSlots) ? {
+      alwaysOn: contains(appServiceSiteConfigs, 'siteAlwaysOn') ? appServiceSiteConfigs.siteAlwaysOn : false
       appSettings: union([
         {
           name: 'AzureWebJobsStorage'
@@ -178,36 +177,36 @@ resource azAppServiceWebDeployment 'Microsoft.Web/sites@2021-01-01' = if (appSer
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: appServicePlatform
         }
-      ], appServiceSiteSettings) // If there are slots to be deployed then let's have the slots override the site settings
+      ], siteSettings) // If there are slots to be deployed then let's have the slots override the site settings
     } : {})
   }
   tags: appServiceTags
-  resource azAppServiceLinkApim 'config' = if (contains(appServiceSettings, 'appServiceApimSettings')) {
+  resource azAppServiceLinkApim 'config' = if (contains(appServiceSiteConfigs, 'siteApimSettings')) {
     name: 'web'
     properties: {
       apiManagementConfig: {
-        id: replace(replace(resourceId(appServiceSettings.appServiceApimSettings.apimResourceGroupName, 'MMicrosoft.ApiManagement/apis', appServiceSettings.appServiceApimSettings.apimName, appServiceSettings.appServiceApimSettings.apimApiName), '@environment', environment), '@region', region)
+        id: replace(replace(resourceId(appServiceSiteConfigs.siteApimSettings.apimResourceGroupName, 'MMicrosoft.ApiManagement/apis', appServiceSiteConfigs.siteApimSettings.apimName, appServiceSiteConfigs.siteApimSettings.apimApiName), '@environment', environment), '@region', region)
       }
     }
   }
 }
 
 // 5. Set the Identity Provider if applicable
-module azAppServiceAuthSettings 'az.app.service.config.auth.v2.settings.bicep' = if (contains(appServiceSettings, 'appServiceAuthSettings')) {
-  name: contains(appServiceSettings, 'appServiceAuthSettings') ? 'az-app-service-config-auth-${guid(appServiceName)}' : 'no-app-service-auth-settings-to-deploy'
+module azAppServiceAuthSettings 'az.app.service.config.auth.v2.settings.bicep' = if (contains(appServiceSiteConfigs, 'siteAuthSettings')) {
+  name: contains(appServiceSiteConfigs, 'siteAuthSettings') ? 'az-app-service-config-auth-${guid(appServiceName)}' : 'no-app-service-auth-settings-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
     appServiceName: appServiceName
-    appServiceAuthUnauthenticatedAction: appServiceSettings.appServiceAuthSettings.appServiceAuthAction
-    appServiceAuthIdentityProviderType: appServiceSettings.appServiceAuthSettings.appServiceAuthIdentityProvider
-    appServiceAuthIdentityProviderAudiences: appServiceSettings.appServiceAuthSettings.appServiceAuthIdentityAudiences
-    appServiceAuthIdentityProviderClientSecretName: appServiceSettings.appServiceAuthSettings.appServiceAuthIdentityClientSecretName
-    appServiceAuthIdentityProviderClientId: appServiceSettings.appServiceAuthSettings.appServiceAuthIdentityClientId
-    appServiceAuthIdentityProviderOpenIdIssuer: appServiceSettings.appServiceAuthSettings.appServiceAuthIdentityOpenIdIssuer
-    appServiceAuthIdentityProviderGraphApiVersion: appServiceSettings.appServiceAuthSettings.appServiceAuthIdentityGraphApiVersion
-    appServiceAuthIdentityProviderScopes: appServiceSettings.appServiceAuthSettings.appServiceAuthIdentityScopes
+    appServiceAuthUnauthenticatedAction: appServiceSiteConfigs.siteAuthSettings.appServiceAuthAction
+    appServiceAuthIdentityProviderType: appServiceSiteConfigs.siteAuthSettings.appServiceAuthIdentityProvider
+    appServiceAuthIdentityProviderAudiences: appServiceSiteConfigs.siteAuthSettings.appServiceAuthIdentityAudiences
+    appServiceAuthIdentityProviderClientSecretName: appServiceSiteConfigs.siteAuthSettings.appServiceAuthIdentityClientSecretName
+    appServiceAuthIdentityProviderClientId: appServiceSiteConfigs.siteAuthSettings.appServiceAuthIdentityClientId
+    appServiceAuthIdentityProviderOpenIdIssuer: appServiceSiteConfigs.siteAuthSettings.appServiceAuthIdentityOpenIdIssuer
+    appServiceAuthIdentityProviderGraphApiVersion: appServiceSiteConfigs.siteAuthSettings.appServiceAuthIdentityGraphApiVersion
+    appServiceAuthIdentityProviderScopes: appServiceSiteConfigs.siteAuthSettings.appServiceAuthIdentityScopes
   }
   dependsOn: [
     azAppServiceFunctionDeployment
@@ -274,7 +273,7 @@ module azAppServiceSlotDeployment 'az.app.service.slot.bicep' = [for slot in app
     appServiceSlotPlanName: appServicePlanName
     appServiceSlotPlanResourceGroup: appServicePlanResourceGroup
     appServiceSlotPlatform: appServicePlatform
-    appServiceSlotSettings: appServiceSettings
+    appServiceSlotSiteConfigs: appServiceSiteConfigs
     appServiceSlotStorageAccountName: appServiceStorageAccountName
     appServiceSlotStorageAccountResourceGroup: appServiceStorageAccountResourceGroup
   }

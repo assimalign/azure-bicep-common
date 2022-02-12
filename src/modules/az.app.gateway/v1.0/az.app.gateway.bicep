@@ -17,10 +17,10 @@ param appGatewayName string
 param appGatewaySku object
 
 @description('')
-param appGatewayBackendConfigurations object
+param appGatewayBackend object
 
 @description('')
-param appGatewayFrontendConfigurations object
+param appGatewayFrontend object
 
 @description('')
 param appGatewayRoutingRules array
@@ -32,18 +32,18 @@ param appGatewayRoutingRules array
 // **************************************************************************************** //
 // 1. Get Virtual Network Subnet to reference for Ip Configurations
 resource azVirtualNetworkSubnetResource 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
-  name: replace(replace('${appGatewayFrontendConfigurations.privateIp.privateIpVirtualNetwork}/${appGatewayFrontendConfigurations.privateIp.privateIpSubnet}', '@environment', environment), '@region', region)
-  scope: resourceGroup(replace(replace('${appGatewayFrontendConfigurations.privateIp.privateIpResourceGroup}', '@environment', environment), '@region', region))
+  name: replace(replace('${appGatewayFrontend.privateIp.privateIpVirtualNetwork}/${appGatewayFrontend.privateIp.privateIpSubnet}', '@environment', environment), '@region', region)
+  scope: resourceGroup(replace(replace('${appGatewayFrontend.privateIp.privateIpResourceGroup}', '@environment', environment), '@region', region))
 }
 
 // 2. Get a Public IP address for the frontend of the gateway if applicable
-resource azPublicIpAddressNameResource 'Microsoft.Network/publicIPAddresses@2021-02-01' existing = if (!empty(appGatewayFrontendConfigurations.publicIp)) {
-  name: replace(replace('${appGatewayFrontendConfigurations.publicIp.publicIpName}', '@environment', environment), '@region', region)
-  scope: resourceGroup(replace(replace('${appGatewayFrontendConfigurations.publicIp.publicIpResourceGroup}', '@environment', environment), '@region', region))
+resource azPublicIpAddressNameResource 'Microsoft.Network/publicIPAddresses@2021-02-01' existing = if (!empty(appGatewayFrontend.publicIp)) {
+  name: replace(replace('${appGatewayFrontend.publicIp.publicIpName}', '@environment', environment), '@region', region)
+  scope: resourceGroup(replace(replace('${appGatewayFrontend.publicIp.publicIpResourceGroup}', '@environment', environment), '@region', region))
 }
 
 // Format the Backend Pool
-var backendAddressPools = [for pool in appGatewayBackendConfigurations.receivers: {
+var backendAddressPools = [for pool in appGatewayBackend.receivers: {
   name: pool.name
   properties: {
     backendAddresses: environment == 'dev' ? pool.addresses.dev : environment == 'qa' ? pool.addresses.qa : environment == 'uat' ? pool.addresses.uat : pool.addresses.prd
@@ -51,7 +51,7 @@ var backendAddressPools = [for pool in appGatewayBackendConfigurations.receivers
 }]
 
 //
-var backendPorts = [for port in appGatewayBackendConfigurations.ports: {
+var backendPorts = [for port in appGatewayBackend.ports: {
   name: port.name
   properties: {
     cookieBasedAffinity: 'Disabled'
@@ -62,7 +62,7 @@ var backendPorts = [for port in appGatewayBackendConfigurations.ports: {
 }]
 
 // Format Frontend Ports to receive requests on
-var frontenPorts = [for port in appGatewayFrontendConfigurations.ports: {
+var frontenPorts = [for port in appGatewayFrontend.ports: {
   name: port.name
   properties: {
     port: port.frontendPort
@@ -70,7 +70,7 @@ var frontenPorts = [for port in appGatewayFrontendConfigurations.ports: {
 }]
 
 // format HttpListener Vairables
-var frontendHttpListeners = [for listener in appGatewayFrontendConfigurations.listeners: {
+var frontendHttpListeners = [for listener in appGatewayFrontend.listeners: {
   name: listener.name
   properties: {
     frontendIPConfiguration: {
@@ -136,9 +136,9 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2020-11-01' =
         }
       }
     ]
-    frontendIPConfigurations: any(!empty(appGatewayFrontendConfigurations.publicIp) && !empty(appGatewayFrontendConfigurations.privateIp) ? [
+    frontendIPConfigurations: any(!empty(appGatewayFrontend.publicIp) && !empty(appGatewayFrontend.privateIp) ? [
       {
-        name: appGatewayFrontendConfigurations.publicIp.name
+        name: appGatewayFrontend.publicIp.name
         properties: {
           publicIPAddress: {
             id: azPublicIpAddressNameResource.id
@@ -146,25 +146,25 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2020-11-01' =
         }
       }
       {
-        name: appGatewayFrontendConfigurations.privateIp.name
+        name: appGatewayFrontend.privateIp.name
         properties: {
           subnet: {
             id: azVirtualNetworkSubnetResource.id
           }
         }
       }
-    ] : any(!empty(appGatewayFrontendConfigurations.publicIp)  ? [
+    ] : any(!empty(appGatewayFrontend.publicIp)  ? [
       {
-        name: appGatewayFrontendConfigurations.publicIp.name
+        name: appGatewayFrontend.publicIp.name
         properties: {
           publicIPAddress: {
             id: azPublicIpAddressNameResource.id
           }
         }
       }
-    ] : any(!empty(appGatewayFrontendConfigurations.privateIp) ? [
+    ] : any(!empty(appGatewayFrontend.privateIp) ? [
       {
-        name: appGatewayFrontendConfigurations.privateIp.name
+        name: appGatewayFrontend.privateIp.name
         properties: {
           subnet: {
             id: azVirtualNetworkSubnetResource.id

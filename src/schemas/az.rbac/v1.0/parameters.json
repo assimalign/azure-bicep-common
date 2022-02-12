@@ -10,7 +10,7 @@
                         "type": "object",
                         "properties": {
                             "resourceTypeAssigningRole": {
-                                "$ref": "#definitions/roleAssignmentResourceTypes"
+                                "$ref": "#/definitions/roleAssignmentResourceTypes"
                             },
                             "resourceRoleAssignmentScope": {
                                 "type": "string",
@@ -34,7 +34,7 @@
                                 "type": "string"
                             }
                         },
-                        "$ref": "#definitions/roleAssignmentDefinitions",
+                        "$ref": "#/definitions/roleAssignmentDefinitions",
                         "required": [
                             "resourceRoleName",
                             "resourceTypeAssigningRole",
@@ -55,7 +55,7 @@
             "description": "Schema for assigning RBAC roles as part of a nested resource deployment. This means that the service principal should be accessible from the resource deployment.",
             "properties": {
                 "resourceTypeAssigningRole": {
-                    "$ref": "#definitions/roleAssignmentResourceTypes"
+                    "$ref": "#/definitions/roleAssignmentResourceTypes"
                 },
                 "resourceRoleAssignmentScope": {
                     "type": "string",
@@ -76,7 +76,7 @@
                     "type": "string"
                 }
             },
-            "$ref": "#definitions/roleAssignmentDefinitions",
+            "$ref": "#/definitions/roleAssignmentDefinitions",
             "required": [
                 "resourceRoleName",
                 "resourceTypeAssigningRole",

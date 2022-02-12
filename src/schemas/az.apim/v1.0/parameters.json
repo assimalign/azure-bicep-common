@@ -2,7 +2,18 @@
     "$schema": "http://json-schema.org/draft-07/schema",
     "definitions": {
         "apim-gateways" : {
-
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            
+                        }
+                    }
+                }
+            }
         },
         "apim-gateway-backends": {
             "type": "object",
