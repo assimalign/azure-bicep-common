@@ -1,11 +1,11 @@
 {
-    "$schema": "http://schemas.assimalign.com/json/bicep/az.main/parameters.json",
+    "$schema": "../../src/schemas/az/parameters.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "resourceGroups":{
             "value": [
                 {
-                    "resourceGroupName": "asal-erp-app-rg-@environment-@location-01",
+                    "resourceGroupName": "asal-erp-app-rg-@environment-@region-01",
                     "resourceGroupLocation": "eastus"
                 }
             ]
@@ -13,8 +13,8 @@
         "appConfigurations": {
             "value": [
                 {
-                    "appConfigurationName": "asal-erp-@environment-@location-01",
-                    "appConfigurationResourceGroup": "asal-erp-app-rg-@environment-@location-01",
+                    "appConfigurationName": "asal-erp-app-cfg-@environment-@region-01",
+                    "appConfigurationResourceGroup": "asal-erp-app-rg-@environment-@region-01",
                     "appConfigurationEnableMsi": false,
                     "appConfigurationEnableRbac": false,
                     "appConfigurationDisablePublicAccess": false,
@@ -22,17 +22,23 @@
                         {
                             "appConfigurationKey": "TestKey",
                             "appConfigurationValue": "TestValue",
+                            "appConfigurationLabels": [
+                                "label1",
+                                "lable2"
+                            ],
                             "appConfigurationValueContentType": "text/plain"
                         }
                     ],
-                    
                     "appConfigurationSku":{
                         "dev": "Free",
                         "qa": "Standard",
                         "uat": "Standard",
                         "prd": "Standard"
+                    },
+                    "appConfigurationTags": {
+                        "company": "Assimalign LLC",
+                        "project": "assimalign-erp-core"
                     }
-                    
                 }
             ]
         }
