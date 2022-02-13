@@ -33,6 +33,9 @@ param appServiceSlotMsiRoleAssignments array = []
 @description('The name of the Function App Slot')
 param appServiceSlotName string
 
+@description('The location/region the Azure App Service will be deployed to. ')
+param appServiceSlotLocation string = resourceGroup().location
+
 @allowed([
   'dotnet'
   'java'
@@ -94,14 +97,14 @@ resource azAppServiceInsightsResource 'Microsoft.Insights/components@2020-02-02-
 // 4.1 Deploy Function App, if applicable
 resource azAppServiceFunctionSlotDeployment 'Microsoft.Web/sites/slots@2021-01-01' = if (appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux') {
   name: appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux' ? replace(replace('${appServiceName}/${appServiceSlotName}', '@environment', environment), '@region', region) : 'no-function-app-slot-to-deploy'
-  location: resourceGroup().location
+  location: appServiceSlotLocation
   kind: appServiceSlotType
   identity: {
     type: appServiceSlotMsiEnabled == true ? 'SystemAssigned' : 'None'
   }
   properties: {
     serverFarmId: azAppServicePlanResource.id
-    httpsOnly: appServiceSlotSiteConfigs.httpsOnly
+    httpsOnly: contains(appServiceSlotSiteConfigs, 'siteHttpsOnly') ? appServiceSlotSiteConfigs.siteHttpsOnly : false
     clientAffinityEnabled: false
     siteConfig: {
       alwaysOn: contains(appServiceSlotSiteConfigs, 'siteAlwaysOn') ? appServiceSlotSiteConfigs.siteAlwaysOn : false
@@ -131,13 +134,15 @@ resource azAppServiceFunctionSlotDeployment 'Microsoft.Web/sites/slots@2021-01-0
 // 4.2 Deploy Web App, if applicable
 resource azAppServiceWebSlotDeployment 'Microsoft.Web/sites/slots@2021-01-01' = if (appServiceSlotType == 'web') {
   name: appServiceSlotType == 'web' ? replace('${appServiceName}/${appServiceSlotName}', '@environment', environment) : 'no-web-app/no-web-app-slot-to-deploy'
-  location: resourceGroup().location
+  location: appServiceSlotLocation
   identity: {
     type: appServiceSlotMsiEnabled == true ? 'SystemAssigned' : 'None'
   }
   properties: {
     serverFarmId: azAppServicePlanResource.id
+    httpsOnly: contains(appServiceSlotSiteConfigs, 'siteHttpsOnly') ? appServiceSlotSiteConfigs.siteHttpsOnly : false
     siteConfig: {
+      alwaysOn: contains(appServiceSlotSiteConfigs, 'siteAlwaysOn') ? appServiceSlotSiteConfigs.siteAlwaysOn : false
       appSettings: union([
         {
           name: 'AzureWebJobsStorage'
@@ -183,22 +188,22 @@ module azAppServiceFunctionSlotFunctionsDeployment 'az.app.service.slot.function
 }]
 
 // 6. Set the Slots Identity Provider if applicable
-module azAppServiceAuthSettings 'az.app.service.slot.config.auth.v2.settings.bicep' = if (!empty(appServiceSlotSiteConfigs.authentication ?? {})) {
-  name: !empty(appServiceSlotSiteConfigs.authentication ?? {}) ? 'az-app-slot-config-auth-${guid('${appServiceName}/${appServiceSlotName}')}' : 'no-app-service-slot-auth-settings-to-deploy'
+module azAppServiceAuthSettings 'az.app.service.slot.config.auth.v2.settings.bicep' = if (contains(appServiceSlotSiteConfigs, 'siteAuthSettings')) {
+  name: contains(appServiceSlotSiteConfigs, 'siteAuthSettings') ? 'az-app-slot-config-auth-${guid('${appServiceName}/${appServiceSlotName}')}' : 'no-app-service-slot-auth-settings-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
-    appName: appServiceName
-    appSlotName: appServiceSlotName
-    appSlotAuthUnauthenticatedAction: appServiceSlotSiteConfigs.authentication.action
-    appSlotAuthIdentityProviderType: appServiceSlotSiteConfigs.authentication.identityProvider
-    appSlotAuthIdentityProviderAudiences: appServiceSlotSiteConfigs.authentication.identityAudiences
-    appSlotAuthIdentityProviderClientSecretName: appServiceSlotSiteConfigs.authentication.identityClientSecretName
-    appSlotAuthIdentityProviderClientId: appServiceSlotSiteConfigs.authentication.identityClientId
-    appSlotAuthIdentityProviderOpenIdIssuer: appServiceSlotSiteConfigs.authentication.identityOpenIdIssuer
-    appSlotAuthIdentityProviderGraphApiVersion: appServiceSlotSiteConfigs.authentication.identityGraphApiVersion
-    appSlotAuthIdentityProviderScopes: appServiceSlotSiteConfigs.authentication.identityScopes
+    appServiceName: appServiceName
+    appServiceSlotName: appServiceSlotPlanName
+    appServiceSlotAuthUnauthenticatedAction: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthAction
+    appServiceSlotAuthIdentityProviderType: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthIdentityProvider
+    appServiceSlotAuthIdentityProviderAudiences: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthIdentityAudiences
+    appServiceSlotAuthIdentityProviderClientSecretName: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthIdentityClientSecretName
+    appServiceSlotAuthIdentityProviderClientId: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthIdentityClientId
+    appServiceSlotAuthIdentityProviderOpenIdIssuer: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthIdentityOpenIdIssuer
+    appServiceSlotAuthIdentityProviderGraphApiVersion: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthIdentityGraphApiVersion
+    appServiceSlotAuthIdentityProviderScopes: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthIdentityScopes
   }
   dependsOn: [
     azAppServiceFunctionSlotDeployment

@@ -13,6 +13,9 @@ param region string = ''
 @description('The name of the Event hub Resource to be deployed')
 param eventHubNamespace string
 
+@description('')
+param eventHubNamespaceLocation string = resourceGroup().location
+
 @description('A list of Event Hubs to deploy under the Namespace')
 param eventHubs array = []
 
@@ -33,7 +36,7 @@ param eventHubPolicies array = []
 // 1. Deploy Event Hub Namespace
 resource azEventHubNamespaceDeployment 'Microsoft.EventHub/namespaces@2021-01-01-preview' = {
   name: replace(replace('${eventHubNamespace}', '@environment', environment), '@region', region)
-  location: resourceGroup().location
+  location: eventHubNamespaceLocation
   identity: {
     type: eventHubEnableMsi == true && !empty(eventHubSku) ? 'SystemAssigned' : 'None'
   }

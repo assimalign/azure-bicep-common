@@ -7,69 +7,25 @@
                 "value": {
                     "type": "array",
                     "items": {
-                        "type":"object",
+                        "type": "object",
                         "properties": {
-                            "name": {
+                            "notificationHubNamespaceName": {
                                 "type": "string"
                             },
-                            "sku": {
+                            "notificationHubNamespaceSku": {
                                 "type": "object",
                                 "properties": {
                                     "dev": {
-                                        "type": "string",
-                                        "oneOf": [
-                                            {
-                                                "const": "Free"
-                                            },
-                                            {
-                                                "const": "Basic"
-                                            },
-                                            {
-                                                "const": "Standard"
-                                            }
-                                        ]
+                                        "$ref": "#/definitions/notification-hub-namespace-sku"
                                     },
                                     "qa": {
-                                        "type": "string",
-                                        "oneOf": [
-                                            {
-                                                "const": "Free"
-                                            },
-                                            {
-                                                "const": "Basic"
-                                            },
-                                            {
-                                                "const": "Standard"
-                                            }
-                                        ]
+                                        "$ref": "#/definitions/notification-hub-namespace-sku"
                                     },
                                     "uat": {
-                                        "type": "string",
-                                        "oneOf": [
-                                            {
-                                                "const": "Free"
-                                            },
-                                            {
-                                                "const": "Basic"
-                                            },
-                                            {
-                                                "const": "Standard"
-                                            }
-                                        ]
+                                        "$ref": "#/definitions/notification-hub-namespace-sku"
                                     },
                                     "prd": {
-                                        "type": "string",
-                                        "oneOf": [
-                                            {
-                                                "const": "Free"
-                                            },
-                                            {
-                                                "const": "Basic"
-                                            },
-                                            {
-                                                "const": "Standard"
-                                            }
-                                        ]
+                                        "$ref": "#/definitions/notification-hub-namespace-sku"
                                     }
                                 },
                                 "required": [
@@ -79,20 +35,20 @@
                                     "prd"
                                 ]
                             },
-                            "hubs": {
+                            "notificationHubNamespaceHubs": {
                                 "type": "array",
                                 "items": {
-                                    "$ref": "./az.notification.namespace.hub.schema.json#definitions/notificationNamespaceHub"
+                                    "$ref": "#/definitions/notification-hub-namespace-hub"
                                 }
                             },
-                            "policies": {
+                            "notificationHubNamespacePolicies": {
                                 "type": "array",
                                 "items": {
                                     "properties": {
-                                        "name": {
+                                        "policyName": {
                                             "type": "string"
                                         },
-                                        "permissions": {
+                                        "policyPermissions": {
                                             "type": "array",
                                             "items": {
                                                 "type": "string",
@@ -110,34 +66,29 @@
                                             },
                                             "minItems": 1
                                         }
-                                    }
+                                    },
+                                    "required": [
+                                        "policyName",
+                                        "policyPermissions"
+                                    ]
                                 }
                             },
-                            "tags": {
-                                "oneOf": [
-                                    {
-                                        "type": "object",
-                                        "patternProperties": {
-                                            "^[a-z]": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "minProperties": 1
-                                    },
-                                    {
-                                        "type": "null"
+                            "notificationHubNamespaceTags": {
+                                "type": "object",
+                                "patternProperties": {
+                                    "^[a-z]": {
+                                        "type": "string"
                                     }
-                                ]
+                                },
+                                "minProperties": 1
                             }
                         },
                         "required": [
-                            "name",
-                            "tags",
-                            "sku",
-                            "hubs",
-                            "policies"
+                            "notificationHubNamespaceName",
+                            "notificationHubNamespaceSku"
                         ]
-                    }
+                    },
+                    "minItems": 1
                 }
             },
             "required": [
@@ -149,31 +100,48 @@
             "items": {
                 "type": "object",
                 "properties": {
-                    "name": {
+                    "notificationHubName": {
                         "type": "string",
                         "description": "The name of the Notification Namespace Hub"
                     },
-                    "namespace": {
+                    "notificationHubLocation": {
+                        "type": "string"
+                    },
+                    "notificationHubNamespaceName": {
                         "type": "string",
                         "description": "The name of the notification Namespace."
                     }
                 },
                 "required": [
-                    "name",
-                    "namespace"
+                    "notificationHubName",
+                    "notificationHubNamespaceName"
                 ]
             }
         },
         "notification-hub-namespace-hub": {
             "type": "object",
             "properties": {
-                "name": {
+                "notificationHubName": {
                     "type": "string",
                     "description": "The name of the Notification Namespace Hub"
                 }
             },
             "required": [
-                "name"
+                "notificationHubName"
+            ]
+        },
+        "notification-hub-namespace-sku": {
+            "type": "string",
+            "oneOf": [
+                {
+                    "const": "Free"
+                },
+                {
+                    "const": "Basic"
+                },
+                {
+                    "const": "Standard"
+                }
             ]
         }
     }

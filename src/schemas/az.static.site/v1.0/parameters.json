@@ -8,10 +8,10 @@
                     "items": {
                         "type": "object",
                         "properties": {
-                            "name": {
+                            "staticSiteName": {
                                 "type": "string"
                             },
-                            "location": {
+                            "staticSiteLocation": {
                                 "type": "string",
                                 "oneOf": [
                                     {
@@ -31,7 +31,7 @@
                                     }
                                 ]
                             },
-                            "sku": {
+                            "staticSiteSku": {
                                 "type": "object",
                                 "properties": {
                                     "dev": {
@@ -86,7 +86,7 @@
                                     "prd"
                                 ]
                             },
-                            "tags": {
+                            "staticSiteTags": {
                                 "oneOf": [
                                     {
                                         "type": "object",
@@ -104,12 +104,13 @@
                             }
                         },
                         "required": [
-                            "name",
-                            "location",
-                            "sku",
-                            "tags"
+                            "staticSiteName",
+                            "staticSiteLocation",
+                            "staticSiteSku",
+                            "staticSiteTags"
                         ]
-                    }
+                    },
+                    "minItems": 1
                 }
             },
             "required": [

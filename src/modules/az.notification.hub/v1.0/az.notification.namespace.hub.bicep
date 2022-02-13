@@ -11,17 +11,20 @@ param environment string = 'dev'
 param region string = ''
 
 @description('The name of the Notification Namespace to deploy')
-param notificationNamespaceName string
+param notificationHubName string
+
+@description('The location/region to deploy the Azure Notification Hub.')
+param notificationHubLocation string = resourceGroup().location
 
 @description('The name of the notification namespace hub')
-param notificationNamespaceHubName string
+param notificationHubNamespaceName string
 
 
 // 1. Deploy the notification namespace hub
 resource azNotificationNamespaceHubDeployment 'Microsoft.NotificationHubs/namespaces/notificationHubs@2017-04-01' = {
-  name: replace(replace('${notificationNamespaceName}/${notificationNamespaceHubName}', '@environment', environment), '@region', region)
-  location: resourceGroup().location
+  name: replace(replace('${notificationHubNamespaceName}/${notificationHubName}', '@environment', environment), '@region', region)
+  location: notificationHubLocation
   properties: {
-    name: replace(replace('${notificationNamespaceName}/${notificationNamespaceHubName}', '@environment', environment), '@region', region)
+    name: replace(replace('${notificationHubNamespaceName}/${notificationHubName}', '@environment', environment), '@region', region)
   }
 }

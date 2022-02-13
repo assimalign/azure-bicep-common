@@ -8,21 +8,24 @@
                     "items": {
                         "type": "object",
                         "properties": {
-                            "name": {
+                            "logAnalyticsWorkspaceName": {
                                 "type": "string"
                             },
-                            "retention": {
+                            "logAnalyticsWorkspaceLocation": {
+                                "type": "string"
+                            },
+                            "logAnalyticsWorkspaceRetention": {
                                 "type": "number",
                                 "description": "Number of Days to retain data",
                                 "default": 30,
                                 "minimum": 2
                             },
-                            "dailyQuota": {
+                            "logAnalyticsWorkspaceDailyQuota": {
                                 "type": "number",
                                 "description": "The Daily Quota of ingestion in GBs",
                                 "default": -1
                             },
-                            "sku": {
+                            "logAnalyticsWorkspaceSku": {
                                 "type": "object",
                                 "properties": {
                                     "dev": {
@@ -153,7 +156,7 @@
                                     "prd"
                                 ]
                             },
-                            "publicNetworkAccessForIngestion": {
+                            "logAnalyticsWorkspacePublicNetworkAccessForIngestion": {
                                 "type": "string",
                                 "default": "Enabled",
                                 "oneOf": [
@@ -165,7 +168,7 @@
                                     }
                                 ]
                             },
-                            "publicNetworkAccessForQuery": {
+                            "logAnalyticsWorkspacePublicNetworkAccessForQuery": {
                                 "type": "string",
                                 "default": "Enabled",
                                 "oneOf": [
@@ -177,33 +180,22 @@
                                     }
                                 ]
                             },
-                            "tags": {
-                                "oneOf": [
-                                    {
-                                        "type": "object",
-                                        "patternProperties": {
-                                            "^[a-z]": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "minProperties": 1
-                                    },
-                                    {
-                                        "type": "null"
+                            "logAnalyticsWorkspaceTags": {
+                                "type": "object",
+                                "patternProperties": {
+                                    "^[a-z]": {
+                                        "type": "string"
                                     }
-                                ]
+                                },
+                                "minProperties": 1
                             }
                         },
                         "required": [
-                            "name",
-                            "sku",
-                            "retention",
-                            "dailyQuota",
-                            "publicNetworkAccessForIngestion",
-                            "publicNetworkAccessForQuery",
-                            "tags"
+                            "logAnalyticsWorkspaceName",
+                            "logAnalyticsWorkspaceSku"
                         ]
-                    }
+                    },
+                    "minItems": 1
                 }
             },
             "required": [

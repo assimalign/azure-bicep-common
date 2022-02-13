@@ -11,6 +11,9 @@
                             "appServiceName": {
                                 "type": "string"
                             },
+                            "appServiceLocation": {
+                                "type": "string"
+                            },
                             "appServiceType": {
                                 "type": "string",
                                 "oneOf": [
@@ -208,6 +211,9 @@
                                 "description": "The Azure App Service in which the slot will rollup under."
                             },
                             "appServiceSlotName": {
+                                "type": "string"
+                            },
+                            "appServiceSlotLocation": {
                                 "type": "string"
                             },
                             "appServiceSlotType": {
@@ -446,6 +452,9 @@
                             "appServicePlanName": {
                                 "type": "string"
                             },
+                            "appServicePlanLocation": {
+                                "type": "string"
+                            },
                             "appServicePlanOs": {
                                 "type": "string",
                                 "oneOf": [
@@ -485,10 +494,10 @@
                                 ]
                             },
                             "appServicePlanAseName": {
-                                "type":"string"
+                                "type": "string"
                             },
                             "appServicePlanAseResourceGroup": {
-                                "type":"string"
+                                "type": "string"
                             },
                             "appServicePlanTags": {
                                 "type": "object",
@@ -1312,131 +1321,123 @@
             ]
         },
         "app-services-auth-settings": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "object",
-                    "default": {
-                        "azureIdentity": {
-                            "clientId": "",
-                            "clientSecretName": "",
-                            "openIdIssuer": "https://sts.windows.net/{tenant Id} or https://login.microsoft.com/{tenant Id}"
+            "type": "object",
+            "default": {
+                "appServiceAuthAction": "Return401",
+                "appServiceAuthIdentityClientId": "",
+                "appServiceAuthIdentityClientSecretName": "",
+                "appServiceAuthIdentityOpenIdIssuer": "https://sts.windows.net/{tenant Id} or https://login.microsoft.com/{tenant Id}"
+            },
+            "properties": {
+                "appServiceAuthAction": {
+                    "type": "string",
+                    "description": "The unauthenticated action",
+                    "oneOf": [
+                        {
+                            "const": "RedirectToLoginPage"
+                        },
+                        {
+                            "const": "AllowAnonymous"
+                        },
+                        {
+                            "const": "Return401"
+                        },
+                        {
+                            "const": "Return403"
                         }
-                    },
+                    ]
+                },
+                "appServiceAuthIdentityProvider": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "AzureAD"
+                        },
+                        {
+                            "const": "Google"
+                        },
+                        {
+                            "const": "Github"
+                        },
+                        {
+                            "const": "Facebook"
+                        }
+                    ]
+                },
+                "appServiceAuthIdentityClientSecretName": {
+                    "type": "string"
+                },
+                "appServiceAuthIdentityClientId": {
+                    "type": "object",
                     "properties": {
-                        "appServiceAuthAction": {
-                            "type": "string",
-                            "description": "The unauthenticated action",
-                            "oneOf": [
-                                {
-                                    "const": "RedirectToLoginPage"
-                                },
-                                {
-                                    "const": "AllowAnonymous"
-                                },
-                                {
-                                    "const": "Return401"
-                                },
-                                {
-                                    "const": "Return403"
-                                }
-                            ]
-                        },
-                        "appServiceAuthIdentityProvider": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "AzureAD"
-                                },
-                                {
-                                    "const": "Google"
-                                },
-                                {
-                                    "const": "Github"
-                                },
-                                {
-                                    "const": "Facebook"
-                                }
-                            ]
-                        },
-                        "appServiceAuthIdentityClientSecretName": {
+                        "dev": {
                             "type": "string"
                         },
-                        "appServiceAuthIdentityClientId": {
-                            "type": "object",
-                            "properties": {
-                                "dev": {
-                                    "type": "string"
-                                },
-                                "qa": {
-                                    "type": "string"
-                                },
-                                "uat": {
-                                    "type": "string"
-                                },
-                                "prd": {
-                                    "type": "string"
-                                }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                        "qa": {
+                            "type": "string"
                         },
-                        "appServiceAuthIdentityOpenIdIssuer": {
-                            "type": "object",
-                            "properties": {
-                                "dev": {
-                                    "type": "string"
-                                },
-                                "qa": {
-                                    "type": "string"
-                                },
-                                "uat": {
-                                    "type": "string"
-                                },
-                                "prd": {
-                                    "type": "string"
-                                }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                        "uat": {
+                            "type": "string"
                         },
-                        "appServiceAuthIdentityScopes": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        },
-                        "appServiceAuthIdentityAudiences": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        },
-                        "appServiceAuthIdentityGraphApiVersion": {
+                        "prd": {
                             "type": "string"
                         }
                     },
                     "required": [
-                        "appServiceAuthAction",
-                        "appServiceAuthIdentityProvider",
-                        "appServiceAuthIdentityClientId",
-                        "appServiceAuthIdentityClientSecretName",
-                        "appServiceAuthIdentityOpenIdIssuer",
-                        "appServiceAuthIdentityScopes",
-                        "appServiceAuthIdentityAudiences",
-                        "appServiceAuthIdentityGraphApiVersion"
+                        "dev",
+                        "qa",
+                        "uat",
+                        "prd"
                     ]
+                },
+                "appServiceAuthIdentityOpenIdIssuer": {
+                    "type": "object",
+                    "properties": {
+                        "dev": {
+                            "type": "string"
+                        },
+                        "qa": {
+                            "type": "string"
+                        },
+                        "uat": {
+                            "type": "string"
+                        },
+                        "prd": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "dev",
+                        "qa",
+                        "uat",
+                        "prd"
+                    ]
+                },
+                "appServiceAuthIdentityScopes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "appServiceAuthIdentityAudiences": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "appServiceAuthIdentityGraphApiVersion": {
+                    "type": "string"
                 }
+            },
+            "required": [
+                "appServiceAuthAction",
+                "appServiceAuthIdentityProvider",
+                "appServiceAuthIdentityClientId",
+                "appServiceAuthIdentityClientSecretName",
+                "appServiceAuthIdentityOpenIdIssuer",
+                "appServiceAuthIdentityScopes",
+                "appServiceAuthIdentityAudiences",
+                "appServiceAuthIdentityGraphApiVersion"
             ]
         },
         "app-service-plan-sku": {

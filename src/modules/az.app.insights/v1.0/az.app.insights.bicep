@@ -10,8 +10,11 @@ param environment string = 'dev'
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
-@description('The name of the application insights to deploy')
+@description('The name of the application insights to deploy.')
 param appInsightsName string
+
+@description('The location/region the Azure App Insights instance will be deployed to.')
+param appInsightsLocation string = resourceGroup().location
 
 @allowed([
   'web'
@@ -42,17 +45,14 @@ resource azAppLogAnalyticsWorkspaceDeployment 'Microsoft.OperationalInsights/wor
 // 2. Deploy the new instance of App insights under the requested log workspace
 resource azAppInsightsComponentsDeployment 'Microsoft.Insights/components@2020-02-02-preview' = {
   name: replace(replace('${appInsightsName}', '@environment', environment), '@region', region)
-  location: resourceGroup().location
+  location: appInsightsLocation
   kind: appInsightsKind
   properties: {
     Application_Type: appInsightsKind == 'web' ? 'web' : 'other'
     WorkspaceResourceId: azAppLogAnalyticsWorkspaceDeployment.id
-   
   }
   tags: appInsightsTags
 }
-
-
 
 // 3. Return Deployment Output
 output resource object = azAppInsightsComponentsDeployment

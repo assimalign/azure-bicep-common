@@ -12,6 +12,9 @@
                             "appGatewayName": {
                                 "type": "string"
                             },
+                            "appGatewayLocation": {
+                                "type": "string"
+                            },
                             "appGatewaySku": {
                                 "type": "object",
                                 "properties": {

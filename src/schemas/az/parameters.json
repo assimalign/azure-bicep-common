@@ -164,12 +164,20 @@
                         }
                     ]
                 },
-                // "staticSites": {
-                //     "$ref": "./az.static.site.schema.json#definitions/staticSites"
-                // },
-                // "logAnalyticWorkspaces": {
-                //     "$ref": "./az.log.analytics.workspace.schema.json#definitions/logAnalyticWorkspaces"
-                // },
+                "staticSites": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.static.site/v1.0/parameters.json#/definitions/static-sites"
+                        }
+                    ]
+                },
+                "logAnalyticWorkspaces": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.log.analytics.workspace/v1.0/parameters.json#/definitions/log-analytic-workspaces"
+                        }
+                    ]
+                },
                 "virtualNetworks": {
                     "oneOf": [
                         {
@@ -183,6 +191,9 @@
                             "$ref": "../az.virtual.network/v1.0/parameters.json#/definitions/virtual-networks-peering"
                         }
                     ]
+                },
+                "vpnGateway": {
+
                 },
                 // "virtualPrivateNetworkGateways": {
                 //     "$ref": "./az.virtual.private.network.gateway.schema.json#definitions/virtualPrivateNetworkGateways"
@@ -246,18 +257,35 @@
                         }
                     ]
                 },
-                // "eventGridDomains": {
-                //     "$ref": "az.event.grid.domain.schema.json#definitions/eventGridDomains"
-                // },
-                // "eventGridDomainTopics": {
-                //     "$ref": "az.event.grid.domain.topic.schema.json#definitions/eventGridDomainTopics"
-                // },
-                // "eventGridDomainTopicSubscriptions": {
-                //     "$ref": "az.event.grid.domain.topic.subscription.schema.json#definitions/eventGridDomainTopicSubscriptions"
-                // },
-                // "eventGridDomainSubscriptions": {
-                //     "$ref": "az.event.grid.domain.subscription.schema.json#definitions/eventGridDomainSubscriptions"
-                // },  
+                "eventGridDomains": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.event.grid/v1.0/parameters.json#/definitions/event-grid-domains"
+                        }
+                    ]
+                   
+                },
+                "eventGridDomainTopics": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.event.grid/v1.0/parameters.json#/definitions/event-grid-domain-topics"
+                        }
+                    ]
+                },
+                "eventGridDomainTopicSubscriptions": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.event.grid/v1.0/parameters.json#/definitions/event-grid-domain-topic-subscriptions"
+                        }
+                    ]
+                },
+                "eventGridDomainSubscriptions": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.event.grid/v1.0/parameters.json#/definitions/event-grid-domain-subscriptions"
+                        }
+                    ]
+                },  
                 "serviceBusNamespaces": {
                     "oneOf": [
                         {
@@ -286,12 +314,20 @@
                         }
                     ]
                 },
-                // "notificationNamespaces": {
-                //     "$ref": "az.notification.namespace.schema.json#definitions/notificationNamespaces"
-                // },
-                // "notificationNamespaceHubs": {
-                //     "$ref": "az.notification.namespace.hub.schema.json#definitions/notificationNamespaceHubs"
-                // },
+                "notificationNamespaces": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.notification.hub/v1.0/parameters.json#/definitions/notification-hub-namespaces"
+                        }
+                    ]
+                },
+                "notificationNamespaceHubs": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.notification.hub/v1.0/parameters.json#/definitions/notification-hub-namespace-hubs"
+                        }
+                    ]
+                },
                 "keyVaults": {
                     "oneOf": [
                         {

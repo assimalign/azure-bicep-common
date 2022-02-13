@@ -93,43 +93,7 @@
                                 ]
                             },
                             "keyVaultPrivateEndpoint": {
-                                "oneOf": [
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            "privateEndpointName": {
-                                                "type": "string"
-                                            },
-                                            "privateEndpointDnsZone": {
-                                                "type": "string"
-                                            },
-                                            "privateEndpointDnsZoneResourceGroup": {
-                                                "type": "string",
-                                                "description": "The resource group in which the Azure Private DNS Zone belongs to."
-                                            },
-                                            "privateEndpointVirtualNetwork": {
-                                                "type": "string"
-                                            },
-                                            "privateEndpointVirtualNetworkSubnet": {
-                                                "type": "string"
-                                            },
-                                            "privateEndpointVirtualNetworkResourceGroup": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "required": [
-                                            "privateEndpointName",
-                                            "privateEndpointDnsZone",
-                                            "privateEndpointDnsZoneResourceGroup",
-                                            "privateEndpointVirtualNetwork",
-                                            "privateEndpointVirtualNetworkSubnet",
-                                            "privateEndpointVirtualNetworkResourceGroup"
-                                        ]
-                                    },
-                                    {
-                                        "type": "null"
-                                    }
-                                ]
+                                "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
                             },
                             "keyVaultVirtualNetworks": {
                                 "type":"array",

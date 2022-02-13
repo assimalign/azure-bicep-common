@@ -17,9 +17,7 @@ param eventGridDomainName string
 param eventGridDomainTopicName string
 
 @description('A collectio nof subscriptions to deploy with the Event Grid Topic')
-param eventGridDomainSubscriptions array = []
-
-
+param eventGridDomainTopicSubscriptions array = []
 
 // 1. Deploy the Event Grid Domain Topic
 resource azEventGridTopicDomainDeployment 'Microsoft.EventGrid/domains/topics@2020-10-15-preview' = {
@@ -27,24 +25,24 @@ resource azEventGridTopicDomainDeployment 'Microsoft.EventGrid/domains/topics@20
 }
 
 // 2. Deploy the Event Grid Domain Topic Subscriptions, if applicable
-module azEventGridDomainTopicSubscriptionsDeployment 'az.event.grid.domain.topic.subscription.bicep' = [for (subscription, index) in eventGridDomainSubscriptions: if (!empty(subscription)) {
-  name: !empty(eventGridDomainSubscriptions) ? toLower('az-egd-subscriptions-${guid('${azEventGridTopicDomainDeployment.id}/${subscription.name}')}') : 'no-egd-subscription-to-deploy'
+module azEventGridDomainTopicSubscriptionsDeployment 'az.event.grid.domain.topic.subscription.bicep' = [for (subscription, index) in eventGridDomainTopicSubscriptions: if (!empty(subscription)) {
+  name: !empty(eventGridDomainTopicSubscriptions) ? toLower('az-egd-topic-sub-${guid('${azEventGridTopicDomainDeployment.id}/${subscription.eventGridDomainTopicSubscriptionName}')}') : 'no-egd-subscription-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
     eventGridDomainName: eventGridDomainName
     eventGridDomainTopicName: eventGridDomainTopicName
-    eventGridEventTypes: subscription.eventTypes
-    eventGridSubscriptionName: subscription.name
-    eventGridSubscriptionEndpointName: subscription.endpointName
-    eventGridSubscriptionEndpointResourceGroup: subscription.endpointResourceGroup
-    eventGridSubscriptionEndpointType: subscription.endpointType
-    eventGridEventFilters: subscription.eventFilters
-    eventGridEventLabels: subscription.eventTypes
-    eventGridDeadLetterDestination: subscription.eventDeadLetterDestination
-    eventGridEventDeliveryHeaders: subscription.eventHeaders
-    eventGridSubscriptionUseMsi: subscription.eventMsiEnabled
+    eventGridDomainTopicSubscriptionName: subscription.eventGridDomainTopicSubscriptionName
+    eventGridDomainTopicSubscriptionEndpointType: subscription.eventGridDomainTopicSubscriptionEndpointType
+    eventGridDomainTopicSubscriptionEndpointName: subscription.eventGridDomainTopicSubscriptionEndpointName
+    eventGridDomainTopicSubscriptionEndpointResourceGroup: subscription.eventGridDomainTopicSubscriptionEndpointResourceGroup
+    eventGridDomainTopicSubscriptionEventTypes: contains(subscription, 'eventGridDomainTopicSubscriptionEventTypes') ? subscription.eventGridDomainTopicSubscriptionEventTypes : []
+    eventGridDomainTopicSubscriptionEventFilters: contains(subscription, 'eventGridDomainTopicSubscriptionEventFilters') ? subscription.eventGridDomainTopicSubscriptionEventFilters : []
+    eventGridDomainTopicSubscriptionEventLabels: contains(subscription, 'eventGridDomainTopicSubscriptionEventLabels') ? subscription.eventGridDomainTopicSubscriptionEventLabels : []
+    eventGridDomainTopicSubscriptionDeadLetterDestination: contains(subscription, 'eventGridDomainTopicSubscriptionDeadLetterDestination') ? subscription.eventGridDomainTopicSubscriptionDeadLetterDestination : {}
+    eventGridDomainTopicSubscriptionEventHeaders: contains(subscription, 'eventGridDomainTopicSubscriptionEventHeaders') ? subscription.eventGridDomainTopicSubscriptionEventHeaders : []
+    eventGridDomainTopicSubscriptionMsiEnabled: contains(subscription, 'eventGridDomainTopicSubscriptionMsiEnabled') ? subscription.eventGridDomainTopicSubscriptionMsiEnabled : false
   }
 }]
 

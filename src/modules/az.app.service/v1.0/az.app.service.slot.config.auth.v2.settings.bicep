@@ -11,12 +11,13 @@ param environment string = 'dev'
 param region string = ''
 
 @description('The Function App Name to be deployed')
-param appName string
-
-param appSlotName string 
+param appServiceName string
 
 @description('The name of the resource group the app lives in')
-param appResourceGroup string = resourceGroup().name
+param appServiceResourceGroup string = resourceGroup().name
+
+@description('')
+param appServiceSlotName string 
 
 @allowed([
   'RedirectToLoginPage'
@@ -25,7 +26,7 @@ param appResourceGroup string = resourceGroup().name
   'Return403'
 ])
 @description('')
-param appSlotAuthUnauthenticatedAction string
+param appServiceSlotAuthUnauthenticatedAction string
 
 @allowed([
   'AzureAD'
@@ -35,61 +36,61 @@ param appSlotAuthUnauthenticatedAction string
   'Twitter'
 ])
 @description('')
-param appSlotAuthIdentityProviderType string = 'AzureAD'
+param appServiceSlotAuthIdentityProviderType string = 'AzureAD'
 
 @description('')
-param appSlotAuthIdentityProviderClientId object
+param appServiceSlotAuthIdentityProviderClientId object
 
 @description('')
-param appSlotAuthIdentityProviderOpenIdIssuer object 
+param appServiceSlotAuthIdentityProviderOpenIdIssuer object 
 
 @description('')
-param appSlotAuthIdentityProviderClientSecretName string
+param appServiceSlotAuthIdentityProviderClientSecretName string
 
 @description('')
-param appSlotAuthIdentityProviderAudiences array = []
+param appServiceSlotAuthIdentityProviderAudiences array = []
 
 @description('')
-param appSlotAuthIdentityProviderScopes array = []
+param appServiceSlotAuthIdentityProviderScopes array = []
 
 @description('For Facebook')
-param appSlotAuthIdentityProviderGraphApiVersion string = ''
+param appServiceSlotAuthIdentityProviderGraphApiVersion string = ''
 
 
-var audiences = [for audience in appSlotAuthIdentityProviderAudiences: replace(replace(audience, '@environment', environment), '@region', region)]
+var audiences = [for audience in appServiceSlotAuthIdentityProviderAudiences: replace(replace(audience, '@environment', environment), '@region', region)]
 
 // Get the existing app resource 
 resource azAppServiceResource 'Microsoft.Web/sites@2021-01-15' existing = {
-  name: replace(replace(appName, '@environment', environment), '@region', region)
-  scope: resourceGroup(replace(replace(appResourceGroup, '@environment', environment), '@region', region))
+  name: replace(replace(appServiceName, '@environment', environment), '@region', region)
+  scope: resourceGroup(replace(replace(appServiceResourceGroup, '@environment', environment), '@region', region))
 }
 
 resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/slots/config@2021-01-15' = {
-  name: replace(replace('${appName}/${appSlotName}/authsettingsV2', '@environment', environment), '@region', region)
+  name: replace(replace('${appServiceName}/${appServiceSlotName}/authsettingsV2', '@environment', environment), '@region', region)
   properties: {
     globalValidation: {
       requireAuthentication: true
-      unauthenticatedClientAction: appSlotAuthUnauthenticatedAction
+      unauthenticatedClientAction: appServiceSlotAuthUnauthenticatedAction
     }
     identityProviders: {
-      azureActiveDirectory: any(appSlotAuthIdentityProviderType == 'AzureAD' ? {
+      azureActiveDirectory: any(appServiceSlotAuthIdentityProviderType == 'AzureAD' ? {
         enabled: true
         registration: any( environment == 'dev' ? {
-          clientId: appSlotAuthIdentityProviderClientId.dev
-          clientSecretSettingName: appSlotAuthIdentityProviderClientSecretName
-          openIdIssuer: appSlotAuthIdentityProviderOpenIdIssuer.dev
+          clientId: appServiceSlotAuthIdentityProviderClientId.dev
+          clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
+          openIdIssuer: appServiceSlotAuthIdentityProviderOpenIdIssuer.dev
         } : any( environment == 'qa' ? {
-          clientId: appSlotAuthIdentityProviderClientId.qa
-          clientSecretSettingName: appSlotAuthIdentityProviderClientSecretName
-          openIdIssuer: appSlotAuthIdentityProviderOpenIdIssuer.qa
+          clientId: appServiceSlotAuthIdentityProviderClientId.qa
+          clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
+          openIdIssuer: appServiceSlotAuthIdentityProviderOpenIdIssuer.qa
         } : any( environment == 'uat' ? {
-          clientId: appSlotAuthIdentityProviderClientId.uat
-          clientSecretSettingName: appSlotAuthIdentityProviderClientSecretName
-          openIdIssuer: appSlotAuthIdentityProviderOpenIdIssuer.uat
+          clientId: appServiceSlotAuthIdentityProviderClientId.uat
+          clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
+          openIdIssuer: appServiceSlotAuthIdentityProviderOpenIdIssuer.uat
         } : any( environment == 'prd' ? {
-          clientId: appSlotAuthIdentityProviderClientId.prd
-          clientSecretSettingName: appSlotAuthIdentityProviderClientSecretName
-          openIdIssuer: appSlotAuthIdentityProviderOpenIdIssuer.prd
+          clientId: appServiceSlotAuthIdentityProviderClientId.prd
+          clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
+          openIdIssuer: appServiceSlotAuthIdentityProviderOpenIdIssuer.prd
         } : json('null')))))
         validation: {
           allowedAudiences: union([
@@ -104,64 +105,64 @@ resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/slots/config@20
         }
       } : json('null'))
 
-      facebook: any(appSlotAuthIdentityProviderType == 'Facebook' ? {
+      facebook: any(appServiceSlotAuthIdentityProviderType == 'Facebook' ? {
         enabled: true
         registration: any(environment == 'dev' ? {
-          appId: appSlotAuthIdentityProviderClientId.dev
-          appSecretSettingName: appSlotAuthIdentityProviderClientSecretName
+          appId: appServiceSlotAuthIdentityProviderClientId.dev
+          appSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
         } : any(environment == 'qa' ? {
-          appId: appSlotAuthIdentityProviderClientId.qa
-          appSecretSettingName: appSlotAuthIdentityProviderClientSecretName
+          appId: appServiceSlotAuthIdentityProviderClientId.qa
+          appSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
         } : any(environment == 'uat' ? {
-          appId: appSlotAuthIdentityProviderClientId.uat
-          appSecretSettingName: appSlotAuthIdentityProviderClientSecretName
+          appId: appServiceSlotAuthIdentityProviderClientId.uat
+          appSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
         } : any(environment == 'prd' ? {
-          appId: appSlotAuthIdentityProviderClientId.prd
-          appSecretSettingName: appSlotAuthIdentityProviderClientSecretName
+          appId: appServiceSlotAuthIdentityProviderClientId.prd
+          appSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
         } : json('null')))))
-        graphApiVersion: appSlotAuthIdentityProviderGraphApiVersion
+        graphApiVersion: appServiceSlotAuthIdentityProviderGraphApiVersion
         login: {
-          scopes: appSlotAuthIdentityProviderScopes
+          scopes: appServiceSlotAuthIdentityProviderScopes
         }
       } : json('null'))
 
-      gitHub: any(appSlotAuthIdentityProviderType == 'Github' ? {
+      gitHub: any(appServiceSlotAuthIdentityProviderType == 'Github' ? {
         enabled: true
         registration: any(environment == 'dev' ? {
-          clientId: appSlotAuthIdentityProviderClientId.dev
-          clientSecretSettingName: appSlotAuthIdentityProviderClientSecretName
+          clientId: appServiceSlotAuthIdentityProviderClientId.dev
+          clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
         }: any(environment == 'qa' ? {
-          clientId: appSlotAuthIdentityProviderClientId.qa
-          clientSecretSettingName: appSlotAuthIdentityProviderClientSecretName
+          clientId: appServiceSlotAuthIdentityProviderClientId.qa
+          clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
         }: any(environment == 'uat' ? {
-          clientId: appSlotAuthIdentityProviderClientId.uat
-          clientSecretSettingName: appSlotAuthIdentityProviderClientSecretName
+          clientId: appServiceSlotAuthIdentityProviderClientId.uat
+          clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
         }: any(environment == 'prd' ? {
-          clientId: appSlotAuthIdentityProviderClientId.prd
-          clientSecretSettingName: appSlotAuthIdentityProviderClientSecretName
+          clientId: appServiceSlotAuthIdentityProviderClientId.prd
+          clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
         }: json('null')))))
         login: {
-          scopes: appSlotAuthIdentityProviderScopes
+          scopes: appServiceSlotAuthIdentityProviderScopes
         }
       } : json('null'))
 
-      google: any(appSlotAuthIdentityProviderType == 'Google' ? {
+      google: any(appServiceSlotAuthIdentityProviderType == 'Google' ? {
         enabled: true
         registration: any(environment == 'dev' ? {
-          clientId: appSlotAuthIdentityProviderClientId.dev
-          clientSecretSettingName: appSlotAuthIdentityProviderClientSecretName
+          clientId: appServiceSlotAuthIdentityProviderClientId.dev
+          clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
         }: any(environment == 'qa' ? {
-          clientId: appSlotAuthIdentityProviderClientId.qa
-          clientSecretSettingName: appSlotAuthIdentityProviderClientSecretName
+          clientId: appServiceSlotAuthIdentityProviderClientId.qa
+          clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
         }: any(environment == 'uat' ? {
-          clientId: appSlotAuthIdentityProviderClientId.uat
-          clientSecretSettingName: appSlotAuthIdentityProviderClientSecretName
+          clientId: appServiceSlotAuthIdentityProviderClientId.uat
+          clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
         }: any(environment == 'prd' ? {
-          clientId: appSlotAuthIdentityProviderClientId.prd
-          clientSecretSettingName: appSlotAuthIdentityProviderClientSecretName
+          clientId: appServiceSlotAuthIdentityProviderClientId.prd
+          clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
         }: json('null')))))
         login: {
-          scopes: appSlotAuthIdentityProviderScopes
+          scopes: appServiceSlotAuthIdentityProviderScopes
         }
         validation: {
           allowedAudiences: union([

@@ -5,10 +5,13 @@
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string
+param environment string = 'dev'
+
+@description('The region prefix or suffix for the resource name, if applicable.')
+param region string = ''
 
 @description('The name of the peering virtual network link')
-param peeringLinkName string 
+param peeringLinkName string
 
 @description('the name of the peering virtual network')
 param peeringVirtualNetwork string
@@ -17,7 +20,7 @@ param peeringVirtualNetwork string
 param peeringVirtualNetworkResourceGroup string = resourceGroup().name
 
 @description('the name of the remote virtual network link')
-param remoteLinkName string 
+param remoteLinkName string
 
 @description('the name of the remote virtual network')
 param remoteVirtualNetwork string
@@ -25,41 +28,38 @@ param remoteVirtualNetwork string
 @description('The name of the resource group the remote virtual network lives in')
 param remoteVirtualNetworkResourceGroup string = resourceGroup().name
 
-
-
-
 // 1. Get the existing Remote Virtual Network
 resource azRemoteVirtualNetworkResource 'Microsoft.Network/virtualNetworks@2021-02-01' existing = {
- name: replace('${remoteVirtualNetwork}', '@environment', environment)
- scope: resourceGroup(replace('${remoteVirtualNetworkResourceGroup}', '@environment', environment))
+  name: replace(replace(remoteVirtualNetwork, '@environment', environment), '@region', region)
+  scope: resourceGroup(replace(replace(remoteVirtualNetworkResourceGroup, '@environment', environment), '@region', region))
 }
 
 // 2. Get the Peering Virtual Network
 resource azPeeringVirtualNetworkResource 'Microsoft.Network/virtualNetworks@2021-02-01' existing = {
-  name: replace('${peeringVirtualNetwork}', '@environment', environment)
-  scope: resourceGroup(replace('${peeringVirtualNetworkResourceGroup}', '@environment', environment))
+  name: replace(replace(peeringVirtualNetwork, '@environment', environment), '@region', region)
+  scope: resourceGroup(replace(replace(peeringVirtualNetworkResourceGroup, '@environment', environment), '@region', region))
 }
 
 // 3. Add the Remote Virtual Network to the peering 
 resource azRemoteVirtualNetworkPeeringDeployment 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-02-01' = {
- name: replace('${azRemoteVirtualNetworkResource.name}/${remoteLinkName}', '@environment', environment)
- properties: {
-   peeringState: 'Connected'
-   remoteVirtualNetwork: {
-     id: azPeeringVirtualNetworkResource.id
-   }
- }
-}
-
-resource azVirtualNetworkPeeringDeployment 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-02-01' = {
-  name: replace('${azPeeringVirtualNetworkResource.name}/${peeringLinkName}', '@environment', environment)
+  name: replace(replace('${azRemoteVirtualNetworkResource.name}/${remoteLinkName}', '@environment', environment), '@region', region)
   properties: {
     peeringState: 'Connected'
     remoteVirtualNetwork: {
-      id: azRemoteVirtualNetworkResource.id 
+      id: azPeeringVirtualNetworkResource.id
+    }
+  }
+}
+
+resource azVirtualNetworkPeeringDeployment 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-02-01' = {
+  name: replace(replace('${azPeeringVirtualNetworkResource.name}/${peeringLinkName}', '@environment', environment), '@region', region)
+  properties: {
+    peeringState: 'Connected'
+    remoteVirtualNetwork: {
+      id: azRemoteVirtualNetworkResource.id
     }
   }
   dependsOn: [
     azRemoteVirtualNetworkPeeringDeployment
   ]
- }
+}

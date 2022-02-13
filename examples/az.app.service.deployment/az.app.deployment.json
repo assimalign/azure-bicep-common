@@ -1,54 +1,25 @@
 {
     "$schema": "../../src/schemas/az/parameters.json",
     "parameters": {
-        "appInsightsActionGroup": {
-            "value": [
-                {
-                    "appInsightsActionGroupName": "",
-                    "appInsightsActionGroupReceivers": {
-                        "smsReceivers": [
-                            {
-                                "countryCode": "1",
-                                "name": "",
-                                "phoneNumber": ""
-                            }
-                        ]
-                    }
-                }
-            ]
-        },
-        "appServicePlans":{
-            "value": [
-                {
-                    "sku": {
-                        "dev": ""
-                    }
-                }
-            ]
-        }
-        "appInsightsActivityLogAlerts": {
-            "value": [
-                {
-                    "appInsightsActivityLogAlertConditions": [
-                        {
-                            "anyOf": [
-                                {
-                                    ""
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        "appInsights": {
-            "value": [
-                {
-                    "appInsightsName": "",
-                    "appInsightsAnalyticWorkspaceName": "",
-                    ""
-                }
-            ]
-        }
+      "staticSites": {
+        "value": [{
+            ""
+        }]
+      },
+       "eventGridDomainTopics": {
+           "value": [
+               {
+                   "eventGridDomainTopicSubscriptions": [
+                       {
+                           "eventGridDomainTopicSubscriptionDeadLetterDestination": {
+                               "storageAccountName": "",
+                               "storageAccountContainerName": "",
+                               "storageAccountResourceGroupName": ""
+                           }
+                       }
+                   ]
+               }
+           ]
+       }
     }
 }

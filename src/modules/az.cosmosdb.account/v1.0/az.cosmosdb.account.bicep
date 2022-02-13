@@ -37,6 +37,9 @@ param cosmosDbAccountEnableMultiRegionWrites bool = false
 @description('Enables free compute up to certain amount. Only good for one resource per subscription.')
 param cosmosDbAccountEnableFreeTier bool = true
 
+@description('')
+param cosmosAccountPrivateEndpoint object = {}
+
 @description('Custom attributes to attach to the document db deployment')
 param cosmosDbAccountTags object = {}
 
@@ -96,5 +99,27 @@ module azCosmosDbAccountDatabaseDeployment 'az.cosmosdb.account.database.bicep' 
   }
 }]
 
-// 4. Return Deployment Output
+// 4. Deploys a private endpoint, if applicable, for an instance of Azure Document DB Account
+module azCosmosDbAccountPrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(cosmosAccountPrivateEndpoint)) {
+  name: !empty(cosmosAccountPrivateEndpoint) ? toLower('az-cosmosdb-priv-endp-${guid('${azCosmosDbAccountDeployment.id}/${cosmosAccountPrivateEndpoint.privateEndpointName}')}') : 'no-cosmosdb-priv-endp-to-deploy'
+  scope: resourceGroup()
+  params: {
+    region: region
+    environment: environment
+    privateEndpointName: cosmosAccountPrivateEndpoint.privateEndpointName
+    privateEndpointLocation: contains(cosmosAccountPrivateEndpoint, 'privateEndpointLocation') ? cosmosAccountPrivateEndpoint.privateEndpointLocation : first(cosmosDbAccountLocations)
+    privateEndpointDnsZoneName: cosmosAccountPrivateEndpoint.privateEndpointDnsZoneName
+    privateEndpointDnsZoneGroupName: 'privatelink-documents-azure-com'
+    privateEndpointDnsZoneResourceGroup: cosmosAccountPrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointVirtualNetworkName: cosmosAccountPrivateEndpoint.privateEndpointVirtualNetworkName
+    privateEndpointVirtualNetworkSubnetName: cosmosAccountPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
+    privateEndpointVirtualNetworkResourceGroup: cosmosAccountPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
+    privateEndpointResourceIdLink: azCosmosDbAccountDeployment.id
+    privateEndpointGroupIds: [
+      'Sql'
+    ]
+  }
+}
+
+// 5. Return Deployment Output
 output resource object = azCosmosDbAccountDeployment

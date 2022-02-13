@@ -11,113 +11,100 @@ param environment string = 'dev'
 param region string = ''
 
 @description('The name of the Event Grid Domain to deploy')
-param eventGridName string
+param eventGridDomainName string
 
-@description('The pricing tier for the Event Grid Domain')
-param eventGridSku object
+@description('The location/region the Azure Event Grid Domain will be deployed to.')
+param eventGridDomainLocation string = resourceGroup().location
 
 @description('A list of object with the Topics and Subscriptions to be deployed under the Event Grid Resource')
-param eventGridTopics array = []
+param eventGridDomainTopics array = []
 
 @description('A list of subscriptions to deploy under the Event Grid')
-param eventGridSubscriptions array = []
+param eventGridDomainSubscriptions array = []
 
 @description('Configurations for implementing a Private Endpoint for the Event Grid Domain')
-param eventGridPrivateEndpoint object = {}
+param eventGridDomainPrivateEndpoint object = {}
 
 @description('A flag to indicate whether System Managed Identity should be enabled for this resource')
-param eventGridMsiEnabled bool = false
+param eventGridDomainMsiEnabled bool = false
 
 @description('A flag to indicate whether System Managed Identity should be enabled for this resource')
-param eventGridMsiRoleAssignments array = []
+param eventGridDomainMsiRoleAssignments array = []
 
 @description('Disables or Enables Public Network Access to the event grid domain')
-param eventGridPublicAccess bool = false
-
-
+param eventGridDomainDisablePublicAccess bool = false
 
 // 1. Deploy Event Grid Domain
-resource azEventGridDomainDeployment 'Microsoft.EventGrid/domains@2021-06-01-preview' = {
-  name: replace(replace('${eventGridName}', '@environment', environment), '@region', region)
-  location: resourceGroup().location
+resource azEventGridDomainDeployment 'Microsoft.EventGrid/domains@2021-12-01' = {
+  name: replace(replace('${eventGridDomainName}', '@environment', environment), '@region', region)
+  location: eventGridDomainLocation
   identity: {
-    type: eventGridMsiEnabled == true ? 'SystemAssigned'  : 'None'
+    type: eventGridDomainMsiEnabled == true ? 'SystemAssigned' : 'None'
   }
-  sku: any(environment == 'dev' ? {
-    name: eventGridSku.dev
-  } : any(environment == 'qa' ? {
-    name: eventGridSku.qa
-  } : any(environment == 'uat' ? {
-    name: eventGridSku.uat
-  } : any(environment == 'prd' ? {
-    name: eventGridSku.prd
-  } : {
-    name: 'Basic'
-  }))))
   properties: {
     inputSchema: 'EventGridSchema'
-    publicNetworkAccess: eventGridPublicAccess == true ? 'Disabled' : 'Enabled'
+    publicNetworkAccess: eventGridDomainDisablePublicAccess == true ? 'Disabled' : 'Enabled'
   }
 }
 
 // 2. Deploy Event Grid Topic & Topic Subscriptions
-module azEventGridTopicSubscriptionDeployment 'az.event.grid.domain.topic.bicep' = [for (topic, index) in eventGridTopics: if (!empty(topic)) {
-  name: !empty(eventGridTopics) ? toLower('az-egd-topic-${guid('${azEventGridDomainDeployment.id}/${topic.name}')}')  : 'no-eg-topics-to-deploy'
+module azEventGridDomainTopicsDeployment 'az.event.grid.domain.topic.bicep' = [for (topic, index) in eventGridDomainTopics: if (!empty(topic)) {
+  name: !empty(eventGridDomainTopics) ? toLower('az-egd-topic-${guid('${azEventGridDomainDeployment.id}/${topic.name}')}') : 'no-egd-topics-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
-    eventGridDomainName: eventGridName
-    eventGridDomainTopicName: topic.name 
-    eventGridDomainSubscriptions: topic.subscriptions
+    eventGridDomainName: eventGridDomainName
+    eventGridDomainTopicName: topic.eventGridDomainTopicName
+    eventGridDomainTopicSubscriptions: topic.eventGridDomainTopicSubscriptions
   }
 }]
 
 // 3. Deploy Event Grid Domain Subscriptions
-module azEventGridSubscriptionDeployment 'az.event.grid.domain.subscription.bicep' = [for (subscription, index) in eventGridSubscriptions: if (!empty(subscription)) {
-  name: !empty(eventGridSubscriptions) ? toLower('az-egd-subscription-${guid('${azEventGridDomainDeployment.id}/${subscription.name}')}')  : 'no-eg-subscriptions-to-deploy'
+module azEventGridDomainSubscriptionsDeployment 'az.event.grid.domain.subscription.bicep' = [for (subscription, index) in eventGridDomainSubscriptions: if (!empty(subscription)) {
+  name: !empty(eventGridDomainSubscriptions) ? toLower('az-egd-subs-${guid('${azEventGridDomainDeployment.id}/${subscription.name}')}') : 'no-eg-subs-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
-    eventGridDomainName: eventGridName
-    eventGridSubscriptionName: subscription.name 
-    eventGridSubscriptionEndpointName: subscription.endpointName 
-    eventGridEventTypes: subscription.eventTypes 
-    eventGridSubscriptionEndpointResourceGroup: subscription.endpointResourceGroup 
-    eventGridSubscriptionEndpointType: subscription.endpointType 
-    eventGridEventFilters: subscription.eventFilters 
-    eventGridDeadLetterDestination: subscription.eventDeadLetterDestination
-    eventGridEventLabels: subscription.eventLabels
-    eventGridEventDeliveryHeaders: subscription.eventHeaders
-    eventGridSubscriptionUseMsi: subscription.eventMsiEnabled
+    eventGridDomainName: eventGridDomainName
+    eventGridDomainSubscriptionName: subscription.eventGridDomainSubscriptionName
+    eventGridDomainSubscriptionEndpointType: subscription.eventGridDomainSubscriptionEndpointType
+    eventGridDomainSubscriptionEndpointName: subscription.eventGridDomainSubscriptionEndpointName
+    eventGridDomainSubscriptionEndpointResourceGroup: subscription.eventGridDomainSubscriptionEndpointResourceGroup
+    eventGridDomainSubscriptionEventTypes: contains(subscription, 'eventGridDomainSubscriptionEventTypes') ? subscription.eventGridDomainSubscriptionEventTypes : []
+    eventGridDomainSubscriptionEventFilters: contains(subscription, 'eventGridDomainSubscriptionEventFilters') ? subscription.eventGridDomainSubscriptionEventFilters : []
+    eventGridDomainSubscriptionEventLabels: contains(subscription, 'eventGridDomainSubscriptionEventLabels') ? subscription.eventGridDomainSubscriptionEventLabels : []
+    eventGridDomainSubscriptionDeadLetterDestination: contains(subscription, 'eventGridDomainSubscriptionDeadLetterDestination') ? subscription.eventGridDomainSubscriptionDeadLetterDestination : {}
+    eventGridDomainSubscriptionEventHeaders: contains(subscription, 'eventGridDomainSubscriptionEventHeaders') ? subscription.eventGridDomainSubscriptionEventHeaders : []
+    eventGridDomainSubscriptionMsiEnabled: contains(subscription, 'eventGridDomainSubscriptionMsiEnabled') ? subscription.eventGridDomainSubscriptionMsiEnabled : false
   }
 }]
 
 // 4. Deploy Private Endpoint if applicable
-module azEventGridPrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if(!empty(eventGridPrivateEndpoint)) {
-  name: !empty(eventGridPrivateEndpoint) ? toLower('az-egd-priv-endpoint-${guid('${azEventGridDomainDeployment.id}/${eventGridPrivateEndpoint.name}')}') : 'no-egd-private-endpoint-to-deploy'
+module azEventGridPrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(eventGridDomainPrivateEndpoint)) {
+  name: !empty(eventGridDomainPrivateEndpoint) ? toLower('az-egd-priv-endpoint-${guid('${azEventGridDomainDeployment.id}/${eventGridDomainPrivateEndpoint.name}')}') : 'no-egd-private-endpoint-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
-    privateEndpointName: eventGridPrivateEndpoint.name
-    privateEndpointPrivateDnsZone: eventGridPrivateEndpoint.privateDnsZone
-    privateEndpointPrivateDnsZoneGroupName: 'privatelink-eventgrid-azure-net'
-    privateEndpointPrivateDnsZoneResourceGroup: eventGridPrivateEndpoint.privateDnsZoneResourceGroup
-    privateEndpointSubnet: eventGridPrivateEndpoint.virtualNetworkSubnet
-    privateEndpointSubnetVirtualNetwork: eventGridPrivateEndpoint.virtualNetwork
-    privateEndpointSubnetResourceGroup: eventGridPrivateEndpoint.virtualNetworkResourceGroup
-    privateEndpointLinkServiceId: azEventGridDomainDeployment.id
+    privateEndpointLocation: contains(eventGridDomainPrivateEndpoint, 'privateEndpointLocation') ? eventGridDomainPrivateEndpoint.privateEndpointLocation : eventGridDomainLocation
+    privateEndpointName: eventGridDomainPrivateEndpoint.privateEndpointName
+    privateEndpointDnsZoneGroupName: 'privatelink-eventgrid-azure-net'
+    privateEndpointDnsZoneName: eventGridDomainPrivateEndpoint.privateEndpointDnsZoneName
+    privateEndpointDnsZoneResourceGroup: eventGridDomainPrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointVirtualNetworkName: eventGridDomainPrivateEndpoint.privateEndpointVirtualNetworkName
+    privateEndpointVirtualNetworkSubnetName: eventGridDomainPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
+    privateEndpointVirtualNetworkResourceGroup: eventGridDomainPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
+    privateEndpointResourceIdLink: azEventGridDomainDeployment.id
     privateEndpointGroupIds: [
       'domain'
     ]
   }
 }
 
-
 // 9.  Assignment RBAC Roles, if any, to App Service Slot Service Principal  
-module azEventGridRoleAssignment '../../az.rbac/v1.0/az.rbac.role.assignment.bicep' = [for roleAssignment in eventGridMsiRoleAssignments: if (eventGridMsiEnabled == true && !empty(eventGridMsiRoleAssignments)) {
+module azEventGridRoleAssignment '../../az.rbac/v1.0/az.rbac.role.assignment.bicep' = [for roleAssignment in eventGridDomainMsiRoleAssignments: if (eventGridDomainMsiEnabled == true && !empty(eventGridDomainMsiRoleAssignments)) {
   name: 'az-egd-rbac-${guid('${azEventGridDomainDeployment.name}-${roleAssignment.resourceRoleName}')}'
   scope: resourceGroup(replace(replace(roleAssignment.resourceGroupToScopeRoleAssignment, '@environment', environment), '@region', region))
   params: {
@@ -131,7 +118,7 @@ module azEventGridRoleAssignment '../../az.rbac/v1.0/az.rbac.role.assignment.bic
     resourcePrincipalIdReceivingRole: azEventGridDomainDeployment.identity.principalId
   }
   dependsOn: [
-    azEventGridTopicSubscriptionDeployment
-    azEventGridSubscriptionDeployment
+    azEventGridDomainTopicsDeployment
+    azEventGridDomainSubscriptionsDeployment
   ]
 }]

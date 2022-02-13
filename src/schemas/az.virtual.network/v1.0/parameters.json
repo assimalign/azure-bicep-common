@@ -12,6 +12,9 @@
                             "virtualNetworkName": {
                                 "type": "string"
                             },
+                            "virtualNetworkLocation": {
+                                "type": "string"
+                            },
                             "virtualNetworkAddressSpaces": {
                                 "type": "array",
                                 "items": {
@@ -26,17 +29,17 @@
                                 "type": "array",
                                 "items": {
                                     "properties": {
-                                        "name": {
+                                        "subnetName": {
                                             "type": "string",
                                             "description": "The name of the Subnet to create within the virtual network."
                                         },
-                                        "range": {
+                                        "subnetRange": {
                                             "type": "string",
                                             "pattern": "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|^[0-9][0-9]|^[0-9])(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}(/[1-9]|/1[0-9]|/2[0-9]|/3[0-2])",
                                             "minLength": 9,
                                             "maxLength": 18
                                         },
-                                        "serviceEndpoints": {
+                                        "subnetServiceEndpoints": {
                                             "type": "array",
                                             "items": {
                                                 "type": "object",
@@ -50,7 +53,7 @@
                                                 ]
                                             }
                                         },
-                                        "privateEndpointNetworkPolicies": {
+                                        "subnetPrivateEndpointNetworkPolicies": {
                                             "type": "string",
                                             "oneOf": [
                                                 {
@@ -63,10 +66,10 @@
                                         }
                                     },
                                     "required": [
-                                        "name",
-                                        "range",
-                                        "serviceEndpoints",
-                                        "privateEndpointNetworkPolicies"
+                                        "subnetName",
+                                        "subnetRange",
+                                        "subnetServiceEndpoints",
+                                        "subnetPrivateEndpointNetworkPolicies"
                                     ]
                                 }
                             },

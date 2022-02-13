@@ -13,6 +13,9 @@ param region string = ''
 @description('A descriptive name for the Action Group.')
 param appInsightsActionGroupName string
 
+@description('The location/region the Azure App Insights Action Group will be deployed to.')
+param appInsightsActionGroupLocation string = resourceGroup().location
+
 @description('A friendly name for the Action Group.')
 param appInsightsActionGroupShortName string = appInsightsActionGroupName
 
@@ -28,7 +31,7 @@ param appInsightsActionGroupTags object = {}
 // Deploys an Alert Action Group
 resource azAppInsightsActivityGroupDeployment 'Microsoft.Insights/actionGroups@2019-06-01' = {
   name: replace(replace(appInsightsActionGroupName, '@environment', environment), '@region', region)
-  location: resourceGroup().location
+  location: appInsightsActionGroupLocation
   properties: union({
     groupShortName: appInsightsActionGroupShortName
     enabled: appInsightsActionGroupEnabled

@@ -13,6 +13,9 @@ param region string = ''
 @description('the name of the key vault to be deployed. NOTE: Prefix and environment name are not included in this resource deployment')
 param keyVaultName string
 
+@description('')
+param keyVaultLocation string = resourceGroup().location
+
 @description('The pricing tier for the key vault resource')
 param keyVaultSku object = {}
 
@@ -69,7 +72,7 @@ var policies = [for policy in keyVaultPolicies: {
 // 3. Deploy Key Vault
 resource azKeyVaultDeployment 'Microsoft.KeyVault/vaults@2019-09-01' = {
   name: replace(replace(keyVaultName, '@environment', environment), '@region', region)
-  location: resourceGroup().location
+  location: keyVaultLocation
   properties: {
     enabledForDeployment: false
     enabledForTemplateDeployment: true
@@ -134,19 +137,20 @@ module azKeyVaultKeyDeployment 'az.key.vault.key.bicep' = [for key in keyVaultKe
 }]
 
 module azKeyVaultPrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(keyVaultPrivateEndpoint)) {
-  name: !empty(keyVaultPrivateEndpoint) ? toLower('az-kv-priv-endpoint-${guid('${azKeyVaultDeployment.id}/${keyVaultPrivateEndpoint.name}')}') : 'no-key-vault-private-endpoint-to-deploy'
+  name: !empty(keyVaultPrivateEndpoint) ? toLower('az-kv-priv-endpoint-${guid('${azKeyVaultDeployment.id}/${keyVaultPrivateEndpoint.privateEndpointName}')}') : 'no-key-vault-private-endpoint-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
-    privateEndpointName: keyVaultPrivateEndpoint.name
-    privateEndpointPrivateDnsZone: keyVaultPrivateEndpoint.privateDnsZone
-    privateEndpointPrivateDnsZoneGroupName: 'privatelink-vaultcore-azure-net'
-    privateEndpointPrivateDnsZoneResourceGroup: keyVaultPrivateEndpoint.privateDnsZoneResourceGroup
-    privateEndpointSubnet: keyVaultPrivateEndpoint.virtualNetworkSubnet
-    privateEndpointSubnetVirtualNetwork: keyVaultPrivateEndpoint.virtualNetwork
-    privateEndpointSubnetResourceGroup: keyVaultPrivateEndpoint.virtualNetworkResourceGroup
-    privateEndpointLinkServiceId: azKeyVaultDeployment.id
+    privateEndpointName: keyVaultPrivateEndpoint.privateEndpointName
+    privateEndpointLocation: contains(keyVaultPrivateEndpoint, 'privateEndpointLocation') ? keyVaultPrivateEndpoint.privateEndpointLocation : keyVaultLocation
+    privateEndpointDnsZoneName: keyVaultPrivateEndpoint.privateEndpointDnsZoneName
+    privateEndpointDnsZoneGroupName: 'privatelink-vaultcore-azure-net'
+    privateEndpointDnsZoneResourceGroup: keyVaultPrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointVirtualNetworkName: keyVaultPrivateEndpoint.privateEndpointVirtualNetworkName
+    privateEndpointVirtualNetworkSubnetName: keyVaultPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
+    privateEndpointVirtualNetworkResourceGroup: keyVaultPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
+    privateEndpointResourceIdLink: azKeyVaultDeployment.id
     privateEndpointGroupIds: [
       'vault'
     ]

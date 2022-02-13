@@ -15,6 +15,8 @@ targetScope = 'subscription'
 //   }
 // }]
 
+
+
 module azAppConfigurationDeployment 'br/assimalign:modules/az.app.configuration.bicep:v1.0' = [for config in appConfigurations: {
   name: 'az-'
   scope: resourceGroup(replace(replace(config.appConfigurationResourceGroup, '@environment', 'dev'), '@location', 'est'))

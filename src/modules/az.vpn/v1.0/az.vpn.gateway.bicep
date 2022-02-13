@@ -3,73 +3,75 @@
    'qa'
    'uat'
    'prd'
- ])
- @description('The environment in which the resource(s) will be deployed')
- param environment string
- 
- @description('The name of the VPN Gateway')
- param vpnName string
+])
+@description('The environment in which the resource(s) will be deployed')
+param environment string = 'dev'
 
- @allowed([
-    'PolicyBased'
-    'RouteBased'
- ])
- @description('')
- param vpnType string
+@description('The region prefix or suffix for the resource name, if applicable.')
+param region string = ''
 
- @description('The Name of the new Public IP Address that will be deployed for the VPN Gateway')
- param vpnIpName string
+@description('The name of the VPN Gateway')
+param vpnGatewayName string
 
- @description('The name of the Virtual Network to use for the VPN Gateway')
- param vpnVirtualNetworkName string
+@description('')
+param vpnGatewayLocation string = resourceGroup().location
+
+@allowed([
+   'PolicyBased'
+   'RouteBased'
+])
+@description('')
+param vpnGatewayType string
+
+@description('The Name of the new Public IP Address that will be deployed for the VPN Gateway')
+param vpnGatewayIpName string
+
+@description('The name of the Virtual Network to use for the VPN Gateway')
+param vpnGatewayVirtualNetworkName string
 
 @description('The VPN Gateway Pricing Tier to deploy')
-param vpnSku object
+param vpnGatewaySku object
 
 @description('The VPN Client settings for connecting to the Virtual Network')
-param vpnClientSettings object = { }
-
-
+param vpnGatewayClientSettings object = {}
 
 // 1. Get Gateway Subnet within specified Virtual Network
 resource azVirtualNetworkSubnetResource 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
-   name: replace('${vpnVirtualNetworkName}/GatewaySubnet', '@environment', environment)
+   name: replace(replace('${vpnGatewayVirtualNetworkName}/GatewaySubnet', '@environment', environment), '@region', region)
 }
-
 
 // 2. Create Public IP Address fo VPN Gateway
 resource azVirtualNetworkGatewayPublicIpDeployment 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
-  name: replace('${vpnIpName}', '@environment', environment)
-  location: resourceGroup().location
-  sku: {
-    name: 'Basic'
-    tier: 'Regional'
-  }
-  properties: {
-     publicIPAllocationMethod: 'Dynamic'
-  }
+   name: replace(replace(vpnGatewayIpName, '@environment', environment), '@region', region)
+   location: vpnGatewayLocation
+   sku: {
+      name: 'Basic'
+      tier: 'Regional'
+   }
+   properties: {
+      publicIPAllocationMethod: 'Dynamic'
+   }
 }
 
-
-resource azVirtualNetworkGatewayDeployment 'Microsoft.Network/virtualNetworkGateways@2021-02-01'= {
-   name: replace('${vpnName}', '@environment', environment)
-   location:resourceGroup().location
+resource azVirtualNetworkGatewayDeployment 'Microsoft.Network/virtualNetworkGateways@2021-02-01' = {
+   name: replace(replace('${vpnGatewayName}', '@environment', environment), '@region', region)
+   location: vpnGatewayLocation
    properties: {
       gatewayType: 'Vpn'
-      vpnType: vpnType
+      vpnType: vpnGatewayType
       sku: any(environment == 'dev' ? {
-         name: vpnSku.dev
-         tier: vpnSku.dev
-      }: any(environment == 'qa' ? {
-         name: vpnSku.qa
-         tier: vpnSku.qa
-      }: any(environment == 'uat' ? {
-         name: vpnSku.uat
-         tier: vpnSku.uat
-      }: any(environment == 'prd' ? {
-         name: vpnSku.prd
-         tier: vpnSku.prd
-      }: {
+         name: vpnGatewaySku.dev
+         tier: vpnGatewaySku.dev
+      } : any(environment == 'qa' ? {
+         name: vpnGatewaySku.qa
+         tier: vpnGatewaySku.qa
+      } : any(environment == 'uat' ? {
+         name: vpnGatewaySku.uat
+         tier: vpnGatewaySku.uat
+      } : any(environment == 'prd' ? {
+         name: vpnGatewaySku.prd
+         tier: vpnGatewaySku.prd
+      } : {
          name: 'VpnGw1'
          tier: 'VpnGw1'
       }))))
@@ -89,12 +91,12 @@ resource azVirtualNetworkGatewayDeployment 'Microsoft.Network/virtualNetworkGate
       ]
       enableBgp: false
       activeActive: false
-      vpnClientConfiguration:  any(empty(vpnClientSettings) ? { 
+      vpnClientConfiguration: any(empty(vpnGatewayClientSettings) ? {
          // Set an Empty Object if no Client Settings are passed
-      } : any(vpnClientSettings.authentication == 'AzureActiveDirectory' ? {
+      } : any(vpnGatewayClientSettings.authentication == 'AzureActiveDirectory' ? {
          vpnClientAddressPool: {
             addressPrefixes: [
-               vpnClientSettings.addressPool
+               vpnGatewayClientSettings.addressPool
             ]
          }
          vpnClientProtocols: [
@@ -103,10 +105,9 @@ resource azVirtualNetworkGatewayDeployment 'Microsoft.Network/virtualNetworkGate
          aadTenant: 'https://login.microsoftonline.com/${subscription().tenantId}/'
          aadAudience: '41b23e61-6c1e-4545-b367-cd054e0ed4b4'
          aadIssuer: 'https://sts.windows.net/${subscription().tenantId}/'
-         }: { }))
-      }
-      dependsOn: [
-         azVirtualNetworkSubnetResource
-         azVirtualNetworkGatewayPublicIpDeployment
-      ]
+      } : {}))
+   }
+   dependsOn: [
+      azVirtualNetworkSubnetResource
+   ]
 }

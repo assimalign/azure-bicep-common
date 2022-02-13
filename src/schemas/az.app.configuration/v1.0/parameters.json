@@ -16,6 +16,9 @@
                                         "type": "string",
                                         "description": "The name of the Azure App Configuration instance to be deployed."
                                     },
+                                    "appConfigurationLocation": {
+                                        "type": "string"
+                                    },
                                     "appConfigurationResourceGroup": {
                                         "type": "string"
                                     },
@@ -51,7 +54,7 @@
                                         "minProperties": 1
                                     },
                                     "appConfigurationPrivateEndpoint": {
-                                        "$ref": "#/definitions/app-configuration-private-endpoint"
+                                        "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
                                     },
                                     "appConfigurationSku": {
                                         "type": "object",
@@ -118,6 +121,9 @@
                                     "appConfigurationName": {
                                         "type": "string",
                                         "description": "The name of the Azure App Configuration instance to be deployed."
+                                    },
+                                    "appConfigurationLocation": {
+                                        "type": "string"
                                     },
                                     "appConfigurationResourceGroup": {
                                         "type": "string"
@@ -322,39 +328,6 @@
                 "appConfigurationKey",
                 "appConfigurationValue",
                 "appConfigurationValueContentType"
-            ]
-        },
-        "app-configuration-private-endpoint": {
-            "type": "object",
-            "properties": {
-                "privateEndpointName": {
-                    "type": "string"
-                },
-                "privateEndpointDnsZoneName": {
-                    "type": "string"
-                },
-                "privateEndpointDnsZoneResourceGroup": {
-                    "type": "string",
-                    "description": "The Azure Resource Group the the private DNS Zone belongs to."
-                },
-                "privateEndpointVirtualNetwork": {
-                    "type": "string"
-                },
-                "privateEndpointVirtualNetworkSubnet": {
-                    "type": "string"
-                },
-                "privateEndpointVirtualNetworkResourceGroup": {
-                    "type": "string"
-                }
-
-            },
-            "required": [
-                "privateEndpointName",
-                "privateEndpointDnsZoneName",
-                "privateEndpointDnsZoneResourceGroup",
-                "privateEndpointVirtualNetwork",
-                "privateEndpointVirtualNetworkSubnet",
-                "privateEndpointVirtualNetworkResourceGroup"
             ]
         }
     }

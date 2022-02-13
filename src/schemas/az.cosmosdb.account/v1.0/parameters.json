@@ -146,6 +146,9 @@
                                         "type": "null"
                                     }
                                 ]
+                            },
+                            "cosmosAccountPrivateEndpoint": {
+                                "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
                             }
                         },
                         "anyOf": [

@@ -12,6 +12,9 @@
                             "serviceBusName": {
                                 "type": "string"
                             },
+                            "serviceBusLocation": {
+                                "type": "string"
+                            },
                             "serviceBusEnableMsi": {
                                 "type": "boolean"
                             },

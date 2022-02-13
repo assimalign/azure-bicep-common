@@ -13,6 +13,9 @@ param region string = ''
 @description('The name of the Notification Namespace to deploy')
 param notificationNamespaceName string
 
+@description('The location/region the Azure Notification Namespace will be deployed to.')
+param notificationNamespaceLocation string = resourceGroup().location
+
 @description('A list of Notification Hubs to deploy under the Notificaiton Namespace')
 param notificationNamespaceHubs array = []
 
@@ -28,7 +31,7 @@ resource azNotificationNamespaceDeployment 'Microsoft.NotificationHubs/namespace
   properties: {
     namespaceType: 'NotificationHub'
   }
-  location: resourceGroup().location
+  location: notificationNamespaceLocation
   sku: any(environment == 'dev' && !empty(notificationNamespaceSku) ? {
     name: notificationNamespaceSku.dev
   } : any(environment == 'qa' && !empty(notificationNamespaceSku) ? {
@@ -40,25 +43,25 @@ resource azNotificationNamespaceDeployment 'Microsoft.NotificationHubs/namespace
   } : {
     name: 'Free'
   }))))
-
   // 1.1 If applicable, deploy authorization rules
   resource azNotificationNamespaceAuthPolicyDeployment 'AuthorizationRules' = [for policy in notificationNamespacePolicies: if (!empty(policy)) {
-    name: !empty(notificationNamespacePolicies) ? policy.name : 'no-nh-polcies-to-deploy'
+    name: !empty(notificationNamespacePolicies) ? policy.policyName : 'no-nh-polcies-to-deploy'
     properties: {
-      rights: !empty(notificationNamespacePolicies) ? policy.permissions : []
+      rights: !empty(notificationNamespacePolicies) ? policy.policyPermissions : []
     }
   }]
 }
 
 // 2. Deploy the Notification Namespace Hubs, if any
 module azNotificationNamespaceHubsDeployment 'az.notification.namespace.hub.bicep' = [for hub in notificationNamespaceHubs: if (!empty(hub)) {
-  name: !empty(notificationNamespaceHubs) ? replace(replace(hub.name, '@environment', environment), '@region', region) : 'no-hubs-to-deploy'
+  name: !empty(notificationNamespaceHubs) ? replace(replace(hub.notificationHubName, '@environment', environment), '@region', region) : 'no-hubs-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
-    notificationNamespaceName: notificationNamespaceName
-    notificationNamespaceHubName: hub.name
+    notificationHubLocation: notificationNamespaceLocation
+    notificationHubName: hub.notificationHubName
+    notificationHubNamespaceName: notificationNamespaceName
   }
   dependsOn: [
     azNotificationNamespaceDeployment

@@ -29,7 +29,6 @@ param serviceBusTopicPolicies array = []
 resource azServiceBusTopicDeployment 'Microsoft.ServiceBus/namespaces/topics@2017-04-01' = {
   name: replace(replace('${serviceBusName}/${serviceBusTopicName}', '@environment', environment), '@region', region)
   properties: any(!empty(serviceBusTopicSettings) ? {
-    
     maxSizeInMegabytes: serviceBusTopicSettings.maxSize ?? 1024
   } : {})
 }

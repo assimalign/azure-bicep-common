@@ -13,6 +13,9 @@ param region string = ''
 @description('The Function App Name to be deployed')
 param appServiceName string
 
+@description('The location/region the Azure App Service will be deployed to. ')
+param appServiceLocation string = resourceGroup().location
+
 @allowed([
   'web'
   'functionapp'
@@ -99,7 +102,7 @@ resource azAppServiceInsightsResource 'Microsoft.Insights/components@2020-02-02-
 // 4.1 Deploy Function App, if applicable
 resource azAppServiceFunctionDeployment 'Microsoft.Web/sites@2021-02-01' = if (appServiceType == 'functionapp' || appServiceType == 'functionapp,linux') {
   name: appServiceType == 'functionapp' || appServiceType == 'functionapp,linux' ? replace(replace('${appServiceName}', '@environment', environment), '@region', region) : 'no-function-app-to-deploy'
-  location: resourceGroup().location
+  location: appServiceLocation
   kind: appServiceType
   identity: {
     type: appServiceMsiEnabled == true ? 'SystemAssigned' : 'None'
@@ -145,7 +148,7 @@ resource azAppServiceFunctionDeployment 'Microsoft.Web/sites@2021-02-01' = if (a
 // 4.2 Deploy Web App, if applicable
 resource azAppServiceWebDeployment 'Microsoft.Web/sites@2021-01-01' = if (appServiceType == 'web') {
   name: appServiceType == 'web' ? replace('${appServiceName}', '@environment', environment) : 'no-web-app-to-deploy'
-  location: resourceGroup().location
+  location: appServiceLocation
   kind: appServiceType
   identity: {
     type: appServiceMsiEnabled == true ? 'SystemAssigned' : 'None'
@@ -263,6 +266,7 @@ module azAppServiceSlotDeployment 'az.app.service.slot.bicep' = [for slot in app
     region: region
     environment: environment
     appServiceName: appServiceName
+    appServiceSlotLocation: appServiceLocation
     appServiceSlotName: slot.appServiceSlotName
     appServiceSlotType: appServiceType
     appServiceSlotFunctions: slot.functions
@@ -276,6 +280,7 @@ module azAppServiceSlotDeployment 'az.app.service.slot.bicep' = [for slot in app
     appServiceSlotSiteConfigs: appServiceSiteConfigs
     appServiceSlotStorageAccountName: appServiceStorageAccountName
     appServiceSlotStorageAccountResourceGroup: appServiceStorageAccountResourceGroup
+    appServiceSlotTags: appServiceTags
   }
   dependsOn: [
     azAppServiceSlotSpecificSettingsDeployment

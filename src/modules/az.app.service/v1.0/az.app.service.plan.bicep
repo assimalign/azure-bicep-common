@@ -13,6 +13,9 @@ param region string = ''
 @description('The name of the app service plan to deploy')
 param appServicePlanName string
 
+@description('')
+param appServicePlanLocation string = resourceGroup().location
+
 @allowed([
   'linux'
   'windows'
@@ -34,12 +37,9 @@ param appServicePlanAseName string = ''
 @description('The resource group the ASE lives under')
 param appServicePlanAseResourceGroup string = resourceGroup().name
 
-
-
 // **************************************************************************************** //
 //               App Service Plan, App Insights, App Storage Act, and Apps Deploy           //
 // **************************************************************************************** //
-
 
 // 1. Get Existing ASE Environment if applicable
 resource azAppServicePlanAseResource 'Microsoft.Web/hostingEnvironments@2021-01-01' existing = if (!empty(appServicePlanAseName)) {
@@ -50,10 +50,10 @@ resource azAppServicePlanAseResource 'Microsoft.Web/hostingEnvironments@2021-01-
 // 2. Creates an app service plan under an ASE if applicable
 resource azAppServicePlanDeployment 'Microsoft.Web/serverfarms@2021-01-01' = {
   name: replace(replace('${appServicePlanName}', '@environment', environment), '@region', region)
-  location: resourceGroup().location
-  properties:  {
+  location: appServicePlanLocation
+  properties: {
     hostingEnvironmentProfile: any(!empty(appServicePlanAseName) ? {
-       id: azAppServicePlanAseResource.id
+      id: azAppServicePlanAseResource.id
     } : null)
   }
   kind: appServicePlanOs
@@ -67,7 +67,7 @@ resource azAppServicePlanDeployment 'Microsoft.Web/serverfarms@2021-01-01' = {
     name: appServicePlanSku.prd
   } : {
     name: 'D1'
-  })))) 
+  }))))
 }
 
 // 3. Return Deployment Output

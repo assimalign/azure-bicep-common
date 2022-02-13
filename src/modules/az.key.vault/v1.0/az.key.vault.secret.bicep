@@ -20,12 +20,10 @@ param keyVaultSecretName string
 param keyVaultSecretResourceName string
 
 @description('The resource type tells what azure resource keys need to be obtained')
-param keyVaultSecretResourceType  string 
+param keyVaultSecretResourceType string
 
 @description('The resource group name of the resource with sensitive information to upload into the key vault for secure access')
 param keyVaultSecretResourceGroupOfResource string
-
-
 
 // ************************************************************************** //
 //                 Service Bus Primary Connection String Update
@@ -43,7 +41,6 @@ module azServiceBusKeyVaultSecretDeployment 'az.key.vault.secret.service.bus.bic
   }
 }
 
-
 // ************************************************************************** //
 //                 Storage Account Primary Connection String Update
 // ************************************************************************** //
@@ -59,7 +56,6 @@ module azStorageAccountKeyVaultSecretDeployment 'az.key.vault.secret.storage.bic
     resourceGroupName: keyVaultSecretResourceGroupOfResource
   }
 }
-
 
 // ************************************************************************** //
 //              Document Db Primary Connection String & Key Update
@@ -77,7 +73,6 @@ module azDocumentDbKeyVaultSecretDeployment 'az.key.vault.secret.cosmosdb.bicep'
   }
 }
 
-
 // ************************************************************************** //
 //                       Event Grid Domain Key Update
 // ************************************************************************** //
@@ -93,7 +88,6 @@ module azEventGridKeyVaultSecretDeployment 'az.key.vault.secret.event.grid.bicep
     resourceGroupName: keyVaultSecretResourceGroupOfResource
   }
 }
-
 
 // ************************************************************************** //
 //                       Event Hub Namespace Key Update
@@ -111,7 +105,6 @@ module azEventHubKeyVaultSecretDeployment 'az.key.vault.secret.event.hub.bicep' 
   }
 }
 
-
 // ************************************************************************** //
 //                       Notification Hub Key Update
 // ************************************************************************** //
@@ -127,8 +120,6 @@ module azNotificationHubKeyVaultSecretDeployment 'az.key.vault.secret.notificati
     resourceGroupName: keyVaultSecretResourceGroupOfResource
   }
 }
-
-
 
 // ************************************************************************** //
 //                       Notificaiton Hub Namespace Key Update

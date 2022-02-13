@@ -13,6 +13,9 @@ param region string = ''
 @description('The name of the app configuration')
 param appConfigurationName string
 
+@description('The region/location the Azure App Configuration instance will be deployed to.')
+param appConfigurationLocation string = resourceGroup().location
+
 @description('The pricing tier for Azure App Configurations: "Free" or "Standard". Default is "Free"')
 param appConfigurationSku object
 
@@ -52,8 +55,8 @@ var appConfigSku = any((environment == 'dev') ? {
 
 // 1. Deploys a single instance of Azure App Configuration
 resource azAppConfigurationDeployment 'Microsoft.AppConfiguration/configurationStores@2021-03-01-preview' = {
-  name: replace(replace('${appConfigurationName}', '@environment', environment), '@region', region)
-  location: resourceGroup().location
+  name: replace(replace(appConfigurationName, '@environment', environment), '@region', region)
+  location: appConfigurationLocation
   sku: appConfigSku
   identity: {
     type: appConfigurationEnableMsi == true ? 'SystemAssigned' : 'None'
@@ -80,20 +83,21 @@ module azAppConfigurationKeysDeployement 'az.app.configuration.key.bicep' = [for
 }]
 
 // 2. Deploys a private endpoint, if applicable, for an instance of Azure App Configuration
-module azEventGridPrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(appConfigurationPrivateEndpoint)) {
+module azAppConfigurationPrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(appConfigurationPrivateEndpoint)) {
   name: !empty(appConfigurationPrivateEndpoint) ? toLower('az-app-cfg-pri-endp-${guid('${azAppConfigurationDeployment.id}/${appConfigurationPrivateEndpoint.privateEndpointName}')}') : 'no-app-cfg-pri-endp-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
     privateEndpointName: appConfigurationPrivateEndpoint.privateEndpointName
-    privateEndpointPrivateDnsZone: appConfigurationPrivateEndpoint.privateEndpointDnsZoneName
-    privateEndpointPrivateDnsZoneGroupName: 'privatelink-azconfig-io'
-    privateEndpointPrivateDnsZoneResourceGroup: appConfigurationPrivateEndpoint.privateEndpointDnsZoneResourceGroup
-    privateEndpointSubnet: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkSubnet
-    privateEndpointSubnetVirtualNetwork: appConfigurationPrivateEndpoint.privateEndpointVirtualNetwork
-    privateEndpointSubnetResourceGroup: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
-    privateEndpointLinkServiceId: azAppConfigurationDeployment.id
+    privateEndpointLocation: contains(appConfigurationPrivateEndpoint, 'privateEndpointLocation') ? appConfigurationPrivateEndpoint.privateEndpointLocation : appConfigurationLocation
+    privateEndpointDnsZoneName: appConfigurationPrivateEndpoint.privateEndpointDnsZoneName
+    privateEndpointDnsZoneGroupName: 'privatelink-azconfig-io'
+    privateEndpointDnsZoneResourceGroup: appConfigurationPrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointVirtualNetworkName: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkName
+    privateEndpointVirtualNetworkSubnetName: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
+    privateEndpointVirtualNetworkResourceGroup: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
+    privateEndpointResourceIdLink: azAppConfigurationDeployment.id
     privateEndpointGroupIds: [
       'configurationStores'
     ]

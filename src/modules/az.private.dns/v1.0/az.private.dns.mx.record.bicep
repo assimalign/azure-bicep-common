@@ -5,7 +5,10 @@
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string
+param environment string = 'dev'
+
+@description('The region prefix or suffix for the resource name, if applicable.')
+param region string = ''
 
 @description('The name of the Private DNS Zone')
 param privateDnsZoneName string
@@ -22,7 +25,7 @@ param privateDnsZoneRecords array
 
 // 1.1 Set A Records if any in Private DNS Zone
 resource azPrivateDnsARecordsDeployment 'Microsoft.Network/privateDnsZones/MX@2020-06-01' = {
-  name: '${privateDnsZoneName}/${privateDnsZoneRecordName}'
+  name: replace(replace('${privateDnsZoneName}/${privateDnsZoneRecordName}', '@environment', environment) , '@region', region)
   properties: {
    ttl: privateDnsZoneTtl
    mxRecords: privateDnsZoneRecords

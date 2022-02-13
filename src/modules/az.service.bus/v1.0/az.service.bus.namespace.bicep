@@ -13,6 +13,9 @@ param region string = ''
 @description('The name of the service bus to deploy')
 param serviceBusName string
 
+@description('The location/region the Azure Service Bus Instance will be deployed to.')
+param serviceBusLocation string = resourceGroup().location
+
 @description('')
 param serviceBusTopics array = []
 
@@ -31,7 +34,7 @@ param serviceBusPolicies array = []
 // 1. Deploy Service Bus Namespace
 resource azServiceBusNamespaceDeployment 'Microsoft.ServiceBus/namespaces@2018-01-01-preview' = {
   name: replace(replace('${serviceBusName}', '@environment', environment), '@region', region)
-  location: resourceGroup().location
+  location: serviceBusLocation
   identity: any(serviceBusEnableMsi ? {
     type: 'SystemAssigned'
   } : {})

@@ -4,16 +4,19 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed')
+@description('The environment in which the resource(s) will be deployed.')
 param environment string = 'dev'
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
-@description('')
+@description('The name of the Azure App Gateway.')
 param appGatewayName string
 
-@description('')
+@description('The location/region the Azure App Gateway will be deployed to.')
+param appGatewayLocation string = resourceGroup().location
+
+@description('The pricing tier of the Azure App Gateway.')
 param appGatewaySku object
 
 @description('')
@@ -22,10 +25,8 @@ param appGatewayBackend object
 @description('')
 param appGatewayFrontend object
 
-@description('')
+@description('The Azure App Gateway routing rules. Reference Link: https://docs.microsoft.com/en-us/azure/application-gateway/configuration-request-routing-rules')
 param appGatewayRoutingRules array
-
-
 
 // **************************************************************************************** //
 //                              App Gateway Deployment                                      //
@@ -57,7 +58,7 @@ var backendPorts = [for port in appGatewayBackend.ports: {
     cookieBasedAffinity: 'Disabled'
     port: port.backendPort
     protocol: port.backendProtocol
-    requestTimeout: port.backendRequestTimeout   
+    requestTimeout: port.backendRequestTimeout
   }
 }]
 
@@ -103,7 +104,7 @@ var routingRules = [for rule in appGatewayRoutingRules: {
 
 resource applicationGateway 'Microsoft.Network/applicationGateways@2020-11-01' = {
   name: replace(replace('${appGatewayName}', '@environment', environment), '@region', region)
-  location: resourceGroup().location
+  location: appGatewayLocation
   properties: {
     sku: any(environment == 'dev' ? {
       name: '${appGatewaySku.dev.tier}_${appGatewaySku.dev.size}'
@@ -153,7 +154,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2020-11-01' =
           }
         }
       }
-    ] : any(!empty(appGatewayFrontend.publicIp)  ? [
+    ] : any(!empty(appGatewayFrontend.publicIp) ? [
       {
         name: appGatewayFrontend.publicIp.name
         properties: {
@@ -171,7 +172,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2020-11-01' =
           }
         }
       }
-    ] : [ ])))
+    ] : [])))
     frontendPorts: frontenPorts
     httpListeners: frontendHttpListeners
     backendAddressPools: backendAddressPools
@@ -179,4 +180,3 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2020-11-01' =
     requestRoutingRules: routingRules
   }
 }
-

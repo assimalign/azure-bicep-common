@@ -12,6 +12,9 @@
                             "appInsightsName": {
                                 "type": "string"
                             },
+                            "appInsightsLocation": {
+                                "type": "string"
+                            },
                             "appInsightsKind": {
                                 "type": "string",
                                 "oneOf": [
@@ -72,6 +75,9 @@
                         "type": "object",
                         "properties": {
                             "appInsightsActionGroupName": {
+                                "type": "string"
+                            },
+                            "appInsightsActionGroupLocation": {
                                 "type": "string"
                             },
                             "appInsightsActionGroupShortName": {

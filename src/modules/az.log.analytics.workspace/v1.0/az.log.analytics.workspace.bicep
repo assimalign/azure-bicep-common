@@ -13,8 +13,11 @@ param region string = ''
 @description('The name of the Analytic Log Workbook')
 param logAnalyticsWorkspaceName string
 
+@description('The location/region the Azure Log Analytical Workspace is deployed to.')
+param logAnalyticsWorkspaceLocation string = resourceGroup().location
+
 @description('The pricing tier for the Workbook')
-param logAnalyticsWorkspaceSku object = {}
+param logAnalyticsWorkspaceSku object 
 
 @description('The number of days to retain data')
 param logAnalyticsWorkspaceRetention int = 30
@@ -31,9 +34,9 @@ param logAnalyticsWorkspacePublicNetworkAccessForQuery string = 'Enabled'
 @description('Tags to attach with the workspace deployment')
 param logAnalyticsWorkspaceTags object = {}
 
-resource azAppLogAnalyticsWorkspaceDeployment 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
+resource azAppLogAnalyticsWorkspaceDeployment 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
   name: replace(replace(logAnalyticsWorkspaceName, '@environment', environment), '@region', region)
-  location: resourceGroup().location
+  location: logAnalyticsWorkspaceLocation
   properties: {
     publicNetworkAccessForIngestion: logAnalyticsWorkspacePublicNetworkAccessForIngestion
     publicNetworkAccessForQuery: logAnalyticsWorkspacePublicNetworkAccessForQuery
