@@ -1,25 +1,36 @@
 {
     "$schema": "../../src/schemas/az/parameters.json",
     "parameters": {
-      "staticSites": {
-        "value": [{
-            ""
-        }]
-      },
-       "eventGridDomainTopics": {
-           "value": [
-               {
-                   "eventGridDomainTopicSubscriptions": [
-                       {
-                           "eventGridDomainTopicSubscriptionDeadLetterDestination": {
-                               "storageAccountName": "",
-                               "storageAccountContainerName": "",
-                               "storageAccountResourceGroupName": ""
-                           }
-                       }
-                   ]
-               }
-           ]
-       }
+        "staticSites": {
+            "value": [
+                {
+                    ""
+                }
+            ]
+        },
+        "storageAccountFileShareServices": {
+            "value": [
+                {
+                    "storageAccountName": "",
+                    "storageAccountResourceGroup": "",
+                    "storageAccountFileShareServiceName": "default"
+                }
+            ]
+        },
+        "eventGridDomainTopics": {
+            "value": [
+                {
+                    "eventGridDomainTopicSubscriptions": [
+                        {
+                            "eventGridDomainTopicSubscriptionDeadLetterDestination": {
+                                "storageAccountName": "",
+                                "storageAccountContainerName": "",
+                                "storageAccountResourceGroupName": ""
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
     }
 }

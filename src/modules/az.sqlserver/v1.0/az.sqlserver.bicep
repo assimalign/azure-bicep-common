@@ -13,11 +13,14 @@ param region string = ''
 @description('The name of the Sql Server Instance')
 param sqlServerName string
 
+@description('')
+param sqlServerLocation string = resourceGroup().location
+
 @description('A list of Sql Server Databases to deploy with the ')
 param sqlServerDatabases array = []
 
 @description('(Required) The admin username for the sql server instance')
-param sqlServerAdminUsername string 
+param sqlServerAdminUsername string
 
 @secure()
 @description('(Required) The admin password for the sql server instance')
@@ -26,29 +29,28 @@ param sqlServerAdminPassword string
 @description('A flag to indeicate whether Managed System identity should be turned on')
 param sqlServerEnableMsi bool = false
 
-
 // 1. Deploys a Sql Server Instance
 resource azSqlServerInstanceDeployment 'Microsoft.Sql/servers@2021-05-01-preview' = {
-  name: replace(replace('${sqlServerName}', '@environment', environment), '@region', region)
-  location: resourceGroup().location
+  name: replace(replace(sqlServerName, '@environment', environment), '@region', region)
+  location: sqlServerLocation
   identity: {
-     type: sqlServerEnableMsi == true ? 'SystemAssigned' : 'None' 
+    type: sqlServerEnableMsi == true ? 'SystemAssigned' : 'None'
   }
   properties: {
-   administratorLogin: sqlServerAdminUsername
-   administratorLoginPassword: sqlServerAdminPassword
+    administratorLogin: sqlServerAdminUsername
+    administratorLoginPassword: sqlServerAdminPassword
   }
 }
 
-
 // 2. Deploy Sql Server Database under instance
-module azSqlServerInstanceDatabaseDeployment 'az.sqlserver.database.bicep' = [for database in sqlServerDatabases: if(!empty(database)) {
+module azSqlServerInstanceDatabaseDeployment 'az.sqlserver.database.bicep' = [for database in sqlServerDatabases: if (!empty(database)) {
   name: !empty(sqlServerDatabases) ? toLower('az-sqlserver-db-${guid('${azSqlServerInstanceDeployment.id}/${database.name}')}') : 'no-sql-server/no-database-to-deploy'
   scope: resourceGroup()
   params: {
-    location: region
+    region: region
     environment: environment
     sqlServerName: sqlServerName
+    sqlServerDatabaseLocation: sqlServerLocation
     sqlServerDatabaseName: database.name
     sqlServerDatabaseSku: database.sku
   }

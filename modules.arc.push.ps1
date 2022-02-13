@@ -9,6 +9,7 @@ $items | ForEach-Object {
         $moduleName = $_.BaseName
         $modulePath = "br:asalbicep.azurecr.io/modules/$moduleName" + ":" + $version
         
+        Write-Host "Uploading $modulePath"
         Publish-AzBicepModule -FilePath $_.FullName -Target $modulePath
     }   
 }

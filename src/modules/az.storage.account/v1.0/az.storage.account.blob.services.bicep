@@ -4,11 +4,17 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
+@description('The environment in which the resource(s) will be deployed')
 param environment string = 'dev'
+
+@description('The region prefix or suffix for the resource name, if applicable.')
+param region string = ''
 
 @description('The name of the storage account to deploy. Must only contain alphanumeric characters')
 param storageAccountName string
+
+@description('The location/region the Azure Storage Account instance is deployed to.')
+param storageAccountLocation string = resourceGroup().location
 
 @allowed([
   'default'
@@ -34,17 +40,16 @@ param storageAccountBlobServiceEnableVersioning bool = false
 @description('')
 param storageAccountBlobServiceEnableSnapshot bool = false
 
-
 // 1. Get the existing Storage Account
-resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2021-04-01' existing = {
-  name: replace(storageAccountName, '@environment', environment)  
+resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2021-08-01' existing = {
+  name: replace(replace(storageAccountName, '@environment', environment), '@region', region)
 }
 
 // 2. Deploy the Blob Service resource
-resource azStorageAccountBlobServiceDeployment 'Microsoft.Storage/storageAccounts/blobServices@2021-04-01' = {
+resource azStorageAccountBlobServiceDeployment 'Microsoft.Storage/storageAccounts/blobServices@2021-08-01' = {
   name: storageAccountBlobServiceName
   parent: azStorageAccountResource
-  properties: { 
+  properties: {
     automaticSnapshotPolicyEnabled: storageAccountBlobServiceEnableSnapshot
     isVersioningEnabled: storageAccountBlobServiceEnableVersioning
     containerDeleteRetentionPolicy: any(!empty(storageAccountBlobServiceRetentionPolicy) ? {
@@ -66,10 +71,11 @@ resource azStorageAccountBlobServiceDeployment 'Microsoft.Storage/storageAccount
 }
 
 // 3. Deploy any Blob Service Container if available
-module azStorageAccountBlobServiceContainerDeployment 'az.storage.account.blob.services.container.bicep' = [for container in storageAccountBlobServiceContainers: if(!empty(container)) {
+module azStorageAccountBlobServiceContainerDeployment 'az.storage.account.blob.services.container.bicep' = [for container in storageAccountBlobServiceContainers: if (!empty(container)) {
   name: !empty(storageAccountBlobServiceContainers) ? toLower('az-stg-blob-container-${guid('${azStorageAccountBlobServiceDeployment.id}/${container.name}')}') : 'no-container-to-deploy'
   scope: resourceGroup()
-  params:{
+  params: {
+    region: region
     environment: environment
     storageAccountName: storageAccountName
     storageAccountBlobServiceName: storageAccountBlobServiceName
@@ -79,25 +85,24 @@ module azStorageAccountBlobServiceContainerDeployment 'az.storage.account.blob.s
   }
 }]
 
-// 4. Deploye the Blob Service Private Endpoint
-module azStorageAccountBlobServicePrivateEndpointDeployment '../az.private.endpoint/az.private.endpoint.bicep' = if(!empty(storageAccountBlobServicePrivateEndpoint)) {
-  name: !empty(storageAccountBlobServicePrivateEndpoint) ? toLower('az-stg-blob-priv-endpoint-${guid('${azStorageAccountBlobServiceDeployment.id}/${storageAccountBlobServicePrivateEndpoint.name}')}') : 'no-eg-private-endpoint-to-deploy'
+// 4. Deploy Storage Account Blob Service Private Endpoint if applicable
+module azStorageBlobServicePrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(storageAccountBlobServicePrivateEndpoint)) {
+  name: !empty(storageAccountBlobServicePrivateEndpoint) ? toLower('az-stg-blob-priv-endpoint-${guid('${azStorageAccountBlobServiceDeployment.id}/${storageAccountBlobServicePrivateEndpoint.privateEndpointName}')}') : 'no-stg-blob-priv-endpoint'
   scope: resourceGroup()
   params: {
+    region: region
     environment: environment
-    privateEndpointName: storageAccountBlobServicePrivateEndpoint.name
-    privateEndpointPrivateDnsZone: storageAccountBlobServicePrivateEndpoint.privateDnsZone
-    privateEndpointPrivateDnsZoneGroupName: 'privatelink-blob-core-windows-net'
-    privateEndpointPrivateDnsZoneResourceGroup: storageAccountBlobServicePrivateEndpoint.privateDnsZoneResourceGroup
-    privateEndpointSubnet: storageAccountBlobServicePrivateEndpoint.virtualNetworkSubnet
-    privateEndpointSubnetVirtualNetwork: storageAccountBlobServicePrivateEndpoint.virtualNetwork
-    privateEndpointSubnetResourceGroup: storageAccountBlobServicePrivateEndpoint.virtualNetworkResourceGroup
-    privateEndpointLinkServiceId: azStorageAccountResource.id
+    privateEndpointName: storageAccountBlobServicePrivateEndpoint.privateEndpointName
+    privateEndpointLocation: contains(storageAccountBlobServicePrivateEndpoint, 'privateEndpointLocation') ? storageAccountBlobServicePrivateEndpoint.privateEndpointLocation : storageAccountLocation
+    privateEndpointDnsZoneName: storageAccountBlobServicePrivateEndpoint.privateEndpointDnsZoneName
+    privateEndpointDnsZoneGroupName: 'privatelink-blob-core-windows-net'
+    privateEndpointDnsZoneResourceGroup: storageAccountBlobServicePrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointVirtualNetworkName: storageAccountBlobServicePrivateEndpoint.privateEndpointVirtualNetworkName
+    privateEndpointVirtualNetworkSubnetName: storageAccountBlobServicePrivateEndpoint.privateEndpointVirtualNetworkSubnetName
+    privateEndpointVirtualNetworkResourceGroup: storageAccountBlobServicePrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
+    privateEndpointResourceIdLink: azStorageAccountResource.id
     privateEndpointGroupIds: [
       'blob'
     ]
   }
-  dependsOn: [
-    azStorageAccountBlobServiceDeployment
-  ]
 }

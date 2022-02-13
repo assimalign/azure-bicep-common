@@ -52,9 +52,13 @@
                 // "sqlServerDatabases": {
                 //     "$ref": "./az.sql.server.account.database.schema.json#definitions/sqlServerDatabases"
                 // },
-                // "storageAccounts": {
-                //     "$ref": "./az.storage.account.schema.json#definitions/storageAccounts"
-                // },
+                "storageAccounts": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-accounts"
+                        }
+                    ]
+                },
                 // "storageAccountBlobServices": {
                 //     "$ref": "./az.storage.account.blob.schema.json#definitions/storageAccountBlobServices"
                 // },
@@ -62,13 +66,21 @@
                 //     "description": "For deploying individual Containers under Blob Services in a Storage Account.",
                 //     "$ref": "./az.storage.account.blob.schema.json#definitions/storageAccountBlobServiceContainers"
                 // },
-                // "storageAccountFileShareServices": {
-                //     "$ref": "./az.storage.account.fileshare.schema.json#definitions/storageAccountFileShareServices"
-                // },
-                // "storageAccountFileShareServiceShares" : {
-                //     "description": "For deploying individual File Shares under File Share Services in a Storage Account.",
-                //     "$ref": "./az.storage.account.fileshare.schema.json#definitions/storageAccountFileShareServiceShares"
-                // },
+                "storageAccountFileShareServices": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-file-share-services"
+                        }
+                    ]
+                },
+                "storageAccountFileShareServiceShares" : {
+                    "description": "For deploying individual File Shares under File Share Services in a Storage Account.",
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-file-share-service-shares"
+                        }
+                    ]
+                },
                 // "storageAccountQueueServices": {
                 //     "$ref": "./az.storage.account.queue.schema.json#definitions/storageAccountQueueServices"
                 // },
@@ -192,12 +204,13 @@
                         }
                     ]
                 },
-                "vpnGateway": {
-
+                "vpnGateways": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.vpn/v1.0/parameters.json#/definitions/vpn-gateways"
+                        }
+                    ]
                 },
-                // "virtualPrivateNetworkGateways": {
-                //     "$ref": "./az.virtual.private.network.gateway.schema.json#definitions/virtualPrivateNetworkGateways"
-                // },
                 // "publicIpAddresses": {
                 //     "$ref": "./az.public.ip.address.schema.json#definitions/publicIpAddresses"
                 // },

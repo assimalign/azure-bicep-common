@@ -238,14 +238,14 @@
                                     ]
                                 }
                             },
-                            "storageAccountBlobServices": {
-                                "$ref": "./az.storage.account.blob.schema.json#definitions/storageAccountBlobService"
-                            },
+                            // "storageAccountBlobServices": {
+                            //     "$ref": "./az.storage.account.blob.schema.json#definitions/storageAccountBlobService"
+                            // },
                             "storageAccountQueueServices": {
-                                "$ref": "./az.storage.account.queue.schema.json#definitions/storageAccountQueueService"
+                                "$ref": "#/definitions/storage-account-queue-service"
                             },
                             "storageAccountFileShareServices": {
-                                "$ref": "./az.storage.account.fileshare.schema.json#definitions/storageAccountFileShareService"
+                                "$ref": "#/definitions/storage-account-file-share-service"
                             },
                             "storageAccountTableServices": {
                                 "$ref": "#/definitions/storage-account-table-service"
@@ -563,7 +563,7 @@
                     }
                 },
                 "storageAccountTableServicePrivateEndpoint": {
-                    "$ref": "#/definitions/storage-account-common-private-endpoint"
+                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
                 }
             },
             "required": [
@@ -625,16 +625,19 @@
                     "type": "array",
                     "items": {
                         "type": "object",
-                        "properties": {
-                            "storageAccountQueueServiceName": {
-                                "type": "string",
-                                "default": "default"
-                            },
+                        "properties": {                
                             "storageAccountName": {
+                                "type": "string"
+                            },
+                            "storageAccountLocation": {
                                 "type": "string"
                             },
                             "storageAccountResourceGroup": {
                                 "type": "string"
+                            },
+                            "storageAccountQueueServiceName": {
+                                "type": "string",
+                                "default": "default"
                             },
                             "storageAccountQueueServiceQueues": {
                                 "type": "array",
@@ -667,12 +670,10 @@
                                 }
                             },
                             "storageAccountQueueServicePrivateEndpoint": {
-                                "$ref": "#/definitions/storage-account-common-private-endpoint"
+                                "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
                             }
                         },
                         "required": [
-                            "storageAccountName",
-                            "storageAccountResourceGroup",
                             "storageAccountQueueServiceName",
                             "storageAccountQueueServiceQueues",
                             "storageAccountQueueServiceCors",
@@ -684,18 +685,18 @@
         },
         "storage-account-queue-service": {
             "type": "object",
-            "properties": {
-                "name": {
+            "properties": {                
+                "storageAccountQueueServiceName": {
                     "type": "string",
                     "default": "default"
                 },
-                "queues": {
+                "storageAccountQueueServiceQueues": {
                     "type": "array",
                     "items": {
-                        "$ref": "#definitions/storageAccountQueueServiceQueue"
+                        "$ref": "#/definitions/storage-account-queue-service-queue"
                     }
                 },
-                "cors": {
+                "storageAccountQueueServiceCors": {
                     "type": "array",
                     "description": "The cors rules to apply to the Queue Services under a specific Storage Account.",
                     "items": {
@@ -719,26 +720,28 @@
                         }
                     }
                 },
-                "privateEndpoint": {
-                    "$ref": "#definitions/storageAccountQueueServicePrivateEndpoint"
+                "storageAccountQueueServicePrivateEndpoint": {
+                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
                 }
             },
             "required": [
-                "name",
-                "queues",
-                "cors",
-                "privateEndpoint"
+                "storageAccountName",
+                "storageAccountResourceGroup",
+                "storageAccountQueueServiceName",
+                "storageAccountQueueServiceQueues",
+                "storageAccountQueueServiceCors",
+                "storageAccountQueueServicePrivateEndpoint"
             ]
         },
         "storage-account-queue-service-queue": {
             "type": "object",
             "properties": {
-                "name": {
+                "StorageAccountQueueName": {
                     "type": "string"
                 }
             },
             "required": [
-                "name"
+                "StorageAccountQueueName"
             ]
         },
         "storage-account-queue-service-queues": {
@@ -749,14 +752,28 @@
                     "items": {
                         "type": "object",
                         "properties": {
-                            "name": {
+                            "storageAccountName": {
                                 "type": "string"
+                            },
+                            "storageAccountResourceGroup": {
+                                "type": "string"
+                            },
+                            "storageAccountQueueName": {
+                                "type": "string"
+                            },
+                            "storageAccountQueueServiceName": {
+                                "type": "string",
+                                "default": "default"
                             }
                         },
                         "required": [
-                            "name"
+                            "storageAccountName",
+                            "storageAccountResourceGroup",
+                            "storageAccountQueueName",
+                            "storageAccountQueueServiceName"
                         ]
-                    }
+                    },
+                    "minItems": 1
                 }
             },
             "required": [
@@ -771,67 +788,70 @@
                     "items": {
                         "type": "object",
                         "properties": {
-                            "name": {
-                                "type": "string",
-                                "default": "default"
-                            },
                             "storageAccountName": {
+                                "type": "string"
+                            },
+                            "storageAccountLocation": {
                                 "type": "string"
                             },
                             "storageAccountResourceGroup": {
                                 "type": "string"
                             },
-                            "shares": {
+                            "storageAccountFileShareServiceName": {
+                                "type": "string",
+                                "default": "default"
+                            },
+                            "storageAccountFileShareServiceShares": {
                                 "type": "array",
                                 "items": {
-                                    "$ref": "#definitions/storageAccountFileShareServiceShare"
+                                    "$ref": "#/definitions/storage-account-file-share-service-share"
                                 }
                             },
-                            "privateEndpoint": {
-                                "$ref": "#definitions/storageAccountFileShareServicePrivateEndpoint"
+                            "storageAccountFileShareServicePrivateEndpoint": {
+                                "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
                             }
                         },
                         "required": [
-                            "name",
                             "storageAccountName",
                             "storageAccountResourceGroup",
-                            "shares",
-                            "privateEndpoint"
+                            "storageAccountFileShareServiceName"
                         ]
-                    }
+                    },
+                    "minItems": 1
                 }
-            }
+            },
+            "required": [
+                "value"
+            ]
         },
         "storage-account-file-share-service": {
             "type": "object",
             "properties": {
-                "name": {
+                "storageAccountFileShareServiceName": {
                     "type": "string",
                     "default": "default"
                 },
-                "shares": {
+                "storageAccountFileShareServiceShares": {
                     "type": "array",
                     "items": {
-                        "$ref": "#definitions/storageAccountFileShareServiceShare"
+                        "$ref": "#/definitions/storage-account-file-share-service-share"
                     }
                 },
-                "privateEndpoint": {
-                    "$ref": "#definitions/storageAccountFileShareServicePrivateEndpoint"
+                "storageAccountFileShareServicePrivateEndpoint": {
+                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
                 }
             },
             "required": [
-                "name",
-                "privateEndpoint",
-                "shares"
+                "storageAccountFileShareServiceName"
             ]
         },
         "storage-account-file-share-service-share": {
             "type": "object",
             "properties": {
-                "name": {
+                "storageAccountFileShareName": {
                     "type": "string"
                 },
-                "accessTier": {
+                "storageAccountFileShareAccessTier": {
                     "type": "string",
                     "oneOf": [
                         {
@@ -850,8 +870,8 @@
                 }
             },
             "required": [
-                "name",
-                "accessTier"
+                "storageAccountFileShareName",
+                "storageAccountFileShareAccessTier"
             ]
         },
         "storage-account-file-share-service-shares": {
@@ -862,19 +882,16 @@
                     "items": {
                         "type": "object",
                         "properties": {
-                            "name": {
-                                "type": "string"
-                            },
                             "storageAccountName": {
-                                "type": "string"
-                            },
-                            "storageAccountFileShareServiceName": {
                                 "type": "string"
                             },
                             "storageAccountResourceGroup": {
                                 "type": "string"
                             },
-                            "accessTier": {
+                            "storageAccountFileShareName": {
+                                "type": "string"
+                            },
+                            "storageAccountFileShareAccessTier": {
                                 "type": "string",
                                 "oneOf": [
                                     {
@@ -890,14 +907,17 @@
                                         "const": "TransactionOptimized"
                                     }
                                 ]
+                            },
+                            "storageAccountFileShareServiceName": {
+                                "type": "string"
                             }
                         },
                         "required": [
-                            "name",
-                            "accessTier",
                             "storageAccountName",
-                            "storageAccountFileShareServiceName",
-                            "storageAccountResourceGroup"
+                            "storageAccountResourceGroup",
+                            "storageAccountFileShareName",
+                            "storageAccountFileShareAccessTier",
+                            "storageAccountFileShareServiceName"
                         ]
                     }
                 }

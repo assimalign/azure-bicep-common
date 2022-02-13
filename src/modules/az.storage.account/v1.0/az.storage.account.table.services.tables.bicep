@@ -4,8 +4,11 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
+@description('The environment in which the resource(s) will be deployed')
 param environment string = 'dev'
+
+@description('The region prefix or suffix for the resource name, if applicable.')
+param region string = ''
 
 @description('The name of the storage account to deploy. Must only contain alphanumeric characters')
 param storageAccountName string
@@ -17,6 +20,6 @@ param storageAccountTableServiceName string = 'default'
 param storageAccountTableName string 
 
 
-resource azStorageAccountTableDeployment 'Microsoft.Storage/storageAccounts/tableServices/tables@2021-06-01' =  {
-  name: replace('${storageAccountName}/${storageAccountTableServiceName}/${storageAccountTableName}', '@environment', environment)
+resource azStorageAccountTableDeployment 'Microsoft.Storage/storageAccounts/tableServices/tables@2021-08-01' =  {
+  name: replace(replace('${storageAccountName}/${storageAccountTableServiceName}/${storageAccountTableName}', '@environment', environment), '@region', region)
 }

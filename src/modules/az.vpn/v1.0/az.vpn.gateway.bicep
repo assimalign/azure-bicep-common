@@ -21,7 +21,7 @@ param vpnGatewayLocation string = resourceGroup().location
    'RouteBased'
 ])
 @description('')
-param vpnGatewayType string
+param vpnGatewayNetworkType string
 
 @description('The Name of the new Public IP Address that will be deployed for the VPN Gateway')
 param vpnGatewayIpName string
@@ -58,7 +58,7 @@ resource azVirtualNetworkGatewayDeployment 'Microsoft.Network/virtualNetworkGate
    location: vpnGatewayLocation
    properties: {
       gatewayType: 'Vpn'
-      vpnType: vpnGatewayType
+      vpnType: vpnGatewayNetworkType
       sku: any(environment == 'dev' ? {
          name: vpnGatewaySku.dev
          tier: vpnGatewaySku.dev

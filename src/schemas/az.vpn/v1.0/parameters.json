@@ -9,11 +9,11 @@
                     "type": "array",
                     "items": {
                         "properties": {
-                            "name": {
+                            "vpnGatewayName": {
                                 "type": "string",
                                 "description": "The name of the VPN Gateway"
                             },
-                            "vpnType": {
+                            "vpnGatewayNetworkType": {
                                 "type": "string",
                                 "oneOf": [
                                     {
@@ -24,15 +24,15 @@
                                     }
                                 ]
                             },
-                            "vpnIpName": {
+                            "vpnGatewayIpName": {
                                 "type": "string",
                                 "description": "The Name of the new Public IP Address that will be deployed for the VPN Gateway"
                             },
-                            "virtualNetwork": {
+                            "vpnGatewayVirtualNetwork": {
                                 "type": "string",
                                 "description": "The name of the virtual network the VPN will live under. DO NOT include Resource Prefix in name."
                             },
-                            "clientSettings": {
+                            "vpnGatewayClientSettings": {
                                 "type": "object",
                                 "description": "These settings are used to configure how a VPN Client will connect to the VPN Gateway. Also known as Point-to-site configurations.",
                                 "properties": {
@@ -64,41 +64,32 @@
                                         }
                                     }
                                 },
-                                "then": {
-
-                                },
+                                "then": {},
                                 "required": [
                                     "authentication",
                                     "addressPool"
                                 ]
                             },
-                            "tags": {
-                                "oneOf": [
-                                    {
-                                        "type": "object",
-                                        "patternProperties": {
-                                            "^[a-z]": {
-                                                "type":"string"
-                                            }
-                                        },
-                                        "minProperties": 1
-                                    },
-                                    {
-                                        "type": "null"
+                            "vpnGatewayTags": {
+                                "type": "object",
+                                "patternProperties": {
+                                    "^[a-z]": {
+                                        "type": "string"
                                     }
-                                ]
+                                },
+                                "minProperties": 1
                             }
                         },
                         "if": {
                             "properties": {
-                                "vpnType": {
+                                "vpnGatewayNetworkType": {
                                     "const": "RouteBased"
                                 }
                             }
                         },
                         "then": {
                             "properties": {
-                                "sku": {
+                                "vpnGatewaySku": {
                                     "type": "object",
                                     "properties": {
                                         "dev": {
@@ -199,7 +190,7 @@
                         },
                         "else": {
                             "properties": {
-                                "sku": {
+                                "vpnGatewaySku": {
                                     "type": "object",
                                     "properties": {
                                         "dev": {
@@ -239,12 +230,11 @@
                             }
                         },
                         "required": [
-                            "name",
-                            "vpnType",
-                            "vpnIpName",
-                            "sku",
-                            "virtualNetwork",
-                            "tags"
+                            "vpnGatewayName",
+                            "vpnGatewayIpName",
+                            "vpnGatewaySku",
+                            "vpnGatewayNetworkType",
+                            "vpnGatewayVirtualNetwork"
                         ]
                     }
                 }

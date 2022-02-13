@@ -4,11 +4,17 @@
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed as part of the resource naming convention')
+@description('The environment in which the resource(s) will be deployed')
 param environment string = 'dev'
+
+@description('The region prefix or suffix for the resource name, if applicable.')
+param region string = ''
 
 @description('The name of the storage account to deploy. Must only contain alphanumeric characters')
 param storageAccountName string
+
+@description('The location/region the Azure Storage Account will deploy to.')
+param storageAccountLocation string = resourceGroup().location
 
 @allowed([
   'Storage'
@@ -93,7 +99,7 @@ var resourceAccess = [for resource in storageAccountResourceAccess: {
 resource azStorageAccountDeployment 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   name: replace(storageAccountName, '@environment', environment)
   kind: storageAccountType
-  location: resourceGroup().location
+  location: storageAccountLocation
   sku: any((environment == 'dev') ? {
     name: '${storageAccountTier.dev}_${toUpper(storageAccountRedundancy.dev)}'
     tier: storageAccountTier.dev
@@ -129,8 +135,10 @@ module azStorageAccountBlobServiceDeployment 'az.storage.account.blob.services.b
   name: !empty(storageAccountBlobServices) ? toLower('az-stg-blob-services-${guid('${azStorageAccountDeployment.id}/blob-service-deployment')}') : 'no-stg-blob-service-to-deploy'
   scope: resourceGroup()
   params: {
+    region: region
     environment: environment
     storageAccountName: storageAccountName
+    storageAccountLocation: storageAccountLocation
     storageAccountBlobServiceName: 'default'
     storageAccountBlobServiceContainers: storageAccountBlobServices.storageAccountBlobServiceContainers
     storageAccountBlobServicePrivateEndpoint: storageAccountBlobServices.storageAccountBlobServicePrivateEndpoint ?? {}
@@ -146,10 +154,11 @@ module azStorageAccountFileShareServiceDeployment 'az.storage.account.fileshare.
   name: !empty(storageAccountFileShareServices) ? toLower('az-stg-fs-service-${guid('${azStorageAccountDeployment.id}/file-share-service-deployment')}') : 'no-stg-fs-service-to-deploy'
   scope: resourceGroup()
   params: {
+    region: region
     environment: environment
     storageAccountName: storageAccountName
+    storageAccountLocation: storageAccountLocation
     storageAccountFileShareServiceName: 'default'
-    
     storageAccountFileShareServiceFileShares: storageAccountFileShareServices.storageAccountFileShareServiceFileShares
     storageAccountFileShareServicePrivateEndpoint: storageAccountFileShareServices.storageAccountFileShareServicePrivateEndpoint ?? {}
   }
@@ -160,12 +169,14 @@ module azStorageAccountQueueServiceDeployment 'az.storage.account.queue.services
   name: !empty(storageAccountQueueServices) ? toLower('az-stg-queue-services-${guid('${azStorageAccountDeployment.id}/queues-service-deployment')}') : 'no-stg-queues-service-to-deploy'
   scope: resourceGroup()
   params: {
+    region: region
     environment: environment
     storageAccountName: storageAccountName
+    storageAccountLocation: storageAccountLocation
     storageAccountQueueServiceName: 'default'
-    storageAccountQueues: storageAccountQueueServices.queues
-    storageAccountQueueServiceCorsRules: storageAccountQueueServices.cors
-    storageAccountQueueServicePrivateEndpoint: storageAccountQueueServices.privateEndpoint ?? {}
+    storageAccountQueueServiceQueues: storageAccountQueueServices.storageAccountQueueServiceQueues
+    storageAccountQueueServiceCorsRules: storageAccountQueueServices.storageAccountQueueServiceCors
+    storageAccountQueueServicePrivateEndpoint:contains(storageAccountQueueServices, 'storageAccountQueueServicePrivateEndpoint') ? storageAccountQueueServices.storageAccountQueueServicePrivateEndpoint : {}
   }
 }
 
@@ -174,11 +185,13 @@ module azStorageAccountTableServiceDeployment 'az.storage.account.table.services
   name: !empty(storageAccountTableServices) ? toLower('az-stg-table-services-${guid('${azStorageAccountDeployment.id}/table-service-deployment')}') : 'no-stg-table-service-to-deploy'
   scope: resourceGroup()
   params: {
+    region: region
     environment: environment
     storageAccountName: storageAccountName
-    storageAccountTableServiceName: 'default'
-    storageAccountTables: storageAccountTableServices.tables
-    storageAccountTableServicePrivateEndpoint: storageAccountTableServices.privateEndpoint ?? {}
+    storageAccountLocation: storageAccountLocation
+    storageAccountTableServiceName: storageAccountTableServices.storageAccountTableServiceName
+    storageAccountTableServiceTables: storageAccountTableServices.storageAccountTableServiceTables
+    storageAccountTableServicePrivateEndpoint: contains(storageAccountTableServices, 'storageAccountTableServicePrivateEndpoint') ? storageAccountTableServices.storageAccountTableServicePrivateEndpoint : {}
   }
 }
 
