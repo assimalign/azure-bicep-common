@@ -11,10 +11,24 @@
         "parameters": {
             "type": "object",
             "properties": {
+                "resourceGroup": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.resource.group/v1.0/parameters.json#/definitions/resource-group"
+                        }
+                    ]
+                },
                 "resourceGroups": {
                     "oneOf": [
                         {
                             "$ref": "../az.resource.group/v1.0/parameters.json#/definitions/resource-groups"
+                        }
+                    ]
+                },
+                "cosmosAccount": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-account"
                         }
                     ]
                 },
@@ -59,13 +73,20 @@
                         }
                     ]
                 },
-                // "storageAccountBlobServices": {
-                //     "$ref": "./az.storage.account.blob.schema.json#definitions/storageAccountBlobServices"
-                // },
-                // "storageAccountBlobServiceContainers": {
-                //     "description": "For deploying individual Containers under Blob Services in a Storage Account.",
-                //     "$ref": "./az.storage.account.blob.schema.json#definitions/storageAccountBlobServiceContainers"
-                // },
+                "storageAccountBlobServices": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-blob-services"
+                        }
+                    ]
+                },
+                "storageAccountBlobServiceContainers": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-blob-service-containers"
+                        }
+                    ]
+                },
                 "storageAccountFileShareServices": {
                     "oneOf": [
                         {
@@ -74,30 +95,50 @@
                     ]
                 },
                 "storageAccountFileShareServiceShares" : {
-                    "description": "For deploying individual File Shares under File Share Services in a Storage Account.",
                     "oneOf": [
                         {
                             "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-file-share-service-shares"
                         }
                     ]
                 },
-                // "storageAccountQueueServices": {
-                //     "$ref": "./az.storage.account.queue.schema.json#definitions/storageAccountQueueServices"
-                // },
-                // "storageAccountQueueServiceQueues": {
-                //     "description": "For deploying individual Queues under Queue Services in a Storage Account.",
-                //     "$ref": "./az.storage.account.queue.schema.json#definitions/storageAccountQueueServiceQueues"
-                // },
-                // "storageAccountTableServices": {
-                //     "$ref": "./az.storage.account.table.schema.json#definitions/storageAccountTableServices"
-                // },
-                // "storageAccountTableServiceTables": {
-                //     "description": "For deploying individual Tables under Tables Services in a Storage Account.",
-                //     "$ref": "./az.storage.account.table.schema.json#definitions/storageAccountTableServiceTables"
-                // },  
+                "storageAccountQueueServices": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-queue-services"
+                        }
+                    ]
+                },
+                "storageAccountQueueServiceQueues": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-queue-service-queues"
+                        }
+                    ]
+                },
+                "storageAccountTableServices": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-table-services"
+                        }
+                    ]
+                },
+                "storageAccountTableServiceTables": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-table-service-tables"
+                        }
+                    ]
+                },  
                 // "appServiceEnvironments": {
                 //     "$ref": "./az.app.service.environment.schema.json#definitions/appServiceEnvironments"
                 // },
+                "appServicePlan": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.app.service/v1.0/parameters.json#/definitions/app-services-plan"
+                        }
+                    ]
+                },
                 "appServicePlans": {
                     "oneOf": [
                         {
@@ -105,8 +146,14 @@
                         }
                     ]
                 },
+                "appService": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.app.service/v1.0/parameters.json#/definitions/app-service"
+                        }
+                    ]
+                },
                 "appServices": {
-                    "description": "Parameters for a list of App Service Deployments. Existing App Service Plan, Storage Account, and Application Insights needed for this deployment.",
                     "oneOf": [
                         {
                             "$ref": "../az.app.service/v1.0/parameters.json#/definitions/app-services"
@@ -127,10 +174,24 @@
                         }
                     ]
                 },
+                "appGateway": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.app.gateway/v1.0/parameters.json#/definitions/app-gateway"
+                        }
+                    ]
+                },
                 "appGateways": {
                     "oneOf": [
                         {
                             "$ref": "../az.app.gateway/v1.0/parameters.json#/definitions/app-gateways"
+                        }
+                    ]
+                },
+                "appConfiguration": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.app.configuration/v1.0/parameters.json#/definitions/app-configuration"
                         }
                     ]
                 },
@@ -148,6 +209,13 @@
                         }
                     ]
                 },
+                "appInsight": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.app.insights/v1.0/parameters.json#/definitions/app-insight"
+                        }
+                    ]
+                },
                 "appInsights": {
                     "oneOf": [
                         {
@@ -156,6 +224,13 @@
                     ]
                 },
                 "appInsightsActionGroup": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.app.insights/v1.0/parameters.json#/definitions/app-insights-action-group"
+                        }
+                    ]
+                },
+                "appInsightsActionGroups": {
                     "oneOf": [
                         {
                             "$ref": "../az.app.insights/v1.0/parameters.json#/definitions/app-insights-action-groups"

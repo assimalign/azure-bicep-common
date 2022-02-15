@@ -1,12 +1,22 @@
 {
     "$schema": "../../src/schemas/az/parameters.json",
     "parameters": {
-        "staticSites": {
-            "value": [
-                {
-                    ""
-                }
-            ]
+       
+      
+        
+        "appConfiguration": {
+            "value": {
+                "appConfigurationName": "",
+                "appConfigurationSku": {
+                    "dev": "Free",
+                    "qa": "Standard",
+                    "uat": "Standard",
+                    "prd": "Standard"
+                },
+                "appConfigurationEnableMsi": false,
+                "appConfigurationEnableRbac": false,
+                "appConfigurationDisablePublicAccess": false
+            }
         },
         "storageAccountFileShareServices": {
             "value": [

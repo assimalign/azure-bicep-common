@@ -7,11 +7,10 @@
             }
         }
     },
-    
     "cloud": {
         "currentProfile": "AzureCloud",
         "credentialPrecedence": [
             "AzurePowerShell"
         ]
-      }
+    }
 }

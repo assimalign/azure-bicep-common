@@ -1,6 +1,18 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "definitions": {
+        "resource-group": {
+            "type": "object",
+            "description": "The Resource Group in which all resource will be deployed under.",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/resource-group-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
         "resource-groups": {
             "type": "object",
             "description": "The Resource Group in which all resource will be deployed under.",
@@ -8,94 +20,90 @@
                 "value": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "resourceGroupName": {
-                                "type": "string"
-                            },
-                            "resourceGroupLocation": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "eastus"
-                                    },
-                                    {
-                                        "const": "eastus2"
-                                    },
-                                    {
-                                        "const": "westus"
-                                    },
-                                    {
-                                        "const": "westus2"
-                                    },
-                                    {
-                                        "const": "westus3"
-                                    },
-                                    {
-                                        "const": "westcentralus"
-                                    },
-                                    {
-                                        "const": "southcentralus"
-                                    },
-                                    {
-                                        "const": "northcentralus"
-                                    },
-                                    {
-                                        "const": "northeurope"
-                                    },
-                                    {
-                                        "const": "swedencentral"
-                                    },
-                                    {
-                                        "const": "uksouth"
-                                    },
-                                    {
-                                        "const": "ukwest"
-                                    },
-                                    {
-                                        "const": "westeurope"
-                                    },
-                                    {
-                                        "const": "francecentral"
-                                    },
-                                    {
-                                        "const": "germanywestcentral"
-                                    },
-                                    {
-                                        "const": "norwayeast"
-                                    },
-                                    {
-                                        "const": "switzerlandnorth"
-                                    }
-                                ]
-                            },
-                            "resourceGroupTags": {
-                                "oneOf": [
-                                    {
-                                        "type": "object",
-                                        "patternProperties": {
-                                            "^[a-z]": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "minProperties": 1
-                                    },
-                                    {
-                                        "type": "null"
-                                    }
-                                ]
-                            }
-                        }
+                        "$ref": "#/definitions/resource-group-parameters"
                     },
-                    "minItems": 1,
-                    "required": [
-                        "resourceGroupName",
-                        "resourceGroupLocation"
-                    ]
+                    "minItems": 1
                 }
             },
             "required": [
                 "value"
+            ]
+        },
+        "resource-group-parameters": {
+            "type": "object",
+            "properties": {
+                "resourceGroupName": {
+                    "type": "string"
+                },
+                "resourceGroupLocation": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "eastus"
+                        },
+                        {
+                            "const": "eastus2"
+                        },
+                        {
+                            "const": "westus"
+                        },
+                        {
+                            "const": "westus2"
+                        },
+                        {
+                            "const": "westus3"
+                        },
+                        {
+                            "const": "westcentralus"
+                        },
+                        {
+                            "const": "southcentralus"
+                        },
+                        {
+                            "const": "northcentralus"
+                        },
+                        {
+                            "const": "northeurope"
+                        },
+                        {
+                            "const": "swedencentral"
+                        },
+                        {
+                            "const": "uksouth"
+                        },
+                        {
+                            "const": "ukwest"
+                        },
+                        {
+                            "const": "westeurope"
+                        },
+                        {
+                            "const": "francecentral"
+                        },
+                        {
+                            "const": "germanywestcentral"
+                        },
+                        {
+                            "const": "norwayeast"
+                        },
+                        {
+                            "const": "switzerlandnorth"
+                        }
+                    ]
+                },
+                "resourceGroupTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "resourceGroupName",
+                "resourceGroupLocation"
             ]
         }
     }
