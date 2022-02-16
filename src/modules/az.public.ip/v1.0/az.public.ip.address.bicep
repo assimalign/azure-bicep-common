@@ -5,13 +5,16 @@
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string
+param environment string = 'dev'
 
-@description('The location prefix or suffix for the resource name')
-param location string = ''
+@description('The region prefix or suffix for the resource name, if applicable.')
+param region string = ''
 
 @description('The name of the Public IP Address')
 param publicIpName string
+
+@description('')
+param publicIpLocation string = resourceGroup().location
 
 @description('The pricing tier of the Public IP Address')
 param publicIpSku object
@@ -26,8 +29,8 @@ param publicIpAllocationMethod string = 'Dynamic'
 
 // 1. Deploy Public Ip Address
 resource azPublicIpAddressDeployment 'Microsoft.Network/publicIPAddresses@2019-11-01' = {
-  name: replace(replace('${publicIpName}', '@environment', environment), '@location', location)
-  location: resourceGroup().location
+  name: replace(replace('${publicIpName}', '@environment', environment), '@location', region)
+  location: publicIpLocation
   properties: {
     publicIPAllocationMethod: publicIpAllocationMethod   
   }

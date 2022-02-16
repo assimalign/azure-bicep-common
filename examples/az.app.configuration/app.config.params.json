@@ -2,6 +2,22 @@
     "$schema": "https://asalschemastore.blob.core.windows.net/json/bicep/az/parameters.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "storageAccount": {
+            "value": {
+                "storageAccountName": "",
+                "storageAccountAccessTier": "cool",
+                "storageAccountTier": {
+                    "dev": "Standard",
+                    "qa": "Standard",
+                    "uat": "Standard",
+                    "prd": "Premium"
+                },
+                
+                "storageAccountType":"StorageV2",
+                "storageAccountTlsVersion": "TLS1_2",
+                "storageAccountVirtualNetworks": []
+            }
+        },
         "resourceGroups":{
             "value": [
                 {

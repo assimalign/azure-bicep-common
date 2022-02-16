@@ -1,524 +1,535 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "definitions": {
+        "storage-account": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/storage-account-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
         "storage-accounts": {
             "type": "object",
             "properties": {
                 "value": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "storageAccountName": {
-                                "type": "string"
-                            },
-                            "storageAccountTlsVersion": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "TLS1_0"
-                                    },
-                                    {
-                                        "const": "TLS1_1"
-                                    },
-                                    {
-                                        "const": "TLS1_2"
-                                    }
-                                ]
-                            },
-                            "storageAccountType": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Storage"
-                                    },
-                                    {
-                                        "const": "StorageV2"
-                                    },
-                                    {
-                                        "const": "BlobStorage"
-                                    },
-                                    {
-                                        "const": "BlockBlobStorage"
-                                    },
-                                    {
-                                        "const": "FileStorage"
-                                    }
-                                ]
-                            },
-                            "storageAccountAccessTier": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "hot"
-                                    },
-                                    {
-                                        "const": "cool"
-                                    }
-                                ]
-                            },
-                            "storageAccountTier": {
-                                "type": "object",
-                                "properties": {
-                                    "dev": {
-                                        "type": "string"
-                                    },
-                                    "qa": {
-                                        "type": "string"
-                                    },
-                                    "uat": {
-                                        "type": "string"
-                                    },
-                                    "prd": {
-                                        "type": "string"
-                                    }
-                                },
-                                "required": [
-                                    "dev",
-                                    "qa",
-                                    "uat",
-                                    "prd"
-                                ]
-                            },
-                            "storageAccountRedundancy": {
-                                "type": "object",
-                                "properties": {
-                                    "dev": {
-                                        "type": "string",
-                                        "oneOf": [
-                                            {
-                                                "const": "LRS"
-                                            },
-                                            {
-                                                "const": "GRS"
-                                            },
-                                            {
-                                                "const": "RAGRS"
-                                            },
-                                            {
-                                                "const": "ZRS"
-                                            }
-                                        ]
-                                    },
-                                    "qa": {
-                                        "type": "string",
-                                        "oneOf": [
-                                            {
-                                                "const": "LRS"
-                                            },
-                                            {
-                                                "const": "GRS"
-                                            },
-                                            {
-                                                "const": "RAGRS"
-                                            },
-                                            {
-                                                "const": "ZRS"
-                                            }
-                                        ]
-                                    },
-                                    "uat": {
-                                        "type": "string",
-                                        "oneOf": [
-                                            {
-                                                "const": "LRS"
-                                            },
-                                            {
-                                                "const": "GRS"
-                                            },
-                                            {
-                                                "const": "RAGRS"
-                                            },
-                                            {
-                                                "const": "ZRS"
-                                            }
-                                        ]
-                                    },
-                                    "prd": {
-                                        "type": "string",
-                                        "oneOf": [
-                                            {
-                                                "const": "LRS"
-                                            },
-                                            {
-                                                "const": "GRS"
-                                            },
-                                            {
-                                                "const": "RAGRS"
-                                            },
-                                            {
-                                                "const": "ZRS"
-                                            }
-                                        ]
-                                    }
-                                },
-                                "required": [
-                                    "dev",
-                                    "qa",
-                                    "uat",
-                                    "prd"
-                                ]
-                            },
-                            "storageAccountVirtualNetworkDefaultAccess": {
-                                "type": "string",
-                                "default": "Allow",
-                                "oneOf": [
-                                    {
-                                        "const": "Allow"
-                                    },
-                                    {
-                                        "const": "Deny"
-                                    }
-                                ]
-                            },
-                            "storageAccountVirtualNetworks": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "allowAccess": {
-                                            "type": "boolean",
-                                            "default": true
-                                        },
-                                        "virtualNetwork": {
-                                            "type": "string"
-                                        },
-                                        "virtualNetworkSubnet": {
-                                            "type": "string"
-                                        },
-                                        "virtualNetworkResourceGroup": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "allowAccess",
-                                        "virtualNetwork",
-                                        "virtualNetworkSubnet",
-                                        "virtualNetworkResourceGroup"
-                                    ]
-                                }
-                            },
-                            "storageAccountVirtualNetworkBypass": {
-                                "type": "string",
-                                "default": "AzureServices",
-                                "oneOf": [
-                                    {
-                                        "const": "AzureServices"
-                                    },
-                                    {
-                                        "const": "Logging"
-                                    },
-                                    {
-                                        "const": "Metrics"
-                                    },
-                                    {
-                                        "const": "None"
-                                    }
-                                ]
-                            },
-                            "storageAccountResourceAccess": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "resourceName": {
-                                            "type": "string"
-                                        },
-                                        "resourceType": {
-                                            "type": "string"
-                                        },
-                                        "resourceGroup": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "resourceName",
-                                        "resourceType",
-                                        "resourceGroup"
-                                    ]
-                                }
-                            },
-                            // "storageAccountBlobServices": {
-                            //     "$ref": "./az.storage.account.blob.schema.json#definitions/storageAccountBlobService"
-                            // },
-                            "storageAccountQueueServices": {
-                                "$ref": "#/definitions/storage-account-queue-service"
-                            },
-                            "storageAccountFileShareServices": {
-                                "$ref": "#/definitions/storage-account-file-share-service"
-                            },
-                            "storageAccountTableServices": {
-                                "$ref": "#/definitions/storage-account-table-service"
-                            },
-                            "storageAccountTags": {
-                                "type": "object",
-                                "patternProperties": {
-                                    "^[a-z]": {
-                                        "type": "string"
-                                    }
-                                },
-                                "minProperties": 1
-                            }
-                        },
-                        "if": {
-                            "properties": {
-                                "storageAccountType": {
-                                    "oneOf": [
-                                        {
-                                            "const": "Storage"
-                                        },
-                                        {
-                                            "const": "StorageV2"
-                                        }
-                                    ]
-                                }
-                            }
-                        },
-                        "then": {
-                            "properties": {
-                                "storageAccountTier": {
-                                    "type": "object",
-                                    "properties": {
-                                        "dev": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "Standard"
-                                                },
-                                                {
-                                                    "const": "Premium"
-                                                }
-                                            ]
-                                        },
-                                        "qa": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "Standard"
-                                                },
-                                                {
-                                                    "const": "Premium"
-                                                }
-                                            ]
-                                        },
-                                        "uat": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "Standard"
-                                                },
-                                                {
-                                                    "const": "Premium"
-                                                }
-                                            ]
-                                        },
-                                        "prd": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "Standard"
-                                                },
-                                                {
-                                                    "const": "Premium"
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "dev",
-                                        "qa",
-                                        "uat",
-                                        "prd"
-                                    ]
-                                },
-                                "storageAccountRedundancy": {
-                                    "type": "object",
-                                    "properties": {
-                                        "dev": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "LRS"
-                                                },
-                                                {
-                                                    "const": "GRS"
-                                                },
-                                                {
-                                                    "const": "RAGRS"
-                                                },
-                                                {
-                                                    "const": "ZRS"
-                                                }
-                                            ]
-                                        },
-                                        "qa": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "LRS"
-                                                },
-                                                {
-                                                    "const": "GRS"
-                                                },
-                                                {
-                                                    "const": "RAGRS"
-                                                },
-                                                {
-                                                    "const": "ZRS"
-                                                }
-                                            ]
-                                        },
-                                        "uat": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "LRS"
-                                                },
-                                                {
-                                                    "const": "GRS"
-                                                },
-                                                {
-                                                    "const": "RAGRS"
-                                                },
-                                                {
-                                                    "const": "ZRS"
-                                                }
-                                            ]
-                                        },
-                                        "prd": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "LRS"
-                                                },
-                                                {
-                                                    "const": "GRS"
-                                                },
-                                                {
-                                                    "const": "RAGRS"
-                                                },
-                                                {
-                                                    "const": "ZRS"
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "dev",
-                                        "qa",
-                                        "uat",
-                                        "prd"
-                                    ]
-                                }
-                            }
-                        },
-                        "else": {
-                            "properties": {
-                                "storageAccountTier": {
-                                    "type": "object",
-                                    "properties": {
-                                        "dev": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "Premium"
-                                                }
-                                            ]
-                                        },
-                                        "qa": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "Premium"
-                                                }
-                                            ]
-                                        },
-                                        "uat": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "Premium"
-                                                }
-                                            ]
-                                        },
-                                        "prd": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "Premium"
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "dev",
-                                        "qa",
-                                        "uat",
-                                        "prd"
-                                    ]
-                                },
-                                "storageAccountRedundancy": {
-                                    "type": "object",
-                                    "properties": {
-                                        "dev": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "LRS"
-                                                }
-                                            ]
-                                        },
-                                        "qa": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "LRS"
-                                                }
-                                            ]
-                                        },
-                                        "uat": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "LRS"
-                                                }
-                                            ]
-                                        },
-                                        "prd": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "LRS"
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "dev",
-                                        "qa",
-                                        "uat",
-                                        "prd"
-                                    ]
-                                }
-                            }
-                        },
-                        "required": [
-                            "storageAccountName",
-                            "storageAccountType",
-                            "storageAccountTier",
-                            "storageAccountAccessTier",
-                            "storageAccountTlsVersion",
-                            "storageAccountVirtualNetworks",
-                            "storageAccountVirtualNetworkBypass",
-                            "storageAccountVirtualNetworkDefaultAccess",
-                            "storageAccountResourceAccess"
-                        ]
+                        "$ref": "#/definitions/storage-account-parameters"
                     },
                     "minItems": 1
                 }
             },
             "required": [
                 "value"
+            ]
+        },
+        "storage-account-parameters": {
+            "type": "object",
+            "properties": {
+                "storageAccountName": {
+                    "type": "string"
+                },
+                "storageAccountResourceGroup": {
+                    "type": "string"
+                },
+                "storageAccountTlsVersion": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "TLS1_0"
+                        },
+                        {
+                            "const": "TLS1_1"
+                        },
+                        {
+                            "const": "TLS1_2"
+                        }
+                    ]
+                },
+                "storageAccountType": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "Storage"
+                        },
+                        {
+                            "const": "StorageV2"
+                        },
+                        {
+                            "const": "BlobStorage"
+                        },
+                        {
+                            "const": "BlockBlobStorage"
+                        },
+                        {
+                            "const": "FileStorage"
+                        }
+                    ]
+                },
+                "storageAccountAccessTier": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "hot"
+                        },
+                        {
+                            "const": "cool"
+                        }
+                    ]
+                },
+                "storageAccountTier": {
+                    "type": "object",
+                    "properties": {
+                        "dev": {
+                            "type": "string"
+                        },
+                        "qa": {
+                            "type": "string"
+                        },
+                        "uat": {
+                            "type": "string"
+                        },
+                        "prd": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "dev",
+                        "qa",
+                        "uat",
+                        "prd"
+                    ]
+                },
+                "storageAccountRedundancy": {
+                    "type": "object",
+                    "properties": {
+                        "dev": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "LRS"
+                                },
+                                {
+                                    "const": "GRS"
+                                },
+                                {
+                                    "const": "RAGRS"
+                                },
+                                {
+                                    "const": "ZRS"
+                                }
+                            ]
+                        },
+                        "qa": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "LRS"
+                                },
+                                {
+                                    "const": "GRS"
+                                },
+                                {
+                                    "const": "RAGRS"
+                                },
+                                {
+                                    "const": "ZRS"
+                                }
+                            ]
+                        },
+                        "uat": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "LRS"
+                                },
+                                {
+                                    "const": "GRS"
+                                },
+                                {
+                                    "const": "RAGRS"
+                                },
+                                {
+                                    "const": "ZRS"
+                                }
+                            ]
+                        },
+                        "prd": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "LRS"
+                                },
+                                {
+                                    "const": "GRS"
+                                },
+                                {
+                                    "const": "RAGRS"
+                                },
+                                {
+                                    "const": "ZRS"
+                                }
+                            ]
+                        }
+                    },
+                    "required": [
+                        "dev",
+                        "qa",
+                        "uat",
+                        "prd"
+                    ]
+                },
+                "storageAccountVirtualNetworkDefaultAccess": {
+                    "type": "string",
+                    "default": "Allow",
+                    "oneOf": [
+                        {
+                            "const": "Allow"
+                        },
+                        {
+                            "const": "Deny"
+                        }
+                    ]
+                },
+                "storageAccountVirtualNetworks": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "allowAccess": {
+                                "type": "boolean",
+                                "default": true
+                            },
+                            "virtualNetwork": {
+                                "type": "string"
+                            },
+                            "virtualNetworkSubnet": {
+                                "type": "string"
+                            },
+                            "virtualNetworkResourceGroup": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "allowAccess",
+                            "virtualNetwork",
+                            "virtualNetworkSubnet",
+                            "virtualNetworkResourceGroup"
+                        ]
+                    }
+                },
+                "storageAccountVirtualNetworkBypass": {
+                    "type": "string",
+                    "default": "AzureServices",
+                    "oneOf": [
+                        {
+                            "const": "AzureServices"
+                        },
+                        {
+                            "const": "Logging"
+                        },
+                        {
+                            "const": "Metrics"
+                        },
+                        {
+                            "const": "None"
+                        }
+                    ]
+                },
+                "storageAccountResourceAccess": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "resourceName": {
+                                "type": "string"
+                            },
+                            "resourceType": {
+                                "type": "string"
+                            },
+                            "resourceGroup": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "resourceName",
+                            "resourceType",
+                            "resourceGroup"
+                        ]
+                    }
+                },
+                "storageAccountBlobServices": {
+                    "$ref": "#/definitions/storage-account-blob-service-parameters"
+                },
+                "storageAccountQueueServices": {
+                    "$ref": "#/definitions/storage-account-queue-service-parameters"
+                },
+                "storageAccountFileShareServices": {
+                    "$ref": "#/definitions/storage-account-file-share-service-parameters"
+                },
+                "storageAccountTableServices": {
+                    "$ref": "#/definitions/storage-account-table-service-parameters"
+                },
+                "storageAccountTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "if": {
+                "properties": {
+                    "storageAccountType": {
+                        "oneOf": [
+                            {
+                                "const": "Storage"
+                            },
+                            {
+                                "const": "StorageV2"
+                            }
+                        ]
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "storageAccountTier": {
+                        "type": "object",
+                        "properties": {
+                            "dev": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "Standard"
+                                    },
+                                    {
+                                        "const": "Premium"
+                                    }
+                                ]
+                            },
+                            "qa": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "Standard"
+                                    },
+                                    {
+                                        "const": "Premium"
+                                    }
+                                ]
+                            },
+                            "uat": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "Standard"
+                                    },
+                                    {
+                                        "const": "Premium"
+                                    }
+                                ]
+                            },
+                            "prd": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "Standard"
+                                    },
+                                    {
+                                        "const": "Premium"
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "dev",
+                            "qa",
+                            "uat",
+                            "prd"
+                        ]
+                    },
+                    "storageAccountRedundancy": {
+                        "type": "object",
+                        "properties": {
+                            "dev": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "LRS"
+                                    },
+                                    {
+                                        "const": "GRS"
+                                    },
+                                    {
+                                        "const": "RAGRS"
+                                    },
+                                    {
+                                        "const": "ZRS"
+                                    }
+                                ]
+                            },
+                            "qa": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "LRS"
+                                    },
+                                    {
+                                        "const": "GRS"
+                                    },
+                                    {
+                                        "const": "RAGRS"
+                                    },
+                                    {
+                                        "const": "ZRS"
+                                    }
+                                ]
+                            },
+                            "uat": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "LRS"
+                                    },
+                                    {
+                                        "const": "GRS"
+                                    },
+                                    {
+                                        "const": "RAGRS"
+                                    },
+                                    {
+                                        "const": "ZRS"
+                                    }
+                                ]
+                            },
+                            "prd": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "LRS"
+                                    },
+                                    {
+                                        "const": "GRS"
+                                    },
+                                    {
+                                        "const": "RAGRS"
+                                    },
+                                    {
+                                        "const": "ZRS"
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "dev",
+                            "qa",
+                            "uat",
+                            "prd"
+                        ]
+                    }
+                }
+            },
+            "else": {
+                "properties": {
+                    "storageAccountTier": {
+                        "type": "object",
+                        "properties": {
+                            "dev": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "Premium"
+                                    }
+                                ]
+                            },
+                            "qa": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "Premium"
+                                    }
+                                ]
+                            },
+                            "uat": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "Premium"
+                                    }
+                                ]
+                            },
+                            "prd": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "Premium"
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "dev",
+                            "qa",
+                            "uat",
+                            "prd"
+                        ]
+                    },
+                    "storageAccountRedundancy": {
+                        "type": "object",
+                        "properties": {
+                            "dev": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "LRS"
+                                    }
+                                ]
+                            },
+                            "qa": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "LRS"
+                                    }
+                                ]
+                            },
+                            "uat": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "LRS"
+                                    }
+                                ]
+                            },
+                            "prd": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "LRS"
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "dev",
+                            "qa",
+                            "uat",
+                            "prd"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "storageAccountName",
+                "storageAccountType",
+                "storageAccountTier"
             ]
         },
         "storage-account-table-services": {
@@ -527,24 +538,7 @@
                 "value": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "allOf": [
-                            {
-                                "$ref": "#/definitions/storage-account-table-service"
-                            }
-                        ],
-                        "properties": {
-                            "storageAccountName": {
-                                "type": "string"
-                            },
-                            "storageAccountResourceGroup": {
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "storageAccountName",
-                            "storageAccountResourceGroup"
-                        ]
+                        "$ref": "#/definitions/storage-account-table-service-parameters"
                     }
                 }
             }
@@ -552,34 +546,67 @@
         "storage-account-table-service": {
             "type": "object",
             "properties": {
+                "value": {
+                    "$ref": "#/definitions/storage-account-table-service-parameters"
+                }
+            }
+        },
+        "storage-account-table-service-parameters": {
+            "type":"object",
+            "properties": {
+                "storageAccountName": {
+                    "type": "string"
+                },
+                "storageAccountResourceGroup": {
+                    "type": "string"
+                },
                 "storageAccountTableServiceName": {
                     "type": "string",
                     "default": "default"
+                },          
+                "storageAccountTableServicePrivateEndpoint": {
+                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
                 },
                 "storageAccountTableServiceTables": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/storage-account-table-service-table"
+                        "$ref": "#/definitions/storage-account-table-service-table-parameters"
                     }
                 },
-                "storageAccountTableServicePrivateEndpoint": {
-                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
+                "storageAccountTableServiceCorsPolicy": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "allowedOrigins": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 1
+                            },
+                            "allowedMethods": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 1
+                            },
+                            "allowedHeaders": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 1
+                            }
+                        },
+                        "minProperties": 1
+                    }
                 }
             },
             "required": [
-                "storageAccountTableServiceName",
-                "storageAccountTableServiceTables"
-            ]
-        },
-        "storage-account-table-service-table": {
-            "type": "object",
-            "properties": {
-                "storageAccountTableName": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "storageAccountTableName"
+                "storageAccountName",
+                "storageAccountResourceGroup"
             ]
         },
         "storage-account-table-service-tables": {
@@ -588,28 +615,7 @@
                 "value": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "storageAccountTableName": {
-                                "type": "string"
-                            },
-                            "storageAccountTableServiceName": {
-                                "type": "string",
-                                "default": "default"
-                            },
-                            "storageAccountName": {
-                                "type": "string"
-                            },
-                            "storageAccountResourceGroup": {
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "storageAccountTableName",
-                            "storageAccountTableServiceName",
-                            "storageAccountName",
-                            "storageAccountResourceGroup"
-                        ]
+                        "$ref": "#/definitions/storage-account-table-service-table-parameters"
                     },
                     "minItems": 1
                 }
@@ -618,74 +624,55 @@
                 "value"
             ]
         },
+        "storage-account-table-service-table": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/storage-account-table-service-table-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "storage-account-table-service-table-parameters": {
+            "type": "object",
+            "properties": {
+                "storageAccountName": {
+                    "type": "string"
+                },
+                "storageAccountResourceGroup": {
+                    "type": "string"
+                },
+                "storageAccountTableServiceName": {
+                    "type": "string",
+                    "default": "default"
+                },
+                "storageAccountTableServiceTableName": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "storageAccountTableName",
+                "storageAccountTableServiceName",
+                "storageAccountTableServiceTableName",
+                "storageAccountResourceGroup"
+            ]
+        },
         "storage-account-queue-services": {
             "type": "object",
             "properties": {
                 "value": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "properties": {                
-                            "storageAccountName": {
-                                "type": "string"
-                            },
-                            "storageAccountLocation": {
-                                "type": "string"
-                            },
-                            "storageAccountResourceGroup": {
-                                "type": "string"
-                            },
-                            "storageAccountQueueServiceName": {
-                                "type": "string",
-                                "default": "default"
-                            },
-                            "storageAccountQueueServiceQueues": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/storage-account-queue-service-queue"
-                                }
-                            },
-                            "storageAccountQueueServiceCors": {
-                                "type": "array",
-                                "description": "The cors rules to apply to the Queue Services under a specific Storage Account.",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "allowedOrigins": {
-                                            "type": "string"
-                                        },
-                                        "exposedHeaders": {
-                                            "type": "string"
-                                        },
-                                        "allowedMethods": {
-                                            "type": "string"
-                                        },
-                                        "maxAgeInSeconds":{
-                                            "type": "string"
-                                        },
-                                        "allowedHeaders": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            },
-                            "storageAccountQueueServicePrivateEndpoint": {
-                                "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
-                            }
-                        },
-                        "required": [
-                            "storageAccountQueueServiceName",
-                            "storageAccountQueueServiceQueues",
-                            "storageAccountQueueServiceCors",
-                            "storageAccountQueueServicePrivateEndpoint"
-                        ]
+                        
                     }
                 }
             }
         },
         "storage-account-queue-service": {
             "type": "object",
-            "properties": {                
+            "properties": {
                 "storageAccountQueueServiceName": {
                     "type": "string",
                     "default": "default"
@@ -711,7 +698,7 @@
                             "allowedMethods": {
                                 "type": "string"
                             },
-                            "maxAgeInSeconds":{
+                            "maxAgeInSeconds": {
                                 "type": "string"
                             },
                             "allowedHeaders": {
@@ -733,15 +720,76 @@
                 "storageAccountQueueServicePrivateEndpoint"
             ]
         },
-        "storage-account-queue-service-queue": {
+        "storage-account-queue-service-parameters": {
             "type": "object",
             "properties": {
-                "StorageAccountQueueName": {
+                "storageAccountName": {
                     "type": "string"
+                },
+                "storageAccountLocation": {
+                    "type": "string"
+                },
+                "storageAccountResourceGroup": {
+                    "type": "string"
+                },
+                "storageAccountQueueServiceName": {
+                    "type": "string",
+                    "default": "default"
+                },
+                "storageAccountQueueServiceQueues": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/storage-account-queue-service-queue-parameters"
+                    }
+                },
+                "storageAccountQueueServiceCors": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "allowedOrigins": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 1
+                            },
+                            "allowedMethods": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 1
+                            },
+                            "allowedHeaders": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 1
+                            }
+                        },
+                        "minProperties": 1
+                    }
+                },
+                "storageAccountQueueServicePrivateEndpoint": {
+                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
                 }
             },
             "required": [
-                "StorageAccountQueueName"
+                "storageAccountQueueServiceName",
+                "storageAccountQueueServiceQueues"
+            ]
+        },
+        "storage-account-queue-service-queue": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/storage-account-queue-service-queue-parameters"
+                }
+            },
+            "required": [
+                "value"
             ]
         },
         "storage-account-queue-service-queues": {
@@ -750,28 +798,7 @@
                 "value": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "storageAccountName": {
-                                "type": "string"
-                            },
-                            "storageAccountResourceGroup": {
-                                "type": "string"
-                            },
-                            "storageAccountQueueName": {
-                                "type": "string"
-                            },
-                            "storageAccountQueueServiceName": {
-                                "type": "string",
-                                "default": "default"
-                            }
-                        },
-                        "required": [
-                            "storageAccountName",
-                            "storageAccountResourceGroup",
-                            "storageAccountQueueName",
-                            "storageAccountQueueServiceName"
-                        ]
+                        "$ref": "#/definitions/storage-account-queue-service-queue-parameters"
                     },
                     "minItems": 1
                 }
@@ -780,42 +807,37 @@
                 "value"
             ]
         },
+        "storage-account-queue-service-queue-parameters": {
+            "type": "object",
+            "properties": {
+                "storageAccountName": {
+                    "type": "string"
+                },
+                "storageAccountResourceGroup": {
+                    "type": "string"
+                },
+                "storageAccountQueueServiceName": {
+                    "type": "string",
+                    "default": "default"
+                },
+                "storageAccountQueueServiceQueueName": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "storageAccountName",
+                "storageAccountResourceGroup",
+                "storageAccountQueueServiceName",
+                "storageAccountQueueServiceQueueName"
+            ]
+        },
         "storage-account-file-share-services": {
             "type": "object",
             "properties": {
                 "value": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "storageAccountName": {
-                                "type": "string"
-                            },
-                            "storageAccountLocation": {
-                                "type": "string"
-                            },
-                            "storageAccountResourceGroup": {
-                                "type": "string"
-                            },
-                            "storageAccountFileShareServiceName": {
-                                "type": "string",
-                                "default": "default"
-                            },
-                            "storageAccountFileShareServiceShares": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/storage-account-file-share-service-share"
-                                }
-                            },
-                            "storageAccountFileShareServicePrivateEndpoint": {
-                                "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
-                            }
-                        },
-                        "required": [
-                            "storageAccountName",
-                            "storageAccountResourceGroup",
-                            "storageAccountFileShareServiceName"
-                        ]
+                        "$ref": "#/definitions/storage-account-file-share-service-parameters"
                     },
                     "minItems": 1
                 }
@@ -827,14 +849,75 @@
         "storage-account-file-share-service": {
             "type": "object",
             "properties": {
+                "value": {
+                    "$ref": "#/definitions/storage-account-file-share-service-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "storage-account-file-share-service-parameters": {
+            "type": "object",
+            "properties": {
+                "storageAccountName": {
+                    "type": "string"
+                },
+                "storageAccountResourceGroup": {
+                    "type": "string"
+                },
                 "storageAccountFileShareServiceName": {
                     "type": "string",
                     "default": "default"
                 },
+                "storageAccountFileShareServiceDeleteRetentionPolicy": {
+                    "type": "object",
+                    "properties": {
+                        "days": {
+                            "type": "number",
+                            "maximum": 1
+                        },
+                        "enabled": {
+                            "type": "boolean",
+                            "default": true
+                        }
+                    }
+                },
+                "storageAccountFileShareServiceCorsPolicy": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "allowedOrigins": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 1
+                            },
+                            "allowedMethods": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 1
+                            },
+                            "allowedHeaders": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 1
+                            }
+                        },
+                        "minProperties": 1
+                    },
+                    "minItems": 1
+                },
                 "storageAccountFileShareServiceShares": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/storage-account-file-share-service-share"
+                        "$ref": "#/definitions/storage-account-file-share-service-share-parameters"
                     }
                 },
                 "storageAccountFileShareServicePrivateEndpoint": {
@@ -842,16 +925,50 @@
                 }
             },
             "required": [
-                "storageAccountFileShareServiceName"
+                "storageAccountName"
+            ]
+        },
+        "storage-account-file-share-service-shares": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/storage-account-file-share-service-share-parameters"
+                    }
+                }
+            },
+            "required": [
+                "value"
             ]
         },
         "storage-account-file-share-service-share": {
             "type": "object",
             "properties": {
-                "storageAccountFileShareName": {
+                "value": {
+                    "$ref": "#/definitions/storage-account-file-share-service-share-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "storage-account-file-share-service-share-parameters": {
+            "type": "object",
+            "properties": {
+                "storageAccountName": {
                     "type": "string"
                 },
-                "storageAccountFileShareAccessTier": {
+                "storageAccountResourceGroup": {
+                    "type": "string"
+                },
+                "storageAccountFileShareServiceName": {
+                    "type": "string"
+                },
+                "storageAccountFileShareServiceShareName": {
+                    "type": "string"
+                },
+                "storageAccountFileShareServiceShareAccessTier": {
                     "type": "string",
                     "oneOf": [
                         {
@@ -870,60 +987,9 @@
                 }
             },
             "required": [
-                "storageAccountFileShareName",
-                "storageAccountFileShareAccessTier"
-            ]
-        },
-        "storage-account-file-share-service-shares": {
-            "type": "object",
-            "properties": {
-                "value": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "storageAccountName": {
-                                "type": "string"
-                            },
-                            "storageAccountResourceGroup": {
-                                "type": "string"
-                            },
-                            "storageAccountFileShareName": {
-                                "type": "string"
-                            },
-                            "storageAccountFileShareAccessTier": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Cools"
-                                    },
-                                    {
-                                        "const": "Hot"
-                                    },
-                                    {
-                                        "const": "Premium"
-                                    },
-                                    {
-                                        "const": "TransactionOptimized"
-                                    }
-                                ]
-                            },
-                            "storageAccountFileShareServiceName": {
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "storageAccountName",
-                            "storageAccountResourceGroup",
-                            "storageAccountFileShareName",
-                            "storageAccountFileShareAccessTier",
-                            "storageAccountFileShareServiceName"
-                        ]
-                    }
-                }
-            },
-            "required": [
-                "value"
+                "storageAccountName",
+                "storageAccountFileShareServiceShareName",
+                "storageAccountFileShareServiceShareAccessTier"
             ]
         },
         "storage-account-blob-services": {
@@ -931,81 +997,7 @@
                 "value": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "name": {
-                                "type": "string",
-                                "default": "default"
-                            },
-                            "storageAccountName": {
-                                "type": "string"
-                            },
-                            "storageAccountResourceGroup": {
-                                "type": "string"
-                            },
-                            "enableVersioning": {
-                                "type": "boolean"
-                            },
-                            "enableSnapshot": {
-                                "type": "boolean"
-                            },
-                            "retentionPolicy": {
-                                "oneOf": [
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            "days": {
-                                                "type": "number"
-                                            }
-                                        },
-                                        "required": [
-                                            "days"
-                                        ]
-                                    },
-                                    {
-                                        "type": "null"
-                                    }
-                                ]
-                            },
-                            "restorePolicy": {
-                                "oneOf": [
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            "days": {
-                                                "type": "number"
-                                            }
-                                        },
-                                        "required": [
-                                            "days"
-                                        ]
-                                    },
-                                    {
-                                        "type": "null"
-                                    }
-                                ]
-                            },
-                            "containers": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#definitions/storageAccountBlobServiceContainer"
-                                }
-                            },
-                            "privateEndpoint": {
-                                "$ref": "#definitions/storageAccountBlobServicePrivateEndpoint"
-                            }
-                        },
-                        "required": [
-                            "name",
-                            "storageAccountName",
-                            "storageAccountResourceGroup",
-                            "retentionPolicy",
-                            "restorePolicy",
-                            "enableSnapshot",
-                            "enableVersioning",
-                            "containers",
-                            "privateEndpoint"
-                        ]
+                        "$ref": "#/definitions/storage-account-blob-service-parameters"
                     }
                 }
             }
@@ -1013,70 +1005,81 @@
         "storage-account-blob-service": {
             "type": "object",
             "properties": {
-                "name": {
-                    "type": "string",
-                    "default": "default"
-                },
-                "enableVersioning": {
-                    "type": "boolean"
-                },
-                "enableSnapshot": {
-                    "type": "boolean"
-                },
-                "retentionPolicy": {
-                    "oneOf": [
-                        {
-                            "type": "object",
-                            "properties": {
-                                "days": {
-                                    "type": "number"
-                                }
-                            },
-                            "required": [
-                                "days"
-                            ]
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ]
-                },
-                "restorePolicy": {
-                    "oneOf": [
-                        {
-                            "type": "object",
-                            "properties": {
-                                "days": {
-                                    "type": "number"
-                                }
-                            },
-                            "required": [
-                                "days"
-                            ]
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ]
-                },
-                "containers": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#definitions/storageAccountBlobServiceContainer"
-                    }
-                },
-                "privateEndpoint": {
-                    "$ref": "#definitions/storageAccountBlobServicePrivateEndpoint"
+                "value": {
+                    "$ref": "#/definitions/storage-account-blob-service-parameters"
                 }
             },
             "required": [
-                "name",
-                "containers",
-                "retentionPolicy",
-                "restorePolicy",
-                "enableSnapshot",
-                "enableVersioning",
-                "privateEndpoint"
+                "value"
+            ]
+        },
+        "storage-account-blob-service-parameters": {
+            "type": "object",
+            "properties": {
+                "storageAccountName": {
+                    "type": "string"
+                },
+                "storageAccountResourceGroup": {
+                    "type": "string"
+                },
+                "storageAccountBlobServiceName": {
+                    "type": "string",
+                    "default": "default"
+                },
+                "storageAccountBlobServiceEnableVersioning": {
+                    "type": "boolean"
+                },
+                "storageAccountBlobServiceEnableSnapshot": {
+                    "type": "boolean"
+                },
+                "storageAccountBlobServiceRetentionPolicy": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "days": {
+                                    "type": "number"
+                                }
+                            },
+                            "required": [
+                                "days"
+                            ]
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "storageAccountBlobServiceRestorePolicy": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "days": {
+                                    "type": "number"
+                                }
+                            },
+                            "required": [
+                                "days"
+                            ]
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "storageAccountBlobServiceContainers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/storage-account-blob-service-container-parameters"
+                    }
+                },
+                "storageAccountBlobServicePrivateEndpoint": {
+                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
+                }
+            },
+            "required": [
+                "storageAccountBlobServiceName"
             ]
         },
         "storage-account-blob-service-containers": {
@@ -1085,48 +1088,7 @@
                 "value": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "name": {
-                                "type": "string"
-                            },
-                            "storageAccountName": {
-                                "type": "string"
-                            },
-                            "storageAccountBlobServiceName": {
-                                "type": "string"
-                            },
-                            "storageAccountResourceGroup": {
-                                "type": "string"
-                            },
-                            "enableVersioning": {
-                                "type": "boolean",
-                                "default": false
-                            },
-                            "accessLevel": {
-                                "type": "string",
-                                "default": "None",
-                                "oneOf": [
-                                    {
-                                        "const": "None"
-                                    },
-                                    {
-                                        "const": "Blob"
-                                    },
-                                    {
-                                        "const": "Container"
-                                    }
-                                ]
-                            }
-                        },
-                        "required": [
-                            "name",
-                            "storageAccountName",
-                            "storageAccountBlobServiceName",
-                            "storageAccountResourceGroup",
-                            "accessLevel",
-                            "enableVersioning"
-                        ]
+                        "$ref": "#/definitions/storage-account-blob-service-container-parameters"
                     }
                 }
             },
@@ -1137,14 +1099,34 @@
         "storage-account-blob-service-container": {
             "type": "object",
             "properties": {
-                "name": {
+                "value": {
+                    "$ref": "#/definitions/storage-account-blob-service-container-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "storage-account-blob-service-container-parameters": {
+            "type": "object",
+            "properties": {
+                "storageAccountName": {
                     "type": "string"
                 },
-                "enableVersioning": {
+                "storageAccountResourceGroup": {
+                    "type": "string"
+                },
+                "storageAccountBlobServiceName": {
+                    "type": "string"
+                },
+                "storageAccountBlobServiceContainerName": {
+                    "type": "string"
+                },
+                "storageAccountBlobServiceContainerEnableVersioning": {
                     "type": "boolean",
                     "default": false
                 },
-                "accessLevel": {
+                "storageAccountBlobServiceContainerAccessLevel": {
                     "type": "string",
                     "default": "None",
                     "oneOf": [
@@ -1161,48 +1143,10 @@
                 }
             },
             "required": [
-                "name",
-                "accessLevel",
-                "enableVersioning"
-            ]
-        },
-        "storage-account-common-private-endpoint": {
-            "oneOf": [
-                {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        },
-                        "privateDnsZone": {
-                            "type": "string"
-                        },
-                        "privateDnsZoneResourceGroup": {
-                            "type": "string",
-                            "description": ""
-                        },
-                        "virtualNetwork": {
-                            "type": "string"
-                        },
-                        "virtualNetworkSubnet": {
-                            "type": "string"
-                        },
-                        "virtualNetworkResourceGroup": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "name",
-                        "privateDnsZone",
-                        "privateDnsZoneResourceGroup",
-                        "virtualNetwork",
-                        "virtualNetworkSubnet",
-                        "virtualNetworkResourceGroup"
-                    ]
-                },
-                {
-                    "type": "null"
-                }
+                "storageAccountName",
+                "storageAccountBlobServiceContainerName",
+                "storageAccountBlobServiceContainerEnableVersioning",
+                "storageAccountBlobServiceContainerAccessLevel"
             ]
         }
     }

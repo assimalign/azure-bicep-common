@@ -22,7 +22,7 @@ param storageAccountLocation string = resourceGroup().location
 @description('The name of the queue service to deploy')
 param storageAccountQueueServiceName string = 'default'
 
-@description('')
+@description('The List of CORS rules. You can include up to five CorsRule elements in the request.')
 param storageAccountQueueServiceCorsRules array = []
 
 @description('')
@@ -41,7 +41,7 @@ resource azStorageAccountQueueServiceDeployment 'Microsoft.Storage/storageAccoun
   name: storageAccountQueueServiceName
   parent: azStorageAccountResource
   properties: {
-    cors: {
+    cors: empty(storageAccountQueueServiceCorsRules) ? json('null') : {
       corsRules: storageAccountQueueServiceCorsRules
     }
   }
@@ -55,8 +55,8 @@ module azStorageAccountQueuesDeployment 'az.storage.account.queue.services.queue
     region: region
     environment: environment
     storageAccountName: storageAccountName
-    storageAccountQueueName: queue.storageAccountQueueName
     storageAccountQueueServiceName: storageAccountQueueServiceName
+    storageAccountQueueServiceQueueName: queue.storageAccountQueueServiceQueueName
   }
 }]
 

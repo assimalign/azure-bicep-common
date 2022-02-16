@@ -66,10 +66,24 @@
                 // "sqlServerDatabases": {
                 //     "$ref": "./az.sql.server.account.database.schema.json#definitions/sqlServerDatabases"
                 // },
+                "storageAccount": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account"
+                        }
+                    ]
+                },
                 "storageAccounts": {
                     "oneOf": [
                         {
                             "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-accounts"
+                        }
+                    ]
+                },
+                "storageAccountBlobService": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-blob-service"
                         }
                     ]
                 },
@@ -80,10 +94,24 @@
                         }
                     ]
                 },
+                "storageAccountBlobServiceContainer": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-blob-service-container"
+                        }
+                    ]
+                },
                 "storageAccountBlobServiceContainers": {
                     "oneOf": [
                         {
                             "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-blob-service-containers"
+                        }
+                    ]
+                },
+                "storageAccountFileShareService": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-file-share-service"
                         }
                     ]
                 },
@@ -94,10 +122,24 @@
                         }
                     ]
                 },
+                "storageAccountFileShareServiceShare" : {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-file-share-service-share"
+                        }
+                    ]
+                },
                 "storageAccountFileShareServiceShares" : {
                     "oneOf": [
                         {
                             "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-file-share-service-shares"
+                        }
+                    ]
+                },
+                "storageAccountQueueService": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-queue-service"
                         }
                     ]
                 },
@@ -108,10 +150,24 @@
                         }
                     ]
                 },
+                "storageAccountQueueServiceQueue": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-queue-service-queue"
+                        }
+                    ]
+                },
                 "storageAccountQueueServiceQueues": {
                     "oneOf": [
                         {
                             "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-queue-service-queues"
+                        }
+                    ]
+                },
+                "storageAccountTableService": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-table-service"
                         }
                     ]
                 },
@@ -122,6 +178,13 @@
                         }
                     ]
                 },
+                "storageAccountTableServiceTable": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.storage.account/v1.0/parameters.json#/definitions/storage-account-table-service-table"
+                        }
+                    ]
+                },  
                 "storageAccountTableServiceTables": {
                     "oneOf": [
                         {
@@ -129,9 +192,6 @@
                         }
                     ]
                 },  
-                // "appServiceEnvironments": {
-                //     "$ref": "./az.app.service.environment.schema.json#definitions/appServiceEnvironments"
-                // },
                 "appServicePlan": {
                     "oneOf": [
                         {
@@ -286,9 +346,20 @@
                         }
                     ]
                 },
-                // "publicIpAddresses": {
-                //     "$ref": "./az.public.ip.address.schema.json#definitions/publicIpAddresses"
-                // },
+                "publicIpAddress": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.public.ip/v1.0/parameters.json#/definitions/public-ip-address"
+                        }
+                    ]
+                },
+                "publicIpAddresses": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.public.ip/v1.0/parameters.json#/definitions/public-ip-addresses"
+                        }
+                    ]
+                },
                 "privateDnsZones": {
                     "oneOf": [
                         {

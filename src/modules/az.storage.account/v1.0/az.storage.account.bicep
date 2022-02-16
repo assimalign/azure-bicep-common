@@ -81,7 +81,7 @@ param storageAccountTags object = {}
 // Setup the Virtual Networks Allowed or Denied for the Storage Account
 var virtualNetworks = [for network in storageAccountVirtualNetworks: {
   action: network.allowAccess == true ? 'Allow' : null
-  id: replace(resourceId('${network.virtualNetworkResourceGroup}', 'Microsoft.Network/virtualNetworks/subnets', '${network.virtualNetwork}', network.virtualNetworkSubnet), '@environment', environment)
+  id: replace(replace(resourceId('${network.virtualNetworkResourceGroup}', 'Microsoft.Network/virtualNetworks/subnets', '${network.virtualNetwork}', network.virtualNetworkSubnet), '@environment', environment), '@region', region)
 }]
 
 // Setup IP Rules for the virtualnetwork
@@ -96,8 +96,8 @@ var resourceAccess = [for resource in storageAccountResourceAccess: {
 }]
 
 // 1. Deploy Azure Storage Account
-resource azStorageAccountDeployment 'Microsoft.Storage/storageAccounts@2021-04-01' = {
-  name: replace(storageAccountName, '@environment', environment)
+resource azStorageAccountDeployment 'Microsoft.Storage/storageAccounts@2021-08-01' = {
+  name: replace(replace(storageAccountName, '@environment', environment), '@region', region)
   kind: storageAccountType
   location: storageAccountLocation
   sku: any((environment == 'dev') ? {
@@ -141,11 +141,11 @@ module azStorageAccountBlobServiceDeployment 'az.storage.account.blob.services.b
     storageAccountLocation: storageAccountLocation
     storageAccountBlobServiceName: 'default'
     storageAccountBlobServiceContainers: storageAccountBlobServices.storageAccountBlobServiceContainers
-    storageAccountBlobServicePrivateEndpoint: storageAccountBlobServices.storageAccountBlobServicePrivateEndpoint ?? {}
     storageAccountBlobServiceEnableSnapshot: storageAccountBlobServices.storageAccountBlobServiceEnableSnapshot
     storageAccountBlobServiceEnableVersioning: storageAccountBlobServices.storageAccountBlobServiceEnableVersioning
-    storageAccountBlobServiceRestorePolicy: storageAccountBlobServices.storageAccountBlobServiceRestorePolicy ?? {}
-    storageAccountBlobServiceRetentionPolicy: storageAccountBlobServices.storageAccountBlobServiceRetentionPolicy ?? {}
+    storageAccountBlobServicePrivateEndpoint: contains(storageAccountBlobServices, 'storageAccountBlobServicePrivateEndpoint') ? storageAccountBlobServices.storageAccountBlobServicePrivateEndpoint : {}
+    storageAccountBlobServiceRestorePolicy: contains(storageAccountBlobServices, 'storageAccountBlobServiceRestorePolicy') ? storageAccountBlobServices.storageAccountBlobServiceRestorePolicy : {}
+    storageAccountBlobServiceRetentionPolicy: contains(storageAccountBlobServices, 'storageAccountBlobServiceRetentionPolicy') ? storageAccountBlobServices.storageAccountBlobServiceRetentionPolicy : {}
   }
 }
 
@@ -160,6 +160,8 @@ module azStorageAccountFileShareServiceDeployment 'az.storage.account.fileshare.
     storageAccountLocation: storageAccountLocation
     storageAccountFileShareServiceName: 'default'
     storageAccountFileShareServiceFileShares: storageAccountFileShareServices.storageAccountFileShareServiceFileShares
+    storageAccountFileShareServiceDeleteRetentionPolicy: contains(storageAccountFileShareServices, 'storageAccountFileShareServiceDeleteRetentionPolicy') ? storageAccountFileShareServices.storageAccountFileShareServiceDeleteRetentionPolicy : []
+    storageAccountFileShareServiceCorsPolicy: contains(storageAccountFileShareServices, 'storageAccountFileShareServiceCorsPolicy') ? storageAccountFileShareServices.storageAccountFileShareServiceCorsPolicy : []
     storageAccountFileShareServicePrivateEndpoint: storageAccountFileShareServices.storageAccountFileShareServicePrivateEndpoint ?? {}
   }
 }
@@ -176,7 +178,7 @@ module azStorageAccountQueueServiceDeployment 'az.storage.account.queue.services
     storageAccountQueueServiceName: 'default'
     storageAccountQueueServiceQueues: storageAccountQueueServices.storageAccountQueueServiceQueues
     storageAccountQueueServiceCorsRules: storageAccountQueueServices.storageAccountQueueServiceCors
-    storageAccountQueueServicePrivateEndpoint:contains(storageAccountQueueServices, 'storageAccountQueueServicePrivateEndpoint') ? storageAccountQueueServices.storageAccountQueueServicePrivateEndpoint : {}
+    storageAccountQueueServicePrivateEndpoint: contains(storageAccountQueueServices, 'storageAccountQueueServicePrivateEndpoint') ? storageAccountQueueServices.storageAccountQueueServicePrivateEndpoint : {}
   }
 }
 
@@ -191,6 +193,7 @@ module azStorageAccountTableServiceDeployment 'az.storage.account.table.services
     storageAccountLocation: storageAccountLocation
     storageAccountTableServiceName: storageAccountTableServices.storageAccountTableServiceName
     storageAccountTableServiceTables: storageAccountTableServices.storageAccountTableServiceTables
+    storageAccountTableServiceCorsPolicy: contains(storageAccountTableServices, 'storageAccountTableServiceCorsPolicy') ? storageAccountTableServices.storageAccountTableServiceCorsPolicy : []
     storageAccountTableServicePrivateEndpoint: contains(storageAccountTableServices, 'storageAccountTableServicePrivateEndpoint') ? storageAccountTableServices.storageAccountTableServicePrivateEndpoint : {}
   }
 }

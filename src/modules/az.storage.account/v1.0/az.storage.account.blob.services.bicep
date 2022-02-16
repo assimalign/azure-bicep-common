@@ -72,16 +72,17 @@ resource azStorageAccountBlobServiceDeployment 'Microsoft.Storage/storageAccount
 
 // 3. Deploy any Blob Service Container if available
 module azStorageAccountBlobServiceContainerDeployment 'az.storage.account.blob.services.container.bicep' = [for container in storageAccountBlobServiceContainers: if (!empty(container)) {
-  name: !empty(storageAccountBlobServiceContainers) ? toLower('az-stg-blob-container-${guid('${azStorageAccountBlobServiceDeployment.id}/${container.name}')}') : 'no-container-to-deploy'
+  name: !empty(storageAccountBlobServiceContainers) ? toLower('az-stg-blob-container-${guid('${azStorageAccountBlobServiceDeployment.id}/${container.storageAccountBlobServiceContainerName}')}') : 'no-container-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
     storageAccountName: storageAccountName
     storageAccountBlobServiceName: storageAccountBlobServiceName
-    storageAccountBlobServiceContainerName: container.name
-    storageAccountBlobServiceContainerPublicAccess: container.publicAccess
-    storageAccountBlobServiceContainerVersioningEnabled: container.enableVersioning
+    storageAccountBlobServiceContainerName: container.storageAccountBlobServiceContainerName
+    storageAccountBlobServiceContainerPublicAccess: contains(container, 'storageAccountBlobServiceContainerPublicAccess') ? container.storageAccountBlobServiceContainerPublicAccess : 'None'
+    storageAccountBlobServiceContainerVersioningEnabled: contains(container, 'storageAccountBlobServiceContainerVersioningEnabled') ?  container.storageAccountBlobServiceContainerVersioningEnabled : false
+    
   }
 }]
 

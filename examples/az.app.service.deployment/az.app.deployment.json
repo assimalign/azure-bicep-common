@@ -2,7 +2,6 @@
     "$schema": "../../src/schemas/az/parameters.json",
     "parameters": {
        
-      
         
         "appConfiguration": {
             "value": {

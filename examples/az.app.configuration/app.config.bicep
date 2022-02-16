@@ -3,6 +3,7 @@ param appConfigurations array
 
 targetScope = 'subscription'
 
+
 module azResourceGroupDeployment 'br/assimalign:modules/az.resource.group:v1.0' = [for group in resourceGroups: {
   name: 'az-rg-deploy-${guid(group.resourceGroupName)}'
   params: {
