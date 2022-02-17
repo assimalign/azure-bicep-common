@@ -47,3 +47,6 @@ resource azResourceGroupDeployment 'Microsoft.Resources/resourceGroups@2021-04-0
 }
 
 output resource object = azResourceGroupDeployment
+
+
+// Publish-AzBicepModule -FilePath './src/modules/az.resource.group/v1.0/az.resource.group.bicep' -Target 'br:asalbicep.azurecr.io/modules/az.resource.group:v1.0'

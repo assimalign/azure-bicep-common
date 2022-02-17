@@ -34,6 +34,9 @@
                 "appServiceName": {
                     "type": "string"
                 },
+                "appServiceResourceGroup": {
+                    "type": "string"
+                },
                 "appServiceLocation": {
                     "type": "string"
                 },
@@ -70,9 +73,6 @@
                             "const": "php"
                         }
                     ]
-                },
-                "appServicePlatformVersion": {
-                    "type": "string"
                 },
                 "appServiceMsiEnabled": {
                     "type": "boolean",
@@ -210,7 +210,6 @@
                 "appServiceName",
                 "appServiceType",
                 "appServicePlatform",
-                "appServicePlatformVersion",
                 "appServiceStorageAccountName",
                 "appServiceAppInsightsName",
                 "appServiceSiteConfigs"
@@ -491,6 +490,9 @@
                     "type": "string"
                 },
                 "appServicePlanLocation": {
+                    "type": "string"
+                },
+                "appServicePlanResourceGroup": {
                     "type": "string"
                 },
                 "appServicePlanOs": {
@@ -1473,6 +1475,9 @@
         },
         "app-service-plan-sku": {
             "oneOf": [
+                {
+                    "const": "F1"
+                },
                 {
                     "const": "D1"
                 },

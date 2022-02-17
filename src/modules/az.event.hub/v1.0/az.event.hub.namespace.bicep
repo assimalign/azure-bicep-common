@@ -11,75 +11,76 @@ param environment string = 'dev'
 param region string = ''
 
 @description('The name of the Event hub Resource to be deployed')
-param eventHubNamespace string
+param eventHubNamespaceName string
 
 @description('')
 param eventHubNamespaceLocation string = resourceGroup().location
 
 @description('A list of Event Hubs to deploy under the Namespace')
-param eventHubs array = []
+param eventHubNamespaceHubs array = []
 
 @description('The pricing tier broken into per environment')
-param eventHubSku object = {}
+param eventHubNamespaceSku object = {}
 
 @description('A flag to endable System Managed Identity in Azure')
-param eventHubEnableMsi bool = false
+param eventHubNamespaceEnableMsi bool = false
 
 @minValue(1)
 @maxValue(20)
 @description('The total instance counts to be utilized')
-param eventHubCapacity int = 1
+param eventHubNamespaceCapacity int = 1
 
 @description('')
-param eventHubPolicies array = []
+param eventHubNamespacePolicies array = []
 
 // 1. Deploy Event Hub Namespace
 resource azEventHubNamespaceDeployment 'Microsoft.EventHub/namespaces@2021-01-01-preview' = {
-  name: replace(replace('${eventHubNamespace}', '@environment', environment), '@region', region)
+  name: replace(replace('${eventHubNamespaceName}', '@environment', environment), '@region', region)
   location: eventHubNamespaceLocation
   identity: {
-    type: eventHubEnableMsi == true && !empty(eventHubSku) ? 'SystemAssigned' : 'None'
+    type: eventHubNamespaceEnableMsi == true && !empty(eventHubNamespaceSku) ? 'SystemAssigned' : 'None'
   }
-  sku: any(environment == 'dev' && !empty(eventHubSku) ? {
-    name: eventHubSku.dev
-    tier: eventHubSku.dev
-    capacity: eventHubCapacity
-  } : any(environment == 'qa' && !empty(eventHubSku) ? {
-    name: eventHubSku.dev
-    tier: eventHubSku.dev
-    capacity: eventHubCapacity
-  } : any(environment == 'uat' && !empty(eventHubSku) ? {
-    name: eventHubSku.dev
-    tier: eventHubSku.dev
-    capacity: eventHubCapacity
-  } : any(environment == 'prd' && !empty(eventHubSku) ? {
-    name: eventHubSku.prd
-    tier: eventHubSku.prd
-    capacity: eventHubCapacity
+  sku: any(environment == 'dev' && !empty(eventHubNamespaceSku) ? {
+    name: eventHubNamespaceSku.dev
+    tier: eventHubNamespaceSku.dev
+    capacity: eventHubNamespaceCapacity
+  } : any(environment == 'qa' && !empty(eventHubNamespaceSku) ? {
+    name: eventHubNamespaceSku.dev
+    tier: eventHubNamespaceSku.dev
+    capacity: eventHubNamespaceCapacity
+  } : any(environment == 'uat' && !empty(eventHubNamespaceSku) ? {
+    name: eventHubNamespaceSku.dev
+    tier: eventHubNamespaceSku.dev
+    capacity: eventHubNamespaceCapacity
+  } : any(environment == 'prd' && !empty(eventHubNamespaceSku) ? {
+    name: eventHubNamespaceSku.prd
+    tier: eventHubNamespaceSku.prd
+    capacity: eventHubNamespaceCapacity
   } : {
     name: 'Basic'
     tier: 'Basic'
     capacity: 1
   }))))
 
-  resource azEventHubNamespaceAuthorizationRulesDeployment 'AuthorizationRules' = [for (policy, index) in eventHubPolicies: if (!empty(policy)) {
-    name: !empty(eventHubPolicies) ? policy.name : 'no-policy'
+  resource azEventHubNamespaceAuthorizationRulesDeployment 'AuthorizationRules' = [for (policy, index) in eventHubNamespacePolicies: if (!empty(eventHubNamespacePolicies)) {
+    name: !empty(eventHubNamespacePolicies) ? policy.policyName : 'no-policy-to-deploy'
     properties: {
-      rights: !empty(eventHubPolicies) ? policy.permissions : []
+      rights: !empty(eventHubNamespacePolicies) ? policy.policyPermissions : []
     }
   }]
 }
 
 // 2 Deploy individual Event Hubs under the Event Hub Namespace
-module azEventHubsDeployment 'az.event.hub.bicep' = [for (hub, index) in eventHubs: if (!empty(hub)) {
-  name: !empty(eventHubs) ? toLower('az-ehn-hub-${guid('${azEventHubNamespaceDeployment.id}/${hub.name}')}') : 'no-eh-to-deploy'
+module azEventHubsDeployment 'az.event.hub.namespace.hub.bicep' = [for (hub, index) in eventHubNamespaceHubs: if (!empty(hub)) {
+  name: !empty(eventHubNamespaceHubs) ? toLower('az-ehn-hub-${guid('${azEventHubNamespaceDeployment.id}/${hub.name}')}') : 'no-eh-to-deploy'
   scope: resourceGroup()
   params: {
+    region: region
     environment: environment
-    eventHubName: hub.name
-    eventHubNamespace: eventHubNamespace
-    eventHubMessageRetention: hub.messageRetention
-    eventHubPartitionCount: hub.partitionCount
-    eventHubPolicies: hub.policies
+    eventHubNamespaceName: eventHubNamespaceName
+    eventHubNamespaceHubName: hub.eventHubNamespaceHubName
+    eventHubNamespaceHubMessageRetention: hub.eventHubNamespaceHubMessageRetention
+    eventHubNamespaceHubPartitionCount: hub.eventHubNamespaceHubPartitionCount
+    eventHubNamespaceHubPolicies: hub.eventHubNamespaceHubPolicies
   }
 }]

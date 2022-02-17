@@ -1,8 +1,14 @@
 {
     "$schema": "../../src/schemas/az/parameters.json",
     "parameters": {
-       
-        
+        "eventHubNamespace":{
+            "value": {
+                "eventHubNamespaceName": "",
+                "eventHubNamespaceSku": {
+                    
+                }
+            }
+        },
         "appConfiguration": {
             "value": {
                 "appConfigurationName": "",

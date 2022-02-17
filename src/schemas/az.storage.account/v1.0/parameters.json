@@ -529,7 +529,8 @@
             "required": [
                 "storageAccountName",
                 "storageAccountType",
-                "storageAccountTier"
+                "storageAccountTier",
+                "storageAccountRedundancy"
             ]
         },
         "storage-account-table-services": {

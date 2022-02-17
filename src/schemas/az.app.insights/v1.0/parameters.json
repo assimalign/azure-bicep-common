@@ -36,6 +36,9 @@
                 "appInsightsLocation": {
                     "type": "string"
                 },
+                "appInsightsResourceGroup": {
+                    "type": "string"
+                },
                 "appInsightsKind": {
                     "type": "string",
                     "oneOf": [

@@ -318,6 +318,13 @@
                         }
                     ]
                 },
+                "logAnalyticWorkspace": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.log.analytics.workspace/v1.0/parameters.json#/definitions/log-analytic-workspace"
+                        }
+                    ]
+                },
                 "logAnalyticWorkspaces": {
                     "oneOf": [
                         {
@@ -413,6 +420,34 @@
                     "oneOf": [
                         {
                             "$ref": "../az.private.dns/v1.0/parameters.json#/definitions/private-dns-zone-srv-records"
+                        }
+                    ]
+                },
+                "eventHubNamespace": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.event.hub/v1.0/parameters.json#/definitions/event-hub-namespace"
+                        }
+                    ]
+                },
+                "eventHubNamespaces": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.event.hub/v1.0/parameters.json#/definitions/event-hub-namespaces"
+                        }
+                    ]
+                },
+                "eventHubNamespaceHub": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.event.hub/v1.0/parameters.json#/definitions/event-hub-namespace-hub"
+                        }
+                    ]
+                },
+                "eventHubNamespaceHubs": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.event.hub/v1.0/parameters.json#/definitions/event-hub-namespace-hubs"
                         }
                     ]
                 },

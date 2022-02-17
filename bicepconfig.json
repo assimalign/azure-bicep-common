@@ -10,6 +10,7 @@
     "cloud": {
         "currentProfile": "AzureCloud",
         "credentialPrecedence": [
+            "VisualStudioCode",
             "AzurePowerShell"
         ]
     }

@@ -11,36 +11,35 @@ param environment string = 'dev'
 param region string = ''
 
 @description('The name of the Event Hub Namespace')
-param eventHubNamespace string
+param eventHubNamespaceName string
 
 @description('The name of the Event Hub to deploy under the Namespace')
-param eventHubName string
+param eventHubNamespaceHubName string
 
 @maxValue(32)
 @description('')
-param eventHubPartitionCount int = 2
+param eventHubNamespaceHubPartitionCount int = 2
 
 @description('the amount of days to retain the event message')
-param eventHubMessageRetention int = 1
+param eventHubNamespaceHubMessageRetention int = 1
 
 @description('The authorizaiton policies to deploy with the the event hub')
-param eventHubPolicies array = []
+param eventHubNamespaceHubPolicies array = []
 
 // **************************************************************************************** //
 //                                  Event Hub Deployment                                    //
 // **************************************************************************************** //
 
 resource azEventHubDeployment 'Microsoft.EventHub/namespaces/eventhubs@2017-04-01' = {
-  name: replace(replace('${eventHubNamespace}/${eventHubName}', '@environment', environment), '@region', region)
+  name: replace(replace('${eventHubNamespaceName}/${eventHubNamespaceHubName}', '@environment', environment), '@region', region)
   properties: {
-    partitionCount: eventHubPartitionCount
-    messageRetentionInDays: eventHubMessageRetention
+    partitionCount: eventHubNamespaceHubPartitionCount
+    messageRetentionInDays: eventHubNamespaceHubMessageRetention
   }
-
-  resource azEventHubAuthorizationRulesDeployment 'AuthorizationRules' = [for policy in eventHubPolicies: if (!empty(policy)) {
-    name: !empty(eventHubPolicies) ? policy.name : 'no-policy-to-deploy'
+  resource azEventHubAuthorizationRulesDeployment 'AuthorizationRules' = [for policy in eventHubNamespaceHubPolicies: if (!empty(eventHubNamespaceHubPolicies)) {
+    name: !empty(eventHubNamespaceHubPolicies) ? policy.policyName : 'no-policy-to-deploy'
     properties: {
-      rights: !empty(eventHubPolicies) ? policy.permissions : []
+      rights: !empty(eventHubNamespaceHubPolicies) ? policy.policyPermissions : []
     }
   }]
 }
