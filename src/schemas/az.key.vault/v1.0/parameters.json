@@ -1,300 +1,319 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "definitions": {
+        "key-vault": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/key-vault-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
         "key-vaults": {
             "properties": {
                 "value": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "keyVaultName": {
-                                "type": "string"
-                            },
-                            "keyVaultEnableRbac": {
-                                "type": "boolean",
-                                "default": false
-                            },
-                            "keyVaultEnableSoftDelete": {
-                                "type": "boolean",
-                                "default": true
-                            },
-                            "keyVaultCreationMode": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "default"
-                                    },
-                                    {
-
-                                        "const": "recovery"
-                                    }
-                                ]
-                            },
-                            "keyVaultSku": {
-                                "type" : "object",
-                                "properties": {
-                                "dev": {
-                                    "type": "string",
-                                    "oneOf": [
-                                        {
-                                            "const": "Standard"
-                                        },
-                                        {
-                                            "const": "Premium"
-                                        }
-                                    ]
-                                } ,
-                                "qa": {
-                                    "type": "string",
-                                    "oneOf": [
-                                        {
-                                            "const": "Standard"
-                                        },
-                                        {
-                                            "const": "Premium"
-                                        }
-                                    ]
-                                } ,
-                                "uat": {
-                                    "type": "string",
-                                    "oneOf": [
-                                        {
-                                            "const": "Standard"
-                                        },
-                                        {
-                                            "const": "Premium"
-                                        }
-                                    ]
-                                } ,
-                                "prd": {
-                                    "type": "string",
-                                    "oneOf": [
-                                        {
-                                            "const": "Standard"
-                                        },
-                                        {
-                                            "const": "Premium"
-                                        }
-                                    ]
-                                } 
-                                }
-                            },
-                            "keyVaultDefaultNetworkAccess": {
-                                "type":"string",
-                                "default": "Allow",
-                                "oneOf": [
-                                    {
-                                        "const":"Allow"
-                                    },
-                                    {
-                                        "const": "Deny"
-                                    }
-                                ]
-                            },
-                            "keyVaultPrivateEndpoint": {
-                                "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
-                            },
-                            "keyVaultVirtualNetworks": {
-                                "type":"array",
-                                "items":{
-                                    "type": "object",
-                                    "properties":{
-                                        "virtualNetwork":{
-                                            "type":"string"
-                                        },
-                                        "virtualNetworkSubnet":{
-                                            "type":"string"
-                                        },
-                                        "virtualNetworkResourceGroup":{
-                                            "type":"string"
-                                        }
-                                    },
-                                    "required": [
-                                        "virtualNetwork",
-                                        "virtualNetworkSubnet",
-                                        "virtualNetworkResourceGroup"
-                                    ]
-
-                                }
-                            },
-                            "keyVaultSecrets": {
-                                "type": "array",
-                                "description": "Upsert other azure resource secrets, keys, and connection strings into key vault on deployment by referencing those resources",
-                                "items": {
-                                    "properties": {
-                                        "keyVaultSecretName": {
-                                            "type": "string"
-                                        },
-                                        "keyVaultSecretResourceName": {
-                                            "type": "string"
-                                        },
-                                        "keyVaultSecretResourceType": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "Microsoft.ServiceBus/namespaces/authorizationRules"
-                                                },
-                                                {
-                                                    "const": "Microsoft.EventHub/namespaces/authorizationRules"
-                                                },
-                                                {
-                                                    "const": "Microsoft.Storage/storageAccounts"
-                                                },
-                                                {
-                                                    "const": "Microsoft.DocumentDB/databaseAccounts"
-                                                },
-                                                {
-                                                    "const": "Microsoft.EventGrid/domains"
-                                                },
-                                                {
-                                                    "const": "Microsoft.NotificationHubs/namespaces/authorizationRules"
-                                                },
-                                                {
-                                                    "const": "Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules"
-                                                }
-                                            ]
-                                        },
-                                        "keyVaultSecretResourceGroupOfResource": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "keyVaultSecretName",
-                                        "keyVaultSecretResourceName",
-                                        "keyVaultSecretResourceType",
-                                        "keyVaultSecretResourceGroupOfResource"
-                                    ]
-                                }
-                            },
-                            "keyVaultKeys": {
-                                "type": "array",
-                                "items": {
-                                    "properties": {
-
-                                    }
-                                }
-                            },
-                            "keyVaultTags": {
-                                "oneOf": [
-                                    {
-                                        "type": "object",
-                                        "patternProperties": {
-                                            "^[a-z]": {
-                                                "type":"string"
-                                            }
-                                        },
-                                        "minProperties": 1
-                                    },
-                                    {
-                                        "type": "null"
-                                    }
-                                ]
-                            }
-                        },
-                        "if": {
-                            "properties": {
-                                "keyVaultEnableRbac": {
-                                    "const": true
-                                }
-                            }
-                        },
-                        "then": {
-                            "properties": {
-                                "keyVaultPolicies" : {
-                                    "type": "array",
-                                    "maxItems": 0
-                                }
-                            }
-                        },
-                        "else": {
-                            "properties": {
-                                "keyVaultPolicies": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "object",
-                                        "properties": {
-                                            "objectId": {
-                                                "type": "string"
-                                            },
-                                            "permissions": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "keys": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "string",
-                                                            "anyOf": [
-                                                                {
-                                                                    "const": "Get"
-                                                                }
-                                                            ]
-                                                        }
-                                                        
-                                                    },
-                                                    "secrets": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "string",
-                                                            "anyOf": [
-                                                                {
-                                                                    "const": "Get"
-                                                                },
-                                                                {
-                                                                    "const": "List"
-                                                                },
-                                                                {
-                                                                    "const": "Set"
-                                                                },
-                                                                {
-                                                                    "const": "Delete"
-                                                                }
-                                                            ]
-                                                        }
-                                                    },
-                                                    "certificates": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "string",
-                                                            "andOf": [
-                                                                {
-                                                                    "const": "Get"
-                                                                }
-                                                            ]
-                                                        }
-                                                    }
-                                                },
-                                                "required": [
-                                                    "keys",
-                                                    "secrets",
-                                                    "certificates"
-                                                ]
-                                            }
-                                        },
-                                        "required": [
-                                            "objectId",
-                                            "permissions"
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "required": [
-                            "keyVaultName",
-                            "keyVaultCreationMode",
-                            "keyVaultDefaultNetworkAccess",
-                            "keyVaultEnableSoftDelete",
-                            "keyVaultEnableRbac",
-                            "keyVaultVirtualNetworks",
-                            "keyVaultSku",
-                            "keyVaultPolicies"
-                        ]
+                        "$ref": "#/definitions/key-vault-parameters"
                     },
                     "minItems": 1
                 }
             },
             "required": [
                 "value"
+            ]
+        },
+        "key-vault-parameters": {
+            "type": "object",
+            "properties": {
+                "keyVaultName": {
+                    "type": "string"
+                },
+                "keyVaultResourceGroup": {
+                    "type": "string"
+                },
+                "keyVaultConfigs": {
+                    "type": "object",
+                    "properties": {
+                        "keyVaultRbacEnabled": {
+                            "type": "boolean"
+                        },
+                        "keyVaultSoftDeleteEnabled": {
+                            "type": "boolean"
+                        },
+                        "keyVaultSoftDeleteRetention": {
+                            "type": "number",
+                            "minimum": 7,
+                            "maximum": 90
+                        },
+                        "keyVaultPurgeProtectionEnabled": {
+                            "type": "boolean"
+                        },
+                        "keyVaultAllowPublicNetworkAccess": {
+                            "description": "Property to specify whether the vault will accept traffic from public internet. If set to 'disabled' all traffic except private endpoint traffic and that that originates from trusted services will be blocked. This will override the set firewall rules, meaning that even if the firewall rules are present we will not honor the rules.",
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Disabled"
+                                },
+                                {
+                                    "const":"Enabled"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "keyVaultCreationMode": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "default"
+                        },
+                        {
+                            "const": "recovery"
+                        }
+                    ]
+                },
+                "keyVaultSku": {
+                    "type": "object",
+                    "properties": {
+                        "dev": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Standard"
+                                },
+                                {
+                                    "const": "Premium"
+                                }
+                            ]
+                        },
+                        "qa": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Standard"
+                                },
+                                {
+                                    "const": "Premium"
+                                }
+                            ]
+                        },
+                        "uat": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Standard"
+                                },
+                                {
+                                    "const": "Premium"
+                                }
+                            ]
+                        },
+                        "prd": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Standard"
+                                },
+                                {
+                                    "const": "Premium"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "keyVaultPolicies": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "objectId": {
+                                "type": "string"
+                            },
+                            "permissions": {
+                                "type": "object",
+                                "properties": {
+                                    "keys": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "anyOf": [
+                                                {
+                                                    "const": "Get"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "secrets": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "anyOf": [
+                                                {
+                                                    "const": "Get"
+                                                },
+                                                {
+                                                    "const": "List"
+                                                },
+                                                {
+                                                    "const": "Set"
+                                                },
+                                                {
+                                                    "const": "Delete"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "certificates": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "andOf": [
+                                                {
+                                                    "const": "Get"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "keys",
+                                    "secrets",
+                                    "certificates"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "objectId",
+                            "permissions"
+                        ]
+                    }
+                },
+                "keyVaultDefaultNetworkAccess": {
+                    "type": "string",
+                    "default": "Allow",
+                    "oneOf": [
+                        {
+                            "const": "Allow"
+                        },
+                        {
+                            "const": "Deny"
+                        }
+                    ]
+                },
+                "keyVaultPrivateEndpoint": {
+                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
+                },
+                "keyVaultIpAddressAccessRules": {
+                    "type": "array",
+                    "description": "",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                           "ipAddress": {
+                               "type": "string"
+                           }
+                        },
+                        "required": [
+                            "ipAddress"
+                        ]
+                    }
+                },
+                "keyVaultVirtualNetworkAccessRules": {
+                    "type": "array",
+                    "description": "",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "virtualNetwork": {
+                                "type": "string"
+                            },
+                            "virtualNetworkSubnet": {
+                                "type": "string"
+                            },
+                            "virtualNetworkResourceGroup": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "virtualNetwork",
+                            "virtualNetworkSubnet",
+                            "virtualNetworkResourceGroup"
+                        ]
+                    }
+                },
+                "keyVaultSecrets": {
+                    "type": "array",
+                    "description": "Upsert other azure resource secrets, keys, and connection strings into key vault on deployment by referencing those resources",
+                    "items": {
+                        "properties": {
+                            "keyVaultSecretName": {
+                                "type": "string"
+                            },
+                            "keyVaultSecretResourceName": {
+                                "type": "string"
+                            },
+                            "keyVaultSecretResourceType": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "Microsoft.ServiceBus/namespaces/authorizationRules"
+                                    },
+                                    {
+                                        "const": "Microsoft.EventHub/namespaces/authorizationRules"
+                                    },
+                                    {
+                                        "const": "Microsoft.Storage/storageAccounts"
+                                    },
+                                    {
+                                        "const": "Microsoft.DocumentDB/databaseAccounts"
+                                    },
+                                    {
+                                        "const": "Microsoft.EventGrid/domains"
+                                    },
+                                    {
+                                        "const": "Microsoft.NotificationHubs/namespaces/authorizationRules"
+                                    },
+                                    {
+                                        "const": "Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules"
+                                    }
+                                ]
+                            },
+                            "keyVaultSecretResourceGroupOfResource": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "keyVaultSecretName",
+                            "keyVaultSecretResourceName",
+                            "keyVaultSecretResourceType",
+                            "keyVaultSecretResourceGroupOfResource"
+                        ]
+                    }
+                },
+                "keyVaultKeys": {
+                    "type": "array",
+                    "items": {
+                        "properties": {}
+                    }
+                },
+                "keyVaultTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "keyVaultName",
+                "keyVaultSku"
             ]
         }
     }

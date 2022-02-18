@@ -60,9 +60,34 @@
                         }
                     ]
                 },
-                // "sqlServerAccounts": {
-                //     "$ref": "./az.sql.server.account.schema.json#definitions/sqlServerAccounts"
-                // },
+                "sqlServerAccount": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.sql.server/v1.0/parameters.json#/definitions/sql-server-account"
+                        }
+                    ]
+                },
+                "sqlServerAccounts": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.sql.server/v1.0/parameters.json#/definitions/sql-server-accounts"
+                        }
+                    ]
+                },
+                "sqlServerAccountDatabase": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.sql.server/v1.0/parameters.json#/definitions/sql-server-account-database"
+                        }
+                    ]
+                },
+                "sqlServerAccountDatabases": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.sql.server/v1.0/parameters.json#/definitions/sql-server-account-databases"
+                        }
+                    ]
+                },
                 // "sqlServerDatabases": {
                 //     "$ref": "./az.sql.server.account.database.schema.json#definitions/sqlServerDatabases"
                 // },
@@ -519,6 +544,13 @@
                     "oneOf": [
                         {
                             "$ref": "../az.notification.hub/v1.0/parameters.json#/definitions/notification-hub-namespace-hubs"
+                        }
+                    ]
+                },
+                "keyVault": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.key.vault/v1.0/parameters.json#/definitions/key-vault"
                         }
                     ]
                 },

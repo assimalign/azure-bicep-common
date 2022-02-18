@@ -13,27 +13,30 @@ param region string = ''
 @description('the name of the key vault to be deployed. NOTE: Prefix and environment name are not included in this resource deployment')
 param keyVaultName string
 
-@description('')
+@description('The supported Azure location where the key vault should be created.')
 param keyVaultLocation string = resourceGroup().location
 
 @description('The pricing tier for the key vault resource')
-param keyVaultSku object = {}
+param keyVaultSku object
+
+@description('')
+param keyVaultConfigs object = {}
 
 @description('The private endpoint to create or update for the key vault')
 param keyVaultPrivateEndpoint object = {}
-
-@description('')
-param keyVaultEnableSoftDelete bool = true
-
-@description('The virtual networks to allow access to the deployed key vault')
-param keyVaultVirtualNetworks array = []
 
 @allowed([
   'Allow'
   'Deny'
 ])
-@description('')
+@description('The default action when no rule from ipRules and from virtualNetworkRules match. This is only used after the bypass property has been evaluated.')
 param keyVaultDefaultNetworkAccess string = 'Allow'
+
+@description('The virtual networks to allow access to the deployed key vault')
+param keyVaultVirtualNetworkAccessRules array = []
+
+@description('')
+param keyVaultIpAddressAccessRules array = []
 
 @description('The access policies for obtaining keys, secrets, and certificates with the vault')
 param keyVaultPolicies array = []
@@ -54,34 +57,37 @@ param keyVaultCreationMode string = 'default'
 @description('Custom attributes to attach to key vault deployment')
 param keyVaultTags object = {}
 
-@description('Enable RBAC (Role Based Access Control) for authroization to the key vault')
-param keyVaultEnableRbac bool = false
 
 // 1. Format the Virtual Network Access Rules for the Key Vault deployment
-var virtualNetworks = [for network in keyVaultVirtualNetworks: {
-  id: replace(replace(resourceId('${network.virtualNetworkResourceGroup}', 'Microsoft.Network/virtualNetworks/subnets', '${network.virtualNetwork}', network.virtualNetworkSubnet), '@environment', environment), '@region', region)
-}]
+//var virtualNetworks = 
 
 // 2. Format Key Vault Policies, if any
-var policies = [for policy in keyVaultPolicies: {
-  tenantId: subscription().tenantId
-  objectId: policy.objectId
-  permissions: policy.permissions
-}]
+// var policies = [for policy in keyVaultPolicies: {
+//   tenantId: subscription().tenantId
+//   objectId: policy.objectId
+//   permissions: policy.permissions
+// }]
 
 // 3. Deploy Key Vault
-resource azKeyVaultDeployment 'Microsoft.KeyVault/vaults@2019-09-01' = {
+resource azKeyVaultDeployment 'Microsoft.KeyVault/vaults@2021-10-01' = {
   name: replace(replace(keyVaultName, '@environment', environment), '@region', region)
   location: keyVaultLocation
   properties: {
+    tenantId: subscription().tenantId
     enabledForDeployment: false
     enabledForTemplateDeployment: true
     enabledForDiskEncryption: false
-    enableRbacAuthorization: keyVaultEnableRbac
-    tenantId: subscription().tenantId
     createMode: keyVaultCreationMode
-    accessPolicies: policies
-    enableSoftDelete: keyVaultEnableSoftDelete
+    accessPolicies: [for policy in keyVaultPolicies: {
+      tenantId: subscription().tenantId
+      objectId: policy.objectId
+      permissions: policy.permissions
+    }]
+    publicNetworkAccess: contains(keyVaultConfigs, 'keyVaultAllowPublicNetworkAccess') ? keyVaultConfigs.keyVaultAllowPublicNetworkAccess : 'Enabled'
+    enableRbacAuthorization: contains(keyVaultConfigs, 'keyVaultRbacEnabled') ? keyVaultConfigs.keyVaultRbacEnabled : false
+    enableSoftDelete: contains(keyVaultConfigs, 'keyVaultSoftDeleteEnabled') ? keyVaultConfigs.keyVaultSoftDeleteEnabled : true
+    softDeleteRetentionInDays: contains(keyVaultConfigs, 'keyVaultSoftDeleteRetention') ? keyVaultConfigs.keyVaultSoftDeleteRetention : 7
+    enablePurgeProtection: contains(keyVaultConfigs, 'keyVaultPurgeProtectionEnabled') ? keyVaultConfigs.keyVaultPurgeProtectionEnabled : json('null')
     sku: any(environment == 'dev' ? {
       name: keyVaultSku.dev
       family: 'A'
@@ -100,12 +106,16 @@ resource azKeyVaultDeployment 'Microsoft.KeyVault/vaults@2019-09-01' = {
     }))))
     networkAcls: {
       defaultAction: keyVaultDefaultNetworkAccess
-      virtualNetworkRules: virtualNetworks
+      ipRules: [for ip in keyVaultIpAddressAccessRules: {
+        value: ip.ipAddress
+      }]
+      virtualNetworkRules: [for networkRule in keyVaultVirtualNetworkAccessRules: {
+        id: replace(replace(resourceId('${networkRule.virtualNetworkResourceGroup}', 'Microsoft.Network/virtualNetworks/subnets', '${networkRule.virtualNetwork}', networkRule.virtualNetworkSubnet), '@environment', environment), '@region', region)
+      }]
     }
   }
   tags: keyVaultTags
 }
-
 
 module azKeyVaultSecretDeployment 'az.key.vault.secret.bicep' = [for secret in keyVaultSecrets: if (!empty(keyVaultSecrets)) {
   name: !empty(keyVaultSecrets) ? toLower('az-kv-secret-${guid('${azKeyVaultDeployment.id}/${secret.keyVaultSecretName}')}') : 'no-key-vault-secrets-to-deploy'
@@ -120,7 +130,6 @@ module azKeyVaultSecretDeployment 'az.key.vault.secret.bicep' = [for secret in k
     keyVaultSecretResourceGroupOfResource: secret.keyVaultSecretResourceGroupOfResource
   }
 }]
-
 
 module azKeyVaultKeyDeployment 'az.key.vault.key.bicep' = [for key in keyVaultKeys: if (!empty(keyVaultKeys)) {
   name: !empty(keyVaultKeys) ? toLower('az-kv-key-${guid('${azKeyVaultDeployment.id}/${key.name}')}') : 'no-key-vault-keys-to-deploy'
@@ -156,3 +165,5 @@ module azKeyVaultPrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.pr
     ]
   }
 }
+
+// Publish-AzBicepModule -FilePath './src/modules/az.key.vault/v1.0/az.key.vault.bicep' -Target 'br:asalbicep.azurecr.io/modules/az.key.vault:v1.0'
