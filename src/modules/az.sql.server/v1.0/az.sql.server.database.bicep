@@ -54,9 +54,8 @@ resource sqlServerDatabaseDeployment 'Microsoft.Sql/servers/databases@2021-08-01
   name: replace(replace('${sqlServerAccountName}/${sqlServerAccountDatabaseName}', '@environment', environment), '@region', region)
   location: sqlServerAccountDatabaseLocation
   properties: union({
-      collation: contains(sqlServerAccountDatabaseConfigs, 'dbCollation') ? sqlServerAccountDatabaseConfigs.dbCollation : 'SQL_Latin1_General_CP1_CI_AS'
+    collation: contains(sqlServerAccountDatabaseConfigs, 'dbCollation') ? sqlServerAccountDatabaseConfigs.dbCollation : 'SQL_Latin1_General_CP1_CI_AS'
   }, properties)
-    
   sku: any(environment == 'dev' ? {
     tier: sqlServerAccountDatabaseSku.dev.dbTier
     name: sqlServerAccountDatabaseSku.dev.dbTier
