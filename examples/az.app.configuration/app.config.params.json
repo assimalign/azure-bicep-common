@@ -4,6 +4,7 @@
     "parameters": {
         "storageAccount": {
             "value": {
+                "storageAccountBlobServices": {},
                 "storageAccountName": "",
                 "storageAccountAccessTier": "cool",
                 "storageAccountTier": {
