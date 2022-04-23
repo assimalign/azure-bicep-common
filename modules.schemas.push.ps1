@@ -4,6 +4,7 @@ $storageAccountContainerName = 'json'
 $storageAccountResourceGroup = 'asal-main-rg-est-us-01'
 
 
+
 Connect-AzAccount
 
 $account = Get-AzStorageAccount -ResourceGroupName $storageAccountResourceGroup -Name $storageAccountName 
