@@ -1,62 +1,24 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "definitions": {
+        "event-grid-domain": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/event-grid-domain-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
         "event-grid-domains": {
+            "type": "object",
             "properties": {
                 "value": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "eventGridDomainName": {
-                                "type": "string"
-                            },
-                            "eventGridDomainLocation": {
-                                "type": "string",
-                                "description": "The location/region the Azure Event Grid Domain will be deployed to."
-                            },
-                            "eventGridDomainMsiEnabled": {
-                                "type": "boolean"
-                            },
-                            "eventGridDomainMsiRoleAssignments": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "../../az.rbac/v1.0/parameters.json#/definitions/roleAssignment"
-                                }
-                            },
-                            "eventGridDomainDisablePublicAccess": {
-                                "type": "boolean",
-                                "default": false
-                            },
-                            "eventGridDomainPrivateEndpoint": {
-                                "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
-                            },
-                            "eventGridDomainTopics": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/event-grid-domain-topic"
-                                }
-                            },
-                            "eventGridDomainSubscriptions": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/event-grid-domain-subscription"
-                                }
-                            },
-                            "eventGridDomainTags": {
-                                "type": "object",
-                                "patternProperties": {
-                                    "^[a-z]": {
-                                        "type": "string"
-                                    }
-                                },
-                                "minProperties": 1
-                            }
-                        },
-                        "required": [
-                            "eventGridDomainName",
-                            "eventGridDomainDisablePublicAccess"
-                        ]
+                        "$ref": "#/definitions/event-grid-domain-parameters"
                     },
                     "minItems": 1
                 }
@@ -65,34 +27,96 @@
                 "value"
             ]
         },
+        "event-grid-domain-parameters": {
+            "type": "object",
+            "properties": {
+                "eventGridDomainName": {
+                    "type": "string"
+                },
+                "eventGridDomainResourceGroup": {
+                    "type": "string"
+                },
+                "eventGridDomainLocation": {
+                    "type": "string",
+                    "description": "The location/region the Azure Event Grid Domain will be deployed to."
+                },
+                "eventGridDomainMsiEnabled": {
+                    "type": "boolean"
+                },
+                "eventGridDomainMsiRoleAssignments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "../../az.rbac/v1.0/parameters.json#/definitions/roleAssignment"
+                    }
+                },
+                "eventGridDomainDisablePublicAccess": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "eventGridDomainPrivateEndpoint": {
+                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
+                },
+                "eventGridDomainTopics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/event-grid-domain-topic-parameters"
+                    },
+                    "minItems": 1
+                },
+                "eventGridDomainSubscriptions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/event-grid-domain-subscription-parameters"
+                    },
+                    "minItems": 1
+                },
+                "eventGridDomainTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "eventGridDomainName",
+                "eventGridDomainDisablePublicAccess"
+            ]
+        },
         "event-grid-domain-topics": {
             "properties": {
                 "value": {
                     "type": "array",
                     "items": {
                         "type": "object",
-                        "properties": {
-                            "eventGridDomainTopicName": {
-                                "type": "string"
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/event-grid-domain-topic-parameters"
                             },
-                            "eventGridDomainName": {
-                                "type": "string",
-                                "description": "The name of the Event Grid Domain"
-                            },
-                            "eventGridDomainTopicSubscriptions": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/event-grid-domain-topic-subscription"
-                                }
+                            {
+                                "properties": {
+                                    "eventGridDomainTopicName": {
+                                        "type": "string"
+                                    },
+                                    "eventGridDomainName": {
+                                        "type": "string"
+                                    },
+                                    "eventGridDomainResourceGroup": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "eventGridDomainName",
+                                    "eventGridDomainResourceGroup",
+                                    "eventGridDomainTopicName",
+                                    "eventGridDomainTopicSubscriptions"
+                                ]
                             }
-                        },
-                        "required": [
-                            "eventGridDomainName",
-                            "eventGridDomainTopicName",
-                            "eventGridDomainTopicSubscriptions"
-                        ]
-                    },
-                    "minItems": 1
+                        ],
+                        "minItems": 1
+                    }
                 }
             },
             "required": [
@@ -102,19 +126,54 @@
         "event-grid-domain-topic": {
             "type": "object",
             "properties": {
+                "value": {
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/event-grid-domain-topic-parameters"
+                        },
+                        {
+                            "properties": {
+                                "eventGridDomainTopicName": {
+                                    "type": "string"
+                                },
+                                "eventGridDomainName": {
+                                    "type": "string"
+                                },
+                                "eventGridDomainResourceGroup": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "eventGridDomainName",
+                                "eventGridDomainResourceGroup",
+                                "eventGridDomainTopicName",
+                                "eventGridDomainTopicSubscriptions"
+                            ]
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "event-grid-domain-topic-parameters": {
+            "type": "object",
+            "properties": {
                 "eventGridDomainTopicName": {
                     "type": "string"
                 },
                 "eventGridDomainTopicSubscriptions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/event-grid-domain-topic-subscription"
-                    }
+                        "$ref": "#/definitions/event-grid-domain-topic-subscription-parameters"
+                    },
+                    "minItems": 1
                 }
             },
             "required": [
-                "eventGridDomainTopicName",
-                "eventGridDomainTopicSubscriptions"
+                "eventGridDomainTopicName"
             ]
         },
         "event-grid-domain-topic-subscriptions": {
@@ -123,234 +182,30 @@
                     "type": "array",
                     "items": {
                         "type": "object",
-                        "properties": {
-                            "eventGridDomainName": {
-                                "type": "string",
-                                "description": "The name of the Event Grid Domain"
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/event-grid-domain-topic-subscription-parameters"
                             },
-                            "eventGridDomainResourceGroup": {
-                                "type": "string"
-                            },
-                            "eventGridDomainTopicSubscriptionName": {
-                                "type": "string"
-                            },
-                            "eventGridDomainTopicName": {
-                                "description": "The name of the Event Grid Domain Topic"
-                            },
-                            "eventGridDomainTopicSubscriptionEndpointType": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "AzureFunction"
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "eventGridDomainName": {
+                                        "type": "string",
+                                        "description": "The name of the Event Grid Domain"
                                     },
-                                    {
-                                        "const": "ServiceBusQueue"
+                                    "eventGridDomainResourceGroup": {
+                                        "type": "string"
                                     },
-                                    {
-                                        "const": "ServiceBusTopic"
-                                    },
-                                    {
-                                        "const": "StorageQueue"
-                                    },
-                                    {
-                                        "const": "EventHub"
-                                    },
-                                    {
-                                        "const": "WebHook"
-                                    }
-                                ]
-                            },
-                            "eventGridDomainTopicSubscriptionEndpointName": {
-                                "type": "string"
-                            },
-                            "eventGridDomainTopicSubscriptionEndpointResourceGroup": {
-                                "type": "string"
-                            },
-                            "eventGridDomainTopicSubscriptionEventTypes": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "eventGridDomainTopicSubscriptionEventLabels": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "eventGridDomainTopicSubscriptionEventFilters": {
-                                "type": "array",
-                                "items": {
-                                    "properties": {
-                                        "operatorType": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "BoolEquals"
-                                                },
-                                                {
-                                                    "const": "IsNotNull"
-                                                },
-                                                {
-                                                    "const": "IsNotNullOrUndefined"
-                                                },
-                                                {
-                                                    "const": "NumberGreaterThan"
-                                                },
-                                                {
-                                                    "const": "NumberGreaterThanOrEquals"
-                                                },
-                                                {
-                                                    "const": "NumberIn"
-                                                },
-                                                {
-                                                    "const": "NumberInRange"
-                                                },
-                                                {
-                                                    "const": "NumberNotIn"
-                                                },
-                                                {
-                                                    "const": "NumberNotInRange"
-                                                },
-                                                {
-                                                    "const": "NumberLessThan"
-                                                },
-                                                {
-                                                    "const": "NumberLessThanOrEquals"
-                                                },
-                                                {
-                                                    "const": "StringBeginsWith"
-                                                },
-                                                {
-                                                    "const": "StringNotBeginsWith"
-                                                },
-                                                {
-                                                    "const": "StringEndsWith"
-                                                },
-                                                {
-                                                    "const": "StringNotEndsWith"
-                                                },
-                                                {
-                                                    "const": "StringContains"
-                                                },
-                                                {
-                                                    "const": "StringNotContains"
-                                                },
-                                                {
-                                                    "const": "StringIn"
-                                                },
-                                                {
-                                                    "const": "StringNotIn"
-                                                }
-                                            ]
-                                        },
-                                        "key": {
-                                            "type": "string",
-                                            "pattern": "^data|^id$|^topic$|^subject$|^eventtype$|^dataversion$"
-                                        },
-                                        "value": {
-                                            "oneOf": [
-                                                {
-                                                    "type": "string"
-                                                },
-                                                {
-                                                    "type": "number"
-                                                },
-                                                {
-                                                    "type": "boolean"
-                                                },
-                                                {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "oneOf": [
-                                                            {
-                                                                "type": "string"
-                                                            },
-                                                            {
-                                                                "type": "number"
-                                                            }
-                                                        ]
-                                                    },
-                                                    "minItems": 1
-                                                }
-                                            ]
-                                        }
+                                    "eventGridDomainTopicName": {
+                                        "type": "string"
                                     }
                                 },
                                 "required": [
-                                    "key",
-                                    "operatorType",
-                                    "value"
-                                ]
-                            },
-                            "eventGridDomainTopicSubscriptionEventHeaders": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "type": "string"
-                                        },
-                                        "type": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "Static"
-                                                },
-                                                {
-                                                    "const": "Dynamic"
-                                                }
-                                            ]
-                                        },
-                                        "value": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "name",
-                                        "type",
-                                        "value"
-                                    ]
-                                }
-                            },
-                            "eventGridDomainTopicSubscriptionMsiEnabled": {
-                                "type": "boolean"
-                            },
-                            "eventGridDomainTopicSubscriptionDeadLetterDestination": {
-                                "oneOf": [
-                                    {
-                                        "type": "null"
-                                    },
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            "storageAccountContainerName": {
-                                                "type": "string"
-                                            },
-                                            "storageAccountName": {
-                                                "type": "string"
-                                            },
-                                            "storageAccountResourceGroupName": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "required": [
-                                            "storageAccountContainerName",
-                                            "storageAccountName",
-                                            "storageAccountResourceGroupName"
-                                        ]
-                                    }
+                                    "eventGridDomainName",
+                                    "eventGridDomainTopicName",
+                                    "eventGridDomainResourceGroup"
                                 ]
                             }
-                        },
-                        "required": [
-                            "eventGridDomainName",
-                            "eventGridDomainResourceGroup",
-                            "eventGridDomainTopicName",
-                            "eventGridDomainTopicSubscriptionName",
-                            "eventGridDomainTopicSubscriptionEndpointType",
-                            "eventGridDomainTopicSubscriptionEndpointName",
-                            "eventGridDomainTopicSubscriptionEndpointResourceGroup"
                         ]
                     },
                     "minItems": 1
@@ -361,6 +216,42 @@
             ]
         },
         "event-grid-domain-topic-subscription": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/event-grid-domain-topic-subscription-parameters"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "eventGridDomainName": {
+                                    "type": "string",
+                                    "description": "The name of the Event Grid Domain"
+                                },
+                                "eventGridDomainTopicName": {
+                                    "type": "string"
+                                },
+                                "eventGridDomainResourceGroup": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "eventGridDomainName",
+                                "eventGridDomainTopicName",
+                                "eventGridDomainResourceGroup"
+                            ]
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "event-grid-domain-topic-subscription-parameters": {
             "type": "object",
             "properties": {
                 "eventGridDomainTopicSubscriptionName": {
@@ -585,232 +476,27 @@
                     "type": "array",
                     "items": {
                         "type": "object",
-                        "properties": {
-                            "eventGridDomainName": {
-                                "type": "string",
-                                "description": "The name of the Event Grid Domain"
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/event-grid-domain-subscription-parameters"
                             },
-                            "eventGridDomainResourceGroup": {
-                                "type": "string"
-                            },
-                            "eventGridDomainSubscriptionName": {
-                                "type": "string"
-                            },
-                            "eventGridDomainSubscriptionEndpointType": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "AzureFunction"
+                            {
+                                "properties": {
+                                    "eventGridDomainName": {
+                                        "type": "string"
                                     },
-                                    {
-                                        "const": "ServiceBusQueue"
-                                    },
-                                    {
-                                        "const": "ServiceBusTopic"
-                                    },
-                                    {
-                                        "const": "StorageQueue"
-                                    },
-                                    {
-                                        "const": "EventHub"
-                                    },
-                                    {
-                                        "const": "WebHook"
-                                    }
-                                ]
-                            },
-                            "eventGridDomainSubscriptionEndpointName": {
-                                "type": "string"
-                            },
-                            "eventGridDomainSubscriptionEndpointResourceGroup": {
-                                "type": "string"
-                            },
-                            "eventGridDomainSubscriptionEventTypes": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "eventGridDomainSubscriptionEventLabels": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "eventGridDomainSubscriptionEventFilters": {
-                                "type": "array",
-                                "items": {
-                                    "properties": {
-                                        "operatorType": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "BoolEquals"
-                                                },
-                                                {
-                                                    "const": "IsNotNull"
-                                                },
-                                                {
-                                                    "const": "IsNotNullOrUndefined"
-                                                },
-                                                {
-                                                    "const": "NumberGreaterThan"
-                                                },
-                                                {
-                                                    "const": "NumberGreaterThanOrEquals"
-                                                },
-                                                {
-                                                    "const": "NumberIn"
-                                                },
-                                                {
-                                                    "const": "NumberInRange"
-                                                },
-                                                {
-                                                    "const": "NumberNotIn"
-                                                },
-                                                {
-                                                    "const": "NumberNotInRange"
-                                                },
-                                                {
-                                                    "const": "NumberLessThan"
-                                                },
-                                                {
-                                                    "const": "NumberLessThanOrEquals"
-                                                },
-                                                {
-                                                    "const": "StringBeginsWith"
-                                                },
-                                                {
-                                                    "const": "StringNotBeginsWith"
-                                                },
-                                                {
-                                                    "const": "StringEndsWith"
-                                                },
-                                                {
-                                                    "const": "StringNotEndsWith"
-                                                },
-                                                {
-                                                    "const": "StringContains"
-                                                },
-                                                {
-                                                    "const": "StringNotContains"
-                                                },
-                                                {
-                                                    "const": "StringIn"
-                                                },
-                                                {
-                                                    "const": "StringNotIn"
-                                                }
-                                            ]
-                                        },
-                                        "key": {
-                                            "type": "string",
-                                            "pattern": "^data|^id$|^topic$|^subject$|^eventtype$|^dataversion$"
-                                        },
-                                        "value": {
-                                            "oneOf": [
-                                                {
-                                                    "type": "string"
-                                                },
-                                                {
-                                                    "type": "number"
-                                                },
-                                                {
-                                                    "type": "boolean"
-                                                },
-                                                {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "oneOf": [
-                                                            {
-                                                                "type": "string"
-                                                            },
-                                                            {
-                                                                "type": "number"
-                                                            }
-                                                        ]
-                                                    },
-                                                    "minItems": 1
-                                                }
-                                            ]
-                                        }
+                                    "eventGridDomainResourceGroup": {
+                                        "type": "string"
                                     }
                                 },
                                 "required": [
-                                    "key",
-                                    "operatorType",
-                                    "value"
-                                ]
-                            },
-                            "eventGridDomainSubscriptionEventHeaders": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "type": "string"
-                                        },
-                                        "type": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "Static"
-                                                },
-                                                {
-                                                    "const": "Dynamic"
-                                                }
-                                            ]
-                                        },
-                                        "value": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "name",
-                                        "type",
-                                        "value"
-                                    ]
-                                }
-                            },
-                            "eventGridDomainSubscriptionMsiEnabled": {
-                                "type": "boolean"
-                            },
-                            "eventGridDomainSubscriptionDeadLetterDestination": {
-                                "oneOf": [
-                                    {
-                                        "type": "null"
-                                    },
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            "storageAccountContainerName": {
-                                                "type": "string"
-                                            },
-                                            "storageAccountName": {
-                                                "type": "string"
-                                            },
-                                            "storageAccountResourceGroupName": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "required": [
-                                            "storageAccountContainerName",
-                                            "storageAccountName",
-                                            "storageAccountResourceGroupName"
-                                        ]
-                                    }
+                                    "eventGridDomainName",
+                                    "eventGridDomainResourceGroup"
                                 ]
                             }
-                        },
-                        "required": [
-                            "eventGridDomainName",
-                            "eventGridDomainResourceGroup",
-                            "eventGridDomainSubscriptionName",
-                            "eventGridDomainSubscriptionEndpointType",
-                            "eventGridDomainSubscriptionEndpointName",
-                            "eventGridDomainSubscriptionEndpointResourceGroup"
                         ]
-                    }
+                    },
+                    "minItems": 1
                 }
             },
             "required": [
@@ -818,6 +504,36 @@
             ]
         },
         "event-grid-domain-subscription": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/event-grid-domain-subscription-parameters"
+                        },
+                        {
+                            "properties": {
+                                "eventGridDomainName": {
+                                    "type": "string"
+                                },
+                                "eventGridDomainResourceGroup": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "eventGridDomainName",
+                                "eventGridDomainResourceGroup"
+                            ]
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "event-grid-domain-subscription-parameters": {
             "type": "object",
             "properties": {
                 "eventGridDomainSubscriptionName": {

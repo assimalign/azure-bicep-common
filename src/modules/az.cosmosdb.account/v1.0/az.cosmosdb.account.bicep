@@ -13,6 +13,14 @@ param region string = ''
 @description('The name of the Database Account/Server to be deployed')
 param cosmosDbAccountName string
 
+@allowed([
+  'EnableDocument'
+  'EnableTable'
+  'EnableGremlin'
+])
+@description('')
+param cosmosDbAccountType string = 'EnableDocument'
+
 @description('The deployment location of the Document Db Account')
 param cosmosDbAccountLocations array
 
@@ -24,9 +32,6 @@ param cosmosDbAccountConsistencyPolicy object = {}
 
 @description('The list of databases to deploy with the Document Db Account')
 param cosmosDbAccountDatabases array = []
-
-@description('A list of Document Db Tables for Table API deployment database account')
-param cosmosDbAccountTables array = []
 
 @description('Enables System Managed Identity for this resource')
 param cosmosDbAccountEnableMsi bool = false
@@ -62,9 +67,9 @@ resource azCosmosDbAccountDeployment 'Microsoft.DocumentDB/databaseAccounts@2021
       defaultConsistencyLevel: !empty(cosmosDbAccountConsistencyPolicy) ? cosmosDbAccountConsistencyPolicy.consistencyLevel : 'Session'
     }
     // This will enable Table Storage APIs rather than 
-    capabilities: any(length(cosmosDbAccountTables) > 0 && !empty(first(cosmosDbAccountTables)) && empty(first(cosmosDbAccountDatabases)) ? [
+    capabilities: any(cosmosDbAccountType != 'EnableDocument' ? [
       {
-        name: 'EnableTable'
+        name: cosmosDbAccountType
       }
     ] : [])
     enableMultipleWriteLocations: cosmosDbAccountEnableMultiRegionWrites
@@ -74,21 +79,22 @@ resource azCosmosDbAccountDeployment 'Microsoft.DocumentDB/databaseAccounts@2021
   tags: cosmosDbAccountTags
 }
 
-// 2. Deploy Cosmos DB Table API(s), if applicable
-module azCosmosDbAccounTableDeployment 'az.cosmosdb.account.table.bicep' = [for table in cosmosDbAccountTables: if (!empty(cosmosDbAccountTables)) {
-  name: !empty(cosmosDbAccountTables) ? toLower('az-cosmosdb-tables-api-${guid('${azCosmosDbAccountDeployment.id}/${table.name}')}') : 'no-cosmosdb-tables-api-to-deploy'
+// 2. Deploy Cosmos DB Document Database, if applicable
+module azCosmosDbAccountDocumentDatabaseDeployment 'az.cosmosdb.account.document.database.bicep' = [for database in cosmosDbAccountDatabases: if (!empty(cosmosDbAccountDatabases) && cosmosDbAccountType == 'EnableDocument') {
+  name: !empty(cosmosDbAccountDatabases) ? toLower('az-cosmosdb-database-${guid('${azCosmosDbAccountDeployment.id}/${database.cosmosDatabaseName}')}') : 'no-cosmosdb-document-databases-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
     cosmosDbAccountName: cosmosDbAccountName
-    cosmosDbAccountTableName: table.name
+    cosmosDbAccountDatabaseName: database.cosmosDatabaseName
+    cosmosDbAccountDatabaseContainers: database.cosmosDatabaseContainers
   }
 }]
 
-// 3. Deploy Cosmos DB Containers, if applicable
-module azCosmosDbAccountDatabaseDeployment 'az.cosmosdb.account.database.bicep' = [for database in cosmosDbAccountDatabases: if (!empty(cosmosDbAccountDatabases)) {
-  name: !empty(cosmosDbAccountDatabases) ? toLower('az-cosmosdb-database-${guid('${azCosmosDbAccountDeployment.id}/${database.cosmosDatabaseName}')}') : 'no-cosmosdb-databases-to-deploy'
+// 3. Deploy Cosmos DB Graph Database, if applicable
+module azCosmosDbAccountGraphDatabaseDeployment 'az.cosmosdb.account.graph.database.bicep' = [for database in cosmosDbAccountDatabases: if (!empty(cosmosDbAccountDatabases) && cosmosDbAccountType == 'EnableGremlin') {
+  name: !empty(cosmosDbAccountDatabases) ? toLower('az-cosmosdb-database-${guid('${azCosmosDbAccountDeployment.id}/${database.cosmosDatabaseName}')}') : 'no-cosmosdb-graph-databases-to-deploy'
   scope: resourceGroup()
   params: {
     region: region

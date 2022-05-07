@@ -26,11 +26,11 @@ param serviceBusTopicSettings object = {}
 param serviceBusTopicPolicies array = []
 
 // 1. Deploy Service Bus Namespace Topic
-resource azServiceBusTopicDeployment 'Microsoft.ServiceBus/namespaces/topics@2017-04-01' = {
+resource azServiceBusTopicDeployment 'Microsoft.ServiceBus/namespaces/topics@2021-11-01' = {
   name: replace(replace('${serviceBusName}/${serviceBusTopicName}', '@environment', environment), '@region', region)
-  properties: any(!empty(serviceBusTopicSettings) ? {
-    maxSizeInMegabytes: serviceBusTopicSettings.maxSize ?? 1024
-  } : {})
+  properties:  {
+    maxSizeInMegabytes: contains(serviceBusTopicSettings, 'maxSize') ? serviceBusTopicSettings.maxSize : 1024
+  }
 }
 
 // 2. Deploy Service Bus Namespace Topic Authorization Policy
@@ -55,8 +55,8 @@ module azServiceBusTopicSubscriptionDeployment 'az.service.bus.namespace.topic.s
     region: region
     environment: environment
     serviceBusName: serviceBusName
-    serviceBusTopic: serviceBusTopicName
-    serviceBusTopicSubscription: subscription.serviceBusTopicSubscriptionName
+    serviceBusTopicName: serviceBusTopicName
+    serviceBusTopicSubscriptionName: subscription.serviceBusTopicSubscriptionName
     serviceBusTopicSubscriptionSettings: contains(subscription, 'serviceBusTopicSubscriptionSettings') ? subscription.serviceBusTopicSubscriptionSettings : {}
   }
 }]

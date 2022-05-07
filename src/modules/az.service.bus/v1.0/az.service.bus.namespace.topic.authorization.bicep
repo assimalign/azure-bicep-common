@@ -23,7 +23,7 @@ param serviceBusTopicPolicyName string
 param serviceBusTopicPolicyPermissions array
 
 // 1.1 Add the authorization rules
-resource azServiceBusQueueAuthorizationRulesDeployment 'Microsoft.ServiceBus/namespaces/topics/authorizationRules@2017-04-01' = {
+resource azServiceBusQueueAuthorizationRulesDeployment 'Microsoft.ServiceBus/namespaces/topics/authorizationRules@2021-11-01' = {
   name: replace(replace('${serviceBusName}/${serviceBusTopicName}/${serviceBusTopicPolicyName}', '@environment', environment), '@region', region)
   properties: {
     rights: serviceBusTopicPolicyPermissions

@@ -1,41 +1,45 @@
 {
-    "$schema": "../../src/schemas/az.main.schema.json",
+    "$schema": "../../src/schemas/az/parameters.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        
-        "cosmosDatabaseAccounts": {
+        "serviceBusNamespaceTopic":{
+            "value": {
+                "serviceBusName": "",
+                "serviceBusResourceGroup": "",
+                "serviceBusTopicName": "",
+                "serviceBusTopicSubscriptions": [
+                    {
+                        "serviceBusTopicSubscriptionName": "",
+                        "serviceBusTopicSubscriptionSettings": {
+                            "maxDelivery": 0,
+                            "maxSize": 0
+                        }
+                    }
+                ]
+            }
+        },
+        "cosmosAccounts": {
             "value": [
                 {
-                    "databaseAccountName": "",
-                    "databaseAccountConsistencyPolicy": {
-                        "consistencyLevel": "Eventual"
-                    },
-                    "databaseAccountCorsPolicy": [],
-                    "databaseAccountEnableMsi": false,
-                    "databaseAccountEnableFreeTier": false,
-                    "databaseAccountEnableMultiRegionWrites": false,
-                    "databaseAccountLocations": [
+                    "cosmosAccountDatabases": [
                         {
-                            "locationName": "westus2",
-                            "failoverPriority": 0
+                            "cosmosDatabaseName": ""
                         }
-                    ],
-                    "databaseAccountType": "",
-                    
-                    "databaseAccountDatabases": [
-                        {
-                            "databaseName": "",
-                            "databaseContainers": []
-                        }
-                    ],
-                    "databaseAccountTables": [
-                        {
-                            "name": ""
-                        }
-                    ],
-                    "tags": null
+                    ]
                 }
             ]
+        },
+        "cosmosAccountsDocumentDatabase": {
+            "value": {
+                "cosmosAccountName": "",
+                "cosmosAccountResourceGroup": "",
+                "cosmosDatabaseName": "",
+                "cosmosDatabaseContainers": [
+                    {
+                        "cosmosDatabaseContainerName": ""
+                    }
+                ]
+            }
         }
     }
 }

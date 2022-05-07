@@ -14,20 +14,18 @@ param region string = ''
 param serviceBusName string
 
 @description('The name of the Service Bus Topic for the Subscription')
-param serviceBusTopic string
+param serviceBusTopicName string
 
 @description('The name of Subscription to deploy')
-param serviceBusTopicSubscription string
+param serviceBusTopicSubscriptionName string
 
 @description('')
 param serviceBusTopicSubscriptionSettings object = {}
 
-
-
 resource azServiceBusTopicSubscriptionsDeployment 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2021-11-01' = {
-  name: replace(replace('${serviceBusName}/${serviceBusTopic}/${serviceBusTopicSubscription}', '@environment', environment), '@region', region)
+  name: replace(replace('${serviceBusName}/${serviceBusTopicName}/${serviceBusTopicSubscriptionName}', '@environment', environment), '@region', region)
   properties: {
-    forwardTo: ''
-   
+    requiresSession: contains(serviceBusTopicSubscriptionSettings, 'enableSession') ? serviceBusTopicSubscriptionSettings.enableSession : false
+    maxDeliveryCount: contains(serviceBusTopicSubscriptionSettings, 'maxDelivery') ? serviceBusTopicSubscriptionSettings.maxDelivery : 15
   }
 }

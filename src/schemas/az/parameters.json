@@ -39,17 +39,59 @@
                         }
                     ]
                 },
-                "cosmosAccountsDatabases": {
+                "cosmosAccountsDocumentDatabase": {
                     "oneOf": [
                         {
-                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts-databases"
+                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts-document-database"
                         }
                     ]
                 },
-                "cosmosAccountsDatabaseContainers": {
+                "cosmosAccountsDocumentDatabases": {
                     "oneOf": [
                         {
-                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts-database-containers"
+                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts-document-databases"
+                        }
+                    ]
+                },
+                "cosmosAccountsDocumentDatabaseContainer": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts-document-database-container"
+                        }
+                    ]
+                },
+                "cosmosAccountsDocumentDatabaseContainers": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts-document-database-containers"
+                        }
+                    ]
+                },
+                "cosmosAccountsGraphDatabase": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts-graph-database"
+                        }
+                    ]
+                },
+                "cosmosAccountsGraphDatabases": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts-graph-databases"
+                        }
+                    ]
+                },
+                "cosmosAccountsGraphDatabaseContainer": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts-graph-database-container"
+                        }
+                    ]
+                },
+                "cosmosAccountsGraphDatabaseContainers": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts-graph-database-containers"
                         }
                     ]
                 },
@@ -476,18 +518,38 @@
                         }
                     ]
                 },
+                "eventGridDomain": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.event.grid/v1.0/parameters.json#/definitions/event-grid-domain"
+                        }
+                    ]
+                },
                 "eventGridDomains": {
                     "oneOf": [
                         {
                             "$ref": "../az.event.grid/v1.0/parameters.json#/definitions/event-grid-domains"
                         }
                     ]
-                   
+                },
+                "eventGridDomainTopic": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.event.grid/v1.0/parameters.json#/definitions/event-grid-domain-topic"
+                        }
+                    ]
                 },
                 "eventGridDomainTopics": {
                     "oneOf": [
                         {
                             "$ref": "../az.event.grid/v1.0/parameters.json#/definitions/event-grid-domain-topics"
+                        }
+                    ]
+                },
+                "eventGridDomainTopicSubscription": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.event.grid/v1.0/parameters.json#/definitions/event-grid-domain-topic-subscription"
                         }
                     ]
                 },
@@ -498,17 +560,38 @@
                         }
                     ]
                 },
+                "eventGridDomainSubscription": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.event.grid/v1.0/parameters.json#/definitions/event-grid-domain-subscription"
+                        }
+                    ]
+                },  
                 "eventGridDomainSubscriptions": {
                     "oneOf": [
                         {
                             "$ref": "../az.event.grid/v1.0/parameters.json#/definitions/event-grid-domain-subscriptions"
                         }
                     ]
-                },  
+                }, 
+                "serviceBusNamespace": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.service.bus/v1.0/parameters.json#/definitions/service-bus-namespace"
+                        }
+                    ]
+                },
                 "serviceBusNamespaces": {
                     "oneOf": [
                         {
                             "$ref": "../az.service.bus/v1.0/parameters.json#/definitions/service-bus-namespaces"
+                        }
+                    ]
+                },
+                "serviceBusNamespaceQueue": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.service.bus/v1.0/parameters.json#/definitions/service-bus-namespace-queue"
                         }
                     ]
                 },
@@ -519,10 +602,24 @@
                         }
                     ]
                 },
+                "serviceBusNamespaceTopic": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.service.bus/v1.0/parameters.json#/definitions/service-bus-namespace-topic"
+                        }
+                    ]
+                },
                 "serviceBusNamespaceTopics": {
                     "oneOf": [
                         {
                             "$ref": "../az.service.bus/v1.0/parameters.json#/definitions/service-bus-namespace-topics"
+                        }
+                    ]
+                },
+                "serviceBusNamespaceTopicSubscription": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.service.bus/v1.0/parameters.json#/definitions/service-bus-namespace-topic-subscription"
                         }
                     ]
                 },
@@ -533,10 +630,24 @@
                         }
                     ]
                 },
+                "notificationNamespace": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.notification.hub/v1.0/parameters.json#/definitions/notification-hub-namespace"
+                        }
+                    ]
+                },
                 "notificationNamespaces": {
                     "oneOf": [
                         {
                             "$ref": "../az.notification.hub/v1.0/parameters.json#/definitions/notification-hub-namespaces"
+                        }
+                    ]
+                },
+                "notificationNamespaceHub": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.notification.hub/v1.0/parameters.json#/definitions/notification-hub-namespace-hub"
                         }
                     ]
                 },

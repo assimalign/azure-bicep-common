@@ -22,11 +22,12 @@ param serviceBusQueueSettings object = {}
 @description('A list of authorization policies to deploy with the service bus queue')
 param serviceBusQueuePolicies array = []
 
-resource azServiceBusTopicsDeployment 'Microsoft.ServiceBus/namespaces/queues@2017-04-01' = {
+resource azServiceBusTopicsDeployment 'Microsoft.ServiceBus/namespaces/queues@2021-11-01' = {
   name: replace(replace('${serviceBusName}/${serviceBusQueueName}', '@environment', environment), '@region', region)
-  properties: any(!empty(serviceBusQueueSettings) ? {
-    maxSizeInMegabytes: serviceBusQueueSettings.maxSize ?? 1024
-  } : {})
+  properties: {
+    requiresSession: contains(serviceBusQueueSettings, 'enableSession') ? serviceBusQueueSettings.enableSession : false
+    maxSizeInMegabytes: contains(serviceBusQueueSettings, 'maxSize') ? serviceBusQueueSettings.maxSize : 1024
+  }
 }
 
 module azServiceBusTopicAuthPolicyDeployment 'az.service.bus.namespace.queue.authorization.bicep' = [for policy in serviceBusQueuePolicies: if (!empty(policy)) {

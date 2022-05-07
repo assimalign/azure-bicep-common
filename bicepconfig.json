@@ -11,7 +11,8 @@
         "currentProfile": "AzureCloud",
         "credentialPrecedence": [
             "VisualStudioCode",
-            "AzurePowerShell"
+            "AzurePowerShell",
+            "ManagedIdentity"
         ]
     }
 }

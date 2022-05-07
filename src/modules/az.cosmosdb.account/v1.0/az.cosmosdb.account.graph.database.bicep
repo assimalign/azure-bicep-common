@@ -21,7 +21,7 @@ param cosmosDbAccountDatabaseContainers array = []
 
 
 // 1. Deploy the Document Database
-resource azDocumentDbAccountDatabaseDeployment 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2021-06-15' = {
+resource azCosmosAccountGraphDatabaseDeployment 'Microsoft.DocumentDB/databaseAccounts/gremlinDatabases@2021-10-15' = {
   name: replace(replace('${cosmosDbAccountName}/${cosmosDbAccountDatabaseName}', '@environment', environment), '@region', region)
   properties: {
     resource: {
@@ -31,8 +31,8 @@ resource azDocumentDbAccountDatabaseDeployment 'Microsoft.DocumentDB/databaseAcc
 }
 
 // 2. Deploye Document DB Database Containers
-module azDocumentDbAccountDatabaseContainerDeployment 'az.cosmosdb.account.database.container.bicep' = [for container in cosmosDbAccountDatabaseContainers: if(!empty(container)) {
-  name: !empty(cosmosDbAccountDatabaseContainers) ? toLower('az-docdb-container-${guid('${azDocumentDbAccountDatabaseDeployment.id}/${container.databaseContainer}')}') : 'no-dbdocument-containers-to-deploy'
+module azDocumentDbAccountDatabaseContainerDeployment 'az.cosmosdb.account.graph.database.container.bicep' = [for container in cosmosDbAccountDatabaseContainers: if(!empty(container)) {
+  name: !empty(cosmosDbAccountDatabaseContainers) ? toLower('az-docdb-container-${guid('${azCosmosAccountGraphDatabaseDeployment.id}/${container.databaseContainer}')}') : 'no-dbdocument-containers-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -48,4 +48,4 @@ module azDocumentDbAccountDatabaseContainerDeployment 'az.cosmosdb.account.datab
 }]
 
 // 3. Return Deployment Output
-output resource object = azDocumentDbAccountDatabaseDeployment
+output resource object = azCosmosAccountGraphDatabaseDeployment

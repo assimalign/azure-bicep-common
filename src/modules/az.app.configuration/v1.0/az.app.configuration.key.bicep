@@ -30,7 +30,7 @@ param appConfigurationContentType string = ''
 //                      Azure App Configuration Key Deployment                              //
 // **************************************************************************************** //
 
-resource azAppConfigurationKeyValuesDeployment 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-03-01-preview' = if (empty(appConfigurationValueLabels)) {
+resource azAppConfigurationKeyValuesDeployment 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-10-01-preview' = if (empty(appConfigurationValueLabels)) {
   name: replace(replace('${appConfigurationName}/${appConfigurationKeyName}', '@environment', environment), '@region', region)
   properties: {
     value: replace(replace(appConfigurationValue, '@environment', environment), '@region', region)
@@ -39,10 +39,10 @@ resource azAppConfigurationKeyValuesDeployment 'Microsoft.AppConfiguration/confi
 }
 
 // Deploys the same configuration value with different labels
-resource azAppConfigurationKeyValuesWithLabelsDeployment 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-03-01-preview' = [for label in appConfigurationValueLabels: if (!empty(appConfigurationValueLabels)) {
+resource azAppConfigurationKeyValuesWithLabelsDeployment 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-10-01-preview' = [for label in appConfigurationValueLabels: if (!empty(appConfigurationValueLabels)) {
   name: replace(replace('${appConfigurationName}/${appConfigurationKeyName}$${label}', '@environment', environment), '@region', region)
   properties: {
-    value: '${replace(replace(appConfigurationValue, '@environment', environment), '@region', region)}'
+    value: replace(replace(appConfigurationValue, '@environment', environment), '@region', region)
     contentType: empty(appConfigurationContentType) ? json('null') : appConfigurationContentType
   }
 }]

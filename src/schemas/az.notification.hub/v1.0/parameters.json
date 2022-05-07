@@ -1,91 +1,145 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "definitions": {
+        "notification-hub-namespace": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/notification-hub-namespace-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
         "notification-hub-namespaces": {
             "type": "object",
             "properties": {
                 "value": {
                     "type": "array",
                     "items": {
-                        "type": "object",
+                        "$ref": "#/definitions/notification-hub-namespace-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "notification-hub-namespace-parameters": {
+            "type": "object",
+            "properties": {
+                "notificationHubNamespaceName": {
+                    "type": "string"
+                },
+                "notificationHubNamespaceResourceGroup": {
+                    "type": "string"
+                },
+                "notificationHubNamespaceSku": {
+                    "type": "object",
+                    "properties": {
+                        "dev": {
+                            "$ref": "#/definitions/notification-hub-namespace-sku"
+                        },
+                        "qa": {
+                            "$ref": "#/definitions/notification-hub-namespace-sku"
+                        },
+                        "uat": {
+                            "$ref": "#/definitions/notification-hub-namespace-sku"
+                        },
+                        "prd": {
+                            "$ref": "#/definitions/notification-hub-namespace-sku"
+                        }
+                    },
+                    "required": [
+                        "dev",
+                        "qa",
+                        "uat",
+                        "prd"
+                    ]
+                },
+                "notificationHubNamespaceHubs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/notification-hub-namespace-hub-parameters"
+                    },
+                    "minItems": 1
+                },
+                "notificationHubNamespacePolicies": {
+                    "type": "array",
+                    "items": {
                         "properties": {
-                            "notificationHubNamespaceName": {
+                            "policyName": {
                                 "type": "string"
                             },
-                            "notificationHubNamespaceSku": {
-                                "type": "object",
-                                "properties": {
-                                    "dev": {
-                                        "$ref": "#/definitions/notification-hub-namespace-sku"
-                                    },
-                                    "qa": {
-                                        "$ref": "#/definitions/notification-hub-namespace-sku"
-                                    },
-                                    "uat": {
-                                        "$ref": "#/definitions/notification-hub-namespace-sku"
-                                    },
-                                    "prd": {
-                                        "$ref": "#/definitions/notification-hub-namespace-sku"
-                                    }
-                                },
-                                "required": [
-                                    "dev",
-                                    "qa",
-                                    "uat",
-                                    "prd"
-                                ]
-                            },
-                            "notificationHubNamespaceHubs": {
+                            "policyPermissions": {
                                 "type": "array",
                                 "items": {
-                                    "$ref": "#/definitions/notification-hub-namespace-hub"
-                                }
-                            },
-                            "notificationHubNamespacePolicies": {
-                                "type": "array",
-                                "items": {
-                                    "properties": {
-                                        "policyName": {
-                                            "type": "string"
+                                    "type": "string",
+                                    "anyOf": [
+                                        {
+                                            "const": "Listen"
                                         },
-                                        "policyPermissions": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string",
-                                                "anyOf": [
-                                                    {
-                                                        "const": "Listen"
-                                                    },
-                                                    {
-                                                        "const": "Manage"
-                                                    },
-                                                    {
-                                                        "const": "Send"
-                                                    }
-                                                ]
-                                            },
-                                            "minItems": 1
+                                        {
+                                            "const": "Manage"
+                                        },
+                                        {
+                                            "const": "Send"
                                         }
-                                    },
-                                    "required": [
-                                        "policyName",
-                                        "policyPermissions"
                                     ]
-                                }
-                            },
-                            "notificationHubNamespaceTags": {
-                                "type": "object",
-                                "patternProperties": {
-                                    "^[a-z]": {
-                                        "type": "string"
-                                    }
                                 },
-                                "minProperties": 1
+                                "minItems": 1
                             }
                         },
                         "required": [
-                            "notificationHubNamespaceName",
-                            "notificationHubNamespaceSku"
+                            "policyName",
+                            "policyPermissions"
+                        ]
+                    },
+                    "minItems": 1
+                },
+                "notificationHubNamespaceTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "notificationHubNamespaceName",
+                "notificationHubNamespaceSku"
+            ]
+        },
+        "notification-hub-namespace-hubs": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/notification-hub-namespace-hub-parameters"
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "notificationHubNamespaceName": {
+                                        "type": "string",
+                                        "description": "The name of the notification Namespace."
+                                    },
+                                    "notificationHubNamespaceResourceGroup": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "notificationHubNamespaceName"
+                                ]
+                            }
                         ]
                     },
                     "minItems": 1
@@ -95,35 +149,46 @@
                 "value"
             ]
         },
-        "notification-hub-namespace-hubs": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "notificationHubName": {
-                        "type": "string",
-                        "description": "The name of the Notification Namespace Hub"
-                    },
-                    "notificationHubLocation": {
-                        "type": "string"
-                    },
-                    "notificationHubNamespaceName": {
-                        "type": "string",
-                        "description": "The name of the notification Namespace."
-                    }
-                },
-                "required": [
-                    "notificationHubName",
-                    "notificationHubNamespaceName"
-                ]
-            }
-        },
         "notification-hub-namespace-hub": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/notification-hub-namespace-hub-parameters"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "notificationHubNamespaceName": {
+                                    "type": "string",
+                                    "description": "The name of the notification Namespace."
+                                },
+                                "notificationHubNamespaceResourceGroup": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "notificationHubNamespaceName"
+                            ]
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "notification-hub-namespace-hub-parameters": {
             "type": "object",
             "properties": {
                 "notificationHubName": {
                     "type": "string",
                     "description": "The name of the Notification Namespace Hub"
+                },
+                "notificationHubLocation": {
+                    "type": "string"
                 }
             },
             "required": [

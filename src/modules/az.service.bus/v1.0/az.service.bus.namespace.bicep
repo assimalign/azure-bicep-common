@@ -16,13 +16,13 @@ param serviceBusName string
 @description('The location/region the Azure Service Bus Instance will be deployed to.')
 param serviceBusLocation string = resourceGroup().location
 
-@description('')
+@description('A collection of service bus topics to be deployed with the namespace.')
 param serviceBusTopics array = []
 
-@description('')
+@description('A collection of service bus queues to be deployed with the namespace.')
 param serviceBusQueues array = []
 
-@description('')
+@description('The pricing tier to be used for the service bus.')
 param serviceBusSku object
 
 @description('')
@@ -56,7 +56,7 @@ resource azServiceBusNamespaceDeployment 'Microsoft.ServiceBus/namespaces@2018-0
   }))))
 
   // Neet to use a different API version version than parent since preview supports managed identity while auth rules are supported up to 2017-04-01
-  resource azServiceBusNamespaceAuthorizationRulesDeployment 'AuthorizationRules@2017-04-01' = [for policy in serviceBusPolicies: if (!empty(policy)) {
+  resource azServiceBusNamespaceAuthorizationRulesDeployment 'AuthorizationRules@2021-11-01' = [for policy in serviceBusPolicies: if (!empty(policy)) {
     name: !empty(serviceBusPolicies) ? policy.name : 'no-sb-policies-to-deploy'
     properties: {
       rights: policy.permissions
@@ -73,8 +73,8 @@ module azServiceBusNamespaceQueuesDeployment 'az.service.bus.namespace.queue.bic
     environment: environment
     serviceBusName: serviceBusName
     serviceBusQueueName: queue.serviceBusQueueName
-    serviceBusQueuePolicies: queue.serviceBusQueuePolicies
-    serviceBusQueueSettings: queue.serviceBusQueueSettings
+    serviceBusQueuePolicies: contains(queue, 'serviceBusQueuePolicies') ? queue.serviceBusQueuePolicies : []
+    serviceBusQueueSettings: contains(queue, 'serviceBusQueueSettings') ? queue.serviceBusQueueSettings : {}
   }
 }]
 
@@ -87,8 +87,8 @@ module azServiceBusTopicsNamespaceDeployment 'az.service.bus.namespace.topic.bic
     environment: environment
     serviceBusName: serviceBusName
     serviceBusTopicName: topic.serviceBusTopicName
-    serviceBusTopicSubscriptions: topic.serviceBusTopicSubscriptions
-    serviceBusTopicPolicies: topic.serviceBusTopicPolicies
-    serviceBusTopicSettings: topic.serviceBusTopicSettings
+    serviceBusTopicSubscriptions: contains(topic, 'serviceBusTopicSubscriptions') ? topic.serviceBusTopicSubscriptions : []
+    serviceBusTopicPolicies: contains(topic, 'serviceBusTopicPolicies') ? topic.serviceBusTopicPolicies : []
+    serviceBusTopicSettings: contains(topic, 'serviceBusTopicSettings') ? topic.serviceBusTopicSettings : {}
   }
 }]
