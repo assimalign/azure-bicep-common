@@ -49,7 +49,7 @@ resource azEventGridDomainDeployment 'Microsoft.EventGrid/domains@2021-12-01' = 
 
 // 2. Deploy Event Grid Topic & Topic Subscriptions
 module azEventGridDomainTopicsDeployment 'az.event.grid.domain.topic.bicep' = [for (topic, index) in eventGridDomainTopics: if (!empty(topic)) {
-  name: !empty(eventGridDomainTopics) ? toLower('az-egd-topic-${guid('${azEventGridDomainDeployment.id}/${topic.name}')}') : 'no-egd-topics-to-deploy'
+  name: !empty(eventGridDomainTopics) ? toLower('az-egd-topic-${guid('${azEventGridDomainDeployment.id}/${topic.eventGridDomainTopicName}')}') : 'no-egd-topics-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -62,7 +62,7 @@ module azEventGridDomainTopicsDeployment 'az.event.grid.domain.topic.bicep' = [f
 
 // 3. Deploy Event Grid Domain Subscriptions
 module azEventGridDomainSubscriptionsDeployment 'az.event.grid.domain.subscription.bicep' = [for (subscription, index) in eventGridDomainSubscriptions: if (!empty(subscription)) {
-  name: !empty(eventGridDomainSubscriptions) ? toLower('az-egd-subs-${guid('${azEventGridDomainDeployment.id}/${subscription.name}')}') : 'no-eg-subs-to-deploy'
+  name: !empty(eventGridDomainSubscriptions) ? toLower('az-egd-subs-${guid('${azEventGridDomainDeployment.id}/${subscription.eventGridDomainSubscriptionName}')}') : 'no-eg-subs-to-deploy'
   scope: resourceGroup()
   params: {
     region: region

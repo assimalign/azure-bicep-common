@@ -72,7 +72,7 @@ resource azEventHubNamespaceDeployment 'Microsoft.EventHub/namespaces@2021-01-01
 
 // 2 Deploy individual Event Hubs under the Event Hub Namespace
 module azEventHubsDeployment 'az.event.hub.namespace.hub.bicep' = [for (hub, index) in eventHubNamespaceHubs: if (!empty(hub)) {
-  name: !empty(eventHubNamespaceHubs) ? toLower('az-ehn-hub-${guid('${azEventHubNamespaceDeployment.id}/${hub.name}')}') : 'no-eh-to-deploy'
+  name: !empty(eventHubNamespaceHubs) ? toLower('az-ehn-hub-${guid('${azEventHubNamespaceDeployment.id}/${hub.eventHubNamespaceHubName}')}') : 'no-eh-to-deploy'
   scope: resourceGroup()
   params: {
     region: region

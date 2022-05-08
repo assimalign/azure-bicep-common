@@ -65,7 +65,7 @@
                 "serviceBusName": "test-sb-assim-@environment-@region",
                 "serviceBusLocation": "eastus",
                 "serviceBusSku": {
-                    "dev": "Basic",
+                    "dev": "Standard",
                     "qa": "Basic",
                     "uat": "Standard",
                     "prd": "Premium"
