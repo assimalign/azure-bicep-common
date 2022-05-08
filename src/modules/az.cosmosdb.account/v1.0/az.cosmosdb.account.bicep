@@ -88,7 +88,7 @@ module azCosmosDbAccountDocumentDatabaseDeployment 'az.cosmosdb.account.document
     environment: environment
     cosmosDbAccountName: cosmosDbAccountName
     cosmosDbAccountDatabaseName: database.cosmosDatabaseName
-    cosmosDbAccountDatabaseContainers: database.cosmosDatabaseContainers
+    cosmosDbAccountDatabaseContainers: contains(database, 'cosmosDatabaseContainers') ? database.cosmosDatabaseContainers : []
   }
 }]
 
@@ -101,7 +101,7 @@ module azCosmosDbAccountGraphDatabaseDeployment 'az.cosmosdb.account.graph.datab
     environment: environment
     cosmosDbAccountName: cosmosDbAccountName
     cosmosDbAccountDatabaseName: database.cosmosDatabaseName
-    cosmosDbAccountDatabaseContainers: database.cosmosDatabaseContainers
+    cosmosDbAccountDatabaseContainers: contains(database, 'cosmosDatabaseContainers') ? database.cosmosDatabaseContainers : []
   }
 }]
 
@@ -128,4 +128,4 @@ module azCosmosDbAccountPrivateEndpointDeployment '../../az.private.endpoint/v1.
 }
 
 // 5. Return Deployment Output
-output resource object = azCosmosDbAccountDeployment
+output cosmosAccount object = azCosmosDbAccountDeployment

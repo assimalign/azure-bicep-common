@@ -48,4 +48,4 @@ module azDocumentDbAccountDatabaseContainerDeployment 'az.cosmosdb.account.graph
 }]
 
 // 3. Return Deployment Output
-output resource object = azCosmosAccountGraphDatabaseDeployment
+output cosmosGraphDB object = azCosmosAccountGraphDatabaseDeployment

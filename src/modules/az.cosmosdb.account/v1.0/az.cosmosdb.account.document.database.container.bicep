@@ -56,4 +56,4 @@ resource azDocumentDbAccountDatabaseDeployment 'Microsoft.DocumentDB/databaseAcc
 }
 
 // 2. Return Deployment Output
-output resource object = azDocumentDbAccountDatabaseDeployment
+output cosmosDocumentDBContainer object = azDocumentDbAccountDatabaseDeployment
