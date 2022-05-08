@@ -39,7 +39,7 @@
                 ]
             }
         },
-        "cosmosAccountsDocumentDatabase":{
+        "cosmosAccountsDocumentDatabase": {
             "value": {
                 "cosmosDatabaseName": "TestDb3",
                 "cosmosAccountName": "test-cosmosdb-@environment-@region",
@@ -61,7 +61,7 @@
             }
         },
         "serviceBusNamespace": {
-            "value": { 
+            "value": {
                 "serviceBusName": "test-sb-assim-@environment-@region",
                 "serviceBusLocation": "eastus",
                 "serviceBusSku": {
@@ -69,7 +69,29 @@
                     "qa": "Basic",
                     "uat": "Standard",
                     "prd": "Premium"
-                }
+                },
+                "serviceBusTopics": [
+                    {
+                        "serviceBusTopicName": "test-topic-01"
+                    }
+                ],
+                "serviceBusQueues": [
+                    {
+                        "serviceBusQueueName": "test-queue-01"
+                    }
+                ]
+            }
+        },
+        "serviceBusNamespaceQueue": {
+            "value": {
+                "serviceBusName": "test-sb-assim-@environment-@region",
+                "serviceBusQueueName": "test-queue-02"
+            }
+        },
+        "serviceBusNamespaceTopic": {
+            "value": {
+                "serviceBusName": "test-sb-assim-@environment-@region",
+                "serviceBusTopicName": "test-topic-02"
             }
         },
         "eventGridDomain": {

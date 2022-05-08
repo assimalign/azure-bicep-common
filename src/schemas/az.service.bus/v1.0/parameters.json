@@ -171,11 +171,7 @@
                                     }
                                 },
                                 "required": [
-                                    "serviceBusQueueName",
-                                    "serviceBusQueueSettings",
-                                    "serviceBusQueuePolicies",
-                                    "serviceBusName",
-                                    "serviceBusResourceGroup"
+                                    "serviceBusName"
                                 ]
                             }
                         ]
@@ -209,11 +205,7 @@
                                 }
                             },
                             "required": [
-                                "serviceBusQueueName",
-                                "serviceBusQueueSettings",
-                                "serviceBusQueuePolicies",
-                                "serviceBusName",
-                                "serviceBusResourceGroup"
+                                "serviceBusName"
                             ]
                         }
                     ]
@@ -240,9 +232,7 @@
                 }
             },
             "required": [
-                "serviceBusQueueName",
-                "serviceBusQueueSettings",
-                "serviceBusQueuePolicies"
+                "serviceBusQueueName"
             ]
         },
         "service-bus-namespace-topics": {
@@ -267,8 +257,7 @@
                                     }
                                 },
                                 "required": [
-                                    "serviceBusName",
-                                    "serviceBusResourceGroup"
+                                    "serviceBusName"
                                 ]
                             }
                         ]
@@ -300,8 +289,7 @@
                                 }
                             },
                             "required": [
-                                "serviceBusName",
-                                "serviceBusResourceGroup"
+                                "serviceBusName"
                             ]
                         }
                     ]

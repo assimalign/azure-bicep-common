@@ -56,7 +56,7 @@ module azEventGridDomainTopicsDeployment 'az.event.grid.domain.topic.bicep' = [f
     environment: environment
     eventGridDomainName: eventGridDomainName
     eventGridDomainTopicName: topic.eventGridDomainTopicName
-    eventGridDomainTopicSubscriptions: topic.eventGridDomainTopicSubscriptions
+    eventGridDomainTopicSubscriptions: contains(topic, 'eventGridDomainTopicSubscriptions') ? topic.eventGridDomainTopicSubscriptions : []
   }
 }]
 
