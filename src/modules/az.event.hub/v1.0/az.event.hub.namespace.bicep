@@ -35,7 +35,7 @@ param eventHubNamespacePolicies array = []
 
 // 1. Deploy Event Hub Namespace
 resource azEventHubNamespaceDeployment 'Microsoft.EventHub/namespaces@2021-01-01-preview' = {
-  name: replace(replace('${eventHubNamespaceName}', '@environment', environment), '@region', region)
+  name: replace(replace(eventHubNamespaceName, '@environment', environment), '@region', region)
   location: eventHubNamespaceLocation
   identity: {
     type: eventHubNamespaceEnableMsi == true && !empty(eventHubNamespaceSku) ? 'SystemAssigned' : 'None'
@@ -84,3 +84,6 @@ module azEventHubsDeployment 'az.event.hub.namespace.hub.bicep' = [for (hub, ind
     eventHubNamespaceHubPolicies: hub.eventHubNamespaceHubPolicies
   }
 }]
+
+
+output resource object = azEventHubNamespaceDeployment

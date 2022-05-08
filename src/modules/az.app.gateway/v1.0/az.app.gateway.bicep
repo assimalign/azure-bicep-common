@@ -180,3 +180,6 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2020-11-01' =
     requestRoutingRules: routingRules
   }
 }
+
+
+output resource object = applicationGateway

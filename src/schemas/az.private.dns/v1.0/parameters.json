@@ -1,6 +1,31 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "definitions": {
+        "private-dns-zone": {
+            "type": "object",
+            "description": "An array of Virtual Networks to Peer to each other within the same Resource Group.",
+            "properties": {
+                "value": {
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/private-dns-zone-parameters"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "privateDnsZoneResourceGroup": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
         "private-dns-zones": {
             "type": "object",
             "description": "An array of Virtual Networks to Peer to each other within the same Resource Group.",
@@ -9,86 +34,18 @@
                     "type": "array",
                     "items": {
                         "type": "object",
-                        "properties": {
-                            "privateDnsZoneName": {
-                                "type": "string",
-                                "description": "The name of the Private DNS Zone."
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/private-dns-zone-parameters"
                             },
-                            "privateDnsZoneNetworkLinks": {
-                                "type": "array",
-                                "items": {
-                                    "properties": {
-                                        "virtualLinkName": {
-                                            "type": "string",
-                                            "description": "A descriptive name for the Virtual Network the Private DNS Zone will be linked to."
-                                        },
-                                        "virtualNetwork": {
-                                            "type": "string",
-                                            "description": "The name of the virtual network to link to the Private DNS Zone."
-                                        }
-                                    },
-                                    "required": [
-                                        "virtualLinkName",
-                                        "virtualNetwork"
-                                    ]
-                                },
-                                "minItems": 1
-                            },
-                            "privateDnsZoneARecords": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/private-dns-zone-a-record"
-                                }
-                            },
-                            "privateDnsZoneAaaaRecords": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/private-dns-zone-aaaa-record"
-                                }
-                            },
-                            "privateDnsZoneCnameRecords": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/private-dns-zone-cname-record"
-                                }
-                            },
-                            "privateDnsZonePtrRecords": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/private-dns-zone-ptr-record"
-                                }
-                            },
-                            "privateDnsZoneTxtRecords": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/private-dns-zone-txt-record"
-                                }
-                            },
-                            "privateDnsZoneMxRecords": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/private-dns-zone-mx-record"
-                                }
-                            },
-                            "privateDnsZoneSrvRecords": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/private-dns-zone-srv-record"
-                                }
-                            },
-                            "privateDnsZoneTags": {
+                            {
                                 "type": "object",
-                                "patternProperties": {
-                                    "^[a-z]": {
+                                "properties": {
+                                    "privateDnsZoneResourceGroup": {
                                         "type": "string"
                                     }
-                                },
-                                "minProperties": 1
+                                }
                             }
-                        },
-                        "required": [
-                            "privateDnsZoneName",
-                            "privateDnsZoneNetworkLinks"
                         ]
                     },
                     "minItems": 1
@@ -96,6 +53,90 @@
             },
             "required": [
                 "value"
+            ]
+        },
+        "private-dns-zone-parameters": {
+            "type": "object",
+            "properties": {
+                "privateDnsZoneName": {
+                    "type": "string",
+                    "description": "The name of the Private DNS Zone."
+                },
+                "privateDnsZoneNetworkLinks": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "virtualLinkName": {
+                                "type": "string",
+                                "description": "A descriptive name for the Virtual Network the Private DNS Zone will be linked to."
+                            },
+                            "virtualNetwork": {
+                                "type": "string",
+                                "description": "The name of the virtual network to link to the Private DNS Zone."
+                            }
+                        },
+                        "required": [
+                            "virtualLinkName",
+                            "virtualNetwork"
+                        ]
+                    },
+                    "minItems": 1
+                },
+                "privateDnsZoneARecords": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/private-dns-zone-a-record"
+                    }
+                },
+                "privateDnsZoneAaaaRecords": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/private-dns-zone-aaaa-record"
+                    }
+                },
+                "privateDnsZoneCnameRecords": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/private-dns-zone-cname-record"
+                    }
+                },
+                "privateDnsZonePtrRecords": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/private-dns-zone-ptr-record"
+                    }
+                },
+                "privateDnsZoneTxtRecords": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/private-dns-zone-txt-record"
+                    }
+                },
+                "privateDnsZoneMxRecords": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/private-dns-zone-mx-record"
+                    }
+                },
+                "privateDnsZoneSrvRecords": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/private-dns-zone-srv-record"
+                    }
+                },
+                "privateDnsZoneTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "privateDnsZoneName",
+                "privateDnsZoneNetworkLinks"
             ]
         },
         "private-dns-zone-a-records": {
@@ -415,10 +456,10 @@
                                 "type": "string"
                             },
                             "dnsZoneName": {
-                                "type":"string"
+                                "type": "string"
                             },
                             "ttl": {
-                                "type":"number",
+                                "type": "number",
                                 "description": "TTL (Time to Live)",
                                 "default": 3600
                             },
@@ -458,7 +499,7 @@
                     "type": "string"
                 },
                 "ttl": {
-                    "type":"number",
+                    "type": "number",
                     "description": "TTL (Time to Live)",
                     "default": 3600
                 },
@@ -598,7 +639,7 @@
                                 "type": "string"
                             },
                             "ttl": {
-                                "type":"number",
+                                "type": "number",
                                 "description": "TTL (Time to Live)",
                                 "default": 3600
                             },
@@ -642,7 +683,7 @@
                     "type": "string"
                 },
                 "ttl": {
-                    "type":"number",
+                    "type": "number",
                     "description": "TTL (Time to Live)",
                     "default": 3600
                 },

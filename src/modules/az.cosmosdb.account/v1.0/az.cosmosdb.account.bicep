@@ -54,7 +54,7 @@ param cosmosDbAccountTags object = {}
 
 // 1. Deploy the Document Db Account
 resource azCosmosDbAccountDeployment 'Microsoft.DocumentDB/databaseAccounts@2021-10-15' = {
-  name: replace(replace('${cosmosDbAccountName}', '@environment', environment), '@region', region)
+  name: replace(replace(cosmosDbAccountName, '@environment', environment), '@region', region)
   kind: 'GlobalDocumentDB'
   location: first(cosmosDbAccountLocations).locationName
   identity: {

@@ -42,14 +42,14 @@ param appServicePlanAseResourceGroup string = resourceGroup().name
 // **************************************************************************************** //
 
 // 1. Get Existing ASE Environment if applicable
-resource azAppServicePlanAseResource 'Microsoft.Web/hostingEnvironments@2021-01-01' existing = if (!empty(appServicePlanAseName)) {
+resource azAppServicePlanAseResource 'Microsoft.Web/hostingEnvironments@2021-03-01' existing = if (!empty(appServicePlanAseName)) {
   name: replace(replace(appServicePlanAseName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(appServicePlanAseResourceGroup, '@environment', environment), '@region', region))
 }
 
 // 2. Creates an app service plan under an ASE if applicable
-resource azAppServicePlanDeployment 'Microsoft.Web/serverfarms@2021-01-01' = {
-  name: replace(replace('${appServicePlanName}', '@environment', environment), '@region', region)
+resource azAppServicePlanDeployment 'Microsoft.Web/serverfarms@2021-03-01' = {
+  name: replace(replace(appServicePlanName, '@environment', environment), '@region', region)
   location: appServicePlanLocation
   properties: {
     hostingEnvironmentProfile: any(!empty(appServicePlanAseName) ? {

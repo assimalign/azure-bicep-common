@@ -107,26 +107,106 @@
                 "appServiceSiteConfigs": {
                     "type": "object",
                     "properties": {
-                        "siteHttpsOnly": {
+                        "httpsOnly": {
                             "type": "boolean",
                             "default": true
                         },
-                        "siteAlwaysOn": {
+                        "alwaysOn": {
                             "type": "boolean"
+                        },
+                        "webSettings": {
+                            "type": "object",
+                            "properties": {
+                                "dotnetVersion": {
+                                    "enum": [
+                                        "v6.0",
+                                        "v3.1"
+                                    ]
+                                },
+                                "phpVersion": {
+                                    "enum": [
+                                        ""
+                                    ]
+                                },
+                                "pythonVersion": {
+                                    "enum": [
+                                        ""
+                                    ]
+                                },
+                                "nodeVersion": {
+                                    "enum": [
+                                        ""
+                                    ]
+                                },
+                                "powerShellVersion": {
+                                    "enum": [
+                                        ""
+                                    ]
+                                },
+                                "apimGateway": {
+                                    "type": "object",
+                                    "description": "Link an APIM Gateway to the Web App Deployment",
+                                    "properties": {
+                                        "apimApiName": {
+                                            "type": "string"
+                                        },
+                                        "apimName": {
+                                            "type": "string"
+                                        },
+                                        "apimResourceGroupName": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "apimApiName",
+                                        "apimName",
+                                        "apimResourceGroupName"
+                                    ]
+                                }
+                            }
                         },
                         "siteSettings": {
                             "type": "array",
                             "description": "The site settings for the app service",
                             "items": {
-                                "type": "object",
-                                "properties": {
-                                    "name": {
-                                        "type": "string"
+                                "anyOf": [
+                                    {
+                                        "type": "object",
+                                        "enum": [
+                                            {
+                                                "name": "FUNCTIONS_EXTENSION_VERSION",
+                                                "value": "~4"
+                                            },
+                                            {
+                                                "name": "FUNCTIONS_EXTENSION_VERSION",
+                                                "value": "~3"
+                                            },
+                                            {
+                                                "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                                                "value": "~16"
+                                            },
+                                            {
+                                                "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                                                "value": "~14"
+                                            },
+                                            {
+                                                "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                                                "value": "~12"
+                                            }
+                                        ]
                                     },
-                                    "value": {
-                                        "type": "string"
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "value": {
+                                                "type": "string"
+                                            }
+                                        }
                                     }
-                                },
+                                ],
                                 "required": [
                                     "name",
                                     "value"
@@ -135,25 +215,6 @@
                         },
                         "siteAuthSettings": {
                             "$ref": "#/definitions/app-services-auth-settings"
-                        },
-                        "siteApimSettings": {
-                            "type": "object",
-                            "properties": {
-                                "apimApiName": {
-                                    "type": "string"
-                                },
-                                "apimName": {
-                                    "type": "string"
-                                },
-                                "apimResourceGroupName": {
-                                    "type": "string"
-                                }
-                            },
-                            "required": [
-                                "apimApiName",
-                                "apimName",
-                                "apimResourceGroupName"
-                            ]
                         }
                     },
                     "required": [

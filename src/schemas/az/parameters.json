@@ -95,13 +95,13 @@
                         }
                     ]
                 },
-                "cosmosAccountsDatabaseTables": {
-                    "oneOf": [
-                        {
-                            "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts-database-tables"
-                        }
-                    ]
-                },
+                // "cosmosAccountsDatabaseTables": {
+                //     "oneOf": [
+                //         {
+                //             "$ref": "../az.cosmosdb.account/v1.0/parameters.json#/definitions/cosmos-accounts-database-tables"
+                //         }
+                //     ]
+                // },
                 "sqlServerAccount": {
                     "oneOf": [
                         {
@@ -130,9 +130,6 @@
                         }
                     ]
                 },
-                // "sqlServerDatabases": {
-                //     "$ref": "./az.sql.server.account.database.schema.json#definitions/sqlServerDatabases"
-                // },
                 "storageAccount": {
                     "oneOf": [
                         {
@@ -378,6 +375,13 @@
                         }
                     ]
                 },
+                "staticSite": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.static.site/v1.0/parameters.json#/definitions/static-site"
+                        }
+                    ]
+                },
                 "staticSites": {
                     "oneOf": [
                         {
@@ -399,6 +403,13 @@
                         }
                     ]
                 },
+                "virtualNetwork": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.virtual.network/v1.0/parameters.json#/definitions/virtual-network"
+                        }
+                    ]
+                },
                 "virtualNetworks": {
                     "oneOf": [
                         {
@@ -409,7 +420,14 @@
                 "virtualNetworksPeering": {
                     "oneOf": [
                         {
-                            "$ref": "../az.virtual.network/v1.0/parameters.json#/definitions/virtual-networks-peering"
+                            "$ref": "../az.virtual.network/v1.0/parameters.json#/definitions/virtual-network-peering"
+                        }
+                    ]
+                },
+                "virtualNetworksPeerings": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.virtual.network/v1.0/parameters.json#/definitions/virtual-network-peerings"
                         }
                     ]
                 },
@@ -431,6 +449,13 @@
                     "oneOf": [
                         {
                             "$ref": "../az.public.ip/v1.0/parameters.json#/definitions/public-ip-addresses"
+                        }
+                    ]
+                },
+                "privateDnsZone": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.private.dns/v1.0/parameters.json#/definitions/private-dns-zone"
                         }
                     ]
                 },
@@ -669,6 +694,20 @@
                     "oneOf": [
                         {
                             "$ref": "../az.key.vault/v1.0/parameters.json#/definitions/key-vaults"
+                        }
+                    ]
+                },
+                "dataFactory": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.data.factory/v1.0/parameters.json#/definitions/data-factory"
+                        }
+                    ]
+                },
+                "dataFactories": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.data.factory/v1.0/parameters.json#/definitions/data-factories"
                         }
                     ]
                 }

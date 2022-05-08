@@ -77,25 +77,25 @@ var siteSettings = [for setting in appServiceSlotSiteConfigs.siteSettings: {
 
 // 1. Get the existing App Service Plan to attach to the 
 // Note: All web service (Function & Web Apps) have App Service Plans even if it is consumption Y1 Plans
-resource azAppServicePlanResource 'Microsoft.Web/serverfarms@2021-01-01' existing = {
+resource azAppServicePlanResource 'Microsoft.Web/serverfarms@2021-03-01' existing = {
   name: replace(replace(appServiceSlotPlanName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(appServiceSlotPlanResourceGroup, '@environment', environment), '@region', region))
 }
 
 // 2. Get existing app storage account resource
-resource azAppServiceStorageResource 'Microsoft.Storage/storageAccounts@2021-04-01' existing = {
+resource azAppServiceStorageResource 'Microsoft.Storage/storageAccounts@2021-09-01' existing = {
   name: replace(replace(appServiceSlotStorageAccountName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(appServiceSlotStorageAccountResourceGroup, '@environment', environment), '@region', region))
 }
 
 // 3. Get existing app insights 
-resource azAppServiceInsightsResource 'Microsoft.Insights/components@2020-02-02-preview' existing = {
+resource azAppServiceInsightsResource 'Microsoft.Insights/components@2020-02-02' existing = {
   name: replace(replace(appServiceSlotInsightsName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(appServiceSlotInsightsResourceGroup, '@environment', environment), '@region', region))
 }
 
 // 4.1 Deploy Function App, if applicable
-resource azAppServiceFunctionSlotDeployment 'Microsoft.Web/sites/slots@2021-01-01' = if (appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux') {
+resource azAppServiceFunctionSlotDeployment 'Microsoft.Web/sites/slots@2021-03-01' = if (appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux') {
   name: appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux' ? replace(replace('${appServiceName}/${appServiceSlotName}', '@environment', environment), '@region', region) : 'no-function-app-slot-to-deploy'
   location: appServiceSlotLocation
   kind: appServiceSlotType
@@ -104,10 +104,10 @@ resource azAppServiceFunctionSlotDeployment 'Microsoft.Web/sites/slots@2021-01-0
   }
   properties: {
     serverFarmId: azAppServicePlanResource.id
-    httpsOnly: contains(appServiceSlotSiteConfigs, 'siteHttpsOnly') ? appServiceSlotSiteConfigs.siteHttpsOnly : false
+    httpsOnly: contains(appServiceSlotSiteConfigs, 'httpsOnly') ? appServiceSlotSiteConfigs.httpsOnly : false
     clientAffinityEnabled: false
     siteConfig: {
-      alwaysOn: contains(appServiceSlotSiteConfigs, 'siteAlwaysOn') ? appServiceSlotSiteConfigs.siteAlwaysOn : false
+      alwaysOn: contains(appServiceSlotSiteConfigs, 'alwaysOn') ? appServiceSlotSiteConfigs.alwaysOn : false
       appSettings: union([
         {
           name: 'AzureWebJobsStorage'
@@ -129,6 +129,20 @@ resource azAppServiceFunctionSlotDeployment 'Microsoft.Web/sites/slots@2021-01-0
     }
   }
   tags: appServiceSlotTags
+
+  resource azAppServiceLinkApim 'config' = if (contains(appServiceSlotSiteConfigs, 'webSettings')) {
+    name: 'web'
+    properties: {
+      phpVersion: contains(appServiceSlotSiteConfigs.webSettings, 'phpVersion') ? appServiceSlotSiteConfigs.webSettings.phpVersion : json('null')
+      nodeVersion: contains(appServiceSlotSiteConfigs.webSettings, 'nodeVersion') ? appServiceSlotSiteConfigs.webSettings.nodeVersion : json('null')
+      javaVersion: contains(appServiceSlotSiteConfigs.webSettings, 'javaVersion') ? appServiceSlotSiteConfigs.webSettings.javaVersion : json('null')
+      pythonVersion: contains(appServiceSlotSiteConfigs.webSettings, 'pythonVersion') ? appServiceSlotSiteConfigs.webSettings.pythonVersion : json('null')
+      netFrameworkVersion: contains(appServiceSlotSiteConfigs.webSettings, 'dotnetVersion') ? appServiceSlotSiteConfigs.webSettings.dotnetVersion : json('null')
+      apiManagementConfig: any(contains(appServiceSlotSiteConfigs.webSettings, 'apimGateway') ? {
+        id: replace(replace(resourceId(appServiceSlotSiteConfigs.webSettings.apimGateway.apimResourceGroupName, 'MMicrosoft.ApiManagement/apis', appServiceSlotSiteConfigs.webSettings.apimGateway.apimName, appServiceSlotSiteConfigs.webSettings.apimGateway.apimApiName), '@environment', environment), '@region', region)
+      } : {})
+    }
+  }
 }
 
 // 4.2 Deploy Web App, if applicable
@@ -140,9 +154,9 @@ resource azAppServiceWebSlotDeployment 'Microsoft.Web/sites/slots@2021-01-01' = 
   }
   properties: {
     serverFarmId: azAppServicePlanResource.id
-    httpsOnly: contains(appServiceSlotSiteConfigs, 'siteHttpsOnly') ? appServiceSlotSiteConfigs.siteHttpsOnly : false
+    httpsOnly: contains(appServiceSlotSiteConfigs, 'httpsOnly') ? appServiceSlotSiteConfigs.httpsOnly : false
     siteConfig: {
-      alwaysOn: contains(appServiceSlotSiteConfigs, 'siteAlwaysOn') ? appServiceSlotSiteConfigs.siteAlwaysOn : false
+      alwaysOn: contains(appServiceSlotSiteConfigs, 'alwaysOn') ? appServiceSlotSiteConfigs.alwaysOn : false
       appSettings: union([
         {
           name: 'AzureWebJobsStorage'
@@ -168,6 +182,20 @@ resource azAppServiceWebSlotDeployment 'Microsoft.Web/sites/slots@2021-01-01' = 
     }
   }
   tags: appServiceSlotTags
+
+  resource azAppServiceLinkApim 'config' = if (contains(appServiceSlotSiteConfigs, 'webSettings')) {
+    name: 'web'
+    properties: {
+      phpVersion: contains(appServiceSlotSiteConfigs.webSettings, 'phpVersion') ? appServiceSlotSiteConfigs.webSettings.phpVersion : json('null')
+      nodeVersion: contains(appServiceSlotSiteConfigs.webSettings, 'nodeVersion') ? appServiceSlotSiteConfigs.webSettings.nodeVersion : json('null')
+      javaVersion: contains(appServiceSlotSiteConfigs.webSettings, 'javaVersion') ? appServiceSlotSiteConfigs.webSettings.javaVersion : json('null')
+      pythonVersion: contains(appServiceSlotSiteConfigs.webSettings, 'pythonVersion') ? appServiceSlotSiteConfigs.webSettings.pythonVersion : json('null')
+      netFrameworkVersion: contains(appServiceSlotSiteConfigs.webSettings, 'dotnetVersion') ? appServiceSlotSiteConfigs.webSettings.dotnetVersion : json('null')
+      apiManagementConfig: any(contains(appServiceSlotSiteConfigs.webSettings, 'apimGateway') ? {
+        id: replace(replace(resourceId(appServiceSlotSiteConfigs.webSettings.apimGateway.apimResourceGroupName, 'MMicrosoft.ApiManagement/apis', appServiceSlotSiteConfigs.webSettings.apimGateway.apimName, appServiceSlotSiteConfigs.webSettings.apimGateway.apimApiName), '@environment', environment), '@region', region)
+      } : {})
+    }
+  }
 }
 
 // 5. Configure Custom Function Settings (Will use this to disable functions in slots such as: Service Bus Listeners, Timers, etc.,)

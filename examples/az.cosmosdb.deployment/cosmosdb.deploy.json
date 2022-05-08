@@ -18,6 +18,26 @@
                 ]
             }
         },
+        "appService":{
+            "value": {
+                "appServiceName": "",
+                ""
+                "appServiceSiteConfigs": {
+                    "webSettings": {
+                        
+                    },
+                    "alwaysOn": true,
+                    
+                    "siteSettings": [
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~3"
+                        }
+                    ]
+                }
+            }
+        }
+        
         "cosmosAccounts": {
             "value": [
                 {
