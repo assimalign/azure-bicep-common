@@ -34,24 +34,25 @@ param cognitiveSearchHostingMode string = 'default'
 @description('Specifies whether public network access should be enabled or diabled. False is the default.')
 param cognitiveSearchDisablePublicAccess bool = true
 
+var sku = any((environment == 'dev') ? {
+  name: cognitiveSearchSku.dev
+} : any((environment == 'qa') ? {
+  name: cognitiveSearchSku.qa
+} : any((environment == 'uat') ? {
+  name: cognitiveSearchSku.uat
+} : any((environment == 'prd') ? {
+  name: cognitiveSearchSku.prd
+} : {
+  name: 'Free'
+}))))
 
 resource azCognitiveSearchDeployment 'Microsoft.Search/searchServices@2020-08-01' = {
   name: replace(replace(cognitiveSearchName, '@environment', environment), '@region', region)
   location: cognitiveSearchLocation
-  sku: any((environment == 'dev') ? {
-    name: cognitiveSearchSku.dev
-  } : any((environment == 'qa') ? {
-    name: cognitiveSearchSku.qa
-  } : any((environment == 'uat') ? {
-    name: cognitiveSearchSku.uat
-  } : any((environment == 'prd') ? {
-    name: cognitiveSearchSku.prd
-  } : {
-    name: 'Free'
-  }))))
+  sku: sku
   properties: {
     hostingMode: cognitiveSearchHostingMode
-    publicNetworkAccess: cognitiveSearchDisablePublicAccess ? 'disabled': 'enabled'
+    publicNetworkAccess: cognitiveSearchDisablePublicAccess && sku.name != 'free' ? 'disabled' : 'enabled'
   }
 }
 
