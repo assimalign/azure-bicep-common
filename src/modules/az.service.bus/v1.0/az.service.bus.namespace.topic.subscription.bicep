@@ -22,10 +22,20 @@ param serviceBusTopicSubscriptionName string
 @description('')
 param serviceBusTopicSubscriptionSettings object = {}
 
+@description('')
+param serviceBusTopicSubscriptionCorrelationFilters array = []
+
 resource azServiceBusTopicSubscriptionsDeployment 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2021-11-01' = {
   name: replace(replace('${serviceBusName}/${serviceBusTopicName}/${serviceBusTopicSubscriptionName}', '@environment', environment), '@region', region)
   properties: {
     requiresSession: contains(serviceBusTopicSubscriptionSettings, 'enableSession') ? serviceBusTopicSubscriptionSettings.enableSession : false
     maxDeliveryCount: contains(serviceBusTopicSubscriptionSettings, 'maxDelivery') ? serviceBusTopicSubscriptionSettings.maxDelivery : 15
   }
+  resource azServiceBusTopicSubscriptionFiltersDeployment 'rules@2021-11-01' = [for correlationFilter in serviceBusTopicSubscriptionCorrelationFilters: if (!empty(serviceBusTopicSubscriptionCorrelationFilters)) {
+    name: correlationFilter.filterGroupName
+    properties: {
+      correlationFilter: correlationFilter.filters
+      filterType: 'CorrelationFilter'
+    }
+  }]
 }
