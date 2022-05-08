@@ -1,0 +1,21 @@
+trigger:
+- master
+- users/*
+- development
+
+pool:
+  vmImage: windows-latest
+
+variables:
+  deployVariablePath: 'tests\az.bicep.tests\az.bicep.tests.json'
+  deployBicepPath: 'tests\az.bicep.tests\az.bicep.tests.bicep'
+
+steps:
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'Assimalign LLC (DEV) SA'
+    scriptType: 'pscore'
+    scriptLocation: 'inlineScript'
+    inlineScript: 'az deployment sub create --location eastus --name asal-test-bicep-release --template-file $(deployBicepPath) --parameters $(deployVariablePath) environment=$(env.alias) location=dev --verbose'
+    powerShellErrorActionPreference: 'continue'
+    
