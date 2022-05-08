@@ -24,7 +24,7 @@ param appSlotFunctionIsDiabled bool = false
 
 
 resource azAppServiceFunctionAppSlotFunction 'Microsoft.Web/sites/slots/functions@2021-01-15' = {
-  name: replace(replace('${appName}/${appSlotName}/${appSlotFunctionName}','@environment', environment), '@location', region)
+  name: replace(replace('${appName}/${appSlotName}/${appSlotFunctionName}','@environment', environment), '@region', region)
   properties: {
      isDisabled: appSlotFunctionIsDiabled
   }

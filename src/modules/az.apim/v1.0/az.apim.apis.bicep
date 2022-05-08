@@ -8,7 +8,7 @@
 param environment string
 
 @description('The location prefix or suffix for the resource name')
-param location string = ''
+param region string = ''
 
 @description('The name of the API Management resource')
 param apimName string
@@ -40,15 +40,15 @@ param apimApiOperations array = []
 
 
 resource azApimApiDeployment 'Microsoft.ApiManagement/service/apis@2020-12-01' = {
-  name: replace(replace('${apimName}/${apimApiName}', '@environment', environment), '@location', location)
+  name: replace(replace('${apimName}/${apimApiName}', '@environment', environment), '@region', region)
   properties: {
-    path: replace(replace(apimApiPath, '@environment', environment), '@location', location)
+    path: replace(replace(apimApiPath, '@environment', environment), '@region', region)
     protocols: apimApiProtocols
     isCurrent: true
     subscriptionRequired: apimApiSubscriptionRequired
     apiType: 'http'
     description: apimApiDescription
-    displayName: replace(replace(apimApiName, '@environment', environment), '@location', location)     
+    displayName: replace(replace(apimApiName, '@environment', environment), '@region', region)     
   }
 }
 
@@ -56,7 +56,7 @@ resource azApimApiPoliciesDeployment 'Microsoft.ApiManagement/service/apis/polic
  name: 'policy'
  parent: azApimApiDeployment
  properties: {
-   value: replace(replace(apimApiPolicies, '@environment', environment), '@location', location)
+   value: replace(replace(apimApiPolicies, '@environment', environment), '@region', region)
     format: 'xml'
  }
 }
@@ -65,7 +65,7 @@ module azApimApiOperationDeployment 'az.apim.apis.operation.bicep' = [for operat
   name: !empty(apimApiOperations) ? 'az-apim-operation-${guid(operation.apimApiOperationName)}' : 'no-apim-api-operation-to-deploy'
   scope: resourceGroup()
   params: {
-    location: location
+    location: region
     environment: environment
     apimName: apimName
     apimApiName: apimApiName

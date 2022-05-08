@@ -73,7 +73,12 @@
                 
                 "serviceBusTopics": [
                     {
-                        "serviceBusTopicName": "test-topic-01"
+                        "serviceBusTopicName": "test-topic-01",
+                        "serviceBusTopicSubscriptions": [
+                            {
+                                "serviceBusTopicSubscriptionName": "test-topic-01-subscription"
+                            }
+                        ]
                     }
                 ],
                 "serviceBusQueues": [

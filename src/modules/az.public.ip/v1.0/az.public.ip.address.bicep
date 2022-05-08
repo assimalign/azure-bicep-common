@@ -29,7 +29,7 @@ param publicIpAllocationMethod string = 'Dynamic'
 
 // 1. Deploy Public Ip Address
 resource azPublicIpAddressDeployment 'Microsoft.Network/publicIPAddresses@2019-11-01' = {
-  name: replace(replace('${publicIpName}', '@environment', environment), '@location', region)
+  name: replace(replace('${publicIpName}', '@environment', environment), '@region', region)
   location: publicIpLocation
   properties: {
     publicIPAllocationMethod: publicIpAllocationMethod   
