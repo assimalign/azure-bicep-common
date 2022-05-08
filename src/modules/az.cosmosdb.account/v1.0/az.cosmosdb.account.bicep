@@ -81,7 +81,7 @@ resource azCosmosDbAccountDeployment 'Microsoft.DocumentDB/databaseAccounts@2021
 
 // 2. Deploy Cosmos DB Document Database, if applicable
 module azCosmosDbAccountDocumentDatabaseDeployment 'az.cosmosdb.account.document.database.bicep' = [for database in cosmosDbAccountDatabases: if (!empty(cosmosDbAccountDatabases) && cosmosDbAccountType == 'EnableDocument') {
-  name: !empty(cosmosDbAccountDatabases) ? toLower('az-cosmosdb-database-${guid('${azCosmosDbAccountDeployment.id}/${database.cosmosDatabaseName}')}') : 'no-cosmosdb-document-databases-to-deploy'
+  name: !empty(cosmosDbAccountDatabases) ? toLower('az-cosmosdb-docdb-${guid('${azCosmosDbAccountDeployment.id}/${database.cosmosDatabaseName}')}') : 'no-cosmosdb-document-databases-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -94,7 +94,7 @@ module azCosmosDbAccountDocumentDatabaseDeployment 'az.cosmosdb.account.document
 
 // 3. Deploy Cosmos DB Graph Database, if applicable
 module azCosmosDbAccountGraphDatabaseDeployment 'az.cosmosdb.account.graph.database.bicep' = [for database in cosmosDbAccountDatabases: if (!empty(cosmosDbAccountDatabases) && cosmosDbAccountType == 'EnableGremlin') {
-  name: !empty(cosmosDbAccountDatabases) ? toLower('az-cosmosdb-database-${guid('${azCosmosDbAccountDeployment.id}/${database.cosmosDatabaseName}')}') : 'no-cosmosdb-graph-databases-to-deploy'
+  name: !empty(cosmosDbAccountDatabases) ? toLower('az-cosmosdb-graphdb-${guid('${azCosmosDbAccountDeployment.id}/${database.cosmosDatabaseName}')}') : 'no-cosmosdb-graph-databases-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
