@@ -31,14 +31,14 @@ resource azServiceBusTopicsDeployment 'Microsoft.ServiceBus/namespaces/queues@20
 }
 
 module azServiceBusTopicAuthPolicyDeployment 'az.service.bus.namespace.queue.authorization.bicep' = [for policy in serviceBusQueuePolicies: if (!empty(policy)) {
-  name: !empty(serviceBusQueuePolicies) ? toLower('az-sbn-queue-policy-${guid('${azServiceBusTopicsDeployment.id}/${policy.name}')}') : 'no-sbq-policy-to-deploy'
+  name: !empty(serviceBusQueuePolicies) ? toLower('az-sbn-queue-policy-${guid('${azServiceBusTopicsDeployment.id}/${policy.serviceBusPolicyName}')}') : 'no-sbq-policy-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
     serviceBusName: serviceBusName
     serviceBusQueueName: serviceBusQueueName
-    serviceBusQueuePolicyName: policy.name
-    serviceBusQueuePolicyPermissions: policy.permissions
+    serviceBusQueuePolicyName: policy.serviceBusPolicyName
+    serviceBusQueuePolicyPermissions: policy.serviceBusPolicyPermissions
   }
 }]

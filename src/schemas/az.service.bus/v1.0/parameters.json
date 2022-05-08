@@ -496,11 +496,11 @@
         "service-bus-policy": {
             "type": "object",
             "properties": {
-                "name": {
+                "serviceBusPolicyName": {
                     "type": "string",
                     "description": "The name of the Service Bus (Namespace, Queue, or Topic) Policy for the Azure Service Bus Namespace."
                 },
-                "permissions": {
+                "serviceBusPolicyPermissions": {
                     "type": "array",
                     "items": {
                         "type": "string",

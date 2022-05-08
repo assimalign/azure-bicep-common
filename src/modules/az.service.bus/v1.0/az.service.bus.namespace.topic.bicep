@@ -35,21 +35,21 @@ resource azServiceBusTopicDeployment 'Microsoft.ServiceBus/namespaces/topics@202
 
 // 2. Deploy Service Bus Namespace Topic Authorization Policy
 module azServiceBusTopicPolicyDeployment 'az.service.bus.namespace.topic.authorization.bicep' = [for policy in serviceBusTopicPolicies: if (!empty(policy)) {
-  name: !empty(serviceBusTopicPolicies) ? toLower('az-sbn-topic-subs-${guid('${azServiceBusTopicDeployment.id}/${policy.name}')}') : 'no-sbt-policies-to-deploy'
+  name: !empty(serviceBusTopicPolicies) ? toLower('az-sbn-topic-subs-${guid('${azServiceBusTopicDeployment.id}/${policy.serviceBusPolicyName}')}') : 'no-sbt-policies-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
     serviceBusName: serviceBusName
     serviceBusTopicName: serviceBusTopicName
-    serviceBusTopicPolicyName: policy.name
-    serviceBusTopicPolicyPermissions: policy.permissions
+    serviceBusTopicPolicyName: policy.serviceBusPolicyName
+    serviceBusTopicPolicyPermissions: policy.serviceBusPolicyPermissions
   }
 }]
 
 // 2. Deploye Service Bus Namespace Topic Subscriptions if applicable
 module azServiceBusTopicSubscriptionDeployment 'az.service.bus.namespace.topic.subscription.bicep' = [for subscription in serviceBusTopicSubscriptions: if (!empty(subscription)) {
-  name: !empty(serviceBusTopicSubscriptions) ? toLower('az-sbn-topic-subs-${guid('${azServiceBusTopicDeployment.id}/${subscription.name}')}') : 'no-subscription-to-deploy'
+  name: !empty(serviceBusTopicSubscriptions) ? toLower('az-sbn-topic-subs-${guid('${azServiceBusTopicDeployment.id}/${subscription.serviceBusTopicSubscriptionName}')}') : 'no-subscription-to-deploy'
   scope: resourceGroup()
   params: {
     region: region

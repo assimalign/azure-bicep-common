@@ -70,6 +70,7 @@
                     "uat": "Standard",
                     "prd": "Premium"
                 },
+                
                 "serviceBusTopics": [
                     {
                         "serviceBusTopicName": "test-topic-01"
