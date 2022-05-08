@@ -37,7 +37,7 @@ resource azServiceBusNamespaceDeployment 'Microsoft.ServiceBus/namespaces@2018-0
   location: serviceBusLocation
   identity: any(serviceBusEnableMsi ? {
     type: 'SystemAssigned'
-  } : {})
+  } : json('null'))
   sku: any(environment == 'dev' ? {
     name: serviceBusSku.dev
     tier: serviceBusSku.dev
