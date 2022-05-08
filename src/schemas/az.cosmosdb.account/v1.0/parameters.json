@@ -567,9 +567,7 @@
             },
             "required": [
                 "cosmosDatabaseContainerName",
-                "cosmosDatabaseContainerPartitionKey",
-                "cosmosDatabaseContainerIndexingPolicy",
-                "cosmosDatabaseContainerUniqueKeyPolicy"
+                "cosmosDatabaseContainerPartitionKey"
             ]
         },
         "cosmos-accounts-graph-databases": {

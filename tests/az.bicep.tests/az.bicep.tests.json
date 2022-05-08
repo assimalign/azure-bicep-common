@@ -14,11 +14,52 @@
                 "cosmosAccountResourceGroup": "test-rg-@environment-@region",
                 "cosmosAccountLocations": [
                     {
-                        "locationName": "westus2",
+                        "locationName": "centralus",
                         "failoverPriority": 0
+                    }
+                ],
+                "cosmosAccountDatabases": [
+                    {
+                        "cosmosDatabaseName": "TestDb1"
+                    },
+                    {
+                        "cosmosDatabaseName": "TestDb2",
+                        "cosmosDatabaseContainers": [
+                            {
+                                "cosmosDatabaseContainerName": "TestDb2Container",
+                                "cosmosDatabaseContainerPartitionKey": {
+                                    "kind": "Hash",
+                                    "paths": [
+                                        "/Test"
+                                    ]
+                                }
+                            }
+                        ]
                     }
                 ]
             }
+        },
+        "cosmosAccountsDocumentDatabase":{
+            "value": {
+                "cosmosDatabaseName": "TestDb3",
+                "cosmosAccountName": "test-cosmosdb-@environment-@region",
+                "cosmosAccountResourceGroup": "test-rg-@environment-@region"
+            }
+        },
+        "cosmosAccountsDocumentDatabaseContainer": {
+            "value": {
+                "cosmosDatabaseName": "TestDb1",
+                "cosmosAccountName": "test-cosmosdb-@environment-@region",
+                "cosmosAccountResourceGroup": "test-rg-@environment-@region",
+                "cosmosDatabaseContainerName": "TestDb1Container",
+                "cosmosDatabaseContainerPartitionKey": {
+                    "kind": "Hash",
+                    "paths": [
+                        "/Test"
+                    ]
+                }
+            }
         }
+        
     }
 }

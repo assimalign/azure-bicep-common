@@ -41,8 +41,8 @@ module azCosmosAccountDocumentDatabaseContainerDeployment 'az.cosmosdb.account.d
     cosmosDbAccountDatabaseName: cosmosDbAccountDatabaseName
     cosmosDbAccountDatabaseContainerName: container.cosmosDatabaseContainer 
     cosmosDbAccountDatabaseContainerPartition: container.cosmosDatabaseContainerPartitionKey 
-    cosmosDbAccountDatabaseContainerIndexingPolicy: container.cosmosDatabaseContainerIndexingPolicy 
-    cosmosDbAccountDatabaseContainerUniqueKeyPolicies: container.cosmosDatabaseContainerUniqueKeyPolicy
+    cosmosDbAccountDatabaseContainerIndexingPolicy: contains(container, 'cosmosDatabaseContainerIndexingPolicy') ? container.cosmosDatabaseContainerIndexingPolicy : {}
+    cosmosDbAccountDatabaseContainerUniqueKeyPolicies: contains(container, 'cosmosDatabaseContainerUniqueKeyPolicy') ? container.cosmosDatabaseContainerUniqueKeyPolicy : []
     cosmosDbAccountDatabaseContainerTtl: contains(container, 'cosmosDatabaseContainerTtl') ? container.cosmosDatabaseContainerTtl : 0
   }
 }]
