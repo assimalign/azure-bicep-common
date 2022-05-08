@@ -144,8 +144,7 @@
             },
             "required": [
                 "serviceBusName",
-                "serviceBusSku",
-                "serviceBusEnableMsi"
+                "serviceBusSku"
             ]
         },
         "service-bus-namespace-queues": {

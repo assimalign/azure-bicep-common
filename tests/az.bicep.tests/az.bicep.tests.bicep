@@ -4,62 +4,87 @@ param resourceGroup object
 param cosmosAccount object
 param cosmosAccountsDocumentDatabase object
 param cosmosAccountsDocumentDatabaseContainer object
+param eventGridDomain object
+param serviceBusNamespace object
 
 targetScope = 'subscription'
 
 var cosmosResourceGroup = az.resourceGroup(replace(replace(cosmosAccount.cosmosAccountResourceGroup, '@environment', environment), '@region', location))
 
-module azResourceGroupDeploy '../../src/modules/az.resource.group/v1.0/az.resource.group.bicep' = {
-  name: 'test-az-resource-group-deployment'
-  params: {
-    region: location
-    environment: environment
-    resourceGroupLocation: resourceGroup.resourceGroupLocation
-    resourceGroupName: resourceGroup.resourceGroupName
-  }
-}
+// module azResourceGroupDeploy '../../src/modules/az.resource.group/v1.0/az.resource.group.bicep' = {
+//   name: 'test-az-resource-group-deployment'
+//   params: {
+//     region: location
+//     environment: environment
+//     resourceGroupLocation: resourceGroup.resourceGroupLocation
+//     resourceGroupName: resourceGroup.resourceGroupName
+//   }
+// }
 
-module azCosmosAccountDeploy '../../src/modules/az.cosmosdb.account/v1.0/az.cosmosdb.account.bicep' = {
-  name: 'test-az-cosmos-account-deploy'
+// module azCosmosAccountDeploy '../../src/modules/az.cosmosdb.account/v1.0/az.cosmosdb.account.bicep' = {
+//   name: 'test-az-cosmos-account-deploy'
+//   scope: cosmosResourceGroup
+//   params: {
+//     region: location
+//     environment: environment
+//     cosmosDbAccountName: cosmosAccount.cosmosAccountName
+//     cosmosDbAccountLocations: cosmosAccount.cosmosAccountLocations
+//     cosmosDbAccountDatabases: cosmosAccount.cosmosAccountDatabases
+//   }
+//   dependsOn: [
+//     azResourceGroupDeploy
+//   ]
+// }
+
+// module azCosmosAccountDatabaseDeploy '../../src/modules/az.cosmosdb.account/v1.0/az.cosmosdb.account.document.database.bicep' = {
+//   name: 'test-az-cosmos-database-deploy'
+//   scope: cosmosResourceGroup
+//   params: {
+//     region: location
+//     environment: environment
+//     cosmosDbAccountName: cosmosAccountsDocumentDatabase.cosmosAccountName
+//     cosmosDbAccountDatabaseName: cosmosAccountsDocumentDatabase.cosmosDatabaseName
+//   }
+//   dependsOn: [
+//     azCosmosAccountDeploy
+//   ]
+// }
+
+// module azCosmosAccountDatabasteContainerDeploy '../../src/modules/az.cosmosdb.account/v1.0/az.cosmosdb.account.document.database.container.bicep' = {
+//   name: 'test-az-cosmos-database-container-deploy'
+//   scope: cosmosResourceGroup
+//   params: {
+//     region: location
+//     environment: environment
+//     cosmosDbAccountName: cosmosAccountsDocumentDatabaseContainer.cosmosAccountName
+//     cosmosDbAccountDatabaseName: cosmosAccountsDocumentDatabaseContainer.cosmosDatabaseName
+//     cosmosDbAccountDatabaseContainerName: cosmosAccountsDocumentDatabaseContainer.cosmosDatabaseContainerName
+//     cosmosDbAccountDatabaseContainerPartition: cosmosAccountsDocumentDatabaseContainer.cosmosDatabaseContainerPartitionKey
+//   }
+//   dependsOn: [
+//     azCosmosAccountDeploy
+//   ]
+// }
+
+module azServiceBusDeploy '../../src/modules/az.service.bus/v1.0/az.service.bus.namespace.bicep' = {
+  name: 'test-az-sb-namespace-deploy'
   scope: cosmosResourceGroup
   params: {
     region: location
     environment: environment
-    cosmosDbAccountName: cosmosAccount.cosmosAccountName
-    cosmosDbAccountLocations: cosmosAccount.cosmosAccountLocations
-    cosmosDbAccountDatabases: cosmosAccount.cosmosAccountDatabases
+    serviceBusName: serviceBusNamespace.serviceBusName
+    serviceBusLocation: serviceBusNamespace.serviceBusLocation
+    serviceBusSku: serviceBusNamespace.serviceBusSku
   }
-  dependsOn: [
-    azResourceGroupDeploy
-  ]
 }
 
-module azCosmosAccountDatabaseDeploy '../../src/modules/az.cosmosdb.account/v1.0/az.cosmosdb.account.document.database.bicep' = {
-  name: 'test-az-cosmos-database-deploy'
+module azEventGridDeploy '../../src/modules/az.event.grid/v1.0/az.event.grid.domain.bicep' ={
+  name: 'test-az-eg-domain-deploy'
   scope: cosmosResourceGroup
   params: {
     region: location
     environment: environment
-    cosmosDbAccountName: cosmosAccountsDocumentDatabase.cosmosAccountName
-    cosmosDbAccountDatabaseName: cosmosAccountsDocumentDatabase.cosmosDatabaseName
+    eventGridDomainName: eventGridDomain.eventGridDomainName
+    eventGridDomainLocation: eventGridDomain.eventGridDomainLocation
   }
-  dependsOn: [
-    azCosmosAccountDeploy
-  ]
-}
-
-module azCosmosAccountDatabasteContainerDeploy '../../src/modules/az.cosmosdb.account/v1.0/az.cosmosdb.account.document.database.container.bicep' = {
-  name: 'test-az-cosmos-database-container-deploy'
-  scope: cosmosResourceGroup
-  params: {
-    region: location
-    environment: environment
-    cosmosDbAccountName: cosmosAccountsDocumentDatabaseContainer.cosmosAccountName
-    cosmosDbAccountDatabaseName: cosmosAccountsDocumentDatabaseContainer.cosmosDatabaseName
-    cosmosDbAccountDatabaseContainerName: cosmosAccountsDocumentDatabaseContainer.cosmosDatabaseContainerName
-    cosmosDbAccountDatabaseContainerPartition: cosmosAccountsDocumentDatabaseContainer.cosmosDatabaseContainerPartitionKey
-  }
-  dependsOn: [
-    azCosmosAccountDeploy
-  ]
 }

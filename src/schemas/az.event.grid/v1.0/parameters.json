@@ -81,8 +81,7 @@
                 }
             },
             "required": [
-                "eventGridDomainName",
-                "eventGridDomainDisablePublicAccess"
+                "eventGridDomainName"
             ]
         },
         "event-grid-domain-topics": {

@@ -59,6 +59,24 @@
                     ]
                 }
             }
+        },
+        "serviceBusNamespace": {
+            "value": { 
+                "serviceBusName": "test-sb-assim-@environment-@region",
+                "serviceBusLocation": "eastus",
+                "serviceBusSku": {
+                    "dev": "Basic",
+                    "qa": "Basic",
+                    "uat": "Standard",
+                    "prd": "Premium"
+                }
+            }
+        },
+        "eventGridDomain": {
+            "value": {
+                "eventGridDomainName": "test-eg-assim-@environment-@region",
+                "eventGridDomainLocation": "eastus"
+            }
         }
     }
 }
