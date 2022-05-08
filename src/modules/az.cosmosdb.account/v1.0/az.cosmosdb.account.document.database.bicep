@@ -39,7 +39,7 @@ module azCosmosAccountDocumentDatabaseContainerDeployment 'az.cosmosdb.account.d
     environment: environment
     cosmosDbAccountName: cosmosDbAccountName
     cosmosDbAccountDatabaseName: cosmosDbAccountDatabaseName
-    cosmosDbAccountDatabaseContainerName: container.cosmosDatabaseContainer 
+    cosmosDbAccountDatabaseContainerName: container.cosmosDatabaseContainerName 
     cosmosDbAccountDatabaseContainerPartition: container.cosmosDatabaseContainerPartitionKey 
     cosmosDbAccountDatabaseContainerIndexingPolicy: contains(container, 'cosmosDatabaseContainerIndexingPolicy') ? container.cosmosDatabaseContainerIndexingPolicy : {}
     cosmosDbAccountDatabaseContainerUniqueKeyPolicies: contains(container, 'cosmosDatabaseContainerUniqueKeyPolicy') ? container.cosmosDatabaseContainerUniqueKeyPolicy : []

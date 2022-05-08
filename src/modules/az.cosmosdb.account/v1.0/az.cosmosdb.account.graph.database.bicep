@@ -39,7 +39,7 @@ module azDocumentDbAccountDatabaseContainerDeployment 'az.cosmosdb.account.graph
     environment: environment
     cosmosDbAccountName: cosmosDbAccountName
     cosmosDbAccountDatabaseName: cosmosDbAccountDatabaseName
-    cosmosDbAccountDatabaseContainerName: container.cosmosDatabaseContainer 
+    cosmosDbAccountDatabaseContainerName: container.cosmosDatabaseContainerName 
     cosmosDbAccountDatabaseContainerPartition: container.cosmosDatabaseContainerPartitionKey 
     cosmosDbAccountDatabaseContainerIndexingPolicy: container.cosmosDatabaseContainerIndexingPolicy 
     cosmosDbAccountDatabaseContainerUniqueKeyPolicies: container.cosmosDatabaseContainerUniqueKeyPolicy
