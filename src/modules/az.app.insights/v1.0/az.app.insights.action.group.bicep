@@ -38,3 +38,6 @@ resource azAppInsightsActivityGroupDeployment 'Microsoft.Insights/actionGroups@2
   }, appInsightsActionGroupReceivers)
   tags: appInsightsActionGroupTags
 }
+
+
+output azAppInsightsActivityGroup object = azAppInsightsActivityGroupDeployment

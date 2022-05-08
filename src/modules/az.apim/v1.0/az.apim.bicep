@@ -90,7 +90,7 @@ module azApimApisDeployment 'az.apim.apis.bicep' = [for api in apimApis: if(!emp
   name: !empty(apimApis) ? 'az-apim-apis-${guid('${apimName}/${api.name}')}' : 'no-apim-apis-to-deploy'
   scope: resourceGroup()
   params: {
-    location: region
+    region: region
     environment: environment
     apimName: apimName
     apimApiName: api.name

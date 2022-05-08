@@ -65,7 +65,7 @@ module azApimApiOperationDeployment 'az.apim.apis.operation.bicep' = [for operat
   name: !empty(apimApiOperations) ? 'az-apim-operation-${guid(operation.apimApiOperationName)}' : 'no-apim-api-operation-to-deploy'
   scope: resourceGroup()
   params: {
-    location: region
+    region: region
     environment: environment
     apimName: apimName
     apimApiName: apimApiName
@@ -81,3 +81,6 @@ module azApimApiOperationDeployment 'az.apim.apis.operation.bicep' = [for operat
     azApimApiDeployment
   ]
 }]
+
+
+output apimGateway object = azApimApiDeployment

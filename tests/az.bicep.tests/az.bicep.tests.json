@@ -70,13 +70,20 @@
                     "uat": "Standard",
                     "prd": "Premium"
                 },
-                
                 "serviceBusTopics": [
                     {
                         "serviceBusTopicName": "test-topic-01",
                         "serviceBusTopicSubscriptions": [
                             {
-                                "serviceBusTopicSubscriptionName": "test-topic-01-subscription"
+                                "serviceBusTopicSubscriptionName": "test-topic-01-subscription",
+                                "serviceBusTopicSubscriptionCorrelationFilters": [
+                                    {
+                                        "filterGroupName": "test",
+                                        "filters": {
+                                            "label": "test-filter-label"
+                                        }
+                                    }
+                                ]
                             }
                         ]
                     }

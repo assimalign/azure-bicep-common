@@ -105,4 +105,4 @@ module azAppConfigurationPrivateEndpointDeployment '../../az.private.endpoint/v1
 }
 
 // 3. Return Deployment ouput
-output resource object = azAppConfigurationDeployment
+output appConfiguration object = azAppConfigurationDeployment

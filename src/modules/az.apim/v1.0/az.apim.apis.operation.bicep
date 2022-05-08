@@ -1,8 +1,8 @@
 @allowed([
-  'dev'
-  'qa'
-  'uat'
-  'prd'
+   'dev'
+   'qa'
+   'uat'
+   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
 param environment string
@@ -17,10 +17,10 @@ param apimName string
 param apimApiName string
 
 @description('')
-param apimApiOperationName string 
+param apimApiOperationName string
 
 @description('')
-param apimApiOperationDisplayName string 
+param apimApiOperationDisplayName string
 
 @allowed([
    'GET'
@@ -41,10 +41,8 @@ param apimApiOperationUrlTemplate string
 @description('')
 param apimApiOperationParametersTemplate array = []
 
-
-
 resource azApimApiOperationDeployment 'Microsoft.ApiManagement/service/apis/operations@2021-01-01-preview' = {
-   name: replace(replace('${apimName}/${apimApiName}/${apimApiOperationName}','@environment', environment), '@region', region)
+   name: replace(replace('${apimName}/${apimApiName}/${apimApiOperationName}', '@environment', environment), '@region', region)
    properties: {
       displayName: apimApiOperationDisplayName
       urlTemplate: apimApiOperationUrlTemplate
@@ -53,3 +51,5 @@ resource azApimApiOperationDeployment 'Microsoft.ApiManagement/service/apis/oper
       templateParameters: apimApiOperationParametersTemplate
    }
 }
+
+output apimApiOperation object = azApimApiOperationDeployment

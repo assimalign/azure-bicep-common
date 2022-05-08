@@ -359,11 +359,8 @@
                                     }
                                 },
                                 "required": [
-                                    "serviceBusTopicSubscriptionName",
                                     "serviceBusTopicName",
-                                    "serviceBusTopicSubscriptionSettings",
-                                    "serviceBusName",
-                                    "serviceBusResourceGroup"
+                                    "serviceBusName"
                                 ]
                             }
                         ]
@@ -401,11 +398,8 @@
                                 }
                             },
                             "required": [
-                                "serviceBusTopicSubscriptionName",
                                 "serviceBusTopicName",
-                                "serviceBusTopicSubscriptionSettings",
-                                "serviceBusName",
-                                "serviceBusResourceGroup"
+                                "serviceBusName"
                             ]
                         }
                     ]
@@ -441,12 +435,12 @@
                             "filterGroupName",
                             "filters"
                         ]
-                    }
+                    },
+                    "minItems": 1
                 }
             },
             "required": [
-                "serviceBusTopicSubscriptionName",
-                "serviceBusTopicSubscriptionSettings"
+                "serviceBusTopicSubscriptionName"
             ]
         },
         "service-bus-namespace-common-settings": {

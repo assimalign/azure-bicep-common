@@ -30,7 +30,7 @@ var actionsGroups = [for group in appInsightsActivityLogAlertActionGroups: {
   actionGroupId: resourceId('Microsoft.Insights/actionGroups', replace(replace(group.name, '@environment', environment), '@region', region))
 }]
 
-resource azAppInsightsActivityLogAlerts 'Microsoft.Insights/activityLogAlerts@2020-10-01' = {
+resource azAppInsightsActivityLogAlertsDeployemnt 'Microsoft.Insights/activityLogAlerts@2020-10-01' = {
   name: replace(replace(appInsightsActivityLogAlertName, '@environment', environment), '@region', region)
   properties: {
     enabled: appInsightsActivityLogAlertEnabled
@@ -46,3 +46,6 @@ resource azAppInsightsActivityLogAlerts 'Microsoft.Insights/activityLogAlerts@20
     ]
   }
 }
+
+
+output appInsightsActivityLogAlerts object = azAppInsightsActivityLogAlertsDeployemnt

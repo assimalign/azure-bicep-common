@@ -32,7 +32,7 @@ var actionsGroups = [for group in appInsightsAlertRuleActionGroups: {
 
 resource azAppInsightsAlertRuleDeployment 'Microsoft.Insights/activityLogAlerts@2020-10-01' = {
    name: replace(replace(appInsightsAlertRuleName, '@environment', environment), '@region', region)
-   location: resourceGroup().location
+   location: 'global'
    properties: {
       enabled: appInsightsAlertRuleEnabled
       description: appInsightsAlertRuleDescription
@@ -45,3 +45,5 @@ resource azAppInsightsAlertRuleDeployment 'Microsoft.Insights/activityLogAlerts@
       scopes: []
    }
 }
+
+output appInsightsAllertRule object = azAppInsightsAlertRuleDeployment

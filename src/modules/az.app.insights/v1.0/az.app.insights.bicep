@@ -55,4 +55,4 @@ resource azAppInsightsComponentsDeployment 'Microsoft.Insights/components@2020-0
 }
 
 // 3. Return Deployment Output
-output resource object = azAppInsightsComponentsDeployment
+output appInsights object = azAppInsightsComponentsDeployment

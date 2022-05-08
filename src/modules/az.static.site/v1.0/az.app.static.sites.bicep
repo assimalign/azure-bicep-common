@@ -50,4 +50,4 @@ resource azStaticSiteDeployment 'Microsoft.Web/staticSites@2021-03-01' = {
   }
 }
 
-output resource object = azStaticSiteDeployment
+output staticSite object = azStaticSiteDeployment

@@ -12,6 +12,6 @@ resource azLocalNetworkGatewayDeployment 'Microsoft.Network/localNetworkGateways
   name: replace('${localNetGatewayName}', '@environment', environment)
   location: resourceGroup().location
   properties: {
-    
+     
   }
 }
