@@ -2,5 +2,11 @@
     "$schema": "../../src/schemas/az/parameters.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "resourceGroup": {
+            "value": {
+                "resourceGroupName": "test-rg-@environment-@region",
+                "resourceGroupLocation": "eastus"
+            }
+        }
     }
 }
