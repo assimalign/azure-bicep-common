@@ -2,49 +2,57 @@
     "$schema": "http://json-schema.org/draft-07/schema",
     "definitions": {
         "cosmos-account": {
-            "oneOf": [
-                {
-                    "allOf": [
+            "type": "object",
+            "properties": {
+                "value": {
+                    "oneOf": [
                         {
-                            "$ref": "#/definitions/cosmos-account-parameters"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/cosmos-account-parameters"
+                                },
+                                {
+                                    "properties": {
+                                        "cosmosAccountType": {
+                                            "const": "EnableDocument"
+                                        },
+                                        "cosmosAccountDatabases": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/cosmos-accounts-document-database-parameters"
+                                            },
+                                            "minItems": 1
+                                        }
+                                    }
+                                }
+                            ]
                         },
                         {
-                            "properties": {
-                                "cosmosAccountType": {
-                                    "const": "EnableDocument"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/cosmos-account-parameters"
                                 },
-                                "cosmosAccountDatabases": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/definitions/cosmos-accounts-document-database-parameters"
-                                    },
-                                    "minItems": 1
+                                {
+                                    "properties": {
+                                        "cosmosAccountType": {
+                                            "const": "EnableGremlin"
+                                        },
+                                        "cosmosAccountDatabases": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/cosmos-accounts-graph-database-parameters"
+                                            },
+                                            "minItems": 1
+                                        }
+                                    }
                                 }
-                            }
-                        }
-                    ]
-                },
-                {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/cosmos-account-parameters"
-                        },
-                        {
-                            "properties": {
-                                "cosmosAccountType": {
-                                    "const": "EnableGremlin"
-                                },
-                                "cosmosAccountDatabases": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/definitions/cosmos-accounts-graph-database-parameters"
-                                    },
-                                    "minItems": 1
-                                }
-                            }
+                            ]
                         }
                     ]
                 }
+            },
+            "required": [
+                "value"
             ]
         },
         "cosmos-accounts": {
@@ -243,13 +251,7 @@
             },
             "required": [
                 "cosmosAccountName",
-                "cosmosAccountLocations",
-                "cosmosAccountEnableMsi",
-                "cosmosAccountEnableMultiRegionWrites",
-                "cosmosAccountEnableFreeTier",
-                "cosmosAccountConsistencyPolicy",
-                "cosmosAccountCorsPolicy",
-                "cosmosAccountTags"
+                "cosmosAccountLocations"
             ]
         },
         "cosmos-accounts-document-databases": {

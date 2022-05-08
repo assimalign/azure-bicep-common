@@ -7,6 +7,17 @@
                 "resourceGroupName": "test-rg-@environment-@region",
                 "resourceGroupLocation": "eastus"
             }
+        },
+        "cosmosAccount": {
+            "value": {
+                "cosmosAccountName": "test-cosmosdb-@environment-@region",
+                "cosmosAccountLocations": [
+                    {
+                        "locationName": "westus2",
+                        "failoverPriority": 0
+                    }
+                ]
+            }
         }
     }
 }

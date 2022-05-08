@@ -16,6 +16,6 @@ steps:
     azureSubscription: 'Assimalign LLC (DEV) SA'
     scriptType: 'pscore'
     scriptLocation: 'inlineScript'
-    inlineScript: 'az deployment sub create --location eastus --name asal-test-bicep-release --template-file $(deployBicepPath) --parameters $(deployVariablePath) environment=dev location=est --verbose'
+    inlineScript: 'az deployment sub create --location eastus --name asal-test-bicep-release --template-file $(deployBicepPath) --parameters $(deployVariablePath) environment=dev location=est --verbose --debug'
     powerShellErrorActionPreference: 'continue'
     
