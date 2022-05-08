@@ -27,6 +27,7 @@ module azCosmosAccountDeploy '../../src/modules/az.cosmosdb.account/v1.0/az.cosm
     environment: environment
     cosmosDbAccountName: cosmosAccount.cosmosAccountName
     cosmosDbAccountLocations: cosmosAccount.cosmosAccountLocations
+    cosmosDbAccountDatabases: cosmosAccount.cosmosAccountDatabases
   }
   dependsOn: [
     azResourceGroupDeploy
@@ -43,7 +44,7 @@ module azCosmosAccountDatabaseDeploy '../../src/modules/az.cosmosdb.account/v1.0
     cosmosDbAccountDatabaseName: cosmosAccountsDocumentDatabase.cosmosDatabaseName
   }
   dependsOn: [
-    azResourceGroupDeploy
+    azCosmosAccountDeploy
   ]
 }
 
@@ -59,6 +60,6 @@ module azCosmosAccountDatabasteContainerDeploy '../../src/modules/az.cosmosdb.ac
     cosmosDbAccountDatabaseContainerPartition: cosmosAccountsDocumentDatabaseContainer.cosmosDatabaseContainerPartitionKey
   }
   dependsOn: [
-    azResourceGroupDeploy
+    azCosmosAccountDeploy
   ]
 }
