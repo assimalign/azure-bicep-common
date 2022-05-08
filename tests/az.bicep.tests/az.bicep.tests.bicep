@@ -23,6 +23,8 @@ module azCosmosAccountDeploy '../../src/modules/az.cosmosdb.account/v1.0/az.cosm
   name: 'test-az-cosmos-account-deployment'
   scope: cosmosResourceGroup
   params: {
+    region: location
+    environment: environment
     cosmosDbAccountName: cosmosAccount.cosmosAccountName
     cosmosDbAccountLocations: cosmosAccount.cosmosAccountLocations
   }
