@@ -12,7 +12,6 @@
             "value": {
                 "cosmosAccountName": "test-cosmosdb-@environment-@region",
                 "cosmosAccountResourceGroup": "test-rg-@environment-@region",
-                
                 "cosmosAccountLocations": [
                     {
                         "locationName": "centralus",
@@ -61,6 +60,5 @@
                 }
             }
         }
-        
     }
 }
