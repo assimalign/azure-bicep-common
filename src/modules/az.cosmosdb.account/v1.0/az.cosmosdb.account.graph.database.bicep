@@ -32,7 +32,7 @@ resource azCosmosAccountGraphDatabaseDeployment 'Microsoft.DocumentDB/databaseAc
 
 // 2. Deploye Document DB Database Containers
 module azDocumentDbAccountDatabaseContainerDeployment 'az.cosmosdb.account.graph.database.container.bicep' = [for container in cosmosDbAccountDatabaseContainers: if(!empty(container)) {
-  name: !empty(cosmosDbAccountDatabaseContainers) ? toLower('az-docdb-container-${guid('${azCosmosAccountGraphDatabaseDeployment.id}/${container.databaseContainer}')}') : 'no-dbdocument-containers-to-deploy'
+  name: !empty(cosmosDbAccountDatabaseContainers) ? toLower('az-docdb-container-${guid('${azCosmosAccountGraphDatabaseDeployment.id}/${container.cosmosDatabaseContainer}')}') : 'no-dbdocument-containers-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
