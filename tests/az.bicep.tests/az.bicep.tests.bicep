@@ -8,6 +8,7 @@ param eventGridDomain object
 param serviceBusNamespace object
 param serviceBusNamespaceQueue object
 param serviceBusNamespaceTopic object
+param cognitiveSearchService object
 
 targetScope = 'subscription'
 
@@ -68,55 +69,66 @@ var cosmosResourceGroup = az.resourceGroup(replace(replace(cosmosAccount.cosmosA
 //   ]
 // }
 
-module azServiceBusDeploy '../../src/modules/az.service.bus/v1.0/az.service.bus.namespace.bicep' = {
-  name: 'test-az-sb-namespace-deploy'
-  scope: cosmosResourceGroup
-  params: {
-    region: location
-    environment: environment
-    serviceBusName: serviceBusNamespace.serviceBusName
-    serviceBusLocation: serviceBusNamespace.serviceBusLocation
-    serviceBusSku: serviceBusNamespace.serviceBusSku
-    serviceBusTopics: serviceBusNamespace.serviceBusTopics
-    serviceBusQueues:serviceBusNamespace.serviceBusQueues
-  }
-}
+// module azServiceBusDeploy '../../src/modules/az.service.bus/v1.0/az.service.bus.namespace.bicep' = {
+//   name: 'test-az-sb-namespace-deploy'
+//   scope: cosmosResourceGroup
+//   params: {
+//     region: location
+//     environment: environment
+//     serviceBusName: serviceBusNamespace.serviceBusName
+//     serviceBusLocation: serviceBusNamespace.serviceBusLocation
+//     serviceBusSku: serviceBusNamespace.serviceBusSku
+//     serviceBusTopics: serviceBusNamespace.serviceBusTopics
+//     serviceBusQueues:serviceBusNamespace.serviceBusQueues
+//   }
+// }
 
-module azServiceBusQueueDeploy '../../src/modules/az.service.bus/v1.0/az.service.bus.namespace.queue.bicep' = {
-  name: 'test-az-sb-namespace-queue-deploy'
-  scope: cosmosResourceGroup
-  params: {
-    region: location
-    environment: environment
-    serviceBusName: serviceBusNamespaceQueue.serviceBusName
-    serviceBusQueueName: serviceBusNamespaceQueue.serviceBusQueueName
-  }
-  dependsOn: [
-    azServiceBusDeploy
-  ]
-}
+// module azServiceBusQueueDeploy '../../src/modules/az.service.bus/v1.0/az.service.bus.namespace.queue.bicep' = {
+//   name: 'test-az-sb-namespace-queue-deploy'
+//   scope: cosmosResourceGroup
+//   params: {
+//     region: location
+//     environment: environment
+//     serviceBusName: serviceBusNamespaceQueue.serviceBusName
+//     serviceBusQueueName: serviceBusNamespaceQueue.serviceBusQueueName
+//   }
+//   dependsOn: [
+//     azServiceBusDeploy
+//   ]
+// }
 
-module azServiceBusTopicDeploy '../../src/modules/az.service.bus/v1.0/az.service.bus.namespace.topic.bicep' = {
-  name: 'test-az-sb-namespace-topic-deploy'
-  scope: cosmosResourceGroup
-  params: {
-    region: location
-    environment: environment
-    serviceBusName: serviceBusNamespaceTopic.serviceBusName
-    serviceBusTopicName: serviceBusNamespaceTopic.serviceBusTopicName
-  }
-  dependsOn: [
-    azServiceBusDeploy
-  ]
-}
+// module azServiceBusTopicDeploy '../../src/modules/az.service.bus/v1.0/az.service.bus.namespace.topic.bicep' = {
+//   name: 'test-az-sb-namespace-topic-deploy'
+//   scope: cosmosResourceGroup
+//   params: {
+//     region: location
+//     environment: environment
+//     serviceBusName: serviceBusNamespaceTopic.serviceBusName
+//     serviceBusTopicName: serviceBusNamespaceTopic.serviceBusTopicName
+//   }
+//   dependsOn: [
+//     azServiceBusDeploy
+//   ]
+// }
 
-module azEventGridDeploy '../../src/modules/az.event.grid/v1.0/az.event.grid.domain.bicep' ={
-  name: 'test-az-eg-domain-deploy'
+// module azEventGridDeploy '../../src/modules/az.event.grid/v1.0/az.event.grid.domain.bicep' ={
+//   name: 'test-az-eg-domain-deploy'
+//   scope: cosmosResourceGroup
+//   params: {
+//     region: location
+//     environment: environment
+//     eventGridDomainName: eventGridDomain.eventGridDomainName
+//     eventGridDomainLocation: eventGridDomain.eventGridDomainLocation
+//   }
+// }
+
+module azCognitiveSearchDeploy '../../src/modules/az.cognitive.search/v1.0/az.cognitive.search.account.bicep' = {
+  name: 'test-az-cog-search-deploy'
   scope: cosmosResourceGroup
   params: {
     region: location
     environment: environment
-    eventGridDomainName: eventGridDomain.eventGridDomainName
-    eventGridDomainLocation: eventGridDomain.eventGridDomainLocation
+    cognitiveSearchName: cognitiveSearchService.cognitiveSearchName
+    cognitiveSearchLocation: cognitiveSearchService.cognitiveSearchLocation
   }
 }

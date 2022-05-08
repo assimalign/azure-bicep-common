@@ -41,23 +41,21 @@ param appConfigurationTags object = {}
 //                          Azure App Configuration Deployment                              //
 // **************************************************************************************** //
 
-var appConfigSku = any((environment == 'dev') ? {
-  name: appConfigurationSku.dev
-} : any((environment == 'qa') ? {
-  name: appConfigurationSku.qa
-} : any((environment == 'uat') ? {
-  name: appConfigurationSku.uat
-} : any((environment == 'prd') ? {
-  name: appConfigurationSku.prd
-} : {
-  name: 'Free'
-}))))
-
 // 1. Deploys a single instance of Azure App Configuration
 resource azAppConfigurationDeployment 'Microsoft.AppConfiguration/configurationStores@2021-03-01-preview' = {
   name: replace(replace(appConfigurationName, '@environment', environment), '@region', region)
   location: appConfigurationLocation
-  sku: appConfigSku
+  sku: any((environment == 'dev') ? {
+    name: appConfigurationSku.dev
+  } : any((environment == 'qa') ? {
+    name: appConfigurationSku.qa
+  } : any((environment == 'uat') ? {
+    name: appConfigurationSku.uat
+  } : any((environment == 'prd') ? {
+    name: appConfigurationSku.prd
+  } : {
+    name: 'Free'
+  }))))
   identity: {
     type: appConfigurationEnableMsi == true ? 'SystemAssigned' : 'None'
   }

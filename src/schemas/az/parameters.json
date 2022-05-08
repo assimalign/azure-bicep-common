@@ -710,6 +710,20 @@
                             "$ref": "../az.data.factory/v1.0/parameters.json#/definitions/data-factories"
                         }
                     ]
+                },
+                "cognitiveSearchService": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.cognitive.search/v1.0/parameters.json#/definitions/cognitive-search-service"
+                        }
+                    ]
+                },
+                "cognitiveSearchServices": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.cognitive.search/v1.0/parameters.json#/definitions/cognitive-search-services"
+                        }
+                    ]
                 }
                 // "roleAssignments": {
                 //     "$ref": "az.rbac.role.assignment.schema.json#definitions/roleAssignments"

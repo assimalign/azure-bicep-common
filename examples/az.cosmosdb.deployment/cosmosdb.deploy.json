@@ -18,6 +18,14 @@
                 ]
             }
         },
+        "cognitiveSearch": {
+            "value": {
+                "cognitiveSearchName": "",
+                "cognitiveSearchSku": {
+                    
+                }
+            }
+        }
         "appService":{
             "value": {
                 "appServiceName": "",

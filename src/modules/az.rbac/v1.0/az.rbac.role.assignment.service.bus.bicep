@@ -34,7 +34,7 @@ var RoleDefinitionId = {
 }
 
 // 1. If applicable, get existing service bus namespace to scope role assignment
-resource azServiceBusExistingResource 'Microsoft.ServiceBus/namespaces@2021-06-01-preview' existing = if (resourceRoleAssignmentScope == 'Resource') {
+resource azServiceBusExistingResource 'Microsoft.ServiceBus/namespaces@2021-11-01' existing = if (resourceRoleAssignmentScope == 'Resource') {
   name: replace(replace(resourceToScopeRoleAssignment, '@environment', environment), '@region', region)
 }
 

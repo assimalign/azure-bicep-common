@@ -112,6 +112,12 @@
                 "eventGridDomainName": "test-eg-assim-@environment-@region",
                 "eventGridDomainLocation": "eastus"
             }
+        },
+        "cognitiveSearchService": {
+            "value": {
+                "cognitiveSearchName": "test-cog-search-assim-@environment-@region",
+                "cognitiveSearchLocation": "EastUS2"
+            }
         }
     }
 }

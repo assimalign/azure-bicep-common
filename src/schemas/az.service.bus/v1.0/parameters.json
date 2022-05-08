@@ -528,6 +528,15 @@
                 },
                 "messageId": {
                     "type": "string"
+                },
+                "to": {
+                    "type": "string"
+                },
+                "replayToSessionId": {
+                    "type": "string"
+                },
+                "sessionId": {
+                    "type": "string"
                 }
             },
             "minProperties": 1
