@@ -2,6 +2,8 @@
     "$schema": "../../src/schemas/az/parameters.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "iotHub":{
+        },
         "serviceBusNamespaceTopic":{
             "value": {
                 "serviceBusName": "",
@@ -30,7 +32,7 @@
         "appService":{
             "value": {
                 "appServiceName": "",
-                ""
+                
                 "appServiceSiteConfigs": {
                     "webSettings": {
                         

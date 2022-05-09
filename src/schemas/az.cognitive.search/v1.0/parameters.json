@@ -66,6 +66,10 @@
                         "SwedenCentral"
                     ]
                 },
+                "cognitiveSearchResourceGroup": {
+                    "type": "string",
+                    "description": "An optional parameter to be used if scoping Bicep Deployment from the Subscription."
+                },
                 "cognitiveSearchSku": {
                     "type": "object",
                     "default": {

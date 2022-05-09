@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "map-account": {
+            "type": "object",
+            "properties": {
+                "value": {
+
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "map-accounts": {
+            "type": "object",
+            "properties": {
+                "value": {
+
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "map-account-parameters": {
+            
+        }
+    }
+}

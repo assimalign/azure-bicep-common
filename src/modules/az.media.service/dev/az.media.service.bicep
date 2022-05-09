@@ -19,24 +19,23 @@ param mediaServiceLocation string = resourceGroup().location
 @description('A flag to indicate whether System Managed Identity should be enabled for this resource')
 param mediaServiceMsiEnabled bool = false
 
+@description('')
+param mediaServiceStorageAccount object
+
 @description('The tags to attach to the resource when deployed')
 param mediaServiceTags object = {}
 
-resource mediaServices 'Microsoft.Media/mediaservices@2020-05-01' = {
+resource mediaServices 'Microsoft.Media/mediaservices@2021-06-01' = {
   name: replace(replace(mediaServiceName, '@environment', environment), '@region', region)
   location: mediaServiceLocation
   identity: {
     type: mediaServiceMsiEnabled ? 'SystemAssigned' : 'None'
   }
   properties: {
-     storageAuthentication: 'System'
-      encryption: {
-        type:  'CustomerKey'
-      }
     storageAccounts: [
       {
-        id: resourceId()'Microsoft.Storage/storageAccounts', 'mediaServiceStorageAccount')
-        type:  ''
+        id: resourceId(contains(mediaServiceStorageAccount, 'mediaServiceStorageAccountResourceGroup') ? mediaServiceStorageAccount.mediaServiceStorageAccountResourceGroup : resourceGroup().name, 'Microsoft.Storage/storageAccounts', mediaServiceStorageAccount.mediaServiceStorageAccountName)
+        type: 'Primary'
       }
     ]
   }

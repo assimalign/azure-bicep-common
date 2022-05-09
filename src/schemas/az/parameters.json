@@ -738,6 +738,34 @@
                             "$ref": "../az.media.service/v1.0/parameters.json#/definitions/media-services"
                         }
                     ]
+                },
+                "mapAccount": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.map.account/v1.0/parameters.json#/definitions/map-account"
+                        }
+                    ]
+                },
+                "mapAccounts": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.map.account/v1.0/parameters.json#/definitions/map-accounts"
+                        }
+                    ]
+                },
+                "iotHub": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.iot.hub/v1.0/parameters.json#/definitions/iot-hub"
+                        }
+                    ]
+                },
+                "iotHubs": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.iot.hub/v1.0/parameters.json#/definitions/iot-hubs"
+                        }
+                    ]
                 }
                 // "roleAssignments": {
                 //     "$ref": "az.rbac.role.assignment.schema.json#definitions/roleAssignments"
