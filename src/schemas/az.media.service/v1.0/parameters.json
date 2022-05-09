@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "media-service": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/media-service-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "media-services": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/media-service-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "media-service-parameters": {
+            "type": "object",
+            "properties": {
+
+            },
+            "required": [
+                
+            ]
+        }
+    }
+}

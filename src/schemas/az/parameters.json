@@ -724,6 +724,20 @@
                             "$ref": "../az.cognitive.search/v1.0/parameters.json#/definitions/cognitive-search-services"
                         }
                     ]
+                },
+                "mediaService": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.media.service/v1.0/parameters.json#/definitions/media-service"
+                        }
+                    ]
+                },
+                "mediaServices": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.media.service/v1.0/parameters.json#/definitions/media-services"
+                        }
+                    ]
                 }
                 // "roleAssignments": {
                 //     "$ref": "az.rbac.role.assignment.schema.json#definitions/roleAssignments"

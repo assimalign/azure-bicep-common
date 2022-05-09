@@ -102,6 +102,15 @@
                 },
                 "cognitiveSearchDisablePublicAccess": {
                     "type": "boolean"
+                },
+                "cognitiveSearchTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
                 }
             },
             "required": [

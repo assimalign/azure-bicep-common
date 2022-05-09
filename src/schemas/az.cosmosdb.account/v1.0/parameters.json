@@ -234,20 +234,13 @@
                     }
                 },
                 "cosmosAccountTags": {
-                    "oneOf": [
-                        {
-                            "type": "object",
-                            "patternProperties": {
-                                "^[a-z]": {
-                                    "type": "string"
-                                }
-                            },
-                            "minProperties": 1
-                        },
-                        {
-                            "type": "null"
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
                         }
-                    ]
+                    },
+                    "minProperties": 1
                 },
                 "cosmosAccountPrivateEndpoint": {
                     "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
@@ -387,30 +380,30 @@
                     "type": "array",
                     "items": {
                         "type": "object",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/cosmos-accounts-document-database-container-parameters"
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "cosmosDatabaseName": {
-                                    "type": "string"
-                                },
-                                "cosmosAccountName": {
-                                    "type": "string"
-                                },
-                                "cosmosAccountResourceGroup": {
-                                    "type": "string",
-                                    "description": "The name of the Azure Resource Group the Database Account belongs to."
-                                }
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/cosmos-accounts-document-database-container-parameters"
                             },
-                            "required": [
-                                "cosmosDatabaseName",
-                                "cosmosAccountName"
-                            ]
-                        }
-                    ]
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "cosmosDatabaseName": {
+                                        "type": "string"
+                                    },
+                                    "cosmosAccountName": {
+                                        "type": "string"
+                                    },
+                                    "cosmosAccountResourceGroup": {
+                                        "type": "string",
+                                        "description": "The name of the Azure Resource Group the Database Account belongs to."
+                                    }
+                                },
+                                "required": [
+                                    "cosmosDatabaseName",
+                                    "cosmosAccountName"
+                                ]
+                            }
+                        ]
                     },
                     "minItems": 1
                 }
@@ -578,27 +571,27 @@
                     "description": "A list of databases to deploy with the Document DB Account. NOTE: Tables CANNOT be included it deploying Documents",
                     "items": {
                         "type": "object",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/cosmos-accounts-graph-database-parameters"
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "cosmosAccountName": {
-                                    "type": "string",
-                                    "description": "The name of the database account in which the database lives in."
-                                },
-                                "cosmosAccountResourceGroup": {
-                                    "type": "string",
-                                    "description": "The name of the resource group the Database Account belongs to."
-                                }
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/cosmos-accounts-graph-database-parameters"
                             },
-                            "required": [
-                                "cosmosAccountName"
-                            ]
-                        }
-                    ]
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "cosmosAccountName": {
+                                        "type": "string",
+                                        "description": "The name of the database account in which the database lives in."
+                                    },
+                                    "cosmosAccountResourceGroup": {
+                                        "type": "string",
+                                        "description": "The name of the resource group the Database Account belongs to."
+                                    }
+                                },
+                                "required": [
+                                    "cosmosAccountName"
+                                ]
+                            }
+                        ]
                     },
                     "minItems": 1
                 }
