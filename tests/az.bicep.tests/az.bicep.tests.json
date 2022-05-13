@@ -118,6 +118,35 @@
                 "cognitiveSearchName": "test-cog-search-assim-@environment-@region",
                 "cognitiveSearchLocation": "EastUS2"
             }
+        },
+        "storageAccount": {
+            "value": {
+                "storageAccountName": "asststsghe@environment@region01",
+                "storageAccountType":"StorageV2",
+                "storageAccountTier": {
+                    "dev": "Standard",
+                    "qa": "Standard",
+                    "uat": "Standard",
+                    "prd": "Standard"
+                },
+                "storageAccountRedundancy": {
+                    "dev": "LRS",
+                    "qa":"LRS",
+                    "uat": "LRS",
+                    "prd": "LRS"
+                },
+                "storageAccountBlobServices": {
+                    "storageAccountBlobServiceName": "default",
+                    "storageAccountBlobServiceContainers": [
+                    ]
+                }
+            }
+        },
+        "dataShareAccount": {
+            "value": {
+                "dataShareAccountName": "test-data-share",
+                "dataShareAccountLocation": "East US"
+            }
         }
     }
 }

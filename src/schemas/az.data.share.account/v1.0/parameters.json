@@ -1,0 +1,455 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "data-share-account": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/data-share-account-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "data-share-accounts": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/data-share-account-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "data-share-account-parameters": {
+            "type": "object",
+            "properties": {
+                "dataShareAccountName": {
+                    "type": "string"
+                },
+                "dataShareAccountResourceGroup": {
+                    "type": "string"
+                },
+                "dataShareAccountLocation": {
+                    "type": "string"
+                },
+                "dataShareAccountShares": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/data-share-account-share-parameters"
+                    },
+                    "minItems": 1
+                },
+                "dataShareAccountTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            }
+        },
+        "data-share-account-share": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/data-share-account-share-parameters"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dataShareAccountName": {
+                                    "type": "string"
+                                },
+                                "dataShareAccountResourceGroup": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "dataShareAccountName"
+                            ]
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "data-share-account-shares": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/data-share-account-share-parameters"
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "dataShareAccountName": {
+                                        "type": "string"
+                                    },
+                                    "dataShareAccountResourceGroup": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "dataShareAccountName"
+                                ]
+                            }
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "data-share-account-share-parameters": {
+            "type": "object",
+            "properties": {
+                "dataShareName": {
+                    "type": "string"
+                },
+                "dataShareType": {
+                    "enum": [
+                        "InPlace",
+                        "CopyBased"
+                    ]
+                },
+                "dataShareTerms": {
+                    "type": "string",
+                    "description": "Represents the Terms of Use."
+                },
+                "dataShareDescription": {
+                    "type": "string"
+                },
+                "dataShareDatasets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/data-share-account-share-dataset-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "dataShareName",
+                "dataShareType"
+            ]
+        },
+        "data-share-account-share-dataset": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/data-share-account-share-dataset-parameters"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dataShareName": {
+                                    "type": "string"
+                                },
+                                "dataShareAccountName": {
+                                    "type": "string"
+                                },
+                                "dataShareAccountResourceGroup": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "dataShareName",
+                                "dataShareAccountName"
+                            ]
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "data-share-account-share-datasets": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/data-share-account-share-dataset-parameters"
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "dataShareName": {
+                                        "type": "string"
+                                    },
+                                    "dataShareAccountName": {
+                                        "type": "string"
+                                    },
+                                    "dataShareAccountResourceGroup": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "dataShareName",
+                                    "dataShareAccountName"
+                                ]
+                            }
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "data-share-account-share-dataset-parameters": {
+            "type": "object",
+            "allOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "dataShareDatasetName": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "dataShareDatasetName"
+                    ]
+                },
+                {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dataShareDatasetType": {
+                                    "const": "AdlsGen1File"
+                                },
+                                "dataShareDatasetConfigs": {
+                                    "type": "object",
+                                    "properties": {
+                                        "datasetResourceGroup": {
+                                            "type": "string"
+                                        },
+                                        "datasetSubscriptionId": {
+                                            "type": "string"
+                                        },
+                                        "datasetFileName": {
+                                            "type": "string"
+                                        },
+                                        "datasetFolderPath": {
+                                            "type": "string"
+                                        },
+                                        "datasetAccountName": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "datasetResourceGroup",
+                                        "datasetFileName",
+                                        "datasetFolderPath",
+                                        "datasetAccountName"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "dataShareDatasetType",
+                                "dataShareDatasetConfigs"
+                            ]
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dataShareDatasetType": {
+                                    "const": "AdlsGen1Folder"
+                                },
+                                "dataShareDatasetConfigs": {
+                                    "type": "object",
+                                    "properties": {
+                                        "datasetResourceGroup": {
+                                            "type": "string"
+                                        },
+                                        "datasetSubscriptionId": {
+                                            "type": "string"
+                                        },
+                                        "datasetFolderPath": {
+                                            "type": "string"
+                                        },
+                                        "datasetAccountName": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "datasetResourceGroup",
+                                        "datasetFolderPath",
+                                        "datasetAccountName"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "dataShareDatasetType",
+                                "dataShareDatasetConfigs"
+                            ]
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dataShareDatasetType": {
+                                    "const": "AdlsGen2File"
+                                },
+                                "dataShareDatasetConfigs": {
+                                    "type": "object",
+                                    "properties": {
+                                        "datasetResourceGroup": {
+                                            "type": "string"
+                                        },
+                                        "datasetSubscriptionId": {
+                                            "type": "string"
+                                        },
+                                        "datasetFileSystem": {
+                                            "type": "string"
+                                        },
+                                        "datasetFilePath": {
+                                            "type": "string"
+                                        },
+                                        "datasetAccountName": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "datasetResourceGroup",
+                                        "datasetFileSystem",
+                                        "datasetFilePath",
+                                        "datasetAccountName"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dataShareDatasetType": {
+                                    "const": "AdlsGen2Folder"
+                                },
+                                "dataShareDatasetConfigs": {
+                                    "type": "object",
+                                    "properties": {
+                                        "datasetResourceGroup": {
+                                            "type": "string"
+                                        },
+                                        "datasetSubscriptionId": {
+                                            "type": "string"
+                                        },
+                                        "datasetFileSystem": {
+                                            "type": "string"
+                                        },
+                                        "datasetFilePath": {
+                                            "type": "string"
+                                        },
+                                        "datasetFolderPath": {
+                                            "type": "string"
+                                        },
+                                        "datasetAccountName": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "datasetResourceGroup",
+                                        "datasetFileSystem",
+                                        "datasetFilePath",
+                                        "datasetFolderPath",
+                                        "datasetAccountName"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dataShareDatasetType": {
+                                    "const": "Blob"
+                                },
+                                "dataShareDatasetConfigs": {
+                                    "type": "object",
+                                    "properties": {
+                                        "datasetResourceGroup": {
+                                            "type": "string"
+                                        },
+                                        "datasetSubscriptionId": {
+                                            "type": "string"
+                                        },
+                                        "datasetBlobPath": {
+                                            "type": "string"
+                                        },
+                                        "datasetContainerName": {
+                                            "type": "string"
+                                        },
+                                        "datasetAccountName": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "datasetResourceGroup",
+                                        "datasetBlobPath",
+                                        "datasetContainerName",
+                                        "datasetAccountName"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dataShareDatasetType": {
+                                    "const": "Container"
+                                },
+                                "dataShareDatasetConfigs": {
+                                    "type": "object",
+                                    "properties": {
+                                        "datasetResourceGroup": {
+                                            "type": "string"
+                                        },
+                                        "datasetSubscriptionId": {
+                                            "type": "string"
+                                        },
+                                        "datasetContainerName": {
+                                            "type": "string"
+                                        },
+                                        "datasetAccountName": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "datasetResourceGroup",
+                                        "datasetContainerName",
+                                        "datasetAccountName"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

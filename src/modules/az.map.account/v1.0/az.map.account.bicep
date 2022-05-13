@@ -26,6 +26,22 @@ resource azMapAccountDeployment 'Microsoft.Maps/accounts@2021-02-01' = {
    sku: {
       name:  'G2'
    }
-   properties: {}
+   properties: {
+
+   }
    tags: mapAccountTags
+
+   resource azMapAccountPrivateAtlas 'privateAtlases' = {
+     name: ''
+     plan: {
+        
+     }
+   }
 }
+
+
+resource azMapAccountDeployment1 'Microsoft.Maps/accounts/privateAtlases@2020-02-01-preview' = {
+
+   name: '/'
+
+} 

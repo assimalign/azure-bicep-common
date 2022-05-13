@@ -18,10 +18,10 @@ param signalRServiceLocation string = resourceGroup().location
 
 @description('The pricing tier of the Azure Signal R Service.')
 param signalRServiceSku object = {
-  dev: 'Free_F1'
-  qa: 'Free_F1'
-  uat: 'Free_F1'
-  prd: 'Free_F1'
+  dev: 'Free'
+  qa:  'Free'
+  uat: 'Free'
+  prd: 'Free'
 }
 
 @description('The tags to attach to the resource when deployed')
@@ -42,9 +42,12 @@ var sku = any((environment == 'dev') ? {
 resource azSignalRDeployment 'Microsoft.SignalRService/SignalR@2022-02-01' = {
   name: replace(replace(signalRServiceName, '@environment', environment), '@region', region)
   location: signalRServiceLocation
-  sku: sku
+  sku: {
+  name: ''
+
+  }
   properties: {
-     
+    
   }
   tags: signalRServiceTags
 }

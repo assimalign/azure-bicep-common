@@ -9,6 +9,8 @@ param serviceBusNamespace object
 param serviceBusNamespaceQueue object
 param serviceBusNamespaceTopic object
 param cognitiveSearchService object
+param storageAccount object
+param dataShareAccount object
 
 targetScope = 'subscription'
 
@@ -122,13 +124,24 @@ var cosmosResourceGroup = az.resourceGroup(replace(replace(cosmosAccount.cosmosA
 //   }
 // }
 
-module azCognitiveSearchDeploy '../../src/modules/az.cognitive.search/v1.0/az.cognitive.search.account.bicep' = {
-  name: 'test-az-cog-search-deploy'
+// module azCognitiveSearchDeploy '../../src/modules/az.cognitive.search/v1.0/az.cognitive.search.account.bicep' = {
+//   name: 'test-az-cog-search-deploy'
+//   scope: cosmosResourceGroup
+//   params: {
+//     region: location
+//     environment: environment
+//     cognitiveSearchName: cognitiveSearchService.cognitiveSearchName
+//     cognitiveSearchLocation: cognitiveSearchService.cognitiveSearchLocation
+//   }
+// }
+
+module azDataShareDeployment '../../src/modules/az.data.share.account/v1.0/az.data.share.account.bicep' = {
+  name: 'test-az-data-share-deploy'
   scope: cosmosResourceGroup
   params: {
     region: location
     environment: environment
-    cognitiveSearchName: cognitiveSearchService.cognitiveSearchName
-    cognitiveSearchLocation: cognitiveSearchService.cognitiveSearchLocation
+    dataShareAccountName: dataShareAccount.dataShareAccountName
+    dataShareAccountLocation: dataShareAccount.dataShareAccountLocation
   }
 }

@@ -766,6 +766,32 @@
                             "$ref": "../az.iot.hub/v1.0/parameters.json#/definitions/iot-hubs"
                         }
                     ]
+                },
+                "dataShareAccount": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.data.share.account/v1.0/parameters.json#/definitions/data-share-account"
+                        }
+                    ]
+                },
+                "dataShareAccounts": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.data.share.account/v1.0/parameters.json#/definitions/data-share-accounts"
+                        }
+                    ]
+                },
+                "dataShare": {
+
+                },
+                "dataShares": {
+
+                },
+                "dataShareDataset": {
+
+                },
+                "dataShareDatasets": {
+
                 }
                 // "roleAssignments": {
                 //     "$ref": "az.rbac.role.assignment.schema.json#definitions/roleAssignments"

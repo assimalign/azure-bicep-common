@@ -1,18 +1,21 @@
 {
     "moduleAliases": {
-        "ts": {},
         "br": {
             "assimalign": {
                 "registry": "asalbicep.azurecr.io"
             }
         }
     },
+    
     "cloud": {
+        "profiles": {
+            
+        },
         "currentProfile": "AzureCloud",
         "credentialPrecedence": [
-            "VisualStudioCode",
             "AzurePowerShell",
-            "ManagedIdentity"
+            "VisualStudioCode",
+            "VisualStudio"
         ]
     }
 }

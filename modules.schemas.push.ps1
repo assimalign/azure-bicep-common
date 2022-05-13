@@ -5,8 +5,8 @@ $storageAccountResourceGroup = 'asal-main-rg-est-us-01'
 
 
 
-Connect-AzAccount
-# u
+Connect-AzAccount -Subscription '3c1b7889-444a-48a3-b2b4-275e2ff15584'
+
 $account = Get-AzStorageAccount -ResourceGroupName $storageAccountResourceGroup -Name $storageAccountName 
 $items = Get-ChildItem './src' -Recurse -Include '*.json'
 $items | ForEach-Object {

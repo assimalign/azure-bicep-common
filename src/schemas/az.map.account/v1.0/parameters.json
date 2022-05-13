@@ -24,7 +24,35 @@
             ]
         },
         "map-account-parameters": {
-            
+            "type": "object",
+            "properties": {
+                "mapAccountName": {
+                    "type": "string"
+                },
+                "mapAccountSku": {
+                    "type": "object"
+                },
+                "mapAccountPrivateAtlas": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "privateAtlasName":{
+    
+                            }
+                        }
+                    }
+                },
+                "mapAccountTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            }
         }
     }
 }

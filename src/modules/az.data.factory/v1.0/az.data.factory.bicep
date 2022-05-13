@@ -29,15 +29,14 @@ param dataFactoryDefaultNetworkAccess string = 'Allow'
 @description('The source control to be used for data factory packages.')
 param dataFactoryRepositorySettings object = {}
 
-
 resource azDataFactoryDeployment 'Microsoft.DataFactory/factories@2018-06-01' = {
   name: replace(replace(dataFactoryName, '@environment', environment), '@region', region)
   location: dataFactoryLocation
   identity: any(dataFactoryEnableMsi == true ? {
-    type: 'SystemAssigned' 
+    type: 'SystemAssigned'
   } : {})
   properties: {
-     publicNetworkAccess: dataFactoryDefaultNetworkAccess == 'Allow' ? 'Enabled' : 'Disabled'
-     repoConfiguration: any(!empty(dataFactoryRepositorySettings) ? dataFactoryRepositorySettings : { })
+    publicNetworkAccess: dataFactoryDefaultNetworkAccess == 'Allow' ? 'Enabled' : 'Disabled'
+    repoConfiguration: any(!empty(dataFactoryRepositorySettings) ? dataFactoryRepositorySettings : {})
   }
 }
