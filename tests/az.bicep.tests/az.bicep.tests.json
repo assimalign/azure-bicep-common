@@ -136,11 +136,37 @@
                     "uat": "LRS",
                     "prd": "LRS"
                 },
+                "storageAccountQueueServices": {
+                    "storageAccountQueueServiceName": "default",
+                    "storageAccountQueueServiceQueues": [
+                        {
+                            "storageAccountQueueName": "test-queue"
+                        }
+                    ]
+                    
+                },
                 "storageAccountBlobServices": {
                     "storageAccountBlobServiceName": "default",
                     "storageAccountBlobServiceContainers": [
                         {
                             "storageAccountBlobContainerName": "test-container"
+                        }
+                    ]
+                },
+                "storageAccountTableServices": {
+                    "storageAccountTableServiceName": "default",
+                    "storageAccountTableServiceTables": [
+                        {
+                            "storageAccountTableName": "test-table"
+                        }
+                    ]
+                },
+                "storageAccountFileShareServices": {
+                    "storageAccountFileShareServiceName": "default",
+                    "storageAccountFileShareServiceShares": [
+                        {
+                            "storageAccountFileShareName": "fs-test",
+                            "storageAccountFileShareAccessTier": "Cool"
                         }
                     ]
                 }

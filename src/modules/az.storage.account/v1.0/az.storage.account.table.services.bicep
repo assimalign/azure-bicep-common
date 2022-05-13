@@ -26,12 +26,10 @@ param storageAccountTableServiceName string = 'default'
 param storageAccountTableServiceTables array = []
 
 @description('Sets the CORS rules. You can include up to five CorsRule elements in the request.')
-param storageAccountTableServiceCorsPolicy array = []
+param storageAccountTableServiceConfigs object = {}
 
 @description('')
 param storageAccountTableServicePrivateEndpoint object = {}
-
-
 
 // 1. Get the existing Storage Account
 resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2021-04-01' existing = {
@@ -39,26 +37,26 @@ resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2021-04-01'
 }
 
 // 2. Deploy the Storage Account Table Service
-resource azStorageAccountTableServiceDeployment 'Microsoft.Storage/storageAccounts/tableServices@2021-08-01' = {
+resource azStorageAccountTableServiceDeployment 'Microsoft.Storage/storageAccounts/tableServices@2021-09-01' = {
   name: storageAccountTableServiceName
   parent: azStorageAccountResource
   properties: {
-    cors: empty(storageAccountTableServiceCorsPolicy) ? json('null') : {
-      corsRules: storageAccountTableServiceCorsPolicy
+    cors: !contains(storageAccountTableServiceConfigs, 'tableServiceCorsPolicy') ? json('null') : {
+      corsRules: storageAccountTableServiceConfigs.tableServiceCorsPolicy
     }
   }
 }
 
 // 3. Deploy Storage Account Tables if applicable
 module azStorageAccountTableServiceTablesDeployment 'az.storage.account.table.services.tables.bicep' = [for table in storageAccountTableServiceTables: if (!empty(table)) {
-  name: !empty(storageAccountTableServiceTables) ? toLower('az-stg-table-${guid('${azStorageAccountTableServiceDeployment.id}/${table.storageAccountTableServiceTableName}')}') : 'no-table-service-to-deploy'
+  name: !empty(storageAccountTableServiceTables) ? toLower('az-stg-table-${guid('${azStorageAccountTableServiceDeployment.id}/${table.storageAccountTableName}')}') : 'no-table-service-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
     storageAccountName: storageAccountName
     storageAccountTableServiceName: storageAccountTableServiceName
-    storageAccountTableServiceTableName: table.storageAccountTableServiceTableName
+    storageAccountTableServiceTableName: table.storageAccountTableName
   }
 }]
 

@@ -21,15 +21,11 @@ param storageAccountLocation string = resourceGroup().location
 ])
 @description('')
 param storageAccountFileShareServiceName string = 'default'
-
-@description('')
-param storageAccountFileShareServiceCorsPolicy array = []
-
 @description('')
 param storageAccountFileShareServicePrivateEndpoint object = {}
 
 @description('The retention policy when deleting file shares.')
-param storageAccountFileShareServiceDeleteRetentionPolicy object = {}
+param storageAccountFileShareServiceConfigs object = {}
 
 @description('A list of file shares to deploy with the file share service')
 param storageAccountFileShareServiceFileShares array = []
@@ -44,24 +40,24 @@ resource azStorageAccountFileShareServiceDeployment 'Microsoft.Storage/storageAc
   name: storageAccountFileShareServiceName
   parent: azStorageAccountResource
   properties: {
-    shareDeleteRetentionPolicy: empty(storageAccountFileShareServiceDeleteRetentionPolicy) ? json('null') : storageAccountFileShareServiceDeleteRetentionPolicy
-    cors: empty(storageAccountFileShareServiceCorsPolicy) ? json('null') : {
-      corsRules: storageAccountFileShareServiceCorsPolicy
+    shareDeleteRetentionPolicy: contains(storageAccountFileShareServiceConfigs, 'fileShareServiceRetentionPolicy') ? json('null') : storageAccountFileShareServiceConfigs.fileShareServiceRetentionPolicy
+    cors: !contains(storageAccountFileShareServiceConfigs, 'fileShareServiceCorsPolicy') ?  json('null') : {
+      corsRules: storageAccountFileShareServiceConfigs.fileShareServiceCorsPolicy
     }
   }
 }
 
 // 3. Deploy the File Share Service if applicable
 module azStorageAccountFileSharesDeployment 'az.storage.account.fileshare.services.shares.bicep' = [for fileShare in storageAccountFileShareServiceFileShares: if (!empty(fileShare)) {
-  name: !empty(storageAccountFileShareServiceFileShares) ? toLower('az-stg-fs-share-${guid('${azStorageAccountFileShareServiceDeployment.id}/${fileShare.storageAccountFileShareServiceShareName}')}') : 'no-fs-service-to-deploy'
+  name: !empty(storageAccountFileShareServiceFileShares) ? toLower('az-stg-fs-share-${guid('${azStorageAccountFileShareServiceDeployment.id}/${fileShare.storageAccountFileShareName}')}') : 'no-fs-service-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
     storageAccountName: storageAccountName
     storageAccountFileShareServiceName: storageAccountFileShareServiceName
-    storageAccountFileShareServiceShareName: fileShare.storageAccountFileShareServiceShareName
-    storageAccountFileShareServiceShareAccessTier: fileShare.storageAccountFileShareServiceShareAccessTier
+    storageAccountFileShareServiceShareName: fileShare.storageAccountFileShareName
+    storageAccountFileShareServiceShareAccessTier: fileShare.storageAccountFileShareAccessTier
   }
 }]
 

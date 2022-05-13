@@ -23,7 +23,7 @@ param storageAccountLocation string = resourceGroup().location
 param storageAccountQueueServiceName string = 'default'
 
 @description('The List of CORS rules. You can include up to five CorsRule elements in the request.')
-param storageAccountQueueServiceCorsRules array = []
+param storageAccountQueueServiceConfigs object = {}
 
 @description('')
 param storageAccountQueueServicePrivateEndpoint object = {}
@@ -41,22 +41,22 @@ resource azStorageAccountQueueServiceDeployment 'Microsoft.Storage/storageAccoun
   name: storageAccountQueueServiceName
   parent: azStorageAccountResource
   properties: {
-    cors: empty(storageAccountQueueServiceCorsRules) ? json('null') : {
-      corsRules: storageAccountQueueServiceCorsRules
+    cors: !contains(storageAccountQueueServiceConfigs, 'queueServiceCors') ? json('null') : {
+      corsRules: storageAccountQueueServiceConfigs.queueServiceCors
     }
   }
 }
 
 // 3. Deploy any Queues Service queues if any
 module azStorageAccountQueuesDeployment 'az.storage.account.queue.services.queues.bicep' = [for queue in storageAccountQueueServiceQueues: if (!empty(queue)) {
-  name: !empty(storageAccountQueueServiceQueues) ? toLower('az-stg-queues-${guid('${azStorageAccountQueueServiceDeployment.id}/${queue.name}')}') : 'no-queue-service-to-deploy'
+  name: !empty(storageAccountQueueServiceQueues) ? toLower('az-stg-queues-${guid('${azStorageAccountQueueServiceDeployment.id}/${queue.storageAccountQueueName}')}') : 'no-queue-service-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
     storageAccountName: storageAccountName
     storageAccountQueueServiceName: storageAccountQueueServiceName
-    storageAccountQueueServiceQueueName: queue.storageAccountQueueServiceQueueName
+    storageAccountQueueServiceQueueName: queue.storageAccountQueueName
   }
 }]
 

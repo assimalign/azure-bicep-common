@@ -156,10 +156,9 @@ module azStorageAccountFileShareServiceDeployment 'az.storage.account.fileshare.
     storageAccountName: storageAccountName
     storageAccountLocation: storageAccountLocation
     storageAccountFileShareServiceName: 'default'
-    storageAccountFileShareServiceFileShares: storageAccountFileShareServices.storageAccountFileShareServiceFileShares
-    storageAccountFileShareServiceDeleteRetentionPolicy: contains(storageAccountFileShareServices, 'storageAccountFileShareServiceDeleteRetentionPolicy') ? storageAccountFileShareServices.storageAccountFileShareServiceDeleteRetentionPolicy : []
-    storageAccountFileShareServiceCorsPolicy: contains(storageAccountFileShareServices, 'storageAccountFileShareServiceCorsPolicy') ? storageAccountFileShareServices.storageAccountFileShareServiceCorsPolicy : []
-    storageAccountFileShareServicePrivateEndpoint: storageAccountFileShareServices.storageAccountFileShareServicePrivateEndpoint ?? {}
+    storageAccountFileShareServiceFileShares: contains(storageAccountFileShareServices, 'storageAccountFileShareServiceFileShares') ? storageAccountFileShareServices.storageAccountFileShareServiceFileShares : []
+    storageAccountFileShareServiceConfigs: contains(storageAccountFileShareServices, 'storageAccountFileShareServiceConfigs') ? storageAccountFileShareServices.storageAccountFileShareServiceConfigs : {}
+    storageAccountFileShareServicePrivateEndpoint: contains(storageAccountFileShareServices, 'storageAccountFileShareServicePrivateEndpoint') ? storageAccountFileShareServices.storageAccountFileShareServicePrivateEndpoint : {}
   }
 }
 
@@ -173,8 +172,8 @@ module azStorageAccountQueueServiceDeployment 'az.storage.account.queue.services
     storageAccountName: storageAccountName
     storageAccountLocation: storageAccountLocation
     storageAccountQueueServiceName: 'default'
-    storageAccountQueueServiceQueues: storageAccountQueueServices.storageAccountQueueServiceQueues
-    storageAccountQueueServiceCorsRules: storageAccountQueueServices.storageAccountQueueServiceCors
+    storageAccountQueueServiceQueues: contains(storageAccountQueueServices,'storageAccountQueueServiceQueues') ? storageAccountQueueServices.storageAccountQueueServiceQueues : []
+    storageAccountQueueServiceConfigs: contains(storageAccountQueueServices,'storageAccountQueueServiceConfigs') ? storageAccountQueueServices.storageAccountQueueServiceConfigs : {}
     storageAccountQueueServicePrivateEndpoint: contains(storageAccountQueueServices, 'storageAccountQueueServicePrivateEndpoint') ? storageAccountQueueServices.storageAccountQueueServicePrivateEndpoint : {}
   }
 }
@@ -190,7 +189,7 @@ module azStorageAccountTableServiceDeployment 'az.storage.account.table.services
     storageAccountLocation: storageAccountLocation
     storageAccountTableServiceName: storageAccountTableServices.storageAccountTableServiceName
     storageAccountTableServiceTables: storageAccountTableServices.storageAccountTableServiceTables
-    storageAccountTableServiceCorsPolicy: contains(storageAccountTableServices, 'storageAccountTableServiceCorsPolicy') ? storageAccountTableServices.storageAccountTableServiceCorsPolicy : []
+    storageAccountTableServiceConfigs: contains(storageAccountTableServices, 'storageAccountTableServiceConfigs') ? storageAccountTableServices.storageAccountTableServiceConfigs : {}
     storageAccountTableServicePrivateEndpoint: contains(storageAccountTableServices, 'storageAccountTableServicePrivateEndpoint') ? storageAccountTableServices.storageAccountTableServicePrivateEndpoint : {}
   }
 }

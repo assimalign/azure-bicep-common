@@ -73,7 +73,6 @@ module azStorageAccountBlobServiceContainerDeployment 'az.storage.account.blob.s
     storageAccountBlobServiceName: storageAccountBlobServiceName
     storageAccountBlobContainerName: container.storageAccountBlobContainerName
     storageAccountBlobContainerPublicAccess: contains(container, 'storageAccountBlobContainerPublicAccess') ? container.storageAccountBlobContainerPublicAccess : 'None'
-    storageAccountBlobContainerVersioningEnabled: contains(container, 'storageAccountBlobContainerVersioningEnabled') ? container.storageAccountBlobContainerVersioningEnabled : false
   }
 }]
 
