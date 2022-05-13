@@ -29,16 +29,7 @@ param storageAccountBlobServicePrivateEndpoint object = {}
 param storageAccountBlobServiceContainers array = []
 
 @description('')
-param storageAccountBlobServiceRetentionPolicy object = {}
-
-@description('')
-param storageAccountBlobServiceRestorePolicy object = {}
-
-@description('')
-param storageAccountBlobServiceEnableVersioning bool = false
-
-@description('')
-param storageAccountBlobServiceEnableSnapshot bool = false
+param storageAccountBlobServiceConfigs object = {}
 
 // 1. Get the existing Storage Account
 resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2021-08-01' existing = {
@@ -46,25 +37,26 @@ resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2021-08-01'
 }
 
 // 2. Deploy the Blob Service resource
-resource azStorageAccountBlobServiceDeployment 'Microsoft.Storage/storageAccounts/blobServices@2021-08-01' = {
+resource azStorageAccountBlobServiceDeployment 'Microsoft.Storage/storageAccounts/blobServices@2021-09-01' = {
   name: storageAccountBlobServiceName
   parent: azStorageAccountResource
   properties: {
-    automaticSnapshotPolicyEnabled: storageAccountBlobServiceEnableSnapshot
-    isVersioningEnabled: storageAccountBlobServiceEnableVersioning
-    containerDeleteRetentionPolicy: any(!empty(storageAccountBlobServiceRetentionPolicy) ? {
-      days: storageAccountBlobServiceRetentionPolicy.days
+    automaticSnapshotPolicyEnabled: contains(storageAccountBlobServiceConfigs, 'blobServiceEnableSnapshot') ? storageAccountBlobServiceConfigs.blobServiceEnableSnapshot : false
+    isVersioningEnabled: contains(storageAccountBlobServiceConfigs, 'blobServiceEnableVersioning') ? storageAccountBlobServiceConfigs.blobServiceEnableVersioning : false
+    containerDeleteRetentionPolicy: any(contains(storageAccountBlobServiceConfigs, 'blobServiceRetentionPolicy') ? {
+      days: storageAccountBlobServiceConfigs.blobServiceRetentionPolicy.days
       enabled: true
     } : json('null'))
-    changeFeed: any(!empty(storageAccountBlobServiceRestorePolicy) ? {
+    changeFeed: any(contains(storageAccountBlobServiceConfigs, 'blobServiceRestorePolicy') ? {
+      retentionInDays: storageAccountBlobServiceConfigs.blobServiceRestorePolicy.days
       enabled: true
     } : json('null'))
-    restorePolicy: any(!empty(storageAccountBlobServiceRestorePolicy) ? {
-      days: storageAccountBlobServiceRestorePolicy.days
+    restorePolicy: any(contains(storageAccountBlobServiceConfigs, 'blobServiceRestorePolicy') ? {
+      days: storageAccountBlobServiceConfigs.blobServiceRestorePolicy.days
       enabled: true
     } : json('null'))
-    deleteRetentionPolicy: any(!empty(storageAccountBlobServiceRetentionPolicy) ? {
-      days: storageAccountBlobServiceRetentionPolicy.days
+    deleteRetentionPolicy: any(contains(storageAccountBlobServiceConfigs, 'blobServiceRestorePolicy') ? {
+      days: storageAccountBlobServiceConfigs.blobServiceRestorePolicy.days
       enabled: true
     } : json('null'))
   }
@@ -79,10 +71,9 @@ module azStorageAccountBlobServiceContainerDeployment 'az.storage.account.blob.s
     environment: environment
     storageAccountName: storageAccountName
     storageAccountBlobServiceName: storageAccountBlobServiceName
-    storageAccountBlobServiceContainerName: container.storageAccountBlobServiceContainerName
-    storageAccountBlobServiceContainerPublicAccess: contains(container, 'storageAccountBlobServiceContainerPublicAccess') ? container.storageAccountBlobServiceContainerPublicAccess : 'None'
-    storageAccountBlobServiceContainerVersioningEnabled: contains(container, 'storageAccountBlobServiceContainerVersioningEnabled') ?  container.storageAccountBlobServiceContainerVersioningEnabled : false
-    
+    storageAccountBlobContainerName: container.storageAccountBlobContainerName
+    storageAccountBlobContainerPublicAccess: contains(container, 'storageAccountBlobContainerPublicAccess') ? container.storageAccountBlobContainerPublicAccess : 'None'
+    storageAccountBlobContainerVersioningEnabled: contains(container, 'storageAccountBlobContainerVersioningEnabled') ? container.storageAccountBlobContainerVersioningEnabled : false
   }
 }]
 

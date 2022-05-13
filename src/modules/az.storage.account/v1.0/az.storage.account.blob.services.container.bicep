@@ -17,7 +17,7 @@ param storageAccountName string
 param storageAccountBlobServiceName string
 
 @description('The name of the blob storage container to deploy')
-param storageAccountBlobServiceContainerName string
+param storageAccountBlobContainerName string
 
 @allowed([
   'None'
@@ -25,15 +25,15 @@ param storageAccountBlobServiceContainerName string
   'Container'
 ])
 @description('')
-param storageAccountBlobServiceContainerPublicAccess string = 'None'
+param storageAccountBlobContainerPublicAccess string = 'None'
 
 @description('Enables versioning by making blobs immutable')
-param storageAccountBlobServiceContainerVersioningEnabled bool = false
+param storageAccountBlobContainerVersioningEnabled bool = false
 
-resource azStorageAccountBlobDeployment 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-04-01' = {
-  name: replace(replace('${storageAccountName}/${storageAccountBlobServiceName}/${storageAccountBlobServiceContainerName}', '@environment', environment), '@region', region)
+resource azStorageAccountBlobDeployment 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-09-01' = {
+  name: replace(replace('${storageAccountName}/${storageAccountBlobServiceName}/${storageAccountBlobContainerName}', '@environment', environment), '@region', region)
   properties: {
-    publicAccess: storageAccountBlobServiceContainerPublicAccess
+    publicAccess: storageAccountBlobContainerPublicAccess
     // immutableStorageWithVersioning: {
     //   enabled: storageAccountBlobServiceContainerVersioningEnabled
     // }

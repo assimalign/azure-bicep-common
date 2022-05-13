@@ -33,6 +33,9 @@
                 "storageAccountName": {
                     "type": "string"
                 },
+                "storageAccountLocation": {
+                    "type": "string"
+                },
                 "storageAccountResourceGroup": {
                     "type": "string"
                 },
@@ -186,13 +189,9 @@
                 "storageAccountVirtualNetworkDefaultAccess": {
                     "type": "string",
                     "default": "Allow",
-                    "oneOf": [
-                        {
-                            "const": "Allow"
-                        },
-                        {
-                            "const": "Deny"
-                        }
+                    "enum": [
+                        "Allow",
+                        "Deny"
                     ]
                 },
                 "storageAccountVirtualNetworks": {
@@ -539,8 +538,29 @@
                 "value": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/storage-account-table-service-parameters"
-                    }
+                        "type": "object",
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/storage-account-table-service-parameters"
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "storageAccountName": {
+                                        "type": "string"
+                                    },
+                                    "storageAccountResourceGroup": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "storageAccountName",
+                                    "storageAccountResourceGroup"
+                                ]
+                            }
+                        ]
+                    },
+                    "minItems": 1
                 }
             }
         },
@@ -548,23 +568,37 @@
             "type": "object",
             "properties": {
                 "value": {
-                    "$ref": "#/definitions/storage-account-table-service-parameters"
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/storage-account-table-service-parameters"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "storageAccountName": {
+                                    "type": "string"
+                                },
+                                "storageAccountResourceGroup": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "storageAccountName",
+                                "storageAccountResourceGroup"
+                            ]
+                        }
+                    ]
                 }
             }
         },
         "storage-account-table-service-parameters": {
-            "type":"object",
+            "type": "object",
             "properties": {
-                "storageAccountName": {
-                    "type": "string"
-                },
-                "storageAccountResourceGroup": {
-                    "type": "string"
-                },
                 "storageAccountTableServiceName": {
                     "type": "string",
                     "default": "default"
-                },          
+                },
                 "storageAccountTableServicePrivateEndpoint": {
                     "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
                 },
@@ -572,7 +606,8 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/storage-account-table-service-table-parameters"
-                    }
+                    },
+                    "minItems": 1
                 },
                 "storageAccountTableServiceCorsPolicy": {
                     "type": "array",
@@ -606,8 +641,7 @@
                 }
             },
             "required": [
-                "storageAccountName",
-                "storageAccountResourceGroup"
+                "storageAccountTableServiceName"
             ]
         },
         "storage-account-table-service-tables": {
@@ -616,7 +650,32 @@
                 "value": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/storage-account-table-service-table-parameters"
+                        "type": "object",
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/storage-account-table-service-table-parameters"
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "storageAccountName": {
+                                        "type": "string"
+                                    },
+                                    "storageAccountResourceGroup": {
+                                        "type": "string"
+                                    },
+                                    "storageAccountTableServiceName": {
+                                        "type": "string",
+                                        "default": "default"
+                                    }
+                                },
+                                "required": [
+                                    "storageAccountTableName",
+                                    "storageAccountTableServiceName",
+                                    "storageAccountResourceGroup"
+                                ]
+                            }
+                        ]
                     },
                     "minItems": 1
                 }
@@ -629,7 +688,32 @@
             "type": "object",
             "properties": {
                 "value": {
-                    "$ref": "#/definitions/storage-account-table-service-table-parameters"
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/storage-account-table-service-table-parameters"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "storageAccountName": {
+                                    "type": "string"
+                                },
+                                "storageAccountResourceGroup": {
+                                    "type": "string"
+                                },
+                                "storageAccountTableServiceName": {
+                                    "type": "string",
+                                    "default": "default"
+                                }
+                            },
+                            "required": [
+                                "storageAccountTableName",
+                                "storageAccountTableServiceName",
+                                "storageAccountResourceGroup"
+                            ]
+                        }
+                    ]
                 }
             },
             "required": [
@@ -639,25 +723,12 @@
         "storage-account-table-service-table-parameters": {
             "type": "object",
             "properties": {
-                "storageAccountName": {
-                    "type": "string"
-                },
-                "storageAccountResourceGroup": {
-                    "type": "string"
-                },
-                "storageAccountTableServiceName": {
-                    "type": "string",
-                    "default": "default"
-                },
                 "storageAccountTableServiceTableName": {
                     "type": "string"
                 }
             },
             "required": [
-                "storageAccountTableName",
-                "storageAccountTableServiceName",
-                "storageAccountTableServiceTableName",
-                "storageAccountResourceGroup"
+                "storageAccountTableServiceTableName"
             ]
         },
         "storage-account-queue-services": {
@@ -665,9 +736,7 @@
             "properties": {
                 "value": {
                     "type": "array",
-                    "items": {
-                        
-                    }
+                    "items": {}
                 }
             }
         },
@@ -998,7 +1067,26 @@
                 "value": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/storage-account-blob-service-parameters"
+                        "type": "object",
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/storage-account-blob-service-parameters"
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "storageAccountName": {
+                                        "type": "string"
+                                    },
+                                    "storageAccountResourceGroup": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "storageAccountName"
+                                ]
+                            }
+                        ]
                     }
                 }
             }
@@ -1007,7 +1095,26 @@
             "type": "object",
             "properties": {
                 "value": {
-                    "$ref": "#/definitions/storage-account-blob-service-parameters"
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/storage-account-blob-service-parameters"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "storageAccountName": {
+                                    "type": "string"
+                                },
+                                "storageAccountResourceGroup": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "storageAccountName"
+                            ]
+                        }
+                    ]
                 }
             },
             "required": [
@@ -1017,25 +1124,20 @@
         "storage-account-blob-service-parameters": {
             "type": "object",
             "properties": {
-                "storageAccountName": {
-                    "type": "string"
-                },
-                "storageAccountResourceGroup": {
-                    "type": "string"
-                },
                 "storageAccountBlobServiceName": {
                     "type": "string",
                     "default": "default"
                 },
-                "storageAccountBlobServiceEnableVersioning": {
-                    "type": "boolean"
-                },
-                "storageAccountBlobServiceEnableSnapshot": {
-                    "type": "boolean"
-                },
-                "storageAccountBlobServiceRetentionPolicy": {
-                    "oneOf": [
-                        {
+                "storageAccountBlobServiceConfigs": {
+                    "type": "object",
+                    "properties": {
+                        "blobServiceEnableVersioning": {
+                            "type": "boolean"
+                        },
+                        "blobServiceEnableSnapshot": {
+                            "type": "boolean"
+                        },
+                        "blobServiceRetentionPolicy": {
                             "type": "object",
                             "properties": {
                                 "days": {
@@ -1046,14 +1148,7 @@
                                 "days"
                             ]
                         },
-                        {
-                            "type": "null"
-                        }
-                    ]
-                },
-                "storageAccountBlobServiceRestorePolicy": {
-                    "oneOf": [
-                        {
+                        "blobServiceRestorePolicy": {
                             "type": "object",
                             "properties": {
                                 "days": {
@@ -1063,17 +1158,15 @@
                             "required": [
                                 "days"
                             ]
-                        },
-                        {
-                            "type": "null"
                         }
-                    ]
+                    }
                 },
                 "storageAccountBlobServiceContainers": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/storage-account-blob-service-container-parameters"
-                    }
+                    },
+                    "minItems": 1
                 },
                 "storageAccountBlobServicePrivateEndpoint": {
                     "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
@@ -1089,8 +1182,32 @@
                 "value": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/storage-account-blob-service-container-parameters"
-                    }
+                        "type": "object",
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/storage-account-blob-service-container-parameters"
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "storageAccountName": {
+                                        "type": "string"
+                                    },
+                                    "storageAccountResourceGroup": {
+                                        "type": "string"
+                                    },
+                                    "storageAccountBlobServiceName": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "storageAccountName",
+                                    "storageAccountBlobServiceName"
+                                ]
+                            }
+                        ]
+                    },
+                    "minItems": 1
                 }
             },
             "required": [
@@ -1101,7 +1218,30 @@
             "type": "object",
             "properties": {
                 "value": {
-                    "$ref": "#/definitions/storage-account-blob-service-container-parameters"
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/storage-account-blob-service-container-parameters"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "storageAccountName": {
+                                    "type": "string"
+                                },
+                                "storageAccountResourceGroup": {
+                                    "type": "string"
+                                },
+                                "storageAccountBlobServiceName": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "storageAccountName",
+                                "storageAccountBlobServiceName"
+                            ]
+                        }
+                    ]
                 }
             },
             "required": [
@@ -1111,23 +1251,14 @@
         "storage-account-blob-service-container-parameters": {
             "type": "object",
             "properties": {
-                "storageAccountName": {
+                "storageAccountBlobContainerName": {
                     "type": "string"
                 },
-                "storageAccountResourceGroup": {
-                    "type": "string"
-                },
-                "storageAccountBlobServiceName": {
-                    "type": "string"
-                },
-                "storageAccountBlobServiceContainerName": {
-                    "type": "string"
-                },
-                "storageAccountBlobServiceContainerEnableVersioning": {
+                "storageAccountBlobContainerEnableVersioning": {
                     "type": "boolean",
                     "default": false
                 },
-                "storageAccountBlobServiceContainerAccessLevel": {
+                "storageAccountBlobContainerAccessLevel": {
                     "type": "string",
                     "default": "None",
                     "oneOf": [
@@ -1144,10 +1275,7 @@
                 }
             },
             "required": [
-                "storageAccountName",
-                "storageAccountBlobServiceContainerName",
-                "storageAccountBlobServiceContainerEnableVersioning",
-                "storageAccountBlobServiceContainerAccessLevel"
+                "storageAccountBlobContainerName"
             ]
         }
     }

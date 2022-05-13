@@ -135,6 +135,21 @@ var cosmosResourceGroup = az.resourceGroup(replace(replace(cosmosAccount.cosmosA
 //   }
 // }
 
+module azStorageAccountDeployment '../../src/modules/az.storage.account/v1.0/az.storage.account.bicep' = {
+  name: 'test-az-storage-account-deploy'
+  scope: cosmosResourceGroup
+  params: {
+    region: location
+    environment: environment
+    storageAccountName: storageAccount.storageAccountName
+    storageAccountLocation: storageAccount.storageAccountLocation
+    storageAccountType: storageAccount.storageAccountType
+    storageAccountTier: storageAccount.storageAccountTier
+    storageAccountRedundancy: storageAccount.storageAccountRedundancy
+    storageAccountBlobServices: storageAccount.storageAccountBlobServices
+  }
+}
+
 module azDataShareDeployment '../../src/modules/az.data.share.account/v1.0/az.data.share.account.bicep' = {
   name: 'test-az-data-share-deploy'
   scope: cosmosResourceGroup
@@ -145,4 +160,7 @@ module azDataShareDeployment '../../src/modules/az.data.share.account/v1.0/az.da
     dataShareAccountLocation: dataShareAccount.dataShareAccountLocation
     dataShareAccountShares: dataShareAccount.dataShareAccountShares
   }
+  dependsOn: [
+    azStorageAccountDeployment
+  ]
 }

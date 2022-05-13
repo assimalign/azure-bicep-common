@@ -96,7 +96,7 @@ var resourceAccess = [for resource in storageAccountResourceAccess: {
 }]
 
 // 1. Deploy Azure Storage Account
-resource azStorageAccountDeployment 'Microsoft.Storage/storageAccounts@2021-08-01' = {
+resource azStorageAccountDeployment 'Microsoft.Storage/storageAccounts@2021-09-01' = {
   name: replace(replace(storageAccountName, '@environment', environment), '@region', region)
   kind: storageAccountType
   location: storageAccountLocation
@@ -140,12 +140,9 @@ module azStorageAccountBlobServiceDeployment 'az.storage.account.blob.services.b
     storageAccountName: storageAccountName
     storageAccountLocation: storageAccountLocation
     storageAccountBlobServiceName: 'default'
-    storageAccountBlobServiceContainers: storageAccountBlobServices.storageAccountBlobServiceContainers
-    storageAccountBlobServiceEnableSnapshot: storageAccountBlobServices.storageAccountBlobServiceEnableSnapshot
-    storageAccountBlobServiceEnableVersioning: storageAccountBlobServices.storageAccountBlobServiceEnableVersioning
+    storageAccountBlobServiceConfigs: contains(storageAccountBlobServices, 'storageAccountBlobServiceConfigs') ? storageAccountBlobServices.storageAccountBlobServiceConfigs : {}
+    storageAccountBlobServiceContainers: contains(storageAccountBlobServices, 'storageAccountBlobServiceContainers') ? storageAccountBlobServices.storageAccountBlobServiceContainers : []
     storageAccountBlobServicePrivateEndpoint: contains(storageAccountBlobServices, 'storageAccountBlobServicePrivateEndpoint') ? storageAccountBlobServices.storageAccountBlobServicePrivateEndpoint : {}
-    storageAccountBlobServiceRestorePolicy: contains(storageAccountBlobServices, 'storageAccountBlobServiceRestorePolicy') ? storageAccountBlobServices.storageAccountBlobServiceRestorePolicy : {}
-    storageAccountBlobServiceRetentionPolicy: contains(storageAccountBlobServices, 'storageAccountBlobServiceRetentionPolicy') ? storageAccountBlobServices.storageAccountBlobServiceRetentionPolicy : {}
   }
 }
 
