@@ -143,5 +143,6 @@ module azDataShareDeployment '../../src/modules/az.data.share.account/v1.0/az.da
     environment: environment
     dataShareAccountName: dataShareAccount.dataShareAccountName
     dataShareAccountLocation: dataShareAccount.dataShareAccountLocation
+    dataShareAccountShares: dataShareAccount.dataShareAccountShares
   }
 }

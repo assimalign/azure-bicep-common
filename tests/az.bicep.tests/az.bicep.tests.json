@@ -145,7 +145,13 @@
         "dataShareAccount": {
             "value": {
                 "dataShareAccountName": "test-data-share",
-                "dataShareAccountLocation": "East US"
+                "dataShareAccountLocation": "East US",
+                "dataShareAccountShares": [
+                    {
+                        "dataShareName": "test-my-data-share",
+                        "dataShareType": "CopyBased"
+                    }
+                ]
             }
         }
     }
