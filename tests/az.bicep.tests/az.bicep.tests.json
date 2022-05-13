@@ -155,7 +155,18 @@
                         "dataShareName": "test-my-data-share",
                         "dataShareType": "CopyBased",
                         "dataShareDescription": "This is a test Description",
-                        "dataShareTerms": "This is test Terms of Service"
+                        "dataShareTerms": "This is test Terms of Service",
+                        "dataShareDatasets": [
+                            {
+                                "dataShareDatasetName": "test-ds",
+                                "dataShareDatasetType":"Container",
+                                "dataShareDatasetConfigs": {
+                                    "datasetAccountName": "asststsghe@environment@region01",
+                                    "datasetContainerName": "test-container",
+                                    "datasetResourceGroup": "test-rg-@environment-@region"
+                                }
+                            }
+                        ]
                     }
                 ]
             }
