@@ -157,7 +157,7 @@
                     "storageAccountTableServiceName": "default",
                     "storageAccountTableServiceTables": [
                         {
-                            "storageAccountTableName": "test-table"
+                            "storageAccountTableName": "TestTable"
                         }
                     ]
                 },

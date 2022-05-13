@@ -40,7 +40,7 @@ resource azStorageAccountFileShareServiceDeployment 'Microsoft.Storage/storageAc
   name: storageAccountFileShareServiceName
   parent: azStorageAccountResource
   properties: {
-    shareDeleteRetentionPolicy: contains(storageAccountFileShareServiceConfigs, 'fileShareServiceRetentionPolicy') ? json('null') : storageAccountFileShareServiceConfigs.fileShareServiceRetentionPolicy
+    shareDeleteRetentionPolicy: !contains(storageAccountFileShareServiceConfigs, 'fileShareServiceRetentionPolicy') ? json('null') : storageAccountFileShareServiceConfigs.fileShareServiceRetentionPolicy
     cors: !contains(storageAccountFileShareServiceConfigs, 'fileShareServiceCorsPolicy') ?  json('null') : {
       corsRules: storageAccountFileShareServiceConfigs.fileShareServiceCorsPolicy
     }
