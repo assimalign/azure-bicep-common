@@ -81,3 +81,5 @@ module azStorageTableServicePrivateEndpointDeployment '../../az.private.endpoint
     ]
   }
 }
+
+output storageAccountTableService object = azStorageAccountTableServiceDeployment

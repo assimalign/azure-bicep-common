@@ -156,7 +156,7 @@ module azStorageAccountFileShareServiceDeployment 'az.storage.account.fileshare.
     storageAccountName: storageAccountName
     storageAccountLocation: storageAccountLocation
     storageAccountFileShareServiceName: 'default'
-    storageAccountFileShareServiceFileShares: contains(storageAccountFileShareServices, 'storageAccountFileShareServiceFileShares') ? storageAccountFileShareServices.storageAccountFileShareServiceFileShares : []
+    storageAccountFileShareServiceFileShares: contains(storageAccountFileShareServices, 'storageAccountFileShareServiceShares') ? storageAccountFileShareServices.storageAccountFileShareServiceShares : []
     storageAccountFileShareServiceConfigs: contains(storageAccountFileShareServices, 'storageAccountFileShareServiceConfigs') ? storageAccountFileShareServices.storageAccountFileShareServiceConfigs : {}
     storageAccountFileShareServicePrivateEndpoint: contains(storageAccountFileShareServices, 'storageAccountFileShareServicePrivateEndpoint') ? storageAccountFileShareServices.storageAccountFileShareServicePrivateEndpoint : {}
   }
@@ -194,7 +194,7 @@ module azStorageAccountTableServiceDeployment 'az.storage.account.table.services
   }
 }
 
-output resource object = {
+output storageAccount object = {
   resourceId: azStorageAccountDeployment.id
   name: azStorageAccountDeployment.name
   location: azStorageAccountDeployment.location

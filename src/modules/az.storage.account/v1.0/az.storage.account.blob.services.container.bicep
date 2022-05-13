@@ -31,8 +31,7 @@ resource azStorageAccountBlobDeployment 'Microsoft.Storage/storageAccounts/blobS
   name: replace(replace('${storageAccountName}/${storageAccountBlobServiceName}/${storageAccountBlobContainerName}', '@environment', environment), '@region', region)
   properties: {
     publicAccess: storageAccountBlobContainerPublicAccess
-    // immutableStorageWithVersioning: {
-    //   enabled: storageAccountBlobServiceContainerVersioningEnabled
-    // }
   }
 }
+
+output storageAccountBlobContainer object = azStorageAccountBlobDeployment

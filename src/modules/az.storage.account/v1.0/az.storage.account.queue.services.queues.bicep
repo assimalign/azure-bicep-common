@@ -22,3 +22,5 @@ param storageAccountQueueServiceQueueName string
 resource azStorageAccountQueueDeployment 'Microsoft.Storage/storageAccounts/queueServices/queues@2021-08-01' = {
   name: replace(replace('${storageAccountName}/${storageAccountQueueServiceName}/${storageAccountQueueServiceQueueName}', '@environment', environment), '@region', region)
 }
+
+output storageAccountQueue object = azStorageAccountQueueDeployment

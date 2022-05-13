@@ -82,3 +82,5 @@ module azStorageFileShareServicePrivateEndpointDeployment '../../az.private.endp
     ]
   }
 }
+
+output storageAccountFileShareService object = azStorageAccountFileShareServiceDeployment

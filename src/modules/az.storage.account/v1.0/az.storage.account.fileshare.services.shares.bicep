@@ -34,3 +34,5 @@ resource azStorageAccountFileShareDeployment 'Microsoft.Storage/storageAccounts/
     accessTier: storageAccountFileShareServiceShareAccessTier
   }
 }
+
+output storageAccountFileShare object = azStorageAccountFileShareDeployment

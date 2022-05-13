@@ -97,3 +97,5 @@ module azStorageBlobServicePrivateEndpointDeployment '../../az.private.endpoint/
     ]
   }
 }
+
+output storageAccountBlobService object = azStorageAccountBlobServiceDeployment

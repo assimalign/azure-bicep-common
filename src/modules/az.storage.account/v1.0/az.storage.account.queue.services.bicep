@@ -81,3 +81,5 @@ module azStorageQueueServicePrivateEndpointDeployment '../../az.private.endpoint
     ]
   }
 }
+
+output storageAccountQueueService object = azStorageAccountQueueServiceDeployment
