@@ -434,20 +434,13 @@
                     }
                 },
                 "appGatewayTags": {
-                    "oneOf": [
-                        {
-                            "type": "object",
-                            "patternProperties": {
-                                "^[a-z]": {
-                                    "type": "string"
-                                }
-                            },
-                            "minProperties": 1
-                        },
-                        {
-                            "type": "null"
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
                         }
-                    ]
+                    },
+                    "minProperties": 1
                 }
             },
             "required": [
@@ -455,8 +448,7 @@
                 "appGatewaySku",
                 "appGatewayFrontend",
                 "appGatewayBackend",
-                "appGatewayRouting",
-                "appGatewayTags"
+                "appGatewayRouting"
             ]
         }
     }

@@ -33,6 +33,9 @@
                 "dataFactoryName": {
                     "type":"string"
                 },
+                "dataFactoryLocation": {
+                    "type": "string"
+                },
                 "dataFactoryResourceGroup": {
                     "type": "string"
                 },

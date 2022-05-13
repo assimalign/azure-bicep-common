@@ -11,6 +11,7 @@ param serviceBusNamespaceTopic object
 param cognitiveSearchService object
 param storageAccount object
 param dataShareAccount object
+param dataFactory object
 
 targetScope = 'subscription'
 
@@ -136,23 +137,23 @@ var cosmosResourceGroup = az.resourceGroup(replace(replace(cosmosAccount.cosmosA
 // }
 
 
-module azStorageAccountDeployment '../../src/modules/az.storage.account/v1.0/az.storage.account.bicep' = {
-  name: 'test-az-storage-account-deploy'
-  scope: cosmosResourceGroup
-  params: {
-    region: location
-    environment: environment
-    storageAccountName: storageAccount.storageAccountName
-    storageAccountLocation: storageAccount.storageAccountLocation
-    storageAccountType: storageAccount.storageAccountType
-    storageAccountTier: storageAccount.storageAccountTier
-    storageAccountRedundancy: storageAccount.storageAccountRedundancy
-    storageAccountBlobServices: storageAccount.storageAccountBlobServices
-    storageAccountFileShareServices: storageAccount.storageAccountFileShareServices
-    storageAccountQueueServices: storageAccount.storageAccountQueueServices
-    storageAccountTableServices: storageAccount.storageAccountTableServices
-  }
-}
+// module azStorageAccountDeployment '../../src/modules/az.storage.account/v1.0/az.storage.account.bicep' = {
+//   name: 'test-az-storage-account-deploy'
+//   scope: cosmosResourceGroup
+//   params: {
+//     region: location
+//     environment: environment
+//     storageAccountName: storageAccount.storageAccountName
+//     storageAccountLocation: storageAccount.storageAccountLocation
+//     storageAccountType: storageAccount.storageAccountType
+//     storageAccountTier: storageAccount.storageAccountTier
+//     storageAccountRedundancy: storageAccount.storageAccountRedundancy
+//     storageAccountBlobServices: storageAccount.storageAccountBlobServices
+//     storageAccountFileShareServices: storageAccount.storageAccountFileShareServices
+//     storageAccountQueueServices: storageAccount.storageAccountQueueServices
+//     storageAccountTableServices: storageAccount.storageAccountTableServices
+//   }
+// }
 
 // module azDataShareDeployment '../../src/modules/az.data.share.account/v1.0/az.data.share.account.bicep' = {
 //   name: 'test-az-data-share-deploy'
@@ -168,3 +169,15 @@ module azStorageAccountDeployment '../../src/modules/az.storage.account/v1.0/az.
 //     azStorageAccountDeployment
 //   ]
 // }
+
+
+module azDataFacotryDeployment '../../src/modules/az.data.factory/v1.0/az.data.factory.bicep' = {
+  name: 'test-az-df-deploy'
+  scope: cosmosResourceGroup
+  params: {
+    region: location
+    environment: environment
+    dataFactoryName: dataFactory.dataFactoryName
+    dataFactoryLocation: dataFactory.dataFactoryLocation
+  }
+}

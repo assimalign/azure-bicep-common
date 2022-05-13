@@ -196,6 +196,12 @@
                     }
                 ]
             }
+        },
+        "dataFactory": {
+            "value": {
+                "dataFactoryName": "test-df-deploy",
+                "dataFactoryLocation": "East US"
+            }
         }
     }
 }
