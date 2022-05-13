@@ -64,7 +64,7 @@ resource azStorageAccountBlobServiceDeployment 'Microsoft.Storage/storageAccount
 
 // 3. Deploy any Blob Service Container if available
 module azStorageAccountBlobServiceContainerDeployment 'az.storage.account.blob.services.container.bicep' = [for container in storageAccountBlobServiceContainers: if (!empty(container)) {
-  name: !empty(storageAccountBlobServiceContainers) ? toLower('az-stg-blob-container-${guid('${azStorageAccountBlobServiceDeployment.id}/${container.storageAccountBlobServiceContainerName}')}') : 'no-container-to-deploy'
+  name: !empty(storageAccountBlobServiceContainers) ? toLower('az-stg-blob-container-${guid('${azStorageAccountBlobServiceDeployment.id}/${container.storageAccountBlobContainerName}')}') : 'no-container-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
