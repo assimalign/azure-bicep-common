@@ -8,8 +8,6 @@ pool:
 
 variables:
   - group: bicep.release.variables
-  - name: azure-schema-stgact
-    value: 'empty'
 
 steps:
 - task: AzurePowerShell@5
