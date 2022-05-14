@@ -61,7 +61,7 @@ resource azIotHubDeployment 'Microsoft.Devices/IotHubs@2021-07-02' = {
     features: 'None'
     eventHubEndpoints: {
       events: {
-        partitionCount: contains(iotHubScale, 'partitions') ? iotHubScale.partitions : 1
+        partitionCount: contains(iotHubScale, 'partitions') ? iotHubScale.partitions : 2
         retentionTimeInDays: contains(iotHubScale, 'retention') ? iotHubScale.retention : 1
       }
     }
