@@ -20,6 +20,7 @@ $items | ForEach-Object {
             -Context $account.Context `
             -Blob "bicep\$path" `
             -File $_.FullName `
-            -Force
+            -Force `
+            -Verbose
     }   
 }
