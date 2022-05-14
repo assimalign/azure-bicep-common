@@ -8,27 +8,23 @@ pool:
 
 variables:
   - group: bicep.release.variables
-
-  # - name: deployVariablePath
-  #   value: 'tests\az.bicep.tests\az.bicep.tests.json'
-
-  # - name: deployBicepPath
-  #   value: 'tests\az.bicep.tests\az.bicep.tests.bicep'
+  - name: azure-schema-stgact
+    value: 
 
 steps:
-- task: AzureCLI@2
+- task: AzurePowerShell@5
   inputs:
     azureSubscription: 'Assimalign LLC (PRD) SA'
-    scriptType: 'pscore'
-    scriptLocation: 'scriptPath'
-    scriptPath: 'modules.schemas.push.ps1'
-    powerShellErrorActionPreference: 'continue'
+    ScriptType: 'FilePath'
+    ScriptPath: 'modules.schemas.push.ps1'
+    ScriptArguments:
+      -AzureSchemaStgAct test-variable
 
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: 'Assimalign LLC (PRD) SA'
-    scriptType: 'pscore'
-    scriptLocation: 'scriptPath'
-    scriptPath: 'modules.arc.push.ps1'
-    powerShellErrorActionPreference: 'continue'
+# - task: AzureCLI@2
+#   inputs:
+#     azureSubscription: 'Assimalign LLC (PRD) SA'
+#     scriptType: 'pscore'
+#     scriptLocation: 'scriptPath'
+#     scriptPath: 'modules.arc.push.ps1'
+#     powerShellErrorActionPreference: 'continue'
     
