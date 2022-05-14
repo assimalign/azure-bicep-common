@@ -202,6 +202,29 @@
                 "dataFactoryName": "test-df-deploy",
                 "dataFactoryLocation": "East US"
             }
+        },
+        "iotHub": {
+            "value": {
+                "iotHubName": "test-iot-hub-assim",
+                "iotHubSku": {
+                    "dev":{
+                        "name": "F1",
+                        "capacity": 1
+                    },
+                    "qa":{
+                        "name": "F1",
+                        "capacity": 1
+                    },
+                    "uat":{
+                        "name": "F1",
+                        "capacity": 1
+                    },
+                    "prd":{
+                        "name": "F1",
+                        "capacity": 1
+                    }
+                }
+            }
         }
     }
 }

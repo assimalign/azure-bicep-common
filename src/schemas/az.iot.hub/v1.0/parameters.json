@@ -5,7 +5,7 @@
             "type": "object",
             "properties": {
                 "value": {
-
+                    "$ref": "#/definitions/iot-hub-parameters"
                 }
             },
             "required": [
@@ -16,7 +16,11 @@
             "type": "object",
             "properties": {
                 "value": {
-
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/iot-hub-parameters"
+                    },
+                    "minItems": 1
                 }
             },
             "required": [
@@ -24,7 +28,180 @@
             ]
         },
         "iot-hub-parameters": {
-
+            "type": "object",
+            "properties": {
+                "iotHubName": {
+                    "type": "string"
+                },
+                "iotHubLocation": {
+                    "type": "string"
+                },
+                "iotHubResourceGroup": {
+                    "type": "string"
+                },
+                "iotHubMsiEnabled": {
+                    "type": "boolean"
+                },
+                "iotHubDisableLocalAuth": {
+                    "type": "boolean",
+                    "description": "If true, SAS tokens with Iot hub scoped SAS keys cannot be used for authentication."
+                },
+                "iotHubScale": {
+                    "type": "object",
+                    "properties": {
+                        "partitions": {
+                            "type": "number",
+                            "minimum": 1,
+                            "maximum": 32
+                        },
+                        "retention": {
+                            "description": "The number of days to retain device-to-cloud messages.",
+                            "minimum": 1
+                        }
+                    },
+                    "required": [
+                        "partitions",
+                        "retention"
+                    ]
+                },
+                "iotHubSku": {
+                    "type": "object",
+                    "properties": {
+                        "dev": {
+                            "$ref": "#/definitions/iot-hub-sku-parameters"
+                        },
+                        "qa": {
+                            "$ref": "#/definitions/iot-hub-sku-parameters"
+                        },
+                        "uat": {
+                            "$ref": "#/definitions/iot-hub-sku-parameters"
+                        },
+                        "prd": {
+                            "$ref": "#/definitions/iot-hub-sku-parameters"
+                        }
+                    },
+                    "required": [
+                        "dev",
+                        "qa",
+                        "uat",
+                        "prd"
+                    ]
+                },
+                "iotHubTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "iotHubName",
+                "iotHubSku"
+            ]
+        },
+        "iot-hub-sku-parameters": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "const": "F1"
+                        },
+                        "capacity": {
+                            "type": "number",
+                            "const": 1
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "const": "B1"
+                        },
+                        "capacity": {
+                            "type": "number",
+                            "minimum": 1,
+                            "maximum": 200
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "const": "B2"
+                        },
+                        "capacity": {
+                            "type": "number",
+                            "minimum": 1,
+                            "maximum": 200
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "const": "B3"
+                        },
+                        "capacity": {
+                            "type": "number",
+                            "minimum": 1,
+                            "maximum": 10
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "const": "S1"
+                        },
+                        "capacity": {
+                            "type": "number",
+                            "minimum": 1,
+                            "maximum": 200
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "const": "S2"
+                        },
+                        "capacity": {
+                            "type": "number",
+                            "minimum": 1,
+                            "maximum": 200
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "const": "S3"
+                        },
+                        "capacity": {
+                            "type": "number",
+                            "minimum": 1,
+                            "maximum": 10
+                        }
+                    }
+                }
+            ]
         }
     }
 }

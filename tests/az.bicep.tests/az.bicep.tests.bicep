@@ -12,6 +12,7 @@ param cognitiveSearchService object
 param storageAccount object
 param dataShareAccount object
 param dataFactory object
+param iotHub object
 
 targetScope = 'subscription'
 
@@ -179,5 +180,17 @@ module azDataFacotryDeployment '../../src/modules/az.data.factory/v1.0/az.data.f
     environment: environment
     dataFactoryName: dataFactory.dataFactoryName
     dataFactoryLocation: dataFactory.dataFactoryLocation
+  }
+}
+
+module azIotHubDeployment '../../src/modules/az.iot.hub/v1.0/az.iot.hub.bicep' = {
+  name: 'test-iot-hub-deploy'
+  scope: cosmosResourceGroup
+  params: {
+    region: location
+    environment: environment
+    iotHubName: iotHub.iotHubName
+    iotHubLocation: iotHub.iotHubLocation
+    iotHubSku: iotHub.iotHubSku
   }
 }
