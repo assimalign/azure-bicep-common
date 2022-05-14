@@ -37,6 +37,6 @@ resource azDataFactoryDeployment 'Microsoft.DataFactory/factories@2018-06-01' = 
   } : json('null'))
   properties: {
     publicNetworkAccess: dataFactoryDefaultNetworkAccess == 'Allow' ? 'Enabled' : 'Disabled'
-    repoConfiguration: any(!empty(dataFactoryRepositorySettings) ? dataFactoryRepositorySettings : {})
+    repoConfiguration: any(!empty(dataFactoryRepositorySettings) ? dataFactoryRepositorySettings : json('null'))
   }
 }
