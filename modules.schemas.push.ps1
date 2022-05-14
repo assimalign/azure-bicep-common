@@ -1,11 +1,11 @@
 
-$storageAccountName = 'asalschemastore'
+$storageAccountName = "$(AZURE_SCHEMA_STGACT)"
 $storageAccountContainerName = 'json'
-$storageAccountResourceGroup = 'asal-main-rg-est-us-01'
+$storageAccountResourceGroup = "$(AZURE_SCHEMA_STGACT_RG)"
 
 
 
-Connect-AzAccount -Subscription '3c1b7889-444a-48a3-b2b4-275e2ff15584'
+Connect-AzAccount -Subscription 
 
 $account = Get-AzStorageAccount -ResourceGroupName $storageAccountResourceGroup -Name $storageAccountName 
 $items = Get-ChildItem './src' -Recurse -Include '*.json'
