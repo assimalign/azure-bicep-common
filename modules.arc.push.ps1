@@ -1,4 +1,4 @@
-$arcurl = "$(asalbicep.azurecr.io)"
+$arcurl = "$(azure-arc-fqd)"
 $items = Get-ChildItem './src' -Recurse -Include '*.bicep'
 $items | ForEach-Object {
    

@@ -3,9 +3,7 @@ $storageAccountName = "$(azure-schema-stgact)"
 $storageAccountResourceGroup = "$(azure-schema-stgact-rg)"
 $storageAccountContainerName = 'json'
 
-
-
-Connect-AzAccount -Subscription 
+Install-Module Az -Force -AllowClobber
 
 $account = Get-AzStorageAccount -ResourceGroupName $storageAccountResourceGroup -Name $storageAccountName 
 $items = Get-ChildItem './src' -Recurse -Include '*.json'
