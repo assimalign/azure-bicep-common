@@ -19,7 +19,7 @@ steps:
     ScriptType: 'FilePath'
     ScriptPath: 'modules.schemas.push.ps1'
     ScriptArguments:
-      -AzureSchemaStgAct test-variable
+      -storageAccountName test-variable
 
 # - task: AzureCLI@2
 #   inputs:

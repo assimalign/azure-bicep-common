@@ -1,5 +1,6 @@
-
-$storageAccountName = $AzureSchemaStgAct
+param (
+    [string]$storageAccountName
+)
 
 Write-Host $storageAccountName -ForegroundColor Green
 # $storageAccountResourceGroup = "$(azure-schema-stgact-rg)"
