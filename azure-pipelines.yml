@@ -18,6 +18,8 @@ steps:
     ScriptPath: 'modules.schemas.push.ps1'
     ScriptArguments:
       -storageAccountName $(azure-schema-stgact)
+      -storageAccountResourceGroup $(azure-schema-stgact-rg)
+      -storageAccountContainerName json
 
 # - task: AzureCLI@2
 #   inputs:
