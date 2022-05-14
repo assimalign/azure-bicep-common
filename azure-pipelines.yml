@@ -9,12 +9,13 @@ pool:
 variables:
   - group: bicep.release.variables
   - name: azure-schema-stgact
-    value: 
+    value: 'empty'
 
 steps:
 - task: AzurePowerShell@5
   inputs:
     azureSubscription: 'Assimalign LLC (PRD) SA'
+    azurePowerShellVersion: 'LatestVersion'
     ScriptType: 'FilePath'
     ScriptPath: 'modules.schemas.push.ps1'
     ScriptArguments:
