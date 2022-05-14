@@ -1,10 +1,8 @@
-
-
-
-
-
-
-resource azFrontDoorReplacement 'Microsoft.Network/frontDoors@2020-05-01' = {
+resource azFrontDoorReplacement 'Microsoft.Cdn/profiles@2021-06-01' = {
+   name: ''
+   sku: {
+      name: 'Standard_AzureFrontDoor'
+   }
    properties: {
       
    }

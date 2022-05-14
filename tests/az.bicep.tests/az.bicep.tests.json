@@ -203,6 +203,7 @@
                 "dataFactoryLocation": "East US"
             }
         },
+
         "iotHub": {
             "value": {
                 "iotHubName": "test-iot-hub-assim",

@@ -7,15 +7,28 @@ pool:
   vmImage: windows-latest
 
 variables:
-  deployVariablePath: 'tests\az.bicep.tests\az.bicep.tests.json'
-  deployBicepPath: 'tests\az.bicep.tests\az.bicep.tests.bicep'
+  - group: bicep.release.variables
+
+  # - name: deployVariablePath
+  #   value: 'tests\az.bicep.tests\az.bicep.tests.json'
+
+  # - name: deployBicepPath
+  #   value: 'tests\az.bicep.tests\az.bicep.tests.bicep'
 
 steps:
 - task: AzureCLI@2
   inputs:
-    azureSubscription: 'Assimalign LLC (DEV) SA'
+    azureSubscription: 'Assimalign LLC (PRD) SA'
     scriptType: 'pscore'
-    scriptLocation: 'inlineScript'
-    inlineScript: 'az deployment sub create --location eastus --name asal-test-bicep-release --template-file $(deployBicepPath) --parameters $(deployVariablePath) environment=dev location=est --verbose --debug'
+    scriptLocation: 'scriptPath'
+    scriptPath: 'modules.schemas.push.ps1'
+    powerShellErrorActionPreference: 'continue'
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'Assimalign LLC (PRD) SA'
+    scriptType: 'pscore'
+    scriptLocation: 'scriptPath'
+    scriptPath: 'modules.arc.push.ps1'
     powerShellErrorActionPreference: 'continue'
     

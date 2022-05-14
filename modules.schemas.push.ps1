@@ -1,7 +1,7 @@
 
-$storageAccountName = "$(AZURE_SCHEMA_STGACT)"
+$storageAccountName = "$(azure-schema-stgact)"
+$storageAccountResourceGroup = "$(azure-schema-stgact-rg)"
 $storageAccountContainerName = 'json'
-$storageAccountResourceGroup = "$(AZURE_SCHEMA_STGACT_RG)"
 
 
 

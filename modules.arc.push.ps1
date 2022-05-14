@@ -1,3 +1,4 @@
+$arcurl = "$(asalbicep.azurecr.io)"
 $items = Get-ChildItem './src' -Recurse -Include '*.bicep'
 $items | ForEach-Object {
    
@@ -7,7 +8,7 @@ $items | ForEach-Object {
     if ($version -match "^v(/d*/./d)") {
 
         $moduleName = $_.BaseName
-        $modulePath = "br:asalbicep.azurecr.io/modules/$moduleName" + ":" + $version
+        $modulePath = "br:$arcurl/modules/$moduleName" + ":" + $version
         
         Write-Host "Uploading $modulePath"
         Publish-AzBicepModule -FilePath $_.FullName -Target $modulePath

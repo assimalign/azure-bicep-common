@@ -782,16 +782,46 @@
                     ]
                 },
                 "dataShare": {
-
+                    "oneOf": [
+                        {
+                            "$ref": "../az.data.share.account/v1.0/parameters.json#/definitions/data-share-account-share"
+                        }
+                    ]
                 },
                 "dataShares": {
-
+                    "oneOf": [
+                        {
+                            "$ref": "../az.data.share.account/v1.0/parameters.json#/definitions/data-share-account-shares"
+                        }
+                    ]
                 },
                 "dataShareDataset": {
-
+                    "oneOf": [
+                        {
+                            "$ref": "../az.data.share.account/v1.0/parameters.json#/definitions/data-share-account-share-dataset"
+                        }
+                    ]
                 },
                 "dataShareDatasets": {
-
+                    "oneOf": [
+                        {
+                            "$ref": "../az.data.share.account/v1.0/parameters.json#/definitions/data-share-account-share-dataset"
+                        }
+                    ]
+                },
+                "signalRService": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.signalr/v1.0/parameters.json#/definitions/signalr-service"
+                        }
+                    ]
+                },
+                "signalRServices": {
+                    "oneOf": [
+                        {
+                            "$ref": "../az.signalr/v1.0/parameters.json#/definitions/signalr-services"
+                        }
+                    ]
                 }
                 // "roleAssignments": {
                 //     "$ref": "az.rbac.role.assignment.schema.json#definitions/roleAssignments"

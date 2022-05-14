@@ -78,7 +78,7 @@
                                 }
                             ]
                         }
-                     },
+                    },
                     "required": [
                         "dev",
                         "qa",
@@ -98,20 +98,13 @@
                     ]
                 },
                 "publicIpTags": {
-                    "oneOf": [
-                        {
-                            "type": "object",
-                            "patternProperties": {
-                                "^[a-z]": {
-                                    "type":"string"
-                                }
-                            },
-                            "minProperties": 1
-                        },
-                        {
-                            "type": "null"
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
                         }
-                    ]
+                    },
+                    "minProperties": 1
                 }
             },
             "required": [

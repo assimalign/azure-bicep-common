@@ -69,4 +69,5 @@ resource azIotHubDeployment 'Microsoft.Devices/IotHubs@2021-07-02' = {
   tags: iotHubTags
 }
 
-output resource object = azIotHubDeployment
+
+output iotHub object = azIotHubDeployment
