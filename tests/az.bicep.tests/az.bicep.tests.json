@@ -206,6 +206,7 @@
         "iotHub": {
             "value": {
                 "iotHubName": "test-iot-hub-assim",
+                "iotHubLocation": "East US",
                 "iotHubSku": {
                     "dev":{
                         "name": "F1",
