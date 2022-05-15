@@ -12,6 +12,7 @@ variables:
 steps:
 - task: AzurePowerShell@5
   displayName: 'Upcert Bicep JSON Schemas'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   inputs:
     azureSubscription: 'Assimalign LLC (PRD) SA'
     azurePowerShellVersion: 'LatestVersion'
@@ -24,6 +25,7 @@ steps:
 
 - task: AzurePowerShell@5
   displayName: 'Upcert Bicep Modules'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   inputs:
     azureSubscription: 'Assimalign LLC (PRD) SA'
     azurePowerShellVersion: 'LatestVersion'
@@ -31,4 +33,3 @@ steps:
     ScriptPath: 'modules.arc.push.ps1'
     ScriptArguments:
       -arcUrl $(azure-arc-fqd)
-    
