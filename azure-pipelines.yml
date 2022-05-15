@@ -21,11 +21,12 @@ steps:
       -storageAccountResourceGroup $(azure-schema-stgact-rg)
       -storageAccountContainerName json
 
-# - task: AzureCLI@2
-#   inputs:
-#     azureSubscription: 'Assimalign LLC (PRD) SA'
-#     scriptType: 'pscore'
-#     scriptLocation: 'scriptPath'
-#     scriptPath: 'modules.arc.push.ps1'
-#     powerShellErrorActionPreference: 'continue'
+- task: AzurePowerShell@5
+  inputs:
+    azureSubscription: 'Assimalign LLC (PRD) SA'
+    azurePowerShellVersion: 'LatestVersion'
+    ScriptType: 'FilePath'
+    ScriptPath: 'modules.arc.push.ps1'
+    ScriptArguments:
+      -arcUrl $(azure-arc-fqd)
     
