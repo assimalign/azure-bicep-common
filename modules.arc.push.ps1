@@ -21,9 +21,7 @@ $containerRegistryUrl = $containerRegistry.LoginServer
 $items = Get-ChildItem './src' -Recurse -Include '*.bicep'
 Write-Host $items.Length + "Bicep modules were found." -ForegroundColor Blue
 
-
-$context = Get-AzContext -Name $azureContextName 
-
+$context = Get-AzContext
 $items | ForEach-Object {
    
     $paths = $_.DirectoryName.Split('\')
