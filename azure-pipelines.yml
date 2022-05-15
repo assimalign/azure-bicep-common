@@ -11,6 +11,7 @@ variables:
 
 steps:
 - task: AzurePowerShell@5
+  displayName: 'Upcert Bicep JSON Schemas'
   inputs:
     azureSubscription: 'Assimalign LLC (PRD) SA'
     azurePowerShellVersion: 'LatestVersion'
@@ -22,6 +23,7 @@ steps:
       -storageAccountContainerName json
 
 - task: AzurePowerShell@5
+  displayName: 'Upcert Bicep Modules'
   inputs:
     azureSubscription: 'Assimalign LLC (PRD) SA'
     azurePowerShellVersion: 'LatestVersion'

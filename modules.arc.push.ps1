@@ -2,12 +2,16 @@ param (
     [string]$arcUrl
 )
 
+Write-Host $arcUrl
+
 $items = Get-ChildItem './src' -Recurse -Include '*.bicep'
 $items | ForEach-Object {
    
     $paths = $_.DirectoryName.Split('/')
     $version = $paths[$paths.Length - 1]
 
+    Write-Host $_.FullName
+    
     if ($version -match "^v(/d*/./d)") {
 
         $moduleName = $_.BaseName
