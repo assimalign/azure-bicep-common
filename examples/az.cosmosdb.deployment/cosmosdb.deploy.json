@@ -1,11 +1,9 @@
 {
-    "$schema": "../../src/schemas/az/parameters.json",
+    "$schema": "../../src/schemas/az/v1.0/parameters.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        
-        "iotHub":{
-        },
-        "serviceBusNamespaceTopic":{
+        "iotHub": {},
+        "serviceBusNamespaceTopic": {
             "value": {
                 "serviceBusName": "",
                 "serviceBusResourceGroup": "",
@@ -21,25 +19,18 @@
                 ]
             }
         },
-        
         "cognitiveSearch": {
             "value": {
                 "cognitiveSearchName": "",
-                "cognitiveSearchSku": {
-                    
-                }
+                "cognitiveSearchSku": {}
             }
         },
-        "appService":{
+        "appService": {
             "value": {
                 "appServiceName": "",
-                
                 "appServiceSiteConfigs": {
-                    "webSettings": {
-                        
-                    },
+                    "webSettings": {},
                     "alwaysOn": true,
-                    
                     "siteSettings": [
                         {
                             "name": "FUNCTIONS_EXTENSION_VERSION",
@@ -48,8 +39,7 @@
                     ]
                 }
             }
-        }
-        
+        },
         "cosmosAccounts": {
             "value": [
                 {

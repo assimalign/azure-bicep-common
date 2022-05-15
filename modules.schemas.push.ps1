@@ -14,13 +14,14 @@ $items | ForEach-Object {
     if ($version -match "^v(\d*\.\d)") {
 
         $index = $_.FullName.IndexOf('schemas') + 'schemas'.Length + 1
-        $path =  $_.FullName.Substring($index , $_.FullName.Length - $index)
-        $response = Set-AzStorageBlobContent `
+        $path = $_.FullName.Substring($index , $_.FullName.Length - $index)
+        
+        Set-AzStorageBlobContent `
             -Container $storageAccountContainerName `
             -Context $account.Context `
             -Blob "bicep\$path" `
             -File $_.FullName `
             -Force `
             -Verbose
-    }   
+    }
 }

@@ -1,5 +1,5 @@
 {
-    "$schema": "../../src/schemas/az/parameters.json",
+    "$schema": "../../src/schemas/az/v1.0/parameters.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "resourceGroup": {
