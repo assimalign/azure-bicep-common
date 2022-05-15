@@ -13,7 +13,6 @@ param storageAccount object
 param dataShareAccount object
 param dataFactory object
 param iotHub object
-
 targetScope = 'subscription'
 
 var cosmosResourceGroup = az.resourceGroup(replace(replace(cosmosAccount.cosmosAccountResourceGroup, '@environment', environment), '@region', location))

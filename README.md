@@ -1,4 +1,8 @@
-# Assimalign Bicep Modules
+# Assimalign Bicep
+A collection of read
+
+
+**NOTE: This repository is not meant to be a full-proof**
 A repository for common bicep modules made for deploying resources to azure.
 
 
@@ -15,9 +19,27 @@ A repository for common bicep modules made for deploying resources to azure.
 
 
 
-## Common Token Variables
+## Token Replacements
+Use tokens built into all modules to dynamically replace variables in JSON parameter files. 
 
-- '@environment'
-- '@region'
-- '@subscription'
-- '@'
+- **'@environment'**: An environment agnostic variable that adds the environment 
+- **'@region'**
+- **'@subscription'**
+
+
+# Setup
+If you are an organization that would like to 
+
+
+# Prerequisite
+- **Azure DevOps Account and Project**
+- **Service Principal** (Azure AD App Registration). This service principal will need to be connected to the Azure DevOps account in which the pipeline will run under. **NOTE: Make sure to give it a friendly name to reference in the pipeline**
+- 
+
+1. In Azure DevOps create a Variable Group called: `bicep.release.variables`
+2. In `bicep.release.variables` variable group add the following variables: 
+   - azure-arc: 
+   - azure-arc-rg: 
+   - azure-devops-service-principal: The name of the Service Principal 
+   - azure-schema-stgact: 
+   - azure-schema-stgact-rg: 
