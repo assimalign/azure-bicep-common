@@ -3,9 +3,6 @@ param (
     [string]$containerRegistryResourceGroup
 )
 
-$containerRegistryName = 'asalbice'
-$containerRegistryResourceGroup = 'asal-main-rg-est-us-01'
-
 # Get the existing Azure Container Registry
 $containerRegistry = Get-AzContainerRegistry `
     -Name $containerRegistryName `
@@ -18,6 +15,7 @@ if ($null -eq $containerRegistry) {
     Write-Error -Message "The Container Registry '$containerRegistryName' in Resource Group '$containerRegistryResourceGroup' was not found."
 }
 
+$containerRegistryUrl = $containerRegistry.LoginServer
 
 $items = Get-ChildItem './src' -Recurse -Include '*.bicep'
 Write-Host $items.Length + "Bicep modules were found." -ForegroundColor Blue
