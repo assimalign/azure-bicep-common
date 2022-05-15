@@ -10,8 +10,8 @@ $items | ForEach-Object {
     $paths = $_.DirectoryName.Split('/')
     $version = $paths[$paths.Length - 1]
 
-    Write-Host $_.FullName
-    
+    Write-Host $version
+
     if ($version -match "^v(/d*/./d)") {
 
         $moduleName = $_.BaseName
