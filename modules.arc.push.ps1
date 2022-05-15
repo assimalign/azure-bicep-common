@@ -10,9 +10,7 @@ $items | ForEach-Object {
     $paths = $_.DirectoryName.Split('/')
     $version = $paths[$paths.Length - 1]
 
-    Write-Host $version
-
-    if ($version -match "^v(/d*/./d)") {
+    if ($version -match "[a-zA-Z]{1}\d{1,2}\.\d{1,2}") {
 
         $moduleName = $_.BaseName
         $modulePath = "br:$arcUrl/modules/$moduleName" + ":" + $version
