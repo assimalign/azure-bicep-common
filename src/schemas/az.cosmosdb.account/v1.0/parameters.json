@@ -155,13 +155,26 @@
                         "properties": {
                             "locationName": {
                                 "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "centralus"
-                                    },
-                                    {
-                                        "const": "westus2"
-                                    }
+                                "enum": [
+                                    "East US",
+                                    "South Central US",
+                                    "Central US",
+                                    "West US",
+                                    "West US 3",
+                                    "Australia East",
+                                    "North Europe",
+                                    "Sweden Central",
+                                    "UK South",
+                                    "East Asia",
+                                    "Japan East",
+                                    "Canada Central",
+                                    "France Central",
+                                    "Norway East",
+                                    "North Central US",
+                                    "West Central US",
+                                    "Australia Central",
+                                    "Canada East",
+                                    "UK West"
                                 ]
                             },
                             "failoverPriority": {
