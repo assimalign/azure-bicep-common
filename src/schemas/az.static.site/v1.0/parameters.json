@@ -97,13 +97,21 @@
                                     "const": "Standard"
                                 }
                             ]
+                        },
+                        "default": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Free"
+                                },
+                                {
+                                    "const": "Standard"
+                                }
+                            ]
                         }
                     },
                     "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
+                        "default"
                     ]
                 },
                 "staticSiteTags": {
@@ -118,8 +126,7 @@
             },
             "required": [
                 "staticSiteName",
-                "staticSiteLocation",
-                "staticSiteSku"
+                "staticSiteLocation"
             ]
         }
     }

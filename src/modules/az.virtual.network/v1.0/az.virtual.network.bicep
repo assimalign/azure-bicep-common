@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -21,6 +22,9 @@ param virtualNetworkAddressSpaces array
 
 @description('A list of subnet ranges to include in the virtual network deployment')
 param virtualNetworkSubnets array = []
+
+@description('')
+param virtualNetworkTags object = {}
 
 var subnets = [for subnet in virtualNetworkSubnets: {
   name: replace(replace(subnet.subnetName, '@environment', environment), '@region', region)
@@ -41,4 +45,8 @@ resource azVirtualNetworkDeployment 'Microsoft.Network/virtualNetworks@2021-02-0
     }
     subnets: subnets
   }
+  tags: union(virtualNetworkTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }

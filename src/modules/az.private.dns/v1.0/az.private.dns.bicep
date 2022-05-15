@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -37,10 +38,17 @@ param privateDnsZoneTxtRecords array = []
 @description('A list of SRV records to append to the Private DNS Zone')
 param privateDnsZoneSrvRecords array = []
 
+@description('')
+param privtaeDnsZoneTags object = {}
+
 // 1. Deploy Private DNS Zone scoped to the current Resource Group
 resource azPrivateDnsDeployment 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: replace(replace(privateDnsZoneName, '@environment', environment), '@region', region)
   location: 'global'
+  tags: union(privtaeDnsZoneTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 // 1.1 Set A Records if any in Private DNS Zone
@@ -149,8 +157,8 @@ module azPrivateDnsVirtualLinksDeployment 'az.private.dns.link.bicep' = [for lin
     region: region
     environment: environment
     privateDnsName: azPrivateDnsDeployment.name
-    privateDnsNameVirtualLinkName: link.virtualLinkName
-    privateDnsNameVirtualNetwork: link.virtualNetwork
+    privateDnsVirtualLinkName: link.virtualLinkName
+    privateDnsVirtualNetworkName: link.virtualNetwork
   }
 }]
 

@@ -204,6 +204,12 @@
                 "publicIpAddresses": {
                     "$ref": "../../az.public.ip/v1.0/parameters.json#/definitions/public-ip-addresses"
                 },
+                "privateEndpoint": {
+                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint"
+                },
+                "privateEndpoints": {
+                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoints"
+                },
                 "privateDnsZone": {
                     "$ref": "../../az.private.dns/v1.0/parameters.json#/definitions/private-dns-zone"
                 },

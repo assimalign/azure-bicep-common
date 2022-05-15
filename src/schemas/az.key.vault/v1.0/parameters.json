@@ -60,7 +60,7 @@
                                     "const": "Disabled"
                                 },
                                 {
-                                    "const":"Enabled"
+                                    "const": "Enabled"
                                 }
                             ]
                         }
@@ -81,48 +81,19 @@
                     "type": "object",
                     "properties": {
                         "dev": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Standard"
-                                },
-                                {
-                                    "const": "Premium"
-                                }
-                            ]
+                            "$ref": "#/definitions/key-vault-sku"
                         },
                         "qa": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Standard"
-                                },
-                                {
-                                    "const": "Premium"
-                                }
-                            ]
+                            "$ref": "#/definitions/key-vault-sku"
                         },
                         "uat": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Standard"
-                                },
-                                {
-                                    "const": "Premium"
-                                }
-                            ]
+                            "$ref": "#/definitions/key-vault-sku"
                         },
                         "prd": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Standard"
-                                },
-                                {
-                                    "const": "Premium"
-                                }
-                            ]
+                            "$ref": "#/definitions/key-vault-sku"
+                        },
+                        "default":{
+                            "$ref": "#/definitions/key-vault-sku"
                         }
                     }
                 },
@@ -214,9 +185,9 @@
                     "items": {
                         "type": "object",
                         "properties": {
-                           "ipAddress": {
-                               "type": "string"
-                           }
+                            "ipAddress": {
+                                "type": "string"
+                            }
                         },
                         "required": [
                             "ipAddress"
@@ -312,8 +283,14 @@
                 }
             },
             "required": [
-                "keyVaultName",
-                "keyVaultSku"
+                "keyVaultName"
+            ]
+        },
+        "key-vault-sku": {
+            "type": "string",
+            "enum": [
+                "Standard",
+                "Premium"
             ]
         }
     }

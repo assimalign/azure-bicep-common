@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -22,10 +23,9 @@ param appSlotFunctionName string
 @description('')
 param appSlotFunctionIsDiabled bool = false
 
-
 resource azAppServiceFunctionAppSlotFunction 'Microsoft.Web/sites/slots/functions@2021-01-15' = {
-  name: replace(replace('${appName}/${appSlotName}/${appSlotFunctionName}','@environment', environment), '@region', region)
+  name: replace(replace('${appName}/${appSlotName}/${appSlotFunctionName}', '@environment', environment), '@region', region)
   properties: {
-     isDisabled: appSlotFunctionIsDiabled
+    isDisabled: appSlotFunctionIsDiabled
   }
 }

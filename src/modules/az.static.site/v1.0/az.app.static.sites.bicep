@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name')
 param region string = ''
@@ -24,7 +25,16 @@ param staticSiteName string
 param staticSiteLocation string
 
 @description('The pricing tier for the static site')
-param staticSiteSku object
+param staticSiteSku object = {
+  dev: 'Free'
+  qa: 'Free'
+  uat: 'Free'
+  prd: 'Free'
+  default: 'Free'
+}
+
+@description('')
+param staticSiteTags object = {}
 
 resource azStaticSiteDeployment 'Microsoft.Web/staticSites@2021-03-01' = {
   name: replace(replace(staticSiteName, '@environment', environment), '@region', region)
@@ -42,12 +52,16 @@ resource azStaticSiteDeployment 'Microsoft.Web/staticSites@2021-03-01' = {
     name: staticSiteSku.prd
     tier: staticSiteSku.prd
   } : {
-    name: 'Free'
-    tier: 'Free'
+    name: staticSiteSku.default
+    tier: staticSiteSku.default
   }))))
   properties: {
      
   }
+  tags: union(staticSiteTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 output staticSite object = azStaticSiteDeployment

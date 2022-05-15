@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -17,7 +18,13 @@ param appConfigurationName string
 param appConfigurationLocation string = resourceGroup().location
 
 @description('The pricing tier for Azure App Configurations: "Free" or "Standard". Default is "Free"')
-param appConfigurationSku object
+param appConfigurationSku object = {
+  dev: 'Free'
+  qa: 'Free'
+  uat: 'Free'
+  prd: 'Free'
+  default: 'Free'
+}
 
 @description('An array of object containing the key, value, and contentType if applicable.')
 param appConfigurationKeys array = []
@@ -37,12 +44,8 @@ param appConfigurationEnableRbac bool = false
 @description('The tags to attach to the resource when deployed')
 param appConfigurationTags object = {}
 
-// **************************************************************************************** //
-//                          Azure App Configuration Deployment                              //
-// **************************************************************************************** //
-
 // 1. Deploys a single instance of Azure App Configuration
-resource azAppConfigurationDeployment 'Microsoft.AppConfiguration/configurationStores@2021-03-01-preview' = {
+resource azAppConfigurationDeployment 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' = {
   name: replace(replace(appConfigurationName, '@environment', environment), '@region', region)
   location: appConfigurationLocation
   sku: any((environment == 'dev') ? {
@@ -54,7 +57,7 @@ resource azAppConfigurationDeployment 'Microsoft.AppConfiguration/configurationS
   } : any((environment == 'prd') ? {
     name: appConfigurationSku.prd
   } : {
-    name: 'Free'
+    name: appConfigurationSku.default
   }))))
   identity: {
     type: appConfigurationEnableMsi == true ? 'SystemAssigned' : 'None'
@@ -63,7 +66,10 @@ resource azAppConfigurationDeployment 'Microsoft.AppConfiguration/configurationS
     disableLocalAuth: appConfigurationEnableRbac
     publicNetworkAccess: appConfigurationDisablePublicAccess == true ? 'Disabled' : 'Enabled'
   }
-  tags: appConfigurationTags
+  tags: union(appConfigurationTags, {
+    region: region
+    environment: environment
+  })
 }
 
 // 2. Deploy any Azure App Configuration Keys and values
@@ -96,6 +102,7 @@ module azAppConfigurationPrivateEndpointDeployment '../../az.private.endpoint/v1
     privateEndpointVirtualNetworkSubnetName: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
     privateEndpointResourceIdLink: azAppConfigurationDeployment.id
+    privateEndpointTags: contains(appConfigurationPrivateEndpoint, 'privateEndpointTags') ? appConfigurationPrivateEndpoint.privateEndpointTags : {}
     privateEndpointGroupIds: [
       'configurationStores'
     ]

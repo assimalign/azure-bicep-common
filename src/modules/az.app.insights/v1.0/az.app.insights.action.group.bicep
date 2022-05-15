@@ -1,11 +1,5 @@
-@allowed([
-  'dev'
-  'qa'
-  'uat'
-  'prd'
-])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -25,19 +19,21 @@ param appInsightsActionGroupEnabled bool = true
 @description('An object specifying a group of notification receivers for a particular action.')
 param appInsightsActionGroupReceivers object
 
-@description('Custom Attributes to attach to the action group deployment')
+@description('The tags to attach to the resource when deployed.')
 param appInsightsActionGroupTags object = {}
 
 // Deploys an Alert Action Group
-resource azAppInsightsActivityGroupDeployment 'Microsoft.Insights/actionGroups@2019-06-01' = {
+resource azAppInsightsActivityGroupDeployment 'Microsoft.Insights/actionGroups@2022-04-01' = {
   name: replace(replace(appInsightsActionGroupName, '@environment', environment), '@region', region)
   location: appInsightsActionGroupLocation
   properties: union({
     groupShortName: appInsightsActionGroupShortName
     enabled: appInsightsActionGroupEnabled
   }, appInsightsActionGroupReceivers)
-  tags: appInsightsActionGroupTags
+  tags: union(appInsightsActionGroupTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
-
 
 output azAppInsightsActivityGroup object = azAppInsightsActivityGroupDeployment

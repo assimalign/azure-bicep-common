@@ -1,17 +1,21 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
 @description('The name of the API Management resource')
 param apimName string
+
+@description('The location in which the APIM Gateway will be deployed to.')
+param apimLocation string = resourceGroup().location
 
 @description('The organization name of the published gateway')
 param apimPublisher string
@@ -45,6 +49,9 @@ param apimVirtualNetworkResourceGroup string = resourceGroup().name
 @description('')
 param apimApis array = []
 
+@description('The tags to attach to the resource when deployed')
+param apimTags object = {}
+
 
 resource azVirtualNetworkSubnetResource 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = if(apimVirtualNetworkType != 'None') {
   name: replace(replace('${apimVirtualNetwork}/${apimVirtualNetworkSubnet}', '@environment', environment), '@region', region)
@@ -53,7 +60,7 @@ resource azVirtualNetworkSubnetResource 'Microsoft.Network/virtualNetworks/subne
 
 resource azApiManagementInstanceDeployment 'Microsoft.ApiManagement/service@2021-01-01-preview' = {
   name: replace(replace(apimName, '@environment', environment), '@region', region)
-  location: resourceGroup().location
+  location: apimLocation
   identity: {
    type: apimEnableMsi == true ? 'SystemAssigned' : 'None'
   }
@@ -70,8 +77,8 @@ resource azApiManagementInstanceDeployment 'Microsoft.ApiManagement/service@2021
     name: apimSku.prd.name
     capacity: apimSku.prd.capacity
   }  : {
-    name: 'Developer'
-    capacity: 1
+    name: apimSku.default.name
+    capacity: apimSku.default.capacity
   }))))
   
   properties: {
@@ -82,6 +89,10 @@ resource azApiManagementInstanceDeployment 'Microsoft.ApiManagement/service@2021
       subnetResourceId: azVirtualNetworkSubnetResource.id
     } : json('null'))
   }
+  tags: union(apimTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 

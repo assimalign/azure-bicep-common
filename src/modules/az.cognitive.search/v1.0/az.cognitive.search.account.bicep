@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -22,6 +23,7 @@ param cognitiveSearchSku object = {
   qa: 'free'
   uat: 'free'
   prd: 'free'
+  default: 'free'
 }
 
 @allowed([
@@ -34,7 +36,7 @@ param cognitiveSearchHostingMode string = 'default'
 @description('Specifies whether public network access should be enabled or diabled. False is the default.')
 param cognitiveSearchDisablePublicAccess bool = true
 
-@description('The tags to attach to the resource when deployed')
+@description('The tags to attach to the resource when deployed.')
 param cognitiveSearchTags object = {}
 
 var sku = any((environment == 'dev') ? {
@@ -46,7 +48,7 @@ var sku = any((environment == 'dev') ? {
 } : any((environment == 'prd') ? {
   name: cognitiveSearchSku.prd
 } : {
-  name: 'Free'
+  name: cognitiveSearchSku.default
 }))))
 
 resource azCognitiveSearchDeployment 'Microsoft.Search/searchServices@2020-08-01' = {
@@ -57,7 +59,10 @@ resource azCognitiveSearchDeployment 'Microsoft.Search/searchServices@2020-08-01
     hostingMode: cognitiveSearchHostingMode
     publicNetworkAccess: cognitiveSearchDisablePublicAccess && sku.name != 'free' ? 'disabled' : 'enabled'
   }
-  tags: cognitiveSearchTags
+  tags: union(cognitiveSearchTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 output cognitiveSearch object = azCognitiveSearchDeployment

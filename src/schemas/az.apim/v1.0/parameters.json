@@ -90,7 +90,8 @@
                                 "apimBackendRuntimeUrl"
                             ]
                         }
-                    }
+                    },
+                    "minItems": 1
                 }
             },
             "required": [

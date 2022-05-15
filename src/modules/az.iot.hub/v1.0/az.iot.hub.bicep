@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -17,8 +18,28 @@ param iotHubName string
 param iotHubLocation string = resourceGroup().location
 
 @description('')
-param iotHubSku object
-
+param iotHubSku object = {
+  dev: {
+    name: 'F1'
+    capacity: 1
+  }
+  qa: {
+    name: 'F1'
+    capacity: 1
+  }
+  uat: {
+    name: 'F1'
+    capacity: 1
+  } 
+  prd: {
+    name: 'F1'
+    capacity: 1
+  } 
+  default: {
+    name: 'F1'
+    capacity: 1
+  }
+}
 @description('')
 param iotHubMsiEnabled bool = false
 
@@ -44,8 +65,8 @@ var sku = any((environment == 'dev') ? {
   name: iotHubSku.prd.name
   capacity: iotHubSku.prd.capacity
 } : {
-  name: 'F1'
-  capacity: 1
+  name: iotHubSku.default.name
+  capacity: iotHubSku.default.capacity
 }))))
 
 resource azIotHubDeployment 'Microsoft.Devices/IotHubs@2021-07-02' = {
@@ -66,7 +87,10 @@ resource azIotHubDeployment 'Microsoft.Devices/IotHubs@2021-07-02' = {
       }
     }
   }
-  tags: iotHubTags
+  tags: union(iotHubTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 

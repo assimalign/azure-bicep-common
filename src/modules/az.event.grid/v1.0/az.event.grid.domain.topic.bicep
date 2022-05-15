@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -47,4 +48,4 @@ module azEventGridDomainTopicSubscriptionsDeployment 'az.event.grid.domain.topic
 }]
 
 // 3. Return Deployment Output
-output resource object = azEventGridTopicDomainDeployment
+output eventGridDomainTopic object = azEventGridTopicDomainDeployment

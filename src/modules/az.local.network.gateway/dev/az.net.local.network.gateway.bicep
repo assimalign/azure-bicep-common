@@ -1,5 +1,5 @@
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('')
 param localNetGatewayName string

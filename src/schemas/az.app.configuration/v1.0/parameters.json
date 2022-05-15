@@ -1,6 +1,33 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "definitions": {
+        "app-configuration": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/app-configuration-parameters"  
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-configurations": {
+            "type": "object",
+            "$schema": "http://json-schema.org/draft-07/schema",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/app-configuration-parameters"  
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
         "app-configuration-parameters": {
             "type": "object",
             "default": {
@@ -67,67 +94,31 @@
                         "dev": "Free",
                         "qa": "Standard",
                         "uat": "Standard",
-                        "prd": "Standard"
+                        "prd": "Standard",
+                        "default": "Free"
                     },
                     "properties": {
                         "dev": {
-                            "type": "string",
                             "$ref": "#/definitions/app-configuration-sku"
                         },
                         "qa": {
-                            "type": "string",
                             "$ref": "#/definitions/app-configuration-sku"
                         },
                         "uat": {
-                            "type": "string",
                             "$ref": "#/definitions/app-configuration-sku"
                         },
                         "prd": {
-                            "type": "string",
+                            "$ref": "#/definitions/app-configuration-sku"
+                        },
+                        "default": {
                             "$ref": "#/definitions/app-configuration-sku"
                         }
                     },
-                    "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
-                    ]
+                    "minProperties": 1
                 }
             },
             "required": [
-                "appConfigurationName",
-                "appConfigurationSku",
-                "appConfigurationEnableMsi",
-                "appConfigurationEnableRbac",
-                "appConfigurationDisablePublicAccess"
-            ]
-        },
-        "app-configuration": {
-            "type": "object",
-            "properties": {
-                "value": {
-                    "$ref": "#/definitions/app-configuration-parameters"  
-                }
-            },
-            "required": [
-                "value"
-            ]
-        },
-        "app-configurations": {
-            "type": "object",
-            "$schema": "http://json-schema.org/draft-07/schema",
-            "properties": {
-                "value": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/app-configuration-parameters"  
-                    },
-                    "minItems": 1
-                }
-            },
-            "required": [
-                "value"
+                "appConfigurationName"
             ]
         },
         "app-configurations-keys": {
@@ -223,13 +214,10 @@
             ]
         },
         "app-configuration-sku": {
-            "oneOf": [
-                {
-                    "const": "Free"
-                },
-                {
-                    "const": "Standard"
-                }
+            "type": "string",
+            "enum": [
+                "Free",
+                "Standard"
             ]
         }
     }

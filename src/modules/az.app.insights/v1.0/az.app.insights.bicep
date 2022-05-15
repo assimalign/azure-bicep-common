@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
-@description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+@description('The environment in which the resource(s) will be deployed.')
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -27,13 +28,13 @@ param appInsightsLocation string = resourceGroup().location
 @description('')
 param appInsightsKind string = 'web'
 
-@description('The name of the existing Log Analytics Worspace')
+@description('The name of the existing Log Analytics Worspace.')
 param appInsightsAnalyticWorkspaceName string
 
-@description('The name of the resource group for the existing log analytics worspace')
+@description('The name of the resource group for the existing log analytics worspace.')
 param appInsightsAnalyticWorkspaceResourceGroup string = resourceGroup().name
 
-@description('Tags to associated the resource deployment')
+@description('The tags to attach to the resource when deployed.')
 param appInsightsTags object = {}
 
 // 1. Get the existing log workspace to attach the insights component to
@@ -51,7 +52,10 @@ resource azAppInsightsComponentsDeployment 'Microsoft.Insights/components@2020-0
     Application_Type: appInsightsKind == 'web' ? 'web' : 'other'
     WorkspaceResourceId: azAppLogAnalyticsWorkspaceDeployment.id
   }
-  tags: appInsightsTags
+  tags: union(appInsightsTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 // 3. Return Deployment Output

@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -73,7 +74,10 @@ resource azSqlServerInstanceDeployment 'Microsoft.Sql/servers@2021-08-01-preview
     administratorLogin: sqlServerAccountAdminUsername
     administratorLoginPassword: sqlServerAccountAdminPassword
   }
-  tags: sqlServerAccountTags
+  tags: union(sqlServerAccountTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 // 2. Deploy Sql Server Database under instance

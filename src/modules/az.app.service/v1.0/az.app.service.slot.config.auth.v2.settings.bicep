@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -91,7 +92,11 @@ resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/slots/config@20
           clientId: appServiceSlotAuthIdentityProviderClientId.prd
           clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
           openIdIssuer: appServiceSlotAuthIdentityProviderOpenIdIssuer.prd
-        } : json('null')))))
+        } : {
+          clientId: appServiceSlotAuthIdentityProviderClientId.default
+          clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
+          openIdIssuer: appServiceSlotAuthIdentityProviderOpenIdIssuer.default
+        }))))
         validation: {
           allowedAudiences: union([
             'https://${azAppServiceResource.properties.defaultHostName}'
@@ -119,7 +124,10 @@ resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/slots/config@20
         } : any(environment == 'prd' ? {
           appId: appServiceSlotAuthIdentityProviderClientId.prd
           appSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
-        } : json('null')))))
+        } : {
+          appId: appServiceSlotAuthIdentityProviderClientId.default
+          appSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
+        }))))
         graphApiVersion: appServiceSlotAuthIdentityProviderGraphApiVersion
         login: {
           scopes: appServiceSlotAuthIdentityProviderScopes
@@ -140,7 +148,10 @@ resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/slots/config@20
         }: any(environment == 'prd' ? {
           clientId: appServiceSlotAuthIdentityProviderClientId.prd
           clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
-        }: json('null')))))
+        }: {
+          clientId: appServiceSlotAuthIdentityProviderClientId.default
+          clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
+        }))))
         login: {
           scopes: appServiceSlotAuthIdentityProviderScopes
         }
@@ -160,7 +171,10 @@ resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/slots/config@20
         }: any(environment == 'prd' ? {
           clientId: appServiceSlotAuthIdentityProviderClientId.prd
           clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
-        }: json('null')))))
+        }: {
+          clientId: appServiceSlotAuthIdentityProviderClientId.default
+          clientSecretSettingName: appServiceSlotAuthIdentityProviderClientSecretName
+        }))))
         login: {
           scopes: appServiceSlotAuthIdentityProviderScopes
         }

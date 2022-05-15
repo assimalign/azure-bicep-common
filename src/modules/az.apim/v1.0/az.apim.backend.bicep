@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string
+param environment string = ''
 
 @description('The location prefix or suffix for the resource name')
 param region string = ''
@@ -39,7 +40,6 @@ param apimBackendSiteResourceName string = ''
 @description('If adding an Azure Resource then specify the name of the resource group the resource lives in')
 param apimBackendSiteResourceGroupName string = ''
 
-
 // 1. Get existing Azure APIM resource
 resource azApimExistingResource 'Microsoft.ApiManagement/service@2021-01-01-preview' existing = {
   name: replace(replace(apimName, '@environment', environment), '@region', region)
@@ -47,7 +47,7 @@ resource azApimExistingResource 'Microsoft.ApiManagement/service@2021-01-01-prev
 
 // 2. If applicable, get existing app service to apply backend information
 resource azAppServiceExistingResource 'Microsoft.Web/sites@2021-01-15' existing = if (apimBackendType == 'FunctionApp' || apimBackendType == 'web') {
-  name:  replace(replace(apimBackendSiteResourceName, '@environment', environment), '@region', region)
+  name: replace(replace(apimBackendSiteResourceName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(apimBackendSiteResourceGroupName, '@environment', environment), '@region', region))
 }
 
@@ -78,11 +78,11 @@ resource azApimFunctionAppBackendDeployment 'Microsoft.ApiManagement/service/bac
     url: replace(replace(apimBackendRuntimeUrl, '@environment', environment), '@region', region)
     resourceId: replace('${az.environment().resourceManager}/${azAppServiceExistingResource.id}', '///', '/')
     credentials: {
-       header: {
-         'x-functions-key': [
-           '{{${azApimFunctionAppNamedValueDeployment.properties.displayName}}}'
-         ]
-       }
+      header: {
+        'x-functions-key': [
+          '{{${azApimFunctionAppNamedValueDeployment.properties.displayName}}}'
+        ]
+      }
     }
   }
 }

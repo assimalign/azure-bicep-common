@@ -42,163 +42,23 @@
                     "type": "object",
                     "properties": {
                         "dev": {
-                            "type": "object",
-                            "properties": {
-                                "tier": {
-                                    "type": "string",
-                                    "oneOf": [
-                                        {
-                                            "const": "Standard"
-                                        },
-                                        {
-                                            "const": "WAF"
-                                        }
-                                    ]
-                                },
-                                "size": {
-                                    "type": "string",
-                                    "oneOf": [
-                                        {
-                                            "const": "Small"
-                                        },
-                                        {
-                                            "const": "Medium"
-                                        },
-                                        {
-                                            "const": "Large"
-                                        }
-                                    ],
-                                    "capacity": {
-                                        "type": "number"
-                                    }
-                                }
-                            },
-                            "required": [
-                                "tier",
-                                "size",
-                                "capacity"
-                            ]
+                            "$ref": "#/definitions/app-gateway-sku"
                         },
                         "qa": {
-                            "type": "object",
-                            "properties": {
-                                "tier": {
-                                    "type": "string",
-                                    "oneOf": [
-                                        {
-                                            "const": "Standard"
-                                        },
-                                        {
-                                            "const": "WAF"
-                                        }
-                                    ]
-                                },
-                                "size": {
-                                    "type": "string",
-                                    "oneOf": [
-                                        {
-                                            "const": "Small"
-                                        },
-                                        {
-                                            "const": "Medium"
-                                        },
-                                        {
-                                            "const": "Large"
-                                        }
-                                    ],
-                                    "capacity": {
-                                        "type": "number"
-                                    }
-                                }
-                            },
-                            "required": [
-                                "tier",
-                                "size",
-                                "capacity"
-                            ]
+                            "$ref": "#/definitions/app-gateway-sku"
                         },
                         "uat": {
-                            "type": "object",
-                            "properties": {
-                                "tier": {
-                                    "type": "string",
-                                    "oneOf": [
-                                        {
-                                            "const": "Standard"
-                                        },
-                                        {
-                                            "const": "WAF"
-                                        }
-                                    ]
-                                },
-                                "size": {
-                                    "type": "string",
-                                    "oneOf": [
-                                        {
-                                            "const": "Small"
-                                        },
-                                        {
-                                            "const": "Medium"
-                                        },
-                                        {
-                                            "const": "Large"
-                                        }
-                                    ],
-                                    "capacity": {
-                                        "type": "number"
-                                    }
-                                }
-                            },
-                            "required": [
-                                "tier",
-                                "size",
-                                "capacity"
-                            ]
+                            "$ref": "#/definitions/app-gateway-sku"
                         },
                         "prd": {
-                            "type": "object",
-                            "properties": {
-                                "tier": {
-                                    "type": "string",
-                                    "oneOf": [
-                                        {
-                                            "const": "Standard"
-                                        },
-                                        {
-                                            "const": "WAF"
-                                        }
-                                    ]
-                                },
-                                "size": {
-                                    "type": "string",
-                                    "oneOf": [
-                                        {
-                                            "const": "Small"
-                                        },
-                                        {
-                                            "const": "Medium"
-                                        },
-                                        {
-                                            "const": "Large"
-                                        }
-                                    ],
-                                    "capacity": {
-                                        "type": "number"
-                                    }
-                                }
-                            },
-                            "required": [
-                                "tier",
-                                "size",
-                                "capacity"
-                            ]
+                            "$ref": "#/definitions/app-gateway-sku"
+                        },
+                        "default": {
+                            "$ref": "#/definitions/app-gateway-sku"
                         }
                     },
                     "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
+                        "default"
                     ]
                 },
                 "appGatewayFrontend": {
@@ -357,36 +217,23 @@
                                         "type": "object",
                                         "properties": {
                                             "dev": {
-                                                "items": {
-                                                    "type": "object",
-                                                    "minItems": 1,
-                                                    "oneOf": [
-                                                        {
-                                                            "properties": {
-                                                                "fqdn": {
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "fqdn"
-                                                            ]
-                                                        },
-                                                        {
-                                                            "properties": {
-                                                                "ipAddress": {
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "ipAddress"
-                                                            ]
-                                                        }
-                                                    ]
-                                                }
+                                                "$ref": "#/definitions/app-gateway-receiver-address"
+                                            },
+                                            "qa": {
+                                                "$ref": "#/definitions/app-gateway-receiver-address"
+                                            },
+                                            "uat": {
+                                                "$ref": "#/definitions/app-gateway-receiver-address"
+                                            },
+                                            "prd": {
+                                                "$ref": "#/definitions/app-gateway-receiver-address"
+                                            },
+                                            "default": {
+                                                "$ref": "#/definitions/app-gateway-receiver-address"
                                             }
                                         },
                                         "required": [
-                                            "dev"
+                                            "default"
                                         ]
                                     }
                                 },
@@ -449,6 +296,73 @@
                 "appGatewayFrontend",
                 "appGatewayBackend",
                 "appGatewayRouting"
+            ]
+        },
+        "app-gateway-receiver-address": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "minItems": 1,
+                "oneOf": [
+                    {
+                        "properties": {
+                            "fqdn": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "fqdn"
+                        ]
+                    },
+                    {
+                        "properties": {
+                            "ipAddress": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "ipAddress"
+                        ]
+                    }
+                ]
+            }
+        },
+        "app-gateway-sku": {
+            "type": "object",
+            "properties": {
+                "tier": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "Standard"
+                        },
+                        {
+                            "const": "WAF"
+                        }
+                    ]
+                },
+                "size": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "Small"
+                        },
+                        {
+                            "const": "Medium"
+                        },
+                        {
+                            "const": "Large"
+                        }
+                    ],
+                    "capacity": {
+                        "type": "number"
+                    }
+                }
+            },
+            "required": [
+                "tier",
+                "size",
+                "capacity"
             ]
         }
     }

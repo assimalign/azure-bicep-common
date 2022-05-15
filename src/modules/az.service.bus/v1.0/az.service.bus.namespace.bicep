@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -23,13 +24,22 @@ param serviceBusTopics array = []
 param serviceBusQueues array = []
 
 @description('The pricing tier to be used for the service bus.')
-param serviceBusSku object
+param serviceBusSku object = {
+  dev: 'Basic'
+  qa: 'Basic'
+  uat: 'Basic'
+  prd: 'Basic'
+  default: 'Basic'
+}
 
 @description('')
 param serviceBusEnableMsi bool = false
 
 @description('')
 param serviceBusPolicies array = []
+
+@description('')
+param serviceBusTags object = {}
 
 // 1. Deploy Service Bus Namespace
 resource azServiceBusNamespaceDeployment 'Microsoft.ServiceBus/namespaces@2018-01-01-preview' = {
@@ -51,9 +61,13 @@ resource azServiceBusNamespaceDeployment 'Microsoft.ServiceBus/namespaces@2018-0
     name: serviceBusSku.prd
     tier: serviceBusSku.prd
   } : {
-    name: 'Basic'
-    tier: 'Basic'
+    name: serviceBusSku.default
+    tier: serviceBusSku.default
   }))))
+  tags: union(serviceBusTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 
   // Neet to use a different API version version than parent since preview supports managed identity while auth rules are supported up to 2017-04-01
   resource azServiceBusNamespaceAuthorizationRulesDeployment 'AuthorizationRules@2021-11-01' = [for policy in serviceBusPolicies: if (!empty(policy)) {

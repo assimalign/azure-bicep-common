@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -19,6 +20,8 @@ param notificationHubLocation string = resourceGroup().location
 @description('The name of the notification namespace hub')
 param notificationHubNamespaceName string
 
+@description('')
+param notificationHubTags object = {}
 
 // 1. Deploy the notification namespace hub
 resource azNotificationNamespaceHubDeployment 'Microsoft.NotificationHubs/namespaces/notificationHubs@2017-04-01' = {
@@ -27,4 +30,8 @@ resource azNotificationNamespaceHubDeployment 'Microsoft.NotificationHubs/namesp
   properties: {
     name: replace(replace('${notificationHubNamespaceName}/${notificationHubName}', '@environment', environment), '@region', region)
   }
+  tags: union(notificationHubTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }

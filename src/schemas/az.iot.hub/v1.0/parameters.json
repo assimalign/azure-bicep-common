@@ -78,13 +78,13 @@
                         },
                         "prd": {
                             "$ref": "#/definitions/iot-hub-sku-parameters"
+                        },
+                        "default": {
+                            "$ref": "#/definitions/iot-hub-sku-parameters"
                         }
                     },
                     "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
+                        "default"
                     ]
                 },
                 "iotHubTags": {
@@ -98,8 +98,7 @@
                 }
             },
             "required": [
-                "iotHubName",
-                "iotHubSku"
+                "iotHubName"
             ]
         },
         "iot-hub-sku-parameters": {

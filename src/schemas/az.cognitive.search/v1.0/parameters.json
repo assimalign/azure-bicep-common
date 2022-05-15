@@ -74,9 +74,10 @@
                     "type": "object",
                     "default": {
                         "dev": "free",
-                        "qa":  "free",
+                        "qa": "free",
                         "uat": "free",
-                        "prd": "free"
+                        "prd": "free",
+                        "default": "free"
                     },
                     "properties": {
                         "dev": {
@@ -92,6 +93,10 @@
                             "$ref": "#/definitions/cognitive-search-sku"
                         },
                         "prd": {
+                            "type": "string",
+                            "$ref": "#/definitions/cognitive-search-sku"
+                        },
+                        "default": {
                             "type": "string",
                             "$ref": "#/definitions/cognitive-search-sku"
                         }
@@ -134,4 +139,3 @@
         }
     }
 }
-    

@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -34,6 +35,9 @@ param eventGridDomainMsiRoleAssignments array = []
 @description('Disables or Enables Public Network Access to the event grid domain')
 param eventGridDomainDisablePublicAccess bool = false
 
+@description('')
+param eventGridDomainTags object = {}
+
 // 1. Deploy Event Grid Domain
 resource azEventGridDomainDeployment 'Microsoft.EventGrid/domains@2021-12-01' = {
   name: replace(replace('${eventGridDomainName}', '@environment', environment), '@region', region)
@@ -45,6 +49,10 @@ resource azEventGridDomainDeployment 'Microsoft.EventGrid/domains@2021-12-01' = 
     inputSchema: 'EventGridSchema'
     publicNetworkAccess: eventGridDomainDisablePublicAccess == true ? 'Disabled' : 'Enabled'
   }
+  tags: union(eventGridDomainTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 // 2. Deploy Event Grid Topic & Topic Subscriptions
@@ -97,6 +105,7 @@ module azEventGridPrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.p
     privateEndpointVirtualNetworkSubnetName: eventGridDomainPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: eventGridDomainPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
     privateEndpointResourceIdLink: azEventGridDomainDeployment.id
+    privateEndpointTags: contains(eventGridDomainPrivateEndpoint, 'privateEndpointTags') ? eventGridDomainPrivateEndpoint.privateEndpointTags : {}
     privateEndpointGroupIds: [
       'domain'
     ]
@@ -122,3 +131,6 @@ module azEventGridRoleAssignment '../../az.rbac/v1.0/az.rbac.role.assignment.bic
     azEventGridDomainSubscriptionsDeployment
   ]
 }]
+
+
+output eventGridDomain object = azEventGridDomainDeployment

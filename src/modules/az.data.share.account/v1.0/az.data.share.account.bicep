@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -28,7 +29,10 @@ resource azDataShareAccountDeployment 'Microsoft.DataShare/accounts@2021-08-01' 
   identity: {
     type: 'SystemAssigned'
   }
-  tags: dataShareAccountTags
+  tags: union(dataShareAccountTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 module azDataShareAccountShareDeployment 'az.data.share.account.share.bicep' = [for (share, index) in dataShareAccountShares: if (!empty(dataShareAccountShares)) {

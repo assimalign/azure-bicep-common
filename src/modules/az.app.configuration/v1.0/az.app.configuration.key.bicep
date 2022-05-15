@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -25,10 +26,6 @@ param appConfigurationValueLabels array = []
 
 @description('The content type of the configuration value')
 param appConfigurationContentType string = ''
-
-// **************************************************************************************** //
-//                      Azure App Configuration Key Deployment                              //
-// **************************************************************************************** //
 
 resource azAppConfigurationKeyValuesDeployment 'Microsoft.AppConfiguration/configurationStores/keyValues@2021-10-01-preview' = if (empty(appConfigurationValueLabels)) {
   name: replace(replace('${appConfigurationName}/${appConfigurationKeyName}', '@environment', environment), '@region', region)

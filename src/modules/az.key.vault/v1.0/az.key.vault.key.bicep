@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -29,7 +30,7 @@ param keyVaultKeyCurveName string
 param keyVaultKeySize int
 
 @description('')
-param keyVaultTags object = {}
+param keyVaultKeyTags object = {}
 
 
 
@@ -39,5 +40,8 @@ resource azKeyVaultKeyDeployment 'Microsoft.KeyVault/vaults/keys@2021-04-01-prev
     curveName: keyVaultKeyCurveName
     keySize: keyVaultKeySize
   }
-  tags: keyVaultTags
+  tags: union(keyVaultKeyTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }

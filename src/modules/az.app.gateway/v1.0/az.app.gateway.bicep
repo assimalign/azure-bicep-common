@@ -1,11 +1,5 @@
-@allowed([
-  'dev'
-  'qa'
-  'uat'
-  'prd'
-])
 @description('The environment in which the resource(s) will be deployed.')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -28,6 +22,9 @@ param appGatewayFrontend object
 @description('The Azure App Gateway routing rules. Reference Link: https://docs.microsoft.com/en-us/azure/application-gateway/configuration-request-routing-rules')
 param appGatewayRoutingRules array
 
+@description('The tags to attach to the resource when deployed')
+param appGatewayTags object = {}
+
 // **************************************************************************************** //
 //                              App Gateway Deployment                                      //
 // **************************************************************************************** //
@@ -47,7 +44,7 @@ resource azPublicIpAddressNameResource 'Microsoft.Network/publicIPAddresses@2021
 var backendAddressPools = [for pool in appGatewayBackend.receivers: {
   name: pool.name
   properties: {
-    backendAddresses: environment == 'dev' ? pool.addresses.dev : environment == 'qa' ? pool.addresses.qa : environment == 'uat' ? pool.addresses.uat : pool.addresses.prd
+    backendAddresses: environment == 'dev' ? pool.addresses.dev : environment == 'qa' ? pool.addresses.qa : environment == 'uat' ? pool.addresses.uat : environment == 'prd' ? pool.addresses.prd :  pool.addresses.default
   }
 }]
 
@@ -123,9 +120,9 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2020-11-01' =
       tier: appGatewaySku.prd.tier
       capacity: appGatewaySku.prd.capacity
     } : {
-      name: 'Standard_Small'
-      tier: 'Standard'
-      capacity: 2
+      name: '${appGatewaySku.default.tier}_${appGatewaySku.default.size}'
+      tier: appGatewaySku.default.tier
+      capacity: appGatewaySku.default.capacity
     }))))
     gatewayIPConfigurations: [
       {
@@ -179,7 +176,10 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2020-11-01' =
     backendHttpSettingsCollection: backendPorts
     requestRoutingRules: routingRules
   }
+  tags: union(appGatewayTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
-
 
 output appGateway object = applicationGateway

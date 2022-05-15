@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -26,6 +27,9 @@ param appInsightsActivityLogAlertActionGroups array
 @description('')
 param appInsightsActivityLogAlertConditions array
 
+@description('The tags to attach to the resource when deployed')
+param appInsightsActivityLogAlertTags object = {}
+
 var actionsGroups = [for group in appInsightsActivityLogAlertActionGroups: {
   actionGroupId: resourceId('Microsoft.Insights/actionGroups', replace(replace(group.name, '@environment', environment), '@region', region))
 }]
@@ -45,7 +49,10 @@ resource azAppInsightsActivityLogAlertsDeployemnt 'Microsoft.Insights/activityLo
       subscription().id
     ]
   }
+  tags: union(appInsightsActivityLogAlertTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
-
 
 output appInsightsActivityLogAlerts object = azAppInsightsActivityLogAlertsDeployemnt

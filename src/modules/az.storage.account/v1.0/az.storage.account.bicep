@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -127,7 +128,10 @@ resource azStorageAccountDeployment 'Microsoft.Storage/storageAccounts@2021-09-0
       bypass: storageAccountVirtualNetworkBypass
     }
   }
-  tags: storageAccountTags
+  tags: union(storageAccountTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 // 2. Deploy Azure Storage Blob Services

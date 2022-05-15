@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -86,7 +87,11 @@ resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/config@2021-01-
           clientId: appServiceAuthIdentityProviderClientId.prd
           clientSecretSettingName: appServiceAuthIdentityProviderClientSecretName
           openIdIssuer: appServiceAuthIdentityProviderOpenIdIssuer.prd
-        } : json('null')))))
+        } : {
+          clientId: appServiceAuthIdentityProviderClientId.default
+          clientSecretSettingName: appServiceAuthIdentityProviderClientSecretName
+          openIdIssuer: appServiceAuthIdentityProviderOpenIdIssuer.default
+        }))))
         validation: {
           allowedAudiences: union([
             'https://${azAppServiceResource.properties.defaultHostName}'
@@ -114,7 +119,10 @@ resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/config@2021-01-
         } : any(environment == 'prd' ? {
           appId: appServiceAuthIdentityProviderClientId.prd
           appSecretSettingName: appServiceAuthIdentityProviderClientSecretName
-        } : json('null')))))
+        } : {
+          appId: appServiceAuthIdentityProviderClientId.default
+          appSecretSettingName: appServiceAuthIdentityProviderClientSecretName
+        }))))
         graphApiVersion: appServiceAuthIdentityProviderGraphApiVersion
         login: {
           scopes: appServiceAuthIdentityProviderScopes
@@ -135,7 +143,10 @@ resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/config@2021-01-
         }: any(environment == 'prd' ? {
           clientId: appServiceAuthIdentityProviderClientId.prd
           clientSecretSettingName: appServiceAuthIdentityProviderClientSecretName
-        }: json('null')))))
+        }: {
+          clientId: appServiceAuthIdentityProviderClientId.default
+          clientSecretSettingName: appServiceAuthIdentityProviderClientSecretName
+        }))))
         login: {
           scopes: appServiceAuthIdentityProviderScopes
         }
@@ -155,7 +166,10 @@ resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/config@2021-01-
         }: any(environment == 'prd' ? {
           clientId: appServiceAuthIdentityProviderClientId.prd
           clientSecretSettingName: appServiceAuthIdentityProviderClientSecretName
-        }: json('null')))))
+        }: {
+          clientId: appServiceAuthIdentityProviderClientId.default
+          clientSecretSettingName: appServiceAuthIdentityProviderClientSecretName
+        }))))
         login: {
           scopes: appServiceAuthIdentityProviderScopes
         }

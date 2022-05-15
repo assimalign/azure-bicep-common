@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -17,7 +18,13 @@ param keyVaultName string
 param keyVaultLocation string = resourceGroup().location
 
 @description('The pricing tier for the key vault resource')
-param keyVaultSku object
+param keyVaultSku object = {
+  dev: 'Standard'
+  qa: 'Standard'
+  uat: 'Standard'
+  prd: 'Standard'
+  default: 'Standard'
+}
 
 @description('')
 param keyVaultConfigs object = {}
@@ -57,17 +64,6 @@ param keyVaultCreationMode string = 'default'
 @description('Custom attributes to attach to key vault deployment')
 param keyVaultTags object = {}
 
-
-// 1. Format the Virtual Network Access Rules for the Key Vault deployment
-//var virtualNetworks = 
-
-// 2. Format Key Vault Policies, if any
-// var policies = [for policy in keyVaultPolicies: {
-//   tenantId: subscription().tenantId
-//   objectId: policy.objectId
-//   permissions: policy.permissions
-// }]
-
 // 3. Deploy Key Vault
 resource azKeyVaultDeployment 'Microsoft.KeyVault/vaults@2021-10-01' = {
   name: replace(replace(keyVaultName, '@environment', environment), '@region', region)
@@ -101,7 +97,7 @@ resource azKeyVaultDeployment 'Microsoft.KeyVault/vaults@2021-10-01' = {
       name: keyVaultSku.dev
       family: 'A'
     } : {
-      name: 'Standard'
+      name: keyVaultSku.default
       family: 'A'
     }))))
     networkAcls: {
@@ -114,7 +110,10 @@ resource azKeyVaultDeployment 'Microsoft.KeyVault/vaults@2021-10-01' = {
       }]
     }
   }
-  tags: keyVaultTags
+  tags: union(keyVaultTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 module azKeyVaultSecretDeployment 'az.key.vault.secret.bicep' = [for secret in keyVaultSecrets: if (!empty(keyVaultSecrets)) {
@@ -141,7 +140,7 @@ module azKeyVaultKeyDeployment 'az.key.vault.key.bicep' = [for key in keyVaultKe
     keyVaultKeyName: key.name
     keyVaultKeySize: key.size
     keyVaultKeyCurveName: key.curveName
-    keyVaultTags: keyVaultTags
+    keyVaultKeyTags: keyVaultTags
   }
 }]
 
@@ -160,10 +159,11 @@ module azKeyVaultPrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.pr
     privateEndpointVirtualNetworkSubnetName: keyVaultPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: keyVaultPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
     privateEndpointResourceIdLink: azKeyVaultDeployment.id
+    privateEndpointTags: contains(keyVaultPrivateEndpoint, 'privateEndpointTags') ? keyVaultPrivateEndpoint.privateEndpointTags : {}
     privateEndpointGroupIds: [
       'vault'
     ]
   }
 }
 
-// Publish-AzBicepModule -FilePath './src/modules/az.key.vault/v1.0/az.key.vault.bicep' -Target 'br:asalbicep.azurecr.io/modules/az.key.vault:v1.0'
+output keyVault object = azKeyVaultDeployment

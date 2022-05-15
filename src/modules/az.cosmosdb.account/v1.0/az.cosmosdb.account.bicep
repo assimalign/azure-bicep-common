@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -76,7 +77,10 @@ resource azCosmosDbAccountDeployment 'Microsoft.DocumentDB/databaseAccounts@2021
     locations: cosmosDbAccountLocations
     cors: cosmosDbAccountCorsPolicy
   }
-  tags: cosmosDbAccountTags
+  tags: union(cosmosDbAccountTags, {
+    region: region
+    environment: environment
+  })
 }
 
 // 2. Deploy Cosmos DB Document Database, if applicable
@@ -121,6 +125,7 @@ module azCosmosDbAccountPrivateEndpointDeployment '../../az.private.endpoint/v1.
     privateEndpointVirtualNetworkSubnetName: cosmosAccountPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: cosmosAccountPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
     privateEndpointResourceIdLink: azCosmosDbAccountDeployment.id
+    privateEndpointTags: contains(cosmosAccountPrivateEndpoint, 'privateEndpointTags') ? cosmosAccountPrivateEndpoint.privateEndpointTags : {}
     privateEndpointGroupIds: [
       'Sql'
     ]

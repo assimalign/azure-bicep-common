@@ -1,11 +1,12 @@
 @allowed([
+   ''
    'dev'
    'qa'
    'uat'
    'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -19,29 +20,24 @@ param mapAccountLocation string = resourceGroup().location
 @description('The tags to attach to the resource when deployed')
 param mapAccountTags object = {}
 
-
 resource azMapAccountDeployment 'Microsoft.Maps/accounts@2021-02-01' = {
    name: replace(replace(mapAccountName, '@environment', environment), '@region', region)
    location: mapAccountLocation
    sku: {
-      name:  'G2'
+      name: 'G2'
    }
-   properties: {
-
-   }
-   tags: mapAccountTags
+   properties: {}
+   tags: union(mapAccountTags, {
+      region: empty(region) ? 'n/a' : region
+      environment: empty(environment) ? 'n/a' : environment
+   })
 
    resource azMapAccountPrivateAtlas 'privateAtlases' = {
-     name: ''
-     plan: {
-        
-     }
+      name: ''
+      plan: {}
    }
 }
 
-
 resource azMapAccountDeployment1 'Microsoft.Maps/accounts/privateAtlases@2020-02-01-preview' = {
-
    name: '/'
-
-} 
+}

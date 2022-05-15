@@ -1,11 +1,12 @@
 @allowed([
+  'none'
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = 'none'
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -29,6 +30,7 @@ param appServicePlanSku object = {
   qa: 'F1'
   uat: 'F1'
   prd: 'F1'
+  default: 'F1'
 }
 
 @description('The name of the ASE to attach to the app service plan')
@@ -36,6 +38,9 @@ param appServicePlanAseName string = ''
 
 @description('The resource group the ASE lives under')
 param appServicePlanAseResourceGroup string = resourceGroup().name
+
+@description('')
+param appServicePlanTags object = {}
 
 // **************************************************************************************** //
 //               App Service Plan, App Insights, App Storage Act, and Apps Deploy           //
@@ -66,8 +71,12 @@ resource azAppServicePlanDeployment 'Microsoft.Web/serverfarms@2021-03-01' = {
   } : any((environment == 'prd') ? {
     name: appServicePlanSku.prd
   } : {
-    name: 'D1'
+    name: appServicePlanSku.default
   }))))
+  tags:  union(appServicePlanTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 // 3. Return Deployment Output

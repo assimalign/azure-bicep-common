@@ -71,6 +71,15 @@
                         "rootFolder",
                         "repositoryName"
                     ]
+                },
+                "dataFactoryTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
                 }
             },
             "required": [

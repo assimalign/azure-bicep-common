@@ -585,13 +585,14 @@
                         "prd": {
                             "type": "string",
                             "$ref": "#/definitions/app-service-plan-sku"
+                        },
+                        "default": {
+                            "type": "string",
+                            "$ref": "#/definitions/app-service-plan-sku"
                         }
                     },
                     "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
+                        "default"
                     ]
                 },
                 "appServicePlanAseName": {
@@ -611,9 +612,7 @@
                 }
             },
             "required": [
-                "appServicePlanName",
-                "appServicePlanOs",
-                "appServicePlanSku"
+                "appServicePlanName"
             ]
         },
         "app-service-environments": {
@@ -667,13 +666,17 @@
                                                 },
                                                 "prd": {
                                                     "type": "string"
+                                                },
+                                                "default": {
+                                                    
                                                 }
                                             },
                                             "required": [
                                                 "dev",
                                                 "qa",
                                                 "uat",
-                                                "prd"
+                                                "prd",
+                                                "default"
                                             ]
                                         },
                                         "storage": {

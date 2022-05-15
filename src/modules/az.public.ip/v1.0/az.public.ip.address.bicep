@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -26,6 +27,10 @@ param publicIpSku object
 @description('The allocation method of the Public IP Address')
 param publicIpAllocationMethod string = 'Dynamic'
 
+@description('')
+param publicIpTags object = {}
+
+
 
 // 1. Deploy Public Ip Address
 resource azPublicIpAddressDeployment 'Microsoft.Network/publicIPAddresses@2019-11-01' = {
@@ -45,4 +50,8 @@ resource azPublicIpAddressDeployment 'Microsoft.Network/publicIPAddresses@2019-1
   } : {
     name: 'Basic'
   }))))
+  tags: union(publicIpTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }

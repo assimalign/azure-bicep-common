@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -128,7 +129,10 @@ resource azAppServiceFunctionSlotDeployment 'Microsoft.Web/sites/slots@2021-03-0
       ], siteSettings)
     }
   }
-  tags: appServiceSlotTags
+  tags: union(appServiceSlotTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 
   resource azAppServiceLinkApim 'config' = if (contains(appServiceSlotSiteConfigs, 'webSettings')) {
     name: 'web'
@@ -181,7 +185,10 @@ resource azAppServiceWebSlotDeployment 'Microsoft.Web/sites/slots@2021-01-01' = 
       ], siteSettings) // If there are slots to be deployed then let's have the slots override the site settings
     }
   }
-  tags: appServiceSlotTags
+  tags: union(appServiceSlotTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 
   resource azAppServiceLinkApim 'config' = if (contains(appServiceSlotSiteConfigs, 'webSettings')) {
     name: 'web'

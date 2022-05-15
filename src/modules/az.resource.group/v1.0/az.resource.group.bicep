@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -43,10 +44,10 @@ targetScope = 'subscription'
 resource azResourceGroupDeployment 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: replace(replace(resourceGroupName, '@environment', environment), '@region', region)
   location: resourceGroupLocation
-  tags: resourceGroupTags
+  tags:  union(resourceGroupTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 output resourceGroup object = azResourceGroupDeployment
-
-
-// Publish-AzBicepModule -FilePath './src/modules/az.resource.group/v1.0/az.resource.group.bicep' -Target 'br:asalbicep.azurecr.io/modules/az.resource.group:v1.0'

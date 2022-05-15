@@ -49,66 +49,23 @@
                     },
                     "properties": {
                         "dev": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Basic"
-                                },
-                                {
-                                    "const": "Standard"
-                                },
-                                {
-                                    "const": "Premium"
-                                }
-                            ]
+                            "$ref": "#/definitions/service-bus-sku"
                         },
                         "qa": {
-                            "oneOf": [
-                                {
-                                    "const": "Basic"
-                                },
-                                {
-                                    "const": "Standard"
-                                },
-                                {
-                                    "const": "Premium"
-                                }
-                            ]
+                            "$ref": "#/definitions/service-bus-sku"
                         },
                         "uat": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Basic"
-                                },
-                                {
-                                    "const": "Standard"
-                                },
-                                {
-                                    "const": "Premium"
-                                }
-                            ]
+                            "$ref": "#/definitions/service-bus-sku"
                         },
                         "prd": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Basic"
-                                },
-                                {
-                                    "const": "Standard"
-                                },
-                                {
-                                    "const": "Premium"
-                                }
-                            ]
+                            "$ref": "#/definitions/service-bus-sku"
+                        },
+                        "default": {
+                            "$ref": "#/definitions/service-bus-sku"
                         }
                     },
                     "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
+                        "default"
                     ]
                 },
                 "serviceBusQueues": {
@@ -143,8 +100,15 @@
                 }
             },
             "required": [
-                "serviceBusName",
-                "serviceBusSku"
+                "serviceBusName"
+            ]
+        },
+        "service-bus-sku": {
+            "type": "string",
+            "enum": [
+                "Basic",
+                "Standard",
+                "Premium"
             ]
         },
         "service-bus-namespace-queues": {

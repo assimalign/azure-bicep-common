@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -22,6 +23,7 @@ param signalRServiceSku object = {
   qa:  'free'
   uat: 'free'
   prd: 'free'
+  default: 'free'
 }
 
 @description('The tags to attach to the resource when deployed')

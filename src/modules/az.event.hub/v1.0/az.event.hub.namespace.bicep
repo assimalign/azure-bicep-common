@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -20,7 +21,13 @@ param eventHubNamespaceLocation string = resourceGroup().location
 param eventHubNamespaceHubs array = []
 
 @description('The pricing tier broken into per environment')
-param eventHubNamespaceSku object = {}
+param eventHubNamespaceSku object = {
+  dev: 'Basic'
+  qa: 'Basic'
+  uat: 'Basic'
+  prd: 'Basic'
+  default: 'Basic'
+}
 
 @description('A flag to endable System Managed Identity in Azure')
 param eventHubNamespaceEnableMsi bool = false
@@ -32,6 +39,9 @@ param eventHubNamespaceCapacity int = 1
 
 @description('')
 param eventHubNamespacePolicies array = []
+
+@description('')
+param eventHubNamespaceTags object = {}
 
 // 1. Deploy Event Hub Namespace
 resource azEventHubNamespaceDeployment 'Microsoft.EventHub/namespaces@2021-01-01-preview' = {
@@ -57,8 +67,8 @@ resource azEventHubNamespaceDeployment 'Microsoft.EventHub/namespaces@2021-01-01
     tier: eventHubNamespaceSku.prd
     capacity: eventHubNamespaceCapacity
   } : {
-    name: 'Basic'
-    tier: 'Basic'
+    name: eventHubNamespaceSku.default
+    tier: eventHubNamespaceSku.default
     capacity: 1
   }))))
 
@@ -68,6 +78,10 @@ resource azEventHubNamespaceDeployment 'Microsoft.EventHub/namespaces@2021-01-01
       rights: !empty(eventHubNamespacePolicies) ? policy.policyPermissions : []
     }
   }]
+  tags: union(eventHubNamespaceTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 // 2 Deploy individual Event Hubs under the Event Hub Namespace
@@ -85,5 +99,4 @@ module azEventHubsDeployment 'az.event.hub.namespace.hub.bicep' = [for (hub, ind
   }
 }]
 
-
-output resource object = azEventHubNamespaceDeployment
+output eventHubNamespace object = azEventHubNamespaceDeployment

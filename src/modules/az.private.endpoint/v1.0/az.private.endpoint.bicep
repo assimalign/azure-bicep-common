@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -39,6 +40,9 @@ param privateEndpointDnsZoneResourceGroup string
 
 @description('A descriptive group name to add to the private endpoint DNS configurations')
 param privateEndpointDnsZoneGroupName string
+
+@description('')
+param privateEndpointTags object = {}
 
 // 1. Get Existing Subnet Resource within a virtual network
 resource azVirtualNetworkSubnetResource 'Microsoft.Network/virtualNetworks/subnets@2021-05-01' existing = {
@@ -87,6 +91,10 @@ resource azPrivateEndpointDeployment 'Microsoft.Network/privateEndpoints@2021-05
       ]
     }
   }
+  tags: union(privateEndpointTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 // 4. Return Deployment ouput

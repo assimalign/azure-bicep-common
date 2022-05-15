@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -73,7 +74,10 @@ resource sqlServerDatabaseDeployment 'Microsoft.Sql/servers/databases@2021-08-01
     name: sqlServerAccountDatabaseSku.prd.dbTier
     capacity: sqlServerAccountDatabaseSku.prd.dbMaxCapacity
   } : {}))))
-  tags: sqlServerAccountDatabaseTags
+  tags: union(sqlServerAccountDatabaseTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 output resource object = sqlServerDatabaseDeployment

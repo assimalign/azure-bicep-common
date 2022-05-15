@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -29,6 +30,9 @@ param dataFactoryDefaultNetworkAccess string = 'Allow'
 @description('The source control to be used for data factory packages.')
 param dataFactoryRepositorySettings object = {}
 
+@description('The tags to attach to the resource when deployed.')
+param dataFactoryTags object = {}
+
 resource azDataFactoryDeployment 'Microsoft.DataFactory/factories@2018-06-01' = {
   name: replace(replace(dataFactoryName, '@environment', environment), '@region', region)
   location: dataFactoryLocation
@@ -39,4 +43,11 @@ resource azDataFactoryDeployment 'Microsoft.DataFactory/factories@2018-06-01' = 
     publicNetworkAccess: dataFactoryDefaultNetworkAccess == 'Allow' ? 'Enabled' : 'Disabled'
     repoConfiguration: any(!empty(dataFactoryRepositorySettings) ? dataFactoryRepositorySettings : json('null'))
   }
+  tags: union(dataFactoryTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
+
+
+output dataFactory object = azDataFactoryDeployment

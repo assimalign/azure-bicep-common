@@ -1,82 +1,86 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "definitions": {
-        "private-endpoints": {
+        "private-endpoint": {
             "type": "object",
             "properties": {
                 "value": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "$ref": "#/definitions/private-endpoint",
-                        "properties": {
-
-                        },
-                        "minItems": 1
-                    }
+                    "$ref": "#/definitions/private-endpoint-parameters"
                 }
             },
             "required": [
                 "value"
             ]
         },
-        "private-endpoint": {
+        "private-endpoints": {
             "type": "object",
             "properties": {
-                "privateEndpointName": {
-                    "type": "string"
-                },
-                "privateEndpointDnsZoneGroupName": {
-                    "type": "string",
-                    "anyOf": [
-                        {
-                            "const": "privatelink-azconfig-io"
-                        }
-                    ]
-                },
-                "privateEndpointLocation": {
-                    "type": "string",
-                    "description": "The location/region to deploy the Azure Private Endpoint"
-                },
-                "privateEndpointDnsZoneName": {
-                    "type": "string",
-                    "description": "The name of the Private DNS Zone to link to the private endpoint for internal routing."
-                },
-                "privateEndpointDnsZoneResourceGroup": {
-                    "type": "string"
-                },
-                "privateEndpointVirtualNetworkName": {
-                    "type": "string"
-                },
-                "privateEndpointVirtualNetworkSubnetName": {
-                    "type": "string"
-                },
-                "privateEndpointVirtualNetworkResourceGroup": {
-                    "type": "string"
-                },
-                "privateEndpointGroupIds": {
+                "value": {
                     "type": "array",
                     "items": {
-                        "type": "string",
-                        "anyOf": [
-                            {
-                                "const": "configurationStores"
-                            }
-                        ]
-                    }
-                },
-                "privateEndpointResourceIdLink": {
-                    "type": "string",
-                    "description": "The Azure Resource ID to link to the Private Endpoint."
+                        "$ref": "#/definitions/private-endpoint-parameters"
+                    },
+                    "minItems": 1
                 }
             },
             "required": [
-                "privateEndpointName",
-                "privateEndpointDnsZoneName",
-                "privateEndpointDnsZoneGroupName",
-                "privateEndpointVirtualNetworkName",
-                "privateEndpointVirtualNetworkSubnetName",
-                "privateEndpointVirtualNetworkResourceGroup"
+                "value"
+            ]
+        },
+        "private-endpoint-parameters": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/private-endpoint-groups"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "privateEndpointName": {
+                            "type": "string"
+                        },
+                        "privateEndpointLocation": {
+                            "type": "string",
+                            "description": "The location/region to deploy the Azure Private Endpoint"
+                        },
+                        "privateEndpointDnsZoneName": {
+                            "type": "string",
+                            "description": "The name of the Private DNS Zone to link to the private endpoint for internal routing."
+                        },
+                        "privateEndpointDnsZoneResourceGroup": {
+                            "type": "string"
+                        },
+                        "privateEndpointVirtualNetworkName": {
+                            "type": "string"
+                        },
+                        "privateEndpointVirtualNetworkSubnetName": {
+                            "type": "string"
+                        },
+                        "privateEndpointVirtualNetworkResourceGroup": {
+                            "type": "string"
+                        },
+                        "privateEndpointResourceIdLink": {
+                            "type": "string",
+                            "description": "The Azure Resource ID to link to the Private Endpoint."
+                        },
+                        "privateEndpointTags": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[a-z]": {
+                                    "type": "string"
+                                }
+                            },
+                            "minProperties": 1
+                        }
+                    },
+                    "required": [
+                        "privateEndpointName",
+                        "privateEndpointDnsZoneName",
+                        "privateEndpointDnsZoneGroupName",
+                        "privateEndpointVirtualNetworkName",
+                        "privateEndpointVirtualNetworkSubnetName",
+                        "privateEndpointVirtualNetworkResourceGroup"
+                    ]
+                }
             ]
         },
         "private-endpoint-embedded": {
@@ -105,6 +109,15 @@
                 },
                 "privateEndpointVirtualNetworkResourceGroup": {
                     "type": "string"
+                },
+                "privateEndpointTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
                 }
             },
             "required": [
@@ -114,6 +127,130 @@
                 "privateEndpointVirtualNetworkName",
                 "privateEndpointVirtualNetworkSubnetName",
                 "privateEndpointVirtualNetworkResourceGroup"
+            ]
+        },
+        "private-endpoint-groups": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "privateEndpointDnsZoneGroupName": {
+                            "const": "privatelink-azconfig-io"
+                        },
+                        "privateEndpointGroupIds": {
+                            "const": "configurationStores"
+                        }
+                    },
+                    "required": [
+                        "privateEndpointDnsZoneGroupName",
+                        "privateEndpointGroupIds"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "privateEndpointDnsZoneGroupName": {
+                            "const": "privatelink-documents-azure-com"
+                        },
+                        "privateEndpointGroupIds": {
+                            "const": "sql"
+                        }
+                    },
+                    "required": [
+                        "privateEndpointDnsZoneGroupName",
+                        "privateEndpointGroupIds"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "privateEndpointDnsZoneGroupName": {
+                            "const": "privatelink-eventgrid-azure-net"
+                        },
+                        "privateEndpointGroupIds": {
+                            "const": "domain"
+                        }
+                    },
+                    "required": [
+                        "privateEndpointDnsZoneGroupName",
+                        "privateEndpointGroupIds"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "privateEndpointDnsZoneGroupName": {
+                            "const": "privatelink-vaultcore-azure-net"
+                        },
+                        "privateEndpointGroupIds": {
+                            "const": "vault"
+                        }
+                    },
+                    "required": [
+                        "privateEndpointDnsZoneGroupName",
+                        "privateEndpointGroupIds"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "privateEndpointDnsZoneGroupName": {
+                            "const": "privatelink-blob-core-windows-net"
+                        },
+                        "privateEndpointGroupIds": {
+                            "const": "blob"
+                        }
+                    },
+                    "required": [
+                        "privateEndpointDnsZoneGroupName",
+                        "privateEndpointGroupIds"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "privateEndpointDnsZoneGroupName": {
+                            "const": "privatelink-file-core-windows-net"
+                        },
+                        "privateEndpointGroupIds": {
+                            "const": "file"
+                        }
+                    },
+                    "required": [
+                        "privateEndpointDnsZoneGroupName",
+                        "privateEndpointGroupIds"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "privateEndpointDnsZoneGroupName": {
+                            "const": "privatelink-queue-core-windows-net"
+                        },
+                        "privateEndpointGroupIds": {
+                            "const": "queue"
+                        }
+                    },
+                    "required": [
+                        "privateEndpointDnsZoneGroupName",
+                        "privateEndpointGroupIds"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "privateEndpointDnsZoneGroupName": {
+                            "const": "privatelink-table-core-windows-net"
+                        },
+                        "privateEndpointGroupIds": {
+                            "const": "table"
+                        }
+                    },
+                    "required": [
+                        "privateEndpointDnsZoneGroupName",
+                        "privateEndpointGroupIds"
+                    ]
+                }
             ]
         }
     }

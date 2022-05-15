@@ -1,11 +1,12 @@
 @allowed([
+  ''
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -134,7 +135,10 @@ resource azAppServiceFunctionDeployment 'Microsoft.Web/sites@2021-03-01' = if (a
       ], siteSettings)
     } : {})
   }
-  tags: appServiceTags
+  tags: union(appServiceTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 
   resource azAppServiceWebConfigs 'config' = if (contains(appServiceSiteConfigs, 'webSettings')) {
     name: 'web'
@@ -152,7 +156,7 @@ resource azAppServiceFunctionDeployment 'Microsoft.Web/sites@2021-03-01' = if (a
 }
 
 // 4.2 Deploy Web App, if applicable
-resource azAppServiceWebDeployment 'Microsoft.Web/sites@2021-01-01' = if (appServiceType == 'web') {
+resource azAppServiceWebDeployment 'Microsoft.Web/sites@2021-03-01' = if (appServiceType == 'web') {
   name: appServiceType == 'web' ? replace('${appServiceName}', '@environment', environment) : 'no-web-app-to-deploy'
   location: appServiceLocation
   kind: appServiceType
@@ -189,7 +193,10 @@ resource azAppServiceWebDeployment 'Microsoft.Web/sites@2021-01-01' = if (appSer
       ], siteSettings) // If there are slots to be deployed then let's have the slots override the site settings
     } : {})
   }
-  tags: appServiceTags
+  tags: union(appServiceTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
   resource azAppServiceWebConfigs 'config' = if (contains(appServiceSiteConfigs, 'webSettings')) {
     name: 'web'
     properties: {
@@ -319,4 +326,4 @@ module azAppServiceRoleAssignment '../../az.rbac/v1.0/az.rbac.role.assignment.bi
 }]
 
 // 10. Return Deployment Output
-output resource object = appServiceType == 'web' ? azAppServiceWebDeployment : azAppServiceFunctionDeployment
+output appService object = appServiceType == 'web' ? azAppServiceWebDeployment : azAppServiceFunctionDeployment

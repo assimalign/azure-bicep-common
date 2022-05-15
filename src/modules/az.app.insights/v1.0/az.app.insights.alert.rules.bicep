@@ -1,11 +1,12 @@
 @allowed([
+   ''
    'dev'
    'qa'
    'uat'
    'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'dev'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -23,8 +24,11 @@ param appInsightsAlertRuleEnabled bool = true
 param appInsightsAlertRuleActionGroups array
 
 @minLength(1)
-@description('')
+@description('The conditional rules used to define an alert.')
 param appInsightsAlertRuleConditions array
+
+@description('The tags to attach to the resource when deployed.')
+param appInsightsAlertRuleTags object = {}
 
 var actionsGroups = [for group in appInsightsAlertRuleActionGroups: {
    actionGroupId: resourceId('Microsoft.Insights/actionGroups', replace(replace(group.name, '@environment', environment), '@region', region))
@@ -44,6 +48,10 @@ resource azAppInsightsAlertRuleDeployment 'Microsoft.Insights/activityLogAlerts@
       }
       scopes: []
    }
+   tags: union(appInsightsAlertRuleTags, {
+      region: empty(region) ? 'n/a' : region
+      environment: empty(environment) ? 'n/a' : environment
+   })
 }
 
 output appInsightsAllertRule object = azAppInsightsAlertRuleDeployment

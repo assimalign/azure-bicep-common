@@ -19,7 +19,8 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/event-hub-namespace-parameters"
-                    }
+                    },
+                    "minItems": 1
                 }
             },
             "required": [
@@ -58,8 +59,14 @@
                         },
                         "prd": {
                             "$ref": "#/definitions/event-hub-namespace-sku"
+                        },
+                        "default": {
+                            "$ref": "#/definitions/event-hub-namespace-sku"
                         }
-                    }
+                    },
+                    "required": [
+                        "default"
+                    ]
                 },
                 "eventHubNamespacePolicies": {
                     "type": "array",
@@ -69,8 +76,7 @@
                 }
             },
             "required": [
-                "eventHubNamespaceName",
-                "eventHubNamespaceSku"
+                "eventHubNamespaceName"
             ]
         },
         "event-hub-namespace-hub": {
