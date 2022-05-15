@@ -1,0 +1,66 @@
+{
+    // How to reference schemas in storage account
+    //"$schema": "https://{storage account when the schemas live}/json/bicep/az/v1.0/parameters.json"
+    "$schema": "../../src/schemas/az/v1.0/parameters.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceGroup": {
+            "value": {
+                "resourceGroupName": "test-rg-@environment-@region",
+                "resourceGroupLocation": "eastus"
+            }
+        },
+        "cosmosAccount": {
+            "value": {
+                "cosmosAccountName": "test-cosmosdb-@environment-@region",
+                "cosmosAccountResourceGroup": "test-rg-@environment-@region",
+                "cosmosAccountLocations": [
+                    {
+                        "locationName": "centralus",
+                        "failoverPriority": 0
+                    }
+                ],
+                "cosmosAccountDatabases": [
+                    {
+                        "cosmosDatabaseName": "TestDb1"
+                    },
+                    {
+                        "cosmosDatabaseName": "TestDb2",
+                        "cosmosDatabaseContainers": [
+                            {
+                                "cosmosDatabaseContainerName": "TestDb2Container",
+                                "cosmosDatabaseContainerPartitionKey": {
+                                    "kind": "Hash",
+                                    "paths": [
+                                        "/Test"
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "cosmosAccountsDocumentDatabase": {
+            "value": {
+                "cosmosDatabaseName": "TestDb3",
+                "cosmosAccountName": "test-cosmosdb-@environment-@region",
+                "cosmosAccountResourceGroup": "test-rg-@environment-@region"
+            }
+        },
+        "cosmosAccountsDocumentDatabaseContainer": {
+            "value": {
+                "cosmosDatabaseName": "TestDb1",
+                "cosmosAccountName": "test-cosmosdb-@environment-@region",
+                "cosmosAccountResourceGroup": "test-rg-@environment-@region",
+                "cosmosDatabaseContainerName": "TestDb1Container",
+                "cosmosDatabaseContainerPartitionKey": {
+                    "kind": "Hash",
+                    "paths": [
+                        "/Test"
+                    ]
+                }
+            }
+        }
+    }
+}
