@@ -32,5 +32,6 @@ steps:
     ScriptType: 'FilePath'
     ScriptPath: 'modules.arc.push.ps1'
     ScriptArguments:
+      -azureContextName $(azure-context-name)
       -containerRegistryName $(azure-arc)
       -containerRegistryResourceGroup $(azure-arc-rg)
