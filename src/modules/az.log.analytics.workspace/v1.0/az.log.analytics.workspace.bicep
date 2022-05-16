@@ -19,11 +19,11 @@ param logAnalyticsWorkspaceLocation string = resourceGroup().location
 
 @description('The pricing tier for the Workbook')
 param logAnalyticsWorkspaceSku object = {
-  dev: 'Free'
-  qa: 'Free'
-  uat: 'Free'
-  prd: 'Free'
-  default: 'Free'
+  dev: 'PerGB2018'
+  qa: 'PerGB2018'
+  uat: 'PerGB2018'
+  prd: 'PerGB2018'
+  default: 'PerGB2018'
 }
 
 @description('The number of days to retain data')

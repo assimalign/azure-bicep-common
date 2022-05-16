@@ -222,17 +222,7 @@
                 "sqlServerAccountDatabases": {
                     "type": "array",
                     "items": {
-                        "allOf": [
-                            {
-                                "$ref": "#/definitions/sql-server-account-database-parameters"
-                            },
-                            {
-                                "required": [
-                                    "sqlServerAccountDatabaseName",
-                                    "sqlServerAccountDatabaseSku"
-                                ]
-                            }
-                        ]
+                        "$ref": "#/definitions/sql-server-account-database-parameters"
                     },
                     "minItems": 1
                 },
@@ -257,15 +247,23 @@
                 "value": {
                     "type": "array",
                     "items": {
+                        "type": "object",
                         "allOf": [
                             {
                                 "$ref": "#/definitions/sql-server-account-database-parameters"
                             },
                             {
+                                "type": "object",
+                                "properties": {
+                                    "sqlServerAccountName": {
+                                        "type": "string"
+                                    },
+                                    "sqlServerAccountResourceGroup": {
+                                        "type": "string"
+                                    }
+                                },
                                 "required": [
-                                    "sqlServerAccountName",
-                                    "sqlServerAccountDatabaseName",
-                                    "sqlServerAccountDatabaseSku"
+                                    "sqlServerAccountName"
                                 ]
                             }
                         ]
@@ -281,15 +279,23 @@
             "type": "object",
             "properties": {
                 "value": {
+                    "type": "object",
                     "allOf": [
                         {
                             "$ref": "#/definitions/sql-server-account-database-parameters"
                         },
                         {
+                            "type": "object",
+                            "properties": {
+                                "sqlServerAccountName": {
+                                    "type": "string"
+                                },
+                                "sqlServerAccountResourceGroup": {
+                                    "type": "string"
+                                }
+                            },
                             "required": [
-                                "sqlServerAccountName",
-                                "sqlServerAccountDatabaseName",
-                                "sqlServerAccountDatabaseSku"
+                                "sqlServerAccountName"
                             ]
                         }
                     ]
@@ -302,12 +308,6 @@
         "sql-server-account-database-parameters": {
             "type": "object",
             "properties": {
-                "sqlServerAccountName": {
-                    "type": "string"
-                },
-                "sqlServerAccountResourceGroup": {
-                    "type": "string"
-                },
                 "sqlServerAccountDatabaseName": {
                     "type": "string"
                 },
@@ -356,7 +356,11 @@
                     },
                     "minProperties": 1
                 }
-            }
+            },
+            "required": [
+                "sqlServerAccountDatabaseName",
+                "sqlServerAccountDatabaseSku"
+            ]
         },
         "sql-server-account-database-redundancy": {
             "oneOf": [
