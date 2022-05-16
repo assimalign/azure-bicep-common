@@ -18,7 +18,13 @@ param logAnalyticsWorkspaceName string
 param logAnalyticsWorkspaceLocation string = resourceGroup().location
 
 @description('The pricing tier for the Workbook')
-param logAnalyticsWorkspaceSku object 
+param logAnalyticsWorkspaceSku object = {
+  dev: 'Free'
+  qa: 'Free'
+  uat: 'Free'
+  prd: 'Free'
+  default: 'Free'
+}
 
 @description('The number of days to retain data')
 param logAnalyticsWorkspaceRetention int = 30
@@ -54,7 +60,7 @@ resource azAppLogAnalyticsWorkspaceDeployment 'Microsoft.OperationalInsights/wor
     } : any(environment == 'prd' ? {
       name: logAnalyticsWorkspaceSku.prd
     } : {
-      name: 'PerGB2018'
+      name: logAnalyticsWorkspaceSku.default
     }))))
   }
   tags: union(logAnalyticsWorkspaceTags, {

@@ -55,129 +55,23 @@
                         "dev": {
                             "type": "string",
                             "default": "PerGB2018",
-                            "oneOf": [
-                                {
-                                    "const": "Free"
-                                },
-                                {
-                                    "const": "Standard"
-                                },
-                                {
-                                    "const": "PerGB2018"
-                                },
-                                {
-                                    "const": "Premium"
-                                },
-                                {
-                                    "const": "PerNode"
-                                },
-                                {
-                                    "const": "Standalone"
-                                },
-                                {
-                                    "const": "LACluster"
-                                },
-                                {
-                                    "const": "CapacityReservation"
-                                }
-                            ]
+                            "oneOf": []
                         },
                         "qa": {
-                            "type": "string",
-                            "default": "PerGB2018",
-                            "oneOf": [
-                                {
-                                    "const": "Free"
-                                },
-                                {
-                                    "const": "Standard"
-                                },
-                                {
-                                    "const": "PerGB2018"
-                                },
-                                {
-                                    "const": "Premium"
-                                },
-                                {
-                                    "const": "PerNode"
-                                },
-                                {
-                                    "const": "Standalone"
-                                },
-                                {
-                                    "const": "LACluster"
-                                },
-                                {
-                                    "const": "CapacityReservation"
-                                }
-                            ]
+                            "$ref": "#/definitions/log-analytics-workspace-sku"
                         },
                         "uat": {
-                            "type": "string",
-                            "default": "PerGB2018",
-                            "oneOf": [
-                                {
-                                    "const": "Free"
-                                },
-                                {
-                                    "const": "Standard"
-                                },
-                                {
-                                    "const": "PerGB2018"
-                                },
-                                {
-                                    "const": "Premium"
-                                },
-                                {
-                                    "const": "PerNode"
-                                },
-                                {
-                                    "const": "Standalone"
-                                },
-                                {
-                                    "const": "LACluster"
-                                },
-                                {
-                                    "const": "CapacityReservation"
-                                }
-                            ]
+                            "$ref": "#/definitions/log-analytics-workspace-sku"
                         },
                         "prd": {
-                            "type": "string",
-                            "default": "PerGB2018",
-                            "oneOf": [
-                                {
-                                    "const": "Free"
-                                },
-                                {
-                                    "const": "Standard"
-                                },
-                                {
-                                    "const": "PerGB2018"
-                                },
-                                {
-                                    "const": "Premium"
-                                },
-                                {
-                                    "const": "PerNode"
-                                },
-                                {
-                                    "const": "Standalone"
-                                },
-                                {
-                                    "const": "LACluster"
-                                },
-                                {
-                                    "const": "CapacityReservation"
-                                }
-                            ]
+                            "$ref": "#/definitions/log-analytics-workspace-sku"
+                        },
+                        "default": {
+                            "$ref": "#/definitions/log-analytics-workspace-sku"
                         }
                     },
                     "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
+                       "default"
                     ]
                 },
                 "logAnalyticsWorkspacePublicNetworkAccessForIngestion": {
@@ -215,8 +109,20 @@
                 }
             },
             "required": [
-                "logAnalyticsWorkspaceName",
-                "logAnalyticsWorkspaceSku"
+                "logAnalyticsWorkspaceName"
+            ]
+        },
+        "log-analytics-workspace-sku": {
+            "type": "string",
+            "enum": [
+                "Free",
+                "Standard",
+                "PerGB2018",
+                "Premium",
+                "PerNode",
+                "Standalone",
+                "LACluster",
+                "CapacityReservation"
             ]
         }
     }

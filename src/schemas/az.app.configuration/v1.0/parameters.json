@@ -114,6 +114,9 @@
                             "$ref": "#/definitions/app-configuration-sku"
                         }
                     },
+                    "required": [
+                        "default"
+                    ],
                     "minProperties": 1
                 }
             },
