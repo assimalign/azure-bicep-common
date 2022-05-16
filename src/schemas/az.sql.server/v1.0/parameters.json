@@ -36,6 +36,9 @@
                 "sqlServerAccountResourceGroup": {
                     "type": "string"
                 },
+                "sqlServerAccountLocation": {
+                    "type": "string"
+                },
                 "sqlServerAccountMsiEnabled": {
                     "type": "boolean"
                 },
