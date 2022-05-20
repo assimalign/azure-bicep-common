@@ -98,92 +98,36 @@
                         },
                         "prd": {
                             "type": "string"
+                        },
+                        "default": {
+                            "type": "string"
                         }
                     },
                     "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
+                        "default"
                     ]
                 },
                 "storageAccountRedundancy": {
                     "type": "object",
                     "properties": {
                         "dev": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "LRS"
-                                },
-                                {
-                                    "const": "GRS"
-                                },
-                                {
-                                    "const": "RAGRS"
-                                },
-                                {
-                                    "const": "ZRS"
-                                }
-                            ]
+                            "$ref": "#/definitions/storage-account-redundancy"
                         },
                         "qa": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "LRS"
-                                },
-                                {
-                                    "const": "GRS"
-                                },
-                                {
-                                    "const": "RAGRS"
-                                },
-                                {
-                                    "const": "ZRS"
-                                }
-                            ]
+                            "$ref": "#/definitions/storage-account-redundancy"
                         },
                         "uat": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "LRS"
-                                },
-                                {
-                                    "const": "GRS"
-                                },
-                                {
-                                    "const": "RAGRS"
-                                },
-                                {
-                                    "const": "ZRS"
-                                }
-                            ]
+                            "$ref": "#/definitions/storage-account-redundancy"
                         },
                         "prd": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "LRS"
-                                },
-                                {
-                                    "const": "GRS"
-                                },
-                                {
-                                    "const": "RAGRS"
-                                },
-                                {
-                                    "const": "ZRS"
-                                }
-                            ]
+                            "$ref": "#/definitions/storage-account-redundancy"
+                        },
+                        "default": {
+                            "$ref": "#/definitions/storage-account-redundancy"
                         }
                     },
                     "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
+                        "default"
                     ]
                 },
                 "storageAccountVirtualNetworkDefaultAccess": {
@@ -345,92 +289,44 @@
                                         "const": "Premium"
                                     }
                                 ]
+                            },
+                            "default": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "Standard"
+                                    },
+                                    {
+                                        "const": "Premium"
+                                    }
+                                ]
                             }
                         },
                         "required": [
-                            "dev",
-                            "qa",
-                            "uat",
-                            "prd"
+                            "default"
                         ]
                     },
                     "storageAccountRedundancy": {
                         "type": "object",
                         "properties": {
                             "dev": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "LRS"
-                                    },
-                                    {
-                                        "const": "GRS"
-                                    },
-                                    {
-                                        "const": "RAGRS"
-                                    },
-                                    {
-                                        "const": "ZRS"
-                                    }
-                                ]
+                                "$ref": "#/definitions/storage-account-redundancy"
                             },
                             "qa": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "LRS"
-                                    },
-                                    {
-                                        "const": "GRS"
-                                    },
-                                    {
-                                        "const": "RAGRS"
-                                    },
-                                    {
-                                        "const": "ZRS"
-                                    }
-                                ]
+                                "$ref": "#/definitions/storage-account-redundancy"
                             },
                             "uat": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "LRS"
-                                    },
-                                    {
-                                        "const": "GRS"
-                                    },
-                                    {
-                                        "const": "RAGRS"
-                                    },
-                                    {
-                                        "const": "ZRS"
-                                    }
-                                ]
+                                "$ref": "#/definitions/storage-account-redundancy"
                             },
                             "prd": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "LRS"
-                                    },
-                                    {
-                                        "const": "GRS"
-                                    },
-                                    {
-                                        "const": "RAGRS"
-                                    },
-                                    {
-                                        "const": "ZRS"
-                                    }
-                                ]
+                                "$ref": "#/definitions/storage-account-redundancy"
+                            },
+                            "default": {
+                                "$ref": "#/definitions/storage-account-redundancy"
                             }
                         },
                         "required": [
-                            "dev",
-                            "qa",
-                            "uat",
-                            "prd"
+                            "default"
                         ]
                     }
                 }
@@ -471,13 +367,18 @@
                                         "const": "Premium"
                                     }
                                 ]
+                            },
+                            "default": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "Premium"
+                                    }
+                                ]
                             }
                         },
                         "required": [
-                            "dev",
-                            "qa",
-                            "uat",
-                            "prd"
+                            "default"
                         ]
                     },
                     "storageAccountRedundancy": {
@@ -514,13 +415,18 @@
                                         "const": "LRS"
                                     }
                                 ]
+                            },
+                            "default": {
+                                "type": "string",
+                                "oneOf": [
+                                    {
+                                        "const": "LRS"
+                                    }
+                                ]
                             }
                         },
                         "required": [
-                            "dev",
-                            "qa",
-                            "uat",
-                            "prd"
+                            "default"
                         ]
                     }
                 }
@@ -530,6 +436,15 @@
                 "storageAccountType",
                 "storageAccountTier",
                 "storageAccountRedundancy"
+            ]
+        },
+        "storage-account-redundancy": {
+            "type": "string",
+            "enum": [
+                "LRS",
+                "GRS",
+                "RAGRS",
+                "ZRS"
             ]
         },
         "storage-account-table-services": {

@@ -226,7 +226,7 @@
                     "items": {
                         "type": "object",
                         "properties": {
-                            "name": {
+                            "appServiceSlotName": {
                                 "type": "string"
                             },
                             "functions": {

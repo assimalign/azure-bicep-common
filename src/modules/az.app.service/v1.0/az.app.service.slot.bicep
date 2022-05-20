@@ -230,7 +230,7 @@ module azAppServiceAuthSettings 'az.app.service.slot.config.auth.v2.settings.bic
     region: region
     environment: environment
     appServiceName: appServiceName
-    appServiceSlotName: appServiceSlotPlanName
+    appServiceSlotName: appServiceSlotName
     appServiceSlotAuthUnauthenticatedAction: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthAction
     appServiceSlotAuthIdentityProviderType: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthIdentityProvider
     appServiceSlotAuthIdentityProviderAudiences: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthIdentityAudiences

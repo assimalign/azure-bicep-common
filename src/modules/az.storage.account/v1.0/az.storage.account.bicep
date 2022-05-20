@@ -114,8 +114,8 @@ resource azStorageAccountDeployment 'Microsoft.Storage/storageAccounts@2021-09-0
     name: '${storageAccountTier.prd}_${toUpper(storageAccountRedundancy.prd)}'
     tier: storageAccountTier.prd
   } : {
-    name: '${storageAccountTier.dev}_${storageAccountRedundancy.dev}'
-    tier: storageAccountTier.dev
+    name: '${storageAccountTier.default}_${storageAccountRedundancy.default}'
+    tier: storageAccountTier.default
   })))
   properties: {
     accessTier: storageAccountAccessTier

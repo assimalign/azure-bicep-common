@@ -278,7 +278,7 @@ module azAppServiceSlotSpecificSettingsDeployment 'az.app.service.slot.config.na
 
 // 8. Deploy app slots
 module azAppServiceSlotDeployment 'az.app.service.slot.bicep' = [for slot in appServiceSlots: if (!empty(appServiceSlots)) {
-  name: !empty(appServiceSlots) ? 'az-app-service-slot-${guid('${appServiceName}/${slot.name}')}' : 'no-app-service-slots-to-deploy'
+  name: !empty(appServiceSlots) ? 'az-app-service-slot-${guid('${appServiceName}/${slot.appServiceSlotName}')}' : 'no-app-service-slots-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
