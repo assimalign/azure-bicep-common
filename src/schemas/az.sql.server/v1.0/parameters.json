@@ -1,0 +1,571 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "sql-server-account": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/sql-server-account-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "sql-server-accounts": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/sql-server-account-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "sql-server-account-parameters": {
+            "type": "object",
+            "properties": {
+                "sqlServerAccountName": {
+                    "type": "string"
+                },
+                "sqlServerAccountResourceGroup": {
+                    "type": "string"
+                },
+                "sqlServerAccountLocation": {
+                    "type": "string"
+                },
+                "sqlServerAccountMsiEnabled": {
+                    "type": "boolean"
+                },
+                "sqlServerAccountAdminUsername": {
+                    "type": "string"
+                },
+                "sqlServerAccountAdminPassword": {
+                    "type": "string"
+                },
+                "sqlServerAccountAdministrators": {
+                    "type": "object",
+                    "properties": {
+                        "azureAdObjectType": {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "type": "string",
+                                    "oneOf": [
+                                        {
+                                            "const": "User"
+                                        },
+                                        {
+                                            "const": "Group"
+                                        },
+                                        {
+                                            "const": "Application"
+                                        }
+                                    ]
+                                },
+                                "qa": {
+                                    "type": "string",
+                                    "oneOf": [
+                                        {
+                                            "const": "User"
+                                        },
+                                        {
+                                            "const": "Group"
+                                        },
+                                        {
+                                            "const": "Application"
+                                        }
+                                    ]
+                                },
+                                "uat": {
+                                    "type": "string",
+                                    "oneOf": [
+                                        {
+                                            "const": "User"
+                                        },
+                                        {
+                                            "const": "Group"
+                                        },
+                                        {
+                                            "const": "Application"
+                                        }
+                                    ]
+                                },
+                                "prd": {
+                                    "type": "string",
+                                    "oneOf": [
+                                        {
+                                            "const": "User"
+                                        },
+                                        {
+                                            "const": "Group"
+                                        },
+                                        {
+                                            "const": "Application"
+                                        }
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
+                        },
+                        "azureAdTenantId": {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "type": "string"
+                                },
+                                "qa": {
+                                    "type": "string"
+                                },
+                                "uat": {
+                                    "type": "string"
+                                },
+                                "prd": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
+                        },
+                        "azureAdObjectId": {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "type": "string"
+                                },
+                                "qa": {
+                                    "type": "string"
+                                },
+                                "uat": {
+                                    "type": "string"
+                                },
+                                "prd": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
+                        },
+                        "azureAdAuthenticationOnly": {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "type": "boolean"
+                                },
+                                "qa": {
+                                    "type": "boolean"
+                                },
+                                "uat": {
+                                    "type": "boolean"
+                                },
+                                "prd": {
+                                    "type": "boolean"
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "azureAdObjectType",
+                        "azureAdTenantId",
+                        "azureAdObjectId",
+                        "azureAdAuthenticationOnly"
+                    ]
+                },
+                "sqlServerAccountConfigs": {
+                    "type": "object",
+                    "properties": {
+                        "sqlServerAccountPublicAccessEnabled": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Enabled"
+                                },
+                                {
+                                    "const": "Disabled"
+                                }
+                            ]
+                        },
+                        "sqlServerAccountOutboundNetworkAccessEnabled": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Enabled"
+                                },
+                                {
+                                    "const": "Disabled"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "sqlServerAccountDatabases": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/sql-server-account-database-parameters"
+                    },
+                    "minItems": 1
+                },
+                "sqlServerAccountTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "sqlServerAccountName",
+                "sqlServerAccountAdminUsername",
+                "sqlServerAccountAdminPassword"
+            ]
+        },
+        "sql-server-account-databases": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/sql-server-account-database-parameters"
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "sqlServerAccountName": {
+                                        "type": "string"
+                                    },
+                                    "sqlServerAccountResourceGroup": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "sqlServerAccountName"
+                                ]
+                            }
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "sql-server-account-database": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/sql-server-account-database-parameters"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "sqlServerAccountName": {
+                                    "type": "string"
+                                },
+                                "sqlServerAccountResourceGroup": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "sqlServerAccountName"
+                            ]
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "sql-server-account-database-parameters": {
+            "type": "object",
+            "properties": {
+                "sqlServerAccountDatabaseName": {
+                    "type": "string"
+                },
+                "sqlServerAccountDatabaseConfigs": {
+                    "type": "object",
+                    "properties": {
+                        "dbCollation": {
+                            "$ref": "#/definitions/sql-server-account-database-collation"
+                        },
+                        "dbReadScale": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Disabled"
+                                },
+                                {
+                                    "const": "Enabled"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "sqlServerAccountDatabaseSku": {
+                    "type": "object",
+                    "properties": {
+                        "dev": {
+                            "$ref": "#/definitions/sql-server-account-database-sku"
+                        },
+                        "qa": {
+                            "$ref": "#/definitions/sql-server-account-database-sku"
+                        },
+                        "uat": {
+                            "$ref": "#/definitions/sql-server-account-database-sku"
+                        },
+                        "prd": {
+                            "$ref": "#/definitions/sql-server-account-database-sku"
+                        }
+                    }
+                },
+                "sqlServerAccountDatabaseTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "sqlServerAccountDatabaseName",
+                "sqlServerAccountDatabaseSku"
+            ]
+        },
+        "sql-server-account-database-redundancy": {
+            "oneOf": [
+                {
+                    "const": "Geo"
+                },
+                {
+                    "const": "GeoZone"
+                },
+                {
+                    "const": "Local"
+                },
+                {
+                    "const":  "Zone"
+                }
+            ]
+        },
+        "sql-server-account-database-sku": {
+            "type": "object",
+            "oneOf": [
+                {
+                    "description": "ESTIMATED COST/MONTH $4.99 USD with 2 GB Database Max and 4 DTU",
+                    "properties": {
+                        "dbTier": {
+                            "const": "Basic"
+                        },
+                        "dbMaxCapacity": {
+                            "type": "number",
+                            "const": 5,
+                            "default": 5
+                        },
+                        "dbMaxGBSize": {
+                            "type": "number",
+                            "minimum": 1,
+                            "maximum": 2
+                        },
+                        "dbRedundancy": {
+                            "$ref": "#/definitions/sql-server-account-database-redundancy"
+                        }
+                    },
+                    "required": [
+                        "dbTier",
+                        "dbMaxCapacity",
+                        "dbMaxGBSize"
+                    ]
+                },
+                {
+                    "description": "ESTIMATED COST/MONTH 1 DTU x $1.50 USD with 1024 GB Database Max and 3000 DTU",
+                    "properties": {
+                        "dbTier": {
+                            "const": "Standard"
+                        },
+                        "dbMaxCapacity": {
+                            "type": "number",
+                            "minimum": 10,
+                            "maximum": 3000
+                        },
+                        "dbMaxGBSize": {
+                            "type": "number",
+                            "minimum": 1,
+                            "maximum": 1024
+                        },
+                        "dbRedundancy": {
+                            "$ref": "#/definitions/sql-server-account-database-redundancy"
+                        }
+                    },
+                    "required": [
+                        "dbTier",
+                        "dbMaxCapacity",
+                        "dbMaxGBSize"
+                    ]
+                },
+                {
+                    "description": "ESTIMATED COST/MONTH 4.99 USD with 2 GB Database Max and 4 DTU",
+                    "properties": {
+                        "dbTier": {
+                            "const": "Premium"
+                        },
+                        "dbMaxCapacity": {
+                            "type": "number",
+                            "minimum": 125,
+                            "maximum": 4000
+                        },
+                        "dbMaxGBSize": {
+                            "type": "number",
+                            "minimum": 1,
+                            "maximum": 4096
+                        },
+                        "dbRedundancy": {
+                            "$ref": "#/definitions/sql-server-account-database-redundancy"
+                        }
+                    },
+                    "required": [
+                        "dbTier",
+                        "dbMaxCapacity",
+                        "dbMaxGBSize"
+                    ]
+                }
+                // ,
+                // {
+                //     "properties": {
+                //         "dbTier": {
+                //             "const": "GeneralPurpose"
+                //         },
+                //         "dbFamily": {
+                //             "oneOf": [
+                //                 {
+                //                     "const": "Gen5"
+                //                 },
+                //                 {
+                //                     "const": "M-Series"
+                //                 },
+                //                 {
+                //                     "const": "FSv2-series"
+                //                 },
+                //                 {
+                //                     "const": "DC-series"
+                //                 }
+                //             ]
+                //         },
+                //         "dbMaxCapacity": {
+                //             "type": "number",
+                //             "maximum": 10
+                //         },
+                //         "dbMinCapacity": {
+                //             "type": "number",
+                //             "minimum": 1
+                //         },
+                //         "dbMaxGBSize": {
+                //             "type": "number",
+                //             "minimum": 1,
+                //             "maximum": 4096
+                //         },
+                //         "dbRedundancy": {
+                //             "#/definitions": "sql-server-account-database-redundancy"
+                //         }
+                //     },
+                //     "required": [
+                //         "dbTier",
+                //         "dbMaxCapacity",
+                //         "dbMinCapacity",
+                //         "dbMaxGBSize"
+                //     ]
+                // },
+                // {
+                //     "properties": {
+                //         "dbTier": {
+                //             "const": "Hyperscale"
+                //         },
+                //         "dbDtuCapacity": {
+                //             "type": "number",
+                //             "minimum": 125,
+                //             "maximum": 4000
+                //         },
+                //         "dbMaxGBSize": {
+                //             "type": "number",
+                //             "minimum": 1,
+                //             "maximum": 4096
+                //         },
+                //         "dbRedundancy": {
+                //             "#/definitions": "sql-server-account-database-redundancy"
+                //         }
+                //     },
+                //     "required": [
+                //         "dbTier",
+                //         "dbDtuCapacity",
+                //         "dbMaxGBSize"
+                //     ]
+                // },
+                // {
+                //     "properties": {
+                //         "dbTier": {
+                //             "const": "BusinessCritical"
+                //         },
+                //         "dbDtuCapacity": {
+                //             "type": "number",
+                //             "minimum": 125,
+                //             "maximum": 4000
+                //         },
+                //         "dbMaxGBSize": {
+                //             "type": "number",
+                //             "minimum": 1,
+                //             "maximum": 4096
+                //         },
+                //         "dbRedundancy": {
+                //             "#/definitions": "sql-server-account-database-redundancy"
+                //         }
+                //     },
+                //     "required": [
+                //         "dbTier",
+                //         "dbDtuCapacity",
+                //         "dbMaxGBSize"
+                //     ]
+                // }
+            ]
+        },
+        "sql-server-account-database-collation": {
+            "oneOf": [
+                {
+                    "const": "SQL_Latin1_General_CP1_CI_AS"
+                }
+            ]
+        }
+    }
+}

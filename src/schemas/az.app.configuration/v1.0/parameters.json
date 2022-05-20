@@ -1,0 +1,227 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "app-configuration": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/app-configuration-parameters"  
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-configurations": {
+            "type": "object",
+            "$schema": "http://json-schema.org/draft-07/schema",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/app-configuration-parameters"  
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-configuration-parameters": {
+            "type": "object",
+            "default": {
+                "appConfigurationName": "",
+                "appConfigurationSku": {
+                    "dev": "Free",
+                    "qa": "Standard",
+                    "uat": "Standard",
+                    "prd": "Standard"
+                },
+                "appConfigurationEnableMsi": false,
+                "appConfigurationEnableRbac": false,
+                "appConfigurationDisablePublicAccess": false
+            },
+            "properties": {
+                "appConfigurationName": {
+                    "type": "string",
+                    "description": "The name of the Azure App Configuration instance to be deployed."
+                },
+                "appConfigurationLocation": {
+                    "type": "string"
+                },
+                "appConfigurationResourceGroup": {
+                    "type": "string"
+                },
+                "appConfigurationEnableMsi": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enables Managed System Identity for connecting to the deployed instance of Azure App Configuration."
+                },
+                "appConfigurationEnableRbac": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Will disable Access Key Authentication and use RBAC only. If enabled, App Configuration Keys will not be deployable"
+                },
+                "appConfigurationDisablePublicAccess": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "appConfigurationKeys": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/app-configuration-key"
+                    },
+                    "minItems": 1,
+                    "description": "Configuration Keys to deploy with the instance of Azure App Configuration."
+                },
+                "appConfigurationTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                },
+                "appConfigurationPrivateEndpoint": {
+                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
+                },
+                "appConfigurationSku": {
+                    "type": "object",
+                    "description": "Sku Requirement for private endpoint",
+                    "default": {
+                        "dev": "Free",
+                        "qa": "Standard",
+                        "uat": "Standard",
+                        "prd": "Standard",
+                        "default": "Free"
+                    },
+                    "properties": {
+                        "dev": {
+                            "$ref": "#/definitions/app-configuration-sku"
+                        },
+                        "qa": {
+                            "$ref": "#/definitions/app-configuration-sku"
+                        },
+                        "uat": {
+                            "$ref": "#/definitions/app-configuration-sku"
+                        },
+                        "prd": {
+                            "$ref": "#/definitions/app-configuration-sku"
+                        },
+                        "default": {
+                            "$ref": "#/definitions/app-configuration-sku"
+                        }
+                    },
+                    "required": [
+                        "default"
+                    ],
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "appConfigurationName"
+            ]
+        },
+        "app-configurations-keys": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/app-configuration-key"
+                            }
+                        ],
+                        "properties": {
+                            "appConfigurationName": {
+                                "type": "string",
+                                "description": "The name of the deployed Azure App Configuration instance."
+                            },
+                            "appConfigurationResourceGroup": {
+                                "type": "string",
+                                "description": "The name of the Azure Resource Group the Azure App Configuration instance belongs to."
+                            }
+                        },
+                        "required": [
+                            "appConfigurationName",
+                            "appConfigurationResourceGroup"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-configuration-key": {
+            "type": "object",
+            "properties": {
+                "appConfigurationKey": {
+                    "type": "string"
+                },
+                "appConfigurationValue": {
+                    "type": "string"
+                },
+                "appConfigurationLabels": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "minItems": 1
+                },
+                "appConfigurationValueContentType": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "anyOf": [
+                                {
+                                    "const": "application/json"
+                                },
+                                {
+                                    "const": "application/xml"
+                                },
+                                {
+                                    "const": "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8"
+                                },
+                                {
+                                    "const": "text/css"
+                                },
+                                {
+                                    "const": "text/csv"
+                                },
+                                {
+                                    "const": "text/html"
+                                },
+                                {
+                                    "const": "text/plain"
+                                },
+                                {
+                                    "const": "text/xml"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "appConfigurationKey",
+                "appConfigurationValue",
+                "appConfigurationValueContentType"
+            ]
+        },
+        "app-configuration-sku": {
+            "type": "string",
+            "enum": [
+                "Free",
+                "Standard"
+            ]
+        }
+    }
+}

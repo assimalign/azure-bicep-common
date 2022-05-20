@@ -1,0 +1,133 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "static-site": {
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/static-site-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "static-sites": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/static-site-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "static-site-parameters": {
+            "type": "object",
+            "properties": {
+                "staticSiteName": {
+                    "type": "string"
+                },
+                "staticSiteLocation": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "centralus"
+                        },
+                        {
+                            "const": "eastus2"
+                        },
+                        {
+                            "const": "westus2"
+                        },
+                        {
+                            "const": "eastasia"
+                        },
+                        {
+                            "const": "westeurope"
+                        }
+                    ]
+                },
+                "staticSiteSku": {
+                    "type": "object",
+                    "properties": {
+                        "dev": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Free"
+                                },
+                                {
+                                    "const": "Standard"
+                                }
+                            ]
+                        },
+                        "qa": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Free"
+                                },
+                                {
+                                    "const": "Standard"
+                                }
+                            ]
+                        },
+                        "uat": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Free"
+                                },
+                                {
+                                    "const": "Standard"
+                                }
+                            ]
+                        },
+                        "prd": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Free"
+                                },
+                                {
+                                    "const": "Standard"
+                                }
+                            ]
+                        },
+                        "default": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Free"
+                                },
+                                {
+                                    "const": "Standard"
+                                }
+                            ]
+                        }
+                    },
+                    "required": [
+                        "default"
+                    ]
+                },
+                "staticSiteTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "staticSiteName",
+                "staticSiteLocation"
+            ]
+        }
+    }
+}

@@ -1,0 +1,117 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "public-ip-address": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/public-ip-address-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-ip-addresses": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/public-ip-address-parameters"
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-ip-address-parameters": {
+            "type": "object",
+            "properties": {
+                "publicIpName": {
+                    "type": "string"
+                },
+                "publicIpSku": {
+                    "type": "object",
+                    "properties": {
+                        "dev": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Basic"
+                                },
+                                {
+                                    "const": "Standard"
+                                }
+                            ]
+                        },
+                        "qa": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Basic"
+                                },
+                                {
+                                    "const": "Standard"
+                                }
+                            ]
+                        },
+                        "uat": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Basic"
+                                },
+                                {
+                                    "const": "Standard"
+                                }
+                            ]
+                        },
+                        "prd": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "const": "Basic"
+                                },
+                                {
+                                    "const": "Standard"
+                                }
+                            ]
+                        }
+                    },
+                    "required": [
+                        "dev",
+                        "qa",
+                        "uat",
+                        "prd"
+                    ]
+                },
+                "publicIpAllocationMethod": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "Dynamic"
+                        },
+                        {
+                            "const": "Static"
+                        }
+                    ]
+                },
+                "publicIpTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "publicIpName",
+                "publicIpSku",
+                "publicIpAllocationMethod"
+            ]
+        }
+    }
+}

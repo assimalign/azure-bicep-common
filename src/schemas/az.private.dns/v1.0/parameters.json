@@ -1,0 +1,716 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "private-dns-zone": {
+            "type": "object",
+            "description": "An array of Virtual Networks to Peer to each other within the same Resource Group.",
+            "properties": {
+                "value": {
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/private-dns-zone-parameters"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "privateDnsZoneResourceGroup": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "private-dns-zones": {
+            "type": "object",
+            "description": "An array of Virtual Networks to Peer to each other within the same Resource Group.",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/private-dns-zone-parameters"
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "privateDnsZoneResourceGroup": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "private-dns-zone-parameters": {
+            "type": "object",
+            "properties": {
+                "privateDnsZoneName": {
+                    "type": "string",
+                    "description": "The name of the Private DNS Zone."
+                },
+                "privateDnsZoneNetworkLinks": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "virtualLinkName": {
+                                "type": "string",
+                                "description": "A descriptive name for the Virtual Network the Private DNS Zone will be linked to."
+                            },
+                            "virtualNetwork": {
+                                "type": "string",
+                                "description": "The name of the virtual network to link to the Private DNS Zone."
+                            }
+                        },
+                        "required": [
+                            "virtualLinkName",
+                            "virtualNetwork"
+                        ]
+                    },
+                    "minItems": 1
+                },
+                "privateDnsZoneARecords": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/private-dns-zone-a-record"
+                    }
+                },
+                "privateDnsZoneAaaaRecords": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/private-dns-zone-aaaa-record"
+                    }
+                },
+                "privateDnsZoneCnameRecords": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/private-dns-zone-cname-record"
+                    }
+                },
+                "privateDnsZonePtrRecords": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/private-dns-zone-ptr-record"
+                    }
+                },
+                "privateDnsZoneTxtRecords": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/private-dns-zone-txt-record"
+                    }
+                },
+                "privateDnsZoneMxRecords": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/private-dns-zone-mx-record"
+                    }
+                },
+                "privateDnsZoneSrvRecords": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/private-dns-zone-srv-record"
+                    }
+                },
+                "privateDnsZoneTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "privateDnsZoneName",
+                "privateDnsZoneNetworkLinks"
+            ]
+        },
+        "private-dns-zone-a-records": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "ttl": {
+                                "type": "number",
+                                "description": "TTL (Time to Live)",
+                                "default": 3600
+                            },
+                            "ip4vAddresses": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "ipv4Address": {
+                                            "type": "string",
+                                            "pattern": "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|^[0-9][0-9]|^[0-9])(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}"
+                                        }
+                                    },
+                                    "required": [
+                                        "ipv4Address"
+                                    ]
+                                },
+                                "minItems": 1
+                            },
+                            "dnsZoneName": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "dnsZoneName",
+                            "name",
+                            "ttl",
+                            "ip4vAddresses"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "private-dns-zone-a-record": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "ttl": {
+                    "type": "number",
+                    "description": "TTL (Time to Live)",
+                    "default": 3600
+                },
+                "ip4vAddresses": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "ipv4Address": {
+                                "type": "string",
+                                "pattern": "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|^[0-9][0-9]|^[0-9])(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}"
+                            }
+                        },
+                        "required": [
+                            "ipv4Address"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "name",
+                "ttl",
+                "ip4vAddresses"
+            ],
+            "default": null
+        },
+        "private-dns-zone-aaaa-records": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "dnsZoneName": {
+                                "type": "string"
+                            },
+                            "ttl": {
+                                "type": "number",
+                                "description": "TTL (Time to Live)",
+                                "default": 3600
+                            },
+                            "ip6vAddresses": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "ipv6Address": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "ipv6Address"
+                                    ]
+                                },
+                                "minItems": 1
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "ttl",
+                            "ip6vAddresses",
+                            "dnsZoneName"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "private-dns-zone-aaaa-record": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "ttl": {
+                    "type": "number",
+                    "description": "TTL (Time to Live)",
+                    "default": 3600
+                },
+                "ip6vAddresses": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "ipv6Address": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "ipv6Address"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "name",
+                "ttl",
+                "ip6vAddresses"
+            ]
+        },
+        "private-dns-zone-cname-records": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "dnsZoneName": {
+                                "type": "string"
+                            },
+                            "ttl": {
+                                "type": "number",
+                                "description": "TTL (Time to Live)",
+                                "default": 3600
+                            },
+                            "cname": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "ttl",
+                            "cname",
+                            "dnsZoneName"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "private-dns-zone-cname-record": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "ttl": {
+                    "type": "number",
+                    "description": "TTL (Time to Live)",
+                    "default": 3600
+                },
+                "cname": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "ttl",
+                "cname"
+            ]
+        },
+        "private-dns-zone-mx-records": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "dnsZoneName": {
+                                "type": "string"
+                            },
+                            "ttl": {
+                                "type": "number",
+                                "description": "TTL (Time to Live)"
+                            },
+                            "exchanges": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "exchange": {
+                                            "type": "string"
+                                        },
+                                        "preference": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    "required": [
+                                        "exchange",
+                                        "preference"
+                                    ]
+                                },
+                                "minItems": 1
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "ttl",
+                            "exchanges",
+                            "dnsZoneName"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "private-dns-zone-mx-record": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "ttl": {
+                    "type": "number",
+                    "description": "TTL (Time to Live)"
+                },
+                "exchanges": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "exchange": {
+                                "type": "string"
+                            },
+                            "preference": {
+                                "type": "number"
+                            }
+                        },
+                        "required": [
+                            "exchange",
+                            "preference"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "name",
+                "ttl",
+                "exchanges"
+            ]
+        },
+        "private-dns-zone-ptr-records": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "dnsZoneName": {
+                                "type": "string"
+                            },
+                            "ttl": {
+                                "type": "number",
+                                "description": "TTL (Time to Live)",
+                                "default": 3600
+                            },
+                            "pointers": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "ptrdname": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "ptrdname"
+                                    ]
+                                },
+                                "minItems": 1
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "ttl",
+                            "pointers",
+                            "dnsZoneName"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "private-dns-zone-ptr-record": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "ttl": {
+                    "type": "number",
+                    "description": "TTL (Time to Live)",
+                    "default": 3600
+                },
+                "pointers": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "ptrdname": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "ptrdname"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "name",
+                "ttl",
+                "pointers"
+            ]
+        },
+        "private-dns-zone-srv-records": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "dnsZoneName": {
+                                "type": "string"
+                            },
+                            "ttl": {
+                                "type": "number",
+                                "description": "TTL (Time to Live)",
+                                "default": 3600
+                            },
+                            "services": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "priority": {
+                                            "type": "number"
+                                        },
+                                        "weight": {
+                                            "type": "number"
+                                        },
+                                        "port": {
+                                            "type": "number"
+                                        },
+                                        "target": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "priority",
+                                        "weight",
+                                        "port",
+                                        "target"
+                                    ]
+                                }
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "ttl",
+                            "services",
+                            "dnsZoneName"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "private-dns-zone-srv-record": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "ttl": {
+                    "type": "number",
+                    "description": "TTL (Time to Live)",
+                    "default": 3600
+                },
+                "services": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "priority": {
+                                "type": "number"
+                            },
+                            "weight": {
+                                "type": "number"
+                            },
+                            "port": {
+                                "type": "number"
+                            },
+                            "target": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "priority",
+                            "weight",
+                            "port",
+                            "target"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "name",
+                "ttl",
+                "services"
+            ]
+        },
+        "private-dns-zone-txt-records": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "dnsZoneName": {
+                                "type": "string"
+                            },
+                            "ttl": {
+                                "type": "number",
+                                "description": "TTL (Time to Live)",
+                                "default": 3600
+                            },
+                            "values": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "value": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "value"
+                                    ],
+                                    "minItems": 1
+                                },
+                                "minItems": 1
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "ttl",
+                            "values",
+                            "dnsZoneName"
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "private-dns-zone-txt-record": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "ttl": {
+                    "type": "number",
+                    "description": "TTL (Time to Live)",
+                    "default": 3600
+                },
+                "values": {
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "value": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": [
+                            "value"
+                        ],
+                        "minItems": 1
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "name",
+                "ttl",
+                "values"
+            ]
+        }
+    }
+}

@@ -1,0 +1,129 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "log-analytic-workspace": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/log-analytic-workspace-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "log-analytic-workspaces": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/log-analytic-workspace-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "log-analytic-workspace-parameters": {
+            "type": "object",
+            "properties": {
+                "logAnalyticsWorkspaceName": {
+                    "type": "string"
+                },
+                "logAnalyticsWorkspaceResourceGroup": {
+                    "type": "string"
+                },
+                "logAnalyticsWorkspaceLocation": {
+                    "type": "string"
+                },
+                "logAnalyticsWorkspaceRetention": {
+                    "type": "number",
+                    "description": "Number of Days to retain data",
+                    "default": 30,
+                    "minimum": 2
+                },
+                "logAnalyticsWorkspaceDailyQuota": {
+                    "type": "number",
+                    "description": "The Daily Quota of ingestion in GBs",
+                    "default": -1
+                },
+                "logAnalyticsWorkspaceSku": {
+                    "type": "object",
+                    "properties": {
+                        "dev": {
+                            "type": "string",
+                            "default": "PerGB2018",
+                            "oneOf": []
+                        },
+                        "qa": {
+                            "$ref": "#/definitions/log-analytics-workspace-sku"
+                        },
+                        "uat": {
+                            "$ref": "#/definitions/log-analytics-workspace-sku"
+                        },
+                        "prd": {
+                            "$ref": "#/definitions/log-analytics-workspace-sku"
+                        },
+                        "default": {
+                            "$ref": "#/definitions/log-analytics-workspace-sku"
+                        }
+                    },
+                    "required": [
+                       "default"
+                    ]
+                },
+                "logAnalyticsWorkspacePublicNetworkAccessForIngestion": {
+                    "type": "string",
+                    "default": "Enabled",
+                    "oneOf": [
+                        {
+                            "const": "Enabled"
+                        },
+                        {
+                            "const": "Disabled"
+                        }
+                    ]
+                },
+                "logAnalyticsWorkspacePublicNetworkAccessForQuery": {
+                    "type": "string",
+                    "default": "Enabled",
+                    "oneOf": [
+                        {
+                            "const": "Enabled"
+                        },
+                        {
+                            "const": "Disabled"
+                        }
+                    ]
+                },
+                "logAnalyticsWorkspaceTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "logAnalyticsWorkspaceName"
+            ]
+        },
+        "log-analytics-workspace-sku": {
+            "type": "string",
+            "enum": [
+                "Free",
+                "Standard",
+                "PerGB2018",
+                "Premium",
+                "PerNode",
+                "Standalone",
+                "LACluster",
+                "CapacityReservation"
+            ]
+        }
+    }
+}

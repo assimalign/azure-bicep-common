@@ -1,0 +1,12 @@
+{
+    "cloud": {
+        "currentProfile": "AzureCloud",
+        "credentialPrecedence": [
+            "Environment",
+            "ManagedIdentity",
+            "AzurePowerShell",
+            "VisualStudioCode",
+            "VisualStudio"
+        ]
+    }
+}

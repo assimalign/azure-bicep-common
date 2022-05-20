@@ -1,0 +1,186 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "event-hub-namespace": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/event-hub-namespace-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "event-hub-namespaces": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/event-hub-namespace-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "event-hub-namespace-parameters": {
+            "type": "object",
+            "properties": {
+                "eventHubNamespaceName": {
+                    "type": "string"
+                },
+                "eventHubNamespaceResourceGroup": {
+                    "type": "string"
+                },
+                "eventHubNamespaceLocation": {
+                    "type": "string"
+                },
+                "eventHubNamespaceHubs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/event-hub-namespace-hub-parameters"
+                    }
+                },
+                "eventHubNamespaceSku": {
+                    "type": "object",
+                    "properties": {
+                        "dev": {
+                            "$ref": "#/definitions/event-hub-namespace-sku"
+                        },
+                        "qa": {
+                            "$ref": "#/definitions/event-hub-namespace-sku"
+                        },
+                        "uat": {
+                            "$ref": "#/definitions/event-hub-namespace-sku"
+                        },
+                        "prd": {
+                            "$ref": "#/definitions/event-hub-namespace-sku"
+                        },
+                        "default": {
+                            "$ref": "#/definitions/event-hub-namespace-sku"
+                        }
+                    },
+                    "required": [
+                        "default"
+                    ]
+                },
+                "eventHubNamespacePolicies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/event-hub-namespace-policy"
+                    }
+                }
+            },
+            "required": [
+                "eventHubNamespaceName"
+            ]
+        },
+        "event-hub-namespace-hub": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/event-hub-namespace-hub-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "event-hub-namespace-hubs": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/event-hub-namespace-hub-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "event-hub-namespace-hub-parameters": {
+            "type": "object",
+            "properties": {
+                "eventHubNamespaceName": {
+                    "type": "string"
+                },
+                "eventHubNamespaceResourceGroup": {
+                    "type": "string"
+                },
+                "eventHubNamespaceHubName": {
+                    "type": "string"
+                },
+                "eventHubNamespaceHubPartitionCount": {
+                    "type": "number",
+                    "minimum": 2,
+                    "maximum": 32
+                },
+                "eventHubNamespaceHubMessageRetention": {
+                    "type":"number",
+                    "minimum": 1
+                },
+                "eventHubNamespaceHubPolicies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/event-hub-namespace-policy"
+                    }
+                }
+            },
+            "required": [
+                "eventHubNamespaceName",
+                "eventHubNamespaceHubName"
+            ]
+        },
+        "event-hub-namespace-policy": {
+            "type": "object",
+            "properties": {
+                "policyName": {
+                    "type": "string",
+                    "description": "The name of the Service Bus (Namespace, Queue, or Topic) Policy for the Azure Service Bus Namespace."
+                },
+                "policyPermissions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "anyOf": [
+                            {
+                                "const": "Listen"
+                            },
+                            {
+                                "const": "Manage"
+                            },
+                            {
+                                "const": "Send"
+                            }
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "policyName",
+                "policyPermissions"
+            ]
+        },
+        "event-hub-namespace-sku": {
+            "oneOf": [
+                {
+                    "const": "Basic"
+                },
+                {
+                    "const": "Standard"
+                },
+                {
+                    "const": "Premium"
+                }
+            ]
+        }
+    }
+}

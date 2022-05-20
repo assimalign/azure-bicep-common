@@ -1,0 +1,141 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "cognitive-search-service": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/cognitive-search-service-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "cognitive-search-services": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/cognitive-search-service-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "cognitive-search-service-parameters": {
+            "type": "object",
+            "properties": {
+                "cognitiveSearchName": {
+                    "type": "string"
+                },
+                "cognitiveSearchLocation": {
+                    "type": "string",
+                    "enum": [
+                        "EastUS",
+                        "EastUS2",
+                        "CentralUS",
+                        "WestUS",
+                        "WestUS2",
+                        "WestUS3",
+                        "WestCentralUS",
+                        "NorthCentralUS",
+                        "SouthCentralUS",
+                        "UKWest",
+                        "UKSouth",
+                        "UAENorth",
+                        "AustraliaEast",
+                        "AustraliaSoutheast",
+                        "JapanEast",
+                        "JapanWest",
+                        "BrazilSouth",
+                        "CanadaCentral",
+                        "CanadaEast",
+                        "FranceCentral",
+                        "GermanyWestCentral",
+                        "KoreaSouth",
+                        "KoreaCentral",
+                        "NorwayEast",
+                        "SwitzerlandNorth",
+                        "SwitzerlandWest",
+                        "SoutheastAsia",
+                        "SwedenCentral"
+                    ]
+                },
+                "cognitiveSearchResourceGroup": {
+                    "type": "string",
+                    "description": "An optional parameter to be used if scoping Bicep Deployment from the Subscription."
+                },
+                "cognitiveSearchSku": {
+                    "type": "object",
+                    "default": {
+                        "dev": "free",
+                        "qa": "free",
+                        "uat": "free",
+                        "prd": "free",
+                        "default": "free"
+                    },
+                    "properties": {
+                        "dev": {
+                            "type": "string",
+                            "$ref": "#/definitions/cognitive-search-sku"
+                        },
+                        "qa": {
+                            "type": "string",
+                            "$ref": "#/definitions/cognitive-search-sku"
+                        },
+                        "uat": {
+                            "type": "string",
+                            "$ref": "#/definitions/cognitive-search-sku"
+                        },
+                        "prd": {
+                            "type": "string",
+                            "$ref": "#/definitions/cognitive-search-sku"
+                        },
+                        "default": {
+                            "type": "string",
+                            "$ref": "#/definitions/cognitive-search-sku"
+                        }
+                    }
+                },
+                "cognitiveSearchHostingMode": {
+                    "type": "string",
+                    "enum": [
+                        "default",
+                        "highDensity"
+                    ]
+                },
+                "cognitiveSearchDisablePublicAccess": {
+                    "type": "boolean"
+                },
+                "cognitiveSearchTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "cognitiveSearchName"
+            ]
+        },
+        "cognitive-search-sku": {
+            "enum": [
+                "free",
+                "basic",
+                "standard",
+                "standard2",
+                "standard3",
+                "storage_optimized_l1",
+                "storage_optimized_l2"
+            ]
+        }
+    }
+}

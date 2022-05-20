@@ -1,0 +1,32 @@
+{
+    // How to reference schemas in storage account
+    //"$schema": "https://{storage account when the schemas live}/json/bicep/az/v1.0/parameters.json"
+    "$schema": "../../src/schemas/az/v1.0/parameters.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "eventGridDomain": {
+            "value": {
+                "eventGridDomainName": "test-eg-assim-@environment-@region",
+                "eventGridDomainLocation": "eastus"
+            }
+        },
+        "privateEndpoint": {
+            "value": {
+                "privateEndpointDnsZoneGroupName":"privatelink-azconfig-io",
+                "privateEndpointGroupIds":"configurationStores"
+            }
+        },
+        "appConfiguration": {
+            "value": {
+                "appConfigurationName": "",
+                "appConfigurationSku": {
+                    "default": "Free"
+                },
+                "appConfigurationEnableMsi": false,
+                "appConfigurationEnableRbac": false,
+                "appConfigurationDisablePublicAccess": false
+            }
+
+        }
+    }
+}

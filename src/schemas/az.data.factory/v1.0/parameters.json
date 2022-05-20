@@ -1,0 +1,90 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "data-factory": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/data-factory-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "data-factories": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/data-factory-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "data-factory-parameters": {
+            "type":"object",
+            "properties": {
+                "dataFactoryName": {
+                    "type":"string"
+                },
+                "dataFactoryLocation": {
+                    "type": "string"
+                },
+                "dataFactoryResourceGroup": {
+                    "type": "string"
+                },
+                "dataFactoryRepositorySettings": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "enum": [
+                                "FactoryGitHubConfiguration",
+                                "FactoryVSTSConfiguration"
+                            ]
+                        },
+                        "accountName":{
+                            "type": "string"
+                        }, 
+                        "projectName": {
+                            "type": "string"
+                        },
+                        "collaborationBranch":{
+                            "type": "string"
+                        }, 
+                        "rootFolder":{
+                            "type": "string"
+                        }, 
+                        "repositoryName":{
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "accountName",
+                        "collaborationBranch",
+                        "rootFolder",
+                        "repositoryName"
+                    ]
+                },
+                "dataFactoryTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "dataFactoryName"
+            ]
+        }
+    }
+}
