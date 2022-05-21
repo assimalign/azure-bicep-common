@@ -51,148 +51,24 @@
                 "sqlServerAccountAdministrators": {
                     "type": "object",
                     "properties": {
-                        "azureAdObjectType": {
-                            "type": "object",
-                            "properties": {
-                                "dev": {
-                                    "type": "string",
-                                    "oneOf": [
-                                        {
-                                            "const": "User"
-                                        },
-                                        {
-                                            "const": "Group"
-                                        },
-                                        {
-                                            "const": "Application"
-                                        }
-                                    ]
-                                },
-                                "qa": {
-                                    "type": "string",
-                                    "oneOf": [
-                                        {
-                                            "const": "User"
-                                        },
-                                        {
-                                            "const": "Group"
-                                        },
-                                        {
-                                            "const": "Application"
-                                        }
-                                    ]
-                                },
-                                "uat": {
-                                    "type": "string",
-                                    "oneOf": [
-                                        {
-                                            "const": "User"
-                                        },
-                                        {
-                                            "const": "Group"
-                                        },
-                                        {
-                                            "const": "Application"
-                                        }
-                                    ]
-                                },
-                                "prd": {
-                                    "type": "string",
-                                    "oneOf": [
-                                        {
-                                            "const": "User"
-                                        },
-                                        {
-                                            "const": "Group"
-                                        },
-                                        {
-                                            "const": "Application"
-                                        }
-                                    ]
-                                }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                        "dev": {
+                            "$ref": "#/definitions/sql-server-account-administrators"
                         },
-                        "azureAdTenantId": {
-                            "type": "object",
-                            "properties": {
-                                "dev": {
-                                    "type": "string"
-                                },
-                                "qa": {
-                                    "type": "string"
-                                },
-                                "uat": {
-                                    "type": "string"
-                                },
-                                "prd": {
-                                    "type": "string"
-                                }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                        "qa": {
+                            "$ref": "#/definitions/sql-server-account-administrators"
                         },
-                        "azureAdObjectId": {
-                            "type": "object",
-                            "properties": {
-                                "dev": {
-                                    "type": "string"
-                                },
-                                "qa": {
-                                    "type": "string"
-                                },
-                                "uat": {
-                                    "type": "string"
-                                },
-                                "prd": {
-                                    "type": "string"
-                                }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                        "uat": {
+                            "$ref": "#/definitions/sql-server-account-administrators"
                         },
-                        "azureAdAuthenticationOnly": {
-                            "type": "object",
-                            "properties": {
-                                "dev": {
-                                    "type": "boolean"
-                                },
-                                "qa": {
-                                    "type": "boolean"
-                                },
-                                "uat": {
-                                    "type": "boolean"
-                                },
-                                "prd": {
-                                    "type": "boolean"
-                                }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                        "prd": {
+                            "$ref": "#/definitions/sql-server-account-administrators"
+                        },
+                        "default": {
+                            "$ref": "#/definitions/sql-server-account-administrators"
                         }
                     },
                     "required": [
-                        "azureAdObjectType",
-                        "azureAdTenantId",
-                        "azureAdObjectId",
-                        "azureAdAuthenticationOnly"
+                        "default"
                     ]
                 },
                 "sqlServerAccountConfigs": {
@@ -243,6 +119,38 @@
                 "sqlServerAccountName",
                 "sqlServerAccountAdminUsername",
                 "sqlServerAccountAdminPassword"
+            ]
+        },
+        "sql-server-account-administrators": {
+            "type": "object",
+            "properties": {
+                "azureAdLoginName": {
+                    "type": "string"
+                },
+                "azureAdObjectType": {
+                    "type": "string",
+                    "enum": [
+                        "User",
+                        "Group",
+                        "Application"
+                    ]
+                },
+                "azureAdTenantId": {
+                    "type": "string"
+                },
+                "azureAdObjectId": {
+                    "type": "string"
+                },
+                "azureAdAuthenticationOnly": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "azureAdLoginName",
+                "azureAdObjectType",
+                "azureAdTenantId",
+                "azureAdObjectId",
+                "azureAdAuthenticationOnly"
             ]
         },
         "sql-server-account-databases": {
@@ -347,8 +255,14 @@
                         },
                         "prd": {
                             "$ref": "#/definitions/sql-server-account-database-sku"
+                        },
+                        "default": {
+                            "$ref": "#/definitions/sql-server-account-database-sku"
                         }
-                    }
+                    },
+                    "required": [
+                        "default"
+                    ]
                 },
                 "sqlServerAccountDatabaseTags": {
                     "type": "object",
@@ -377,7 +291,7 @@
                     "const": "Local"
                 },
                 {
-                    "const":  "Zone"
+                    "const": "Zone"
                 }
             ]
         },

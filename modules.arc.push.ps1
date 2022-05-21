@@ -36,3 +36,6 @@ $items | ForEach-Object {
         Publish-AzBicepModule -FilePath $_.FullName -Target $modulePath -DefaultProfile $context
     }   
 }
+
+
+Publish-AzBicepModule './src\modules\az.sql.server\v1.0\az.sql.server.bicep'  -Target 'br:aecbicep.azurecr.io:modules/az.sql.server:v1.0'

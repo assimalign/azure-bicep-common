@@ -40,7 +40,7 @@ param sqlServerAccountMsiEnabled bool = false
 param sqlServerAccountTags object = {}
 
 // 1. Deploys a Sql Server Instance
-resource azSqlServerInstanceDeployment 'Microsoft.Sql/servers@2021-08-01-preview' = {
+resource azSqlServerInstanceDeployment 'Microsoft.Sql/servers@2021-11-01-preview' = {
   name: replace(replace(sqlServerAccountName, '@environment', environment), '@region', region)
   location: sqlServerAccountLocation
   identity: {
@@ -49,26 +49,36 @@ resource azSqlServerInstanceDeployment 'Microsoft.Sql/servers@2021-08-01-preview
   properties: {
     minimalTlsVersion: '1.2'
     administrators: empty(sqlServerAccountAdministrators) ? json('null') : any(environment == 'dev' ? {
+      login: sqlServerAccountAdministrators.dev.azureAdLoginName
       sid: sqlServerAccountAdministrators.dev.azureAdObjectId
       principalType: sqlServerAccountAdministrators.dev.azureAdObjectType
       tenantId: sqlServerAccountAdministrators.dev.azureAdTenantId
       azureADOnlyAuthentication: sqlServerAccountAdministrators.dev.azureAdAuthenticationOnly
     } : any(environment == 'qa' ? {
+      login: sqlServerAccountAdministrators.qa.azureAdLoginName
       sid: sqlServerAccountAdministrators.qa.azureAdObjectId
       principalType: sqlServerAccountAdministrators.qa.azureAdObjectType
       tenantId: sqlServerAccountAdministrators.qa.azureAdTenantId
       azureADOnlyAuthentication: sqlServerAccountAdministrators.qa.azureAdAuthenticationOnly
     } : any(environment == 'uat' ? {
+      login: sqlServerAccountAdministrators.uat.azureAdLoginName
       sid: sqlServerAccountAdministrators.uat.azureAdObjectId
       principalType: sqlServerAccountAdministrators.uat.azureAdObjectType
       tenantId: sqlServerAccountAdministrators.uat.azureAdTenantId
       azureADOnlyAuthentication: sqlServerAccountAdministrators.uat.azureAdAuthenticationOnly
     } : any(environment == 'prd' ? {
+      login: sqlServerAccountAdministrators.prd.azureAdLoginName
       sid: sqlServerAccountAdministrators.prd.azureAdObjectId
       principalType: sqlServerAccountAdministrators.prd.azureAdObjectType
       tenantId: sqlServerAccountAdministrators.prd.azureAdTenantId
       azureADOnlyAuthentication: sqlServerAccountAdministrators.prd.azureAdAuthenticationOnly
-    } : {}))))
+    } : {
+      login: sqlServerAccountAdministrators.default.azureAdLoginName
+      sid: sqlServerAccountAdministrators.default.azureAdObjectId
+      principalType: sqlServerAccountAdministrators.default.azureAdObjectType
+      tenantId: sqlServerAccountAdministrators.default.azureAdTenantId
+      azureADOnlyAuthentication: sqlServerAccountAdministrators.default.azureAdAuthenticationOnly
+    }))))
     publicNetworkAccess: contains(sqlServerAccountConfigs, 'sqlServerAccountPublicAccessEnabled') ? sqlServerAccountConfigs.sqlServerAccountPublicAccessEnabled : 'Enabled'
     restrictOutboundNetworkAccess: contains(sqlServerAccountConfigs, 'sqlServerAccountOutboundNetworkAccessEnabled') ? sqlServerAccountConfigs.sqlServerAccountOutboundNetworkAccessEnabled : 'Disabled'
     administratorLogin: sqlServerAccountAdminUsername

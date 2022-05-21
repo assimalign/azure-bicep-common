@@ -49,7 +49,12 @@ var properties = any(environment == 'dev' ? {
   requestedBackupStorageRedundancy: contains(sqlServerAccountDatabaseSku.prd, 'dbRedundancy') ? sqlServerAccountDatabaseSku.prd.dbRedundancy : 'Local'
   readScale: sqlServerAccountDatabaseSku.prd.dbTier == 'Preimum' && contains(sqlServerAccountDatabaseConfigs, 'dbReadScale') ? sqlServerAccountDatabaseConfigs.dbReadScale : 'Disabled'
   maxSizeBytes: sqlServerAccountDatabaseSku.prd.dbMaxGBSize * 1073741824
-} : {}))))
+} : {
+  minCapacity: contains(sqlServerAccountDatabaseSku.default, 'dbMinCapacity') ? sqlServerAccountDatabaseSku.default.dbMinCapacity : 1
+  requestedBackupStorageRedundancy: contains(sqlServerAccountDatabaseSku.default, 'dbRedundancy') ? sqlServerAccountDatabaseSku.default.dbRedundancy : 'Local'
+  readScale: sqlServerAccountDatabaseSku.default.dbTier == 'Preimum' && contains(sqlServerAccountDatabaseConfigs, 'dbReadScale') ? sqlServerAccountDatabaseConfigs.dbReadScale : 'Disabled'
+  maxSizeBytes: sqlServerAccountDatabaseSku.default.dbMaxGBSize * 1073741824
+}))))
 
 resource sqlServerDatabaseDeployment 'Microsoft.Sql/servers/databases@2021-08-01-preview' = {
   name: replace(replace('${sqlServerAccountName}/${sqlServerAccountDatabaseName}', '@environment', environment), '@region', region)
@@ -73,7 +78,11 @@ resource sqlServerDatabaseDeployment 'Microsoft.Sql/servers/databases@2021-08-01
     tier: sqlServerAccountDatabaseSku.prd.dbTier
     name: sqlServerAccountDatabaseSku.prd.dbTier
     capacity: sqlServerAccountDatabaseSku.prd.dbMaxCapacity
-  } : {}))))
+  } : {
+    tier: sqlServerAccountDatabaseSku.default.dbTier
+    name: sqlServerAccountDatabaseSku.default.dbTier
+    capacity: sqlServerAccountDatabaseSku.default.dbMaxCapacity
+  }))))
   tags: union(sqlServerAccountDatabaseTags, {
     region: empty(region) ? 'n/a' : region
     environment: empty(environment) ? 'n/a' : environment
