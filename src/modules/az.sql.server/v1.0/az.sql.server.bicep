@@ -98,11 +98,11 @@ module azSqlServerInstanceDatabaseDeployment 'az.sql.server.database.bicep' = [f
     region: region
     environment: environment
     sqlServerAccountName: sqlServerAccountName
-    sqlServerAccountDatabaseLocation: sqlServerAccountLocation
     sqlServerAccountDatabaseName: database.sqlServerAccountDatabaseName
     sqlServerAccountDatabaseSku: database.sqlServerAccountDatabaseSku
-    sqlServerAccountDatabaseTags: contains(database, 'sqlServerAccountDatabaseTags') ? database.sqlServerAccountDatabaseTags : {}
+    sqlServerAccountDatabaseLocation: contains(database, 'sqlServerAccountDatabaseLocation') ? database.sqlServerAccountDatabaseLocation : sqlServerAccountLocation
     sqlServerAccountDatabaseConfigs: contains(database, 'sqlServerAccountDatabaseConfigs') ? database.sqlServerAccountDatabaseConfigs : {}
+    sqlServerAccountDatabaseTags: contains(database, 'sqlServerAccountDatabaseTags') ? database.sqlServerAccountDatabaseTags : {}
   }
 }]
 
