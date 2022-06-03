@@ -40,7 +40,7 @@ resource azAppConfigurationExistingResource 'Microsoft.AppConfiguration/configur
 
 // 2. Assign Resource Role Scoped to the resource
 resource azAppConfigurationResourceScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'Resource') {
-  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
+  name: guid(resourcePrincipalIdReceivingRole, RoleDefinitionId[resourceRoleName],'scope-resource')
   scope: azAppConfigurationExistingResource
   properties: {
     principalId: resourcePrincipalIdReceivingRole
@@ -50,7 +50,7 @@ resource azAppConfigurationResourceScopedRoleAssignmentDeployment 'Microsoft.Aut
 
 // 3. Assign Resource Role Scoped to the Resource Group
 resource azAppConfigurationResourceGroupScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'ResourceGroup') {
-  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
+  name: guid(resourcePrincipalIdReceivingRole, RoleDefinitionId[resourceRoleName], 'scope-resource-group')
   scope: resourceGroup()
   properties: {
     principalId: resourcePrincipalIdReceivingRole

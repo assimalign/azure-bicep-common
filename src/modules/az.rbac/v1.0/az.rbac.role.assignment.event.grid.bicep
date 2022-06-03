@@ -41,8 +41,8 @@ resource azEventGridExistingResource 'Microsoft.EventGrid/domains@2021-06-01-pre
 }
 
 // 2. Assign Resource Role Scoped to the Resource
-resource azEventGridResourceScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'Resource') {
-  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
+resource azEventGridResourceScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = if (resourceRoleAssignmentScope == 'Resource') {
+  name: guid(resourcePrincipalIdReceivingRole, RoleDefinitionId[resourceRoleName], 'scope-resource')
   scope: azEventGridExistingResource
   properties: {
     principalId: resourcePrincipalIdReceivingRole
@@ -52,7 +52,7 @@ resource azEventGridResourceScopedRoleAssignmentDeployment 'Microsoft.Authorizat
 
 // 3. Assign Resource Role Scoped to the Resource Group
 resource azEventGridResourceGroupScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'ResourceGroup') {
-  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
+  name: guid(resourcePrincipalIdReceivingRole, RoleDefinitionId[resourceRoleName],'scope-resource-group')
   scope: resourceGroup()
   properties: {
     principalId: resourcePrincipalIdReceivingRole

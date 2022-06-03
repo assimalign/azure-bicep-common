@@ -42,7 +42,7 @@ resource azDocumentDBExistingResource 'Microsoft.DocumentDB/databaseAccounts@202
 
 // 2. Assign Resource Role Scoped to the resource
 resource azDocumentDBResourceScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'Resource') {
-  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
+  name: guid(resourcePrincipalIdReceivingRole, RoleDefinitionId[resourceRoleName],'scope-resource')
   scope: azDocumentDBExistingResource
   properties: {
     principalId: resourcePrincipalIdReceivingRole
@@ -52,7 +52,7 @@ resource azDocumentDBResourceScopedRoleAssignmentDeployment 'Microsoft.Authoriza
 
 // 3. Assign Resource Role Scoped to the Resource Group
 resource azDocumentDBResourceGroupScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'ResourceGroup') {
-  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
+  name: guid(resourcePrincipalIdReceivingRole, RoleDefinitionId[resourceRoleName],'scope-resource-group')
   scope: resourceGroup()
   properties: {
     principalId: resourcePrincipalIdReceivingRole

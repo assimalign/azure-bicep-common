@@ -54,7 +54,7 @@ resource azStorageAccountExistingResource 'Microsoft.Storage/storageAccounts@202
 
 // 2. Assign Resource Role Scoped to the resource
 resource azStorageAccountResourceScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'Resource') {
-  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
+  name: guid(resourcePrincipalIdReceivingRole, RoleDefinitionId[resourceRoleName], 'scope-resource')
   scope: azStorageAccountExistingResource
   properties: {
     principalId: resourcePrincipalIdReceivingRole
@@ -64,7 +64,7 @@ resource azStorageAccountResourceScopedRoleAssignmentDeployment 'Microsoft.Autho
 
 // 3. Assign Resource Role Scoped to the Resource Group
 resource azStorageAccountResourceGroupScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'ResourceGroup') {
-  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
+  name: guid(resourcePrincipalIdReceivingRole, RoleDefinitionId[resourceRoleName], 'scope-resource-group')
   scope: resourceGroup()
   properties: {
     principalId: resourcePrincipalIdReceivingRole
