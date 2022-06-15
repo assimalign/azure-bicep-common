@@ -36,6 +36,9 @@
                 "notificationHubNamespaceResourceGroup": {
                     "type": "string"
                 },
+                "notificationHubNamespaceLocation": {
+                    "type": "string"
+                },
                 "notificationHubNamespaceSku": {
                     "type": "object",
                     "properties": {
