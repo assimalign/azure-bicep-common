@@ -37,10 +37,17 @@ param sqlServerAccountAdminPassword string
 param sqlServerAccountMsiEnabled bool = false
 
 @description('')
+param sqlServerAccountVirtualNetworkRules array = []
+
+@description('')
+param sqlServerAccountPrivateEndpoint object = {}
+
+@description('')
 param sqlServerAccountTags object = {}
 
+
 // 1. Deploys a Sql Server Instance
-resource azSqlServerInstanceDeployment 'Microsoft.Sql/servers@2021-11-01-preview' = {
+resource azSqlServerInstanceDeployment 'Microsoft.Sql/servers@2021-08-01-preview' = {
   name: replace(replace(sqlServerAccountName, '@environment', environment), '@region', region)
   location: sqlServerAccountLocation
   identity: {
@@ -49,36 +56,26 @@ resource azSqlServerInstanceDeployment 'Microsoft.Sql/servers@2021-11-01-preview
   properties: {
     minimalTlsVersion: '1.2'
     administrators: empty(sqlServerAccountAdministrators) ? json('null') : any(environment == 'dev' ? {
-      login: sqlServerAccountAdministrators.dev.azureAdLoginName
       sid: sqlServerAccountAdministrators.dev.azureAdObjectId
       principalType: sqlServerAccountAdministrators.dev.azureAdObjectType
       tenantId: sqlServerAccountAdministrators.dev.azureAdTenantId
       azureADOnlyAuthentication: sqlServerAccountAdministrators.dev.azureAdAuthenticationOnly
     } : any(environment == 'qa' ? {
-      login: sqlServerAccountAdministrators.qa.azureAdLoginName
       sid: sqlServerAccountAdministrators.qa.azureAdObjectId
       principalType: sqlServerAccountAdministrators.qa.azureAdObjectType
       tenantId: sqlServerAccountAdministrators.qa.azureAdTenantId
       azureADOnlyAuthentication: sqlServerAccountAdministrators.qa.azureAdAuthenticationOnly
     } : any(environment == 'uat' ? {
-      login: sqlServerAccountAdministrators.uat.azureAdLoginName
       sid: sqlServerAccountAdministrators.uat.azureAdObjectId
       principalType: sqlServerAccountAdministrators.uat.azureAdObjectType
       tenantId: sqlServerAccountAdministrators.uat.azureAdTenantId
       azureADOnlyAuthentication: sqlServerAccountAdministrators.uat.azureAdAuthenticationOnly
     } : any(environment == 'prd' ? {
-      login: sqlServerAccountAdministrators.prd.azureAdLoginName
       sid: sqlServerAccountAdministrators.prd.azureAdObjectId
       principalType: sqlServerAccountAdministrators.prd.azureAdObjectType
       tenantId: sqlServerAccountAdministrators.prd.azureAdTenantId
       azureADOnlyAuthentication: sqlServerAccountAdministrators.prd.azureAdAuthenticationOnly
-    } : {
-      login: sqlServerAccountAdministrators.default.azureAdLoginName
-      sid: sqlServerAccountAdministrators.default.azureAdObjectId
-      principalType: sqlServerAccountAdministrators.default.azureAdObjectType
-      tenantId: sqlServerAccountAdministrators.default.azureAdTenantId
-      azureADOnlyAuthentication: sqlServerAccountAdministrators.default.azureAdAuthenticationOnly
-    }))))
+    } : {}))))
     publicNetworkAccess: contains(sqlServerAccountConfigs, 'sqlServerAccountPublicAccessEnabled') ? sqlServerAccountConfigs.sqlServerAccountPublicAccessEnabled : 'Enabled'
     restrictOutboundNetworkAccess: contains(sqlServerAccountConfigs, 'sqlServerAccountOutboundNetworkAccessEnabled') ? sqlServerAccountConfigs.sqlServerAccountOutboundNetworkAccessEnabled : 'Disabled'
     administratorLogin: sqlServerAccountAdminUsername
@@ -88,6 +85,12 @@ resource azSqlServerInstanceDeployment 'Microsoft.Sql/servers@2021-11-01-preview
     region: empty(region) ? 'n/a' : region
     environment: empty(environment) ? 'n/a' : environment
   })
+  resource networking 'virtualNetworkRules' = [for rule in sqlServerAccountVirtualNetworkRules: if (!empty(sqlServerAccountVirtualNetworkRules)){
+    name: replace(replace(rule.virtualNetworkRuleName, '@environment', environment), '@region', region)
+    properties: {
+      virtualNetworkSubnetId: resourceId(subscription().subscriptionId, replace(replace(rule.virtualNetworkResourceGroup, '@environment', environment), '@region', region),'Microsoft.Network/virtualNetworks', replace(replace('${rule.virtualNetworkName}/subnets/${rule.virtualNetworkSubnetName}', '@environment', environment), '@region', region))
+    }
+  }]
 }
 
 // 2. Deploy Sql Server Database under instance
@@ -98,13 +101,37 @@ module azSqlServerInstanceDatabaseDeployment 'az.sql.server.database.bicep' = [f
     region: region
     environment: environment
     sqlServerAccountName: sqlServerAccountName
+    sqlServerAccountDatabaseLocation: sqlServerAccountLocation
     sqlServerAccountDatabaseName: database.sqlServerAccountDatabaseName
     sqlServerAccountDatabaseSku: database.sqlServerAccountDatabaseSku
-    sqlServerAccountDatabaseLocation: contains(database, 'sqlServerAccountDatabaseLocation') ? database.sqlServerAccountDatabaseLocation : sqlServerAccountLocation
-    sqlServerAccountDatabaseConfigs: contains(database, 'sqlServerAccountDatabaseConfigs') ? database.sqlServerAccountDatabaseConfigs : {}
     sqlServerAccountDatabaseTags: contains(database, 'sqlServerAccountDatabaseTags') ? database.sqlServerAccountDatabaseTags : {}
+    sqlServerAccountDatabaseConfigs: contains(database, 'sqlServerAccountDatabaseConfigs') ? database.sqlServerAccountDatabaseConfigs : {}
   }
 }]
+
+
+// 4. Deploy Private Endpoint if applicable
+module azEventGridPrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(sqlServerAccountPrivateEndpoint)) {
+  name: !empty(sqlServerAccountPrivateEndpoint) ? toLower('az-sqls-priv-endpoint-${guid('${azSqlServerInstanceDeployment.id}/${sqlServerAccountPrivateEndpoint.privateEndpointName}')}') : 'no-egd-private-endpoint-to-deploy'
+  scope: resourceGroup()
+  params: {
+    region: region
+    environment: environment
+    privateEndpointLocation: contains(sqlServerAccountPrivateEndpoint, 'privateEndpointLocation') ? sqlServerAccountPrivateEndpoint.privateEndpointLocation : sqlServerAccountLocation
+    privateEndpointName: sqlServerAccountPrivateEndpoint.privateEndpointName
+    privateEndpointDnsZoneGroupName: 'privatelink-database-windows-net'
+    privateEndpointDnsZoneName: sqlServerAccountPrivateEndpoint.privateEndpointDnsZoneName
+    privateEndpointDnsZoneResourceGroup: sqlServerAccountPrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointVirtualNetworkName: sqlServerAccountPrivateEndpoint.privateEndpointVirtualNetworkName
+    privateEndpointVirtualNetworkSubnetName: sqlServerAccountPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
+    privateEndpointVirtualNetworkResourceGroup: sqlServerAccountPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
+    privateEndpointResourceIdLink: azSqlServerInstanceDeployment.id
+    privateEndpointTags: contains(sqlServerAccountPrivateEndpoint, 'privateEndpointTags') ? sqlServerAccountPrivateEndpoint.privateEndpointTags : {}
+    privateEndpointGroupIds: [
+      'sqlServer'
+    ]
+  }
+}
 
 output resource object = azSqlServerInstanceDeployment
 
