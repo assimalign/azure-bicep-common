@@ -70,10 +70,10 @@
                     "type": "array",
                     "items": {
                         "properties": {
-                            "policyName": {
+                            "notificationHubPolicyName": {
                                 "type": "string"
                             },
-                            "policyPermissions": {
+                            "notificationHubPolicyPermissions": {
                                 "type": "array",
                                 "items": {
                                     "type": "string",
@@ -93,8 +93,8 @@
                             }
                         },
                         "required": [
-                            "policyName",
-                            "policyPermissions"
+                            "notificationHubPolicyName",
+                            "notificationHubPolicyPermissions"
                         ]
                     },
                     "minItems": 1
