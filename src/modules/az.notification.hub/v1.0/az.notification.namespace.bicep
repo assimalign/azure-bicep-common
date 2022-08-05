@@ -55,9 +55,9 @@ resource azNotificationHubNamespaceDeployment 'Microsoft.NotificationHubs/namesp
   }))))
   // 1.1 If applicable, deploy authorization rules
   resource azNotificationNamespaceAuthPolicyDeployment 'AuthorizationRules' = [for policy in notificationHubNamespacePolicies: if (!empty(policy)) {
-    name: !empty(notificationHubNamespacePolicies) ? policy.policyName : 'no-nh-polcies-to-deploy'
+    name: !empty(notificationHubNamespacePolicies) ? policy.notificationHubPolicyName : 'no-nh-polcies-to-deploy'
     properties: {
-      rights: !empty(notificationHubNamespacePolicies) ? policy.policyPermissions : []
+      rights: !empty(notificationHubNamespacePolicies) ? policy.notificationHubPolicyPermissions : []
     }
   }]
   tags: union(notificationHubNamespaceTags, {

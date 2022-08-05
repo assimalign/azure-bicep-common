@@ -75,7 +75,7 @@
                     "required": [
                         "privateEndpointName",
                         "privateEndpointDnsZoneName",
-                        "privateEndpointDnsZoneGroupName",
+                        "privateEndpointDnsZoneResourceGroup",
                         "privateEndpointVirtualNetworkName",
                         "privateEndpointVirtualNetworkSubnetName",
                         "privateEndpointVirtualNetworkResourceGroup"
@@ -123,7 +123,7 @@
             "required": [
                 "privateEndpointName",
                 "privateEndpointDnsZoneName",
-                "privateEndpointDnsZoneGroupName",
+                "privateEndpointDnsZoneResourceGroup",
                 "privateEndpointVirtualNetworkName",
                 "privateEndpointVirtualNetworkSubnetName",
                 "privateEndpointVirtualNetworkResourceGroup"

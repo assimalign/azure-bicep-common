@@ -71,6 +71,36 @@
                         "default"
                     ]
                 },
+                "sqlServerAccountVirtualNetworkRules": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "virtualNetworkRuleName": {
+                                "type": "string"
+                            },
+                            "virtualNetworkName": {
+                                "type": "string"
+                            },
+                            "virtualNetworkSubnetName": {
+                                "type": "string"
+                            },
+                            "virtualNetworkResourceGroup": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "virtualNetworkRuleName",
+                            "virtualNetworkName",
+                            "virtualNetworkSubnetName",
+                            "virtualNetworkResourceGroup"
+                        ]
+                    },
+                    "minItems": 1
+                },
+                "sqlServerAccountPrivateEndpoint": {
+                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
+                },
                 "sqlServerAccountConfigs": {
                     "type": "object",
                     "properties": {

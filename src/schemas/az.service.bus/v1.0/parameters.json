@@ -479,7 +479,11 @@
                     },
                     "minItems": 1
                 }
-            }
+            },
+            "required": [
+                "serviceBusPolicyName",
+                "serviceBusPolicyPermissions"
+            ]
         },
         "service-bus-namespace-topic-subscription-correlation-filter": {
             "type": "object",
