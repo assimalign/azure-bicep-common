@@ -83,7 +83,7 @@ var siteSettings = [for setting in appServiceSiteConfigs.siteSettings: {
 
 // 1. Get the existing App Service Plan to attach to the 
 // Note: All web service (Function & Web Apps) have App Service Plans even if it is consumption Y1 Plans
-resource azAppServicePlanResource 'Microsoft.Web/serverfarms@2021-03-01' existing = {
+resource azAppServicePlanResource 'Microsoft.Web/serverfarms@2022-03-01' existing = {
   name: replace(replace(appServicePlanName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(appServicePlanResourceGroup, '@environment', environment), '@region', region))
 }
@@ -101,7 +101,7 @@ resource azAppServiceInsightsResource 'Microsoft.Insights/components@2020-02-02'
 }
 
 // 4.1 Deploy Function App, if applicable
-resource azAppServiceFunctionDeployment 'Microsoft.Web/sites@2021-03-01' = if (appServiceType == 'functionapp' || appServiceType == 'functionapp,linux') {
+resource azAppServiceFunctionDeployment 'Microsoft.Web/sites@2022-03-01' = if (appServiceType == 'functionapp' || appServiceType == 'functionapp,linux') {
   name: appServiceType == 'functionapp' || appServiceType == 'functionapp,linux' ? replace(replace('${appServiceName}', '@environment', environment), '@region', region) : 'no-function-app-to-deploy'
   location: appServiceLocation
   kind: appServiceType
@@ -149,14 +149,14 @@ resource azAppServiceFunctionDeployment 'Microsoft.Web/sites@2021-03-01' = if (a
       pythonVersion: contains(appServiceSiteConfigs.webSettings, 'pythonVersion') ? appServiceSiteConfigs.webSettings.pythonVersion : json('null')
       netFrameworkVersion: contains(appServiceSiteConfigs.webSettings, 'dotnetVersion') ? appServiceSiteConfigs.webSettings.dotnetVersion : json('null')
       apiManagementConfig: any(contains(appServiceSiteConfigs.webSettings, 'apimGateway') ? {
-        id: replace(replace(resourceId(appServiceSiteConfigs.webSettings.apimGateway.apimResourceGroupName, 'MMicrosoft.ApiManagement/apis', appServiceSiteConfigs.webSettings.apimGateway.apimName, appServiceSiteConfigs.webSettings.apimGateway.apimApiName), '@environment', environment), '@region', region)
+        id: replace(replace(resourceId(appServiceSiteConfigs.webSettings.apimGateway.apimResourceGroupName, 'Microsoft.ApiManagement/service/apis', appServiceSiteConfigs.webSettings.apimGateway.apimName, appServiceSiteConfigs.webSettings.apimGateway.apimApiName), '@environment', environment), '@region', region)
       } : {})
     }
   }
 }
 
 // 4.2 Deploy Web App, if applicable
-resource azAppServiceWebDeployment 'Microsoft.Web/sites@2021-03-01' = if (appServiceType == 'web') {
+resource azAppServiceWebDeployment 'Microsoft.Web/sites@2022-03-01' = if (appServiceType == 'web') {
   name: appServiceType == 'web' ? replace('${appServiceName}', '@environment', environment) : 'no-web-app-to-deploy'
   location: appServiceLocation
   kind: appServiceType
@@ -206,7 +206,7 @@ resource azAppServiceWebDeployment 'Microsoft.Web/sites@2021-03-01' = if (appSer
       pythonVersion: contains(appServiceSiteConfigs.webSettings, 'pythonVersion') ? appServiceSiteConfigs.webSettings.pythonVersion : json('null')
       netFrameworkVersion: contains(appServiceSiteConfigs.webSettings, 'dotnetVersion') ? appServiceSiteConfigs.webSettings.dotnetVersion : json('null')
       apiManagementConfig: any(contains(appServiceSiteConfigs.webSettings, 'apimGateway') ? {
-        id: replace(replace(resourceId(appServiceSiteConfigs.webSettings.apimGateway.apimResourceGroupName, 'MMicrosoft.ApiManagement/apis', appServiceSiteConfigs.webSettings.apimGateway.apimName, appServiceSiteConfigs.webSettings.apimGateway.apimApiName), '@environment', environment), '@region', region)
+        id: replace(replace(resourceId(appServiceSiteConfigs.webSettings.apimGateway.apimResourceGroupName, 'Microsoft.ApiManagement/service/apis', appServiceSiteConfigs.webSettings.apimGateway.apimName, appServiceSiteConfigs.webSettings.apimGateway.apimApiName), '@environment', environment), '@region', region)
       } : {})
     }
   }

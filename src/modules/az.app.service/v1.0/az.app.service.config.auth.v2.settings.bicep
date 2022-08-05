@@ -43,7 +43,7 @@ param appServiceAuthIdentityProviderOpenIdIssuer object
 param appServiceAuthIdentityProviderClientSecretName string
 
 @description('')
-param appServiceAuthIdentityProviderAudiences array = []
+param appServiceAuthIdentityProviderAudiences object = {}
 
 @description('')
 param appServiceAuthIdentityProviderScopes array = []
@@ -52,16 +52,22 @@ param appServiceAuthIdentityProviderScopes array = []
 param appServiceAuthIdentityProviderGraphApiVersion string = ''
 
 
-var audiences = [for audience in appServiceAuthIdentityProviderAudiences: replace(replace(audience, '@environment', environment), '@region', region)]
-
-//  1. Get the existing app resource to add the host 
-resource azAppServiceResource 'Microsoft.Web/sites@2021-01-15' existing = {
-  name: replace(replace(appServiceName, '@environment', environment), '@region', region)
-  scope: resourceGroup()
+var audience = !empty(appServiceAuthIdentityProviderAudiences) ? environment == 'dev' ?  {
+  values: appServiceAuthIdentityProviderAudiences.dev
+} : environment == 'qa' ?  {
+  values: appServiceAuthIdentityProviderAudiences.qa
+} :environment == 'uat' ?  {
+  values: appServiceAuthIdentityProviderAudiences.uat
+} :environment == 'prd' ?  {
+  values: appServiceAuthIdentityProviderAudiences.prd
+} : {
+  values: appServiceAuthIdentityProviderAudiences.default
+} : {
+  values: []
 }
+var audiences = [for value in audience.values: replace(replace(value, '@environment', environment), '@region', region)]
 
-// 2. 
-resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/config@2021-01-15' = {
+resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/config@2022-03-01' = {
   name: replace(replace('${appServiceName}/authsettingsV2', '@environment', environment), '@region', region)
   properties: {
     globalValidation: {
@@ -93,9 +99,7 @@ resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/config@2021-01-
           openIdIssuer: appServiceAuthIdentityProviderOpenIdIssuer.default
         }))))
         validation: {
-          allowedAudiences: union([
-            'https://${azAppServiceResource.properties.defaultHostName}'
-          ], audiences) 
+          allowedAudiences: audiences
         }
         isAutoProvisioned: false
         login: {
@@ -174,9 +178,7 @@ resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/config@2021-01-
           scopes: appServiceAuthIdentityProviderScopes
         }
         validation: {
-          allowedAudiences: union([
-            'https://${azAppServiceResource.properties.defaultHostName}'
-          ], audiences)
+          allowedAudiences: audiences
         }
       } : json('null'))
     }

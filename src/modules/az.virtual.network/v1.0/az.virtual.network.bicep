@@ -24,29 +24,38 @@ param virtualNetworkAddressSpaces array
 param virtualNetworkSubnets array = []
 
 @description('')
+param virtualNetworkConfigs object = {}
+
+@description('')
 param virtualNetworkTags object = {}
 
-var subnets = [for subnet in virtualNetworkSubnets: {
-  name: replace(replace(subnet.subnetName, '@environment', environment), '@region', region)
-  properties: {
-    addressPrefix: subnet.subnetRange
-    privateEndpointNetworkPolicies: subnet.subnetPrivateEndpointNetworkPolicies
-    serviceEndpoints: subnet.subnetServiceEndpoints
-  }
-}]
-
 // 1. Deploy the Virtual Network
-resource azVirtualNetworkDeployment 'Microsoft.Network/virtualNetworks@2021-02-01' = {
+resource azVirtualNetworkDeployment 'Microsoft.Network/virtualNetworks@2022-01-01' = {
   name: replace(replace(virtualNetworkName, '@environment', environment), '@region', region)
   location: virtualNetworkLocation
   properties: {
     addressSpace: {
       addressPrefixes: virtualNetworkAddressSpaces
     }
-    subnets: subnets
+    enableDdosProtection: contains(virtualNetworkConfigs, 'enableDdosProtection') ? virtualNetworkConfigs.enableDdosProtection : false
+    enableVmProtection: contains(virtualNetworkConfigs, 'enableVmProtection') ? virtualNetworkConfigs.enableVmProtection : false
   }
   tags: union(virtualNetworkTags, {
     region: empty(region) ? 'n/a' : region
     environment: empty(environment) ? 'n/a' : environment
   })
 }
+
+module azVirtualNetorkSubnetDeployment './az.virtual.network.subnet.bicep' = [for subnet in virtualNetworkSubnets: if (!empty(virtualNetworkSubnets)) {
+  name: !empty(virtualNetworkSubnets) ? toLower('az-vnet-subnet-${guid('${azVirtualNetworkDeployment.id}/${subnet.virtualNetworkSubnetName}')}') : 'no-vnet-subnet-to-deploy'
+  params: {
+    region: region
+    environment: environment
+    virtualNetworkName: virtualNetworkName
+    virtualNetworkSubnetName: subnet.virtualNetworkSubnetName
+    virtualNetworkSubnetRange: subnet.virtualNetworkSubnetRange
+    virtualNetworkSubnetConfigs: subnet.virtualNetworkSubnetConfigs
+  }
+}]
+
+output virtualNetwork object = azVirtualNetworkDeployment

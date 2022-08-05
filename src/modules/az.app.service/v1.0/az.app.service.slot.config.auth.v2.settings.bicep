@@ -49,7 +49,7 @@ param appServiceSlotAuthIdentityProviderOpenIdIssuer object
 param appServiceSlotAuthIdentityProviderClientSecretName string
 
 @description('')
-param appServiceSlotAuthIdentityProviderAudiences array = []
+param appServiceSlotAuthIdentityProviderAudiences object
 
 @description('')
 param appServiceSlotAuthIdentityProviderScopes array = []
@@ -57,16 +57,28 @@ param appServiceSlotAuthIdentityProviderScopes array = []
 @description('For Facebook')
 param appServiceSlotAuthIdentityProviderGraphApiVersion string = ''
 
-
-var audiences = [for audience in appServiceSlotAuthIdentityProviderAudiences: replace(replace(audience, '@environment', environment), '@region', region)]
+var audience = !empty(appServiceSlotAuthIdentityProviderAudiences) ? environment == 'dev' ?  {
+  values: appServiceSlotAuthIdentityProviderAudiences.dev
+} : environment == 'qa' ?  {
+  values: appServiceSlotAuthIdentityProviderAudiences.qa
+} :environment == 'uat' ?  {
+  values: appServiceSlotAuthIdentityProviderAudiences.uat
+} :environment == 'prd' ?  {
+  values: appServiceSlotAuthIdentityProviderAudiences.prd
+} : {
+  values: appServiceSlotAuthIdentityProviderAudiences.default
+} : {
+  values: []
+}
+var audiences = [for value in audience.values: replace(replace(value, '@environment', environment), '@region', region)]
 
 // Get the existing app resource 
-resource azAppServiceResource 'Microsoft.Web/sites@2021-01-15' existing = {
+resource azAppServiceResource 'Microsoft.Web/sites@2022-03-01' existing = {
   name: replace(replace(appServiceName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(appServiceResourceGroup, '@environment', environment), '@region', region))
 }
 
-resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/slots/config@2021-01-15' = {
+resource azAppServiceAuthSettingsDeployment 'Microsoft.Web/sites/slots/config@2022-03-01' = {
   name: replace(replace('${appServiceName}/${appServiceSlotName}/authsettingsV2', '@environment', environment), '@region', region)
   properties: {
     globalValidation: {

@@ -17,7 +17,7 @@ param appServiceName string
 @description('A collection of key valued pair configurations to set for the a specific app')
 param appServiceSettings object = {}
 
-resource azAppServiceSettingsDeployment 'Microsoft.Web/sites/config@2021-01-15' = {
+resource azAppServiceSettingsDeployment 'Microsoft.Web/sites/config@2022-03-01' = {
   name: replace(replace('${appServiceName}/appsettings', '@environment', environment), '@region', region)
   properties: appServiceSettings
 }

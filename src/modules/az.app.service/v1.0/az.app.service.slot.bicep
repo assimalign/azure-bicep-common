@@ -78,7 +78,7 @@ var siteSettings = [for setting in appServiceSlotSiteConfigs.siteSettings: {
 
 // 1. Get the existing App Service Plan to attach to the 
 // Note: All web service (Function & Web Apps) have App Service Plans even if it is consumption Y1 Plans
-resource azAppServicePlanResource 'Microsoft.Web/serverfarms@2021-03-01' existing = {
+resource azAppServicePlanResource 'Microsoft.Web/serverfarms@2022-03-01' existing = {
   name: replace(replace(appServiceSlotPlanName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(appServiceSlotPlanResourceGroup, '@environment', environment), '@region', region))
 }
@@ -96,7 +96,7 @@ resource azAppServiceInsightsResource 'Microsoft.Insights/components@2020-02-02'
 }
 
 // 4.1 Deploy Function App, if applicable
-resource azAppServiceFunctionSlotDeployment 'Microsoft.Web/sites/slots@2021-03-01' = if (appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux') {
+resource azAppServiceFunctionSlotDeployment 'Microsoft.Web/sites/slots@2022-03-01' = if (appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux') {
   name: appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux' ? replace(replace('${appServiceName}/${appServiceSlotName}', '@environment', environment), '@region', region) : 'no-function-app-slot-to-deploy'
   location: appServiceSlotLocation
   kind: appServiceSlotType
@@ -143,14 +143,14 @@ resource azAppServiceFunctionSlotDeployment 'Microsoft.Web/sites/slots@2021-03-0
       pythonVersion: contains(appServiceSlotSiteConfigs.webSettings, 'pythonVersion') ? appServiceSlotSiteConfigs.webSettings.pythonVersion : json('null')
       netFrameworkVersion: contains(appServiceSlotSiteConfigs.webSettings, 'dotnetVersion') ? appServiceSlotSiteConfigs.webSettings.dotnetVersion : json('null')
       apiManagementConfig: any(contains(appServiceSlotSiteConfigs.webSettings, 'apimGateway') ? {
-        id: replace(replace(resourceId(appServiceSlotSiteConfigs.webSettings.apimGateway.apimResourceGroupName, 'MMicrosoft.ApiManagement/apis', appServiceSlotSiteConfigs.webSettings.apimGateway.apimName, appServiceSlotSiteConfigs.webSettings.apimGateway.apimApiName), '@environment', environment), '@region', region)
+        id: replace(replace(resourceId(appServiceSlotSiteConfigs.webSettings.apimGateway.apimResourceGroupName, 'Microsoft.ApiManagement/service/apis', appServiceSlotSiteConfigs.webSettings.apimGateway.apimName, appServiceSlotSiteConfigs.webSettings.apimGateway.apimApiName), '@environment', environment), '@region', region)
       } : {})
     }
   }
 }
 
 // 4.2 Deploy Web App, if applicable
-resource azAppServiceWebSlotDeployment 'Microsoft.Web/sites/slots@2021-01-01' = if (appServiceSlotType == 'web') {
+resource azAppServiceWebSlotDeployment 'Microsoft.Web/sites/slots@2022-03-01' = if (appServiceSlotType == 'web') {
   name: appServiceSlotType == 'web' ? replace('${appServiceName}/${appServiceSlotName}', '@environment', environment) : 'no-web-app/no-web-app-slot-to-deploy'
   location: appServiceSlotLocation
   identity: {
@@ -199,7 +199,7 @@ resource azAppServiceWebSlotDeployment 'Microsoft.Web/sites/slots@2021-01-01' = 
       pythonVersion: contains(appServiceSlotSiteConfigs.webSettings, 'pythonVersion') ? appServiceSlotSiteConfigs.webSettings.pythonVersion : json('null')
       netFrameworkVersion: contains(appServiceSlotSiteConfigs.webSettings, 'dotnetVersion') ? appServiceSlotSiteConfigs.webSettings.dotnetVersion : json('null')
       apiManagementConfig: any(contains(appServiceSlotSiteConfigs.webSettings, 'apimGateway') ? {
-        id: replace(replace(resourceId(appServiceSlotSiteConfigs.webSettings.apimGateway.apimResourceGroupName, 'MMicrosoft.ApiManagement/apis', appServiceSlotSiteConfigs.webSettings.apimGateway.apimName, appServiceSlotSiteConfigs.webSettings.apimGateway.apimApiName), '@environment', environment), '@region', region)
+        id: replace(replace(resourceId(appServiceSlotSiteConfigs.webSettings.apimGateway.apimResourceGroupName, 'Microsoft.ApiManagement/service/apis', appServiceSlotSiteConfigs.webSettings.apimGateway.apimName, appServiceSlotSiteConfigs.webSettings.apimGateway.apimApiName), '@environment', environment), '@region', region)
       } : {})
     }
   }
@@ -246,7 +246,7 @@ module azAppServiceAuthSettings 'az.app.service.slot.config.auth.v2.settings.bic
 }
 
 // 7. Assignment RBAC Roles, if any, to App Service Slot Service Principal  
-module azAppServiceFunctionRoleAssignment '../../az.rbac/v1.0/az.rbac.role.assignment.bicep' = [for appSlotRoleAssignment in appServiceSlotMsiRoleAssignments: if (appServiceSlotMsiEnabled == true && !empty(appServiceSlotMsiRoleAssignments)) {
+module azAppServiceSlotFunctionRoleAssignment '../../az.rbac/v1.0/az.rbac.role.assignment.bicep' = [for appSlotRoleAssignment in appServiceSlotMsiRoleAssignments: if (appServiceSlotMsiEnabled == true && !empty(appServiceSlotMsiRoleAssignments)) {
   name: 'az-app-service-slot-rbac-${guid('${appServiceName}-${appServiceSlotName}-${appSlotRoleAssignment.resourceRoleName}')}'
   scope: resourceGroup(replace(replace(appSlotRoleAssignment.resourceGroupToScopeRoleAssignment, '@environment', environment), '@region', region))
   params: {
@@ -261,7 +261,6 @@ module azAppServiceFunctionRoleAssignment '../../az.rbac/v1.0/az.rbac.role.assig
   }
   dependsOn: [
     azAppServiceAuthSettings
-    azAppServiceFunctionSlotFunctionsDeployment
   ]
 }]
 

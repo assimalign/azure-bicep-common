@@ -25,7 +25,7 @@ param appSlotAzureStorageConfigNames array = []
 
 
 
-resource azAppServiceSlotSpecificSettingDeployment 'Microsoft.Web/sites/config@2021-02-01' = {
+resource azAppServiceSlotSpecificSettingDeployment 'Microsoft.Web/sites/config@2022-03-01' = {
   name: replace(replace('${appName}/slotConfigNames', '@environment', environment), '@region', region)
   properties: {
     appSettingNames: appSlotSettingNames

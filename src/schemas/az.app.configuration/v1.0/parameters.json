@@ -33,15 +33,19 @@
             "default": {
                 "appConfigurationName": "",
                 "appConfigurationSku": {
+                    "default": "Free",
                     "dev": "Free",
                     "qa": "Standard",
                     "uat": "Standard",
                     "prd": "Standard"
                 },
-                "appConfigurationEnableMsi": false,
-                "appConfigurationEnableRbac": false,
-                "appConfigurationDisablePublicAccess": false
+                "appConfigurationConfigs": {
+                    "enableMsi": true,
+                    "enableRbac": true,
+                    "enablePublicAccess": "Disabled"
+                }
             },
+            "additionalProperties": false,
             "properties": {
                 "appConfigurationName": {
                     "type": "string",
@@ -53,19 +57,26 @@
                 "appConfigurationResourceGroup": {
                     "type": "string"
                 },
-                "appConfigurationEnableMsi": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Enables Managed System Identity for connecting to the deployed instance of Azure App Configuration."
-                },
-                "appConfigurationEnableRbac": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Will disable Access Key Authentication and use RBAC only. If enabled, App Configuration Keys will not be deployable"
-                },
-                "appConfigurationDisablePublicAccess": {
-                    "type": "boolean",
-                    "default": false
+                "appConfigurationConfigs": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "enableMsi": {
+                            "type": "boolean",
+                            "description": "Enables Managed System Identity for connecting to the deployed instance of Azure App Configuration."
+                        },
+                        "enableRbac": {
+                            "type": "boolean",
+                            "description": "Will disable Access Key Authentication and use RBAC only. If enabled, App Configuration Keys will not be deployable"
+                        },
+                        "enablePublicAccess": {
+                            "type": "string",
+                            "enum": [
+                                "Enabled",
+                                "Disabled"
+                            ]
+                        }
+                    }
                 },
                 "appConfigurationKeys": {
                     "type": "array",
@@ -133,21 +144,23 @@
                         "allOf": [
                             {
                                 "$ref": "#/definitions/app-configuration-key"
-                            }
-                        ],
-                        "properties": {
-                            "appConfigurationName": {
-                                "type": "string",
-                                "description": "The name of the deployed Azure App Configuration instance."
                             },
-                            "appConfigurationResourceGroup": {
-                                "type": "string",
-                                "description": "The name of the Azure Resource Group the Azure App Configuration instance belongs to."
+                            {
+                                "properties": {
+                                    "appConfigurationName": {
+                                        "type": "string",
+                                        "description": "The name of the deployed Azure App Configuration instance."
+                                    },
+                                    "appConfigurationResourceGroup": {
+                                        "type": "string",
+                                        "description": "The name of the Azure Resource Group the Azure App Configuration instance belongs to."
+                                    }
+                                },
+                                "required": [
+                                    "appConfigurationName",
+                                    "appConfigurationResourceGroup"
+                                ]
                             }
-                        },
-                        "required": [
-                            "appConfigurationName",
-                            "appConfigurationResourceGroup"
                         ]
                     },
                     "minItems": 1
@@ -159,6 +172,11 @@
         },
         "app-configuration-key": {
             "type": "object",
+            "default": {
+                "appConfigurationKey": "",
+                "appConfigurationValue": "",
+                "appConfigurationValueContentType": null
+            },
             "properties": {
                 "appConfigurationKey": {
                     "type": "string"
@@ -166,8 +184,52 @@
                 "appConfigurationValue": {
                     "type": "string"
                 },
+                "appConfigurationValueEnvReplacements": {
+                    "description": "Specifies that a key should only be deployed within a specific environment.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "default": {
+                        "dev": [],
+                        "qa": [],
+                        "uat": [],
+                        "prd": []
+                    },
+                    "properties": {
+                        "dev": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "qa": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "uat": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "prd": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": [
+                        "dev",
+                        "qa",
+                        "uat",
+                        "prd"
+                    ]
+                },
                 "appConfigurationLabels": {
                     "type": "array",
+                    "description": "Adds a label to the config key for label select. Use key word 'default' to set the default as well.",
                     "items": {
                         "type": "string"
                     },

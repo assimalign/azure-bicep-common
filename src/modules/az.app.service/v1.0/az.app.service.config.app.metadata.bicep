@@ -17,7 +17,7 @@ param appServiceName string
 @description('Key valued pair object with meta data to attach to an existing app service')
 param appServiceMetadata object
 
-resource azAppServiceSettingsDeployment 'Microsoft.Web/sites/config@2021-01-15' = {
+resource azAppServiceSettingsDeployment 'Microsoft.Web/sites/config@2022-03-01' = {
   name: replace(replace('${appServiceName}/metadata', '@environment', environment), '@region', region)
   properties: appServiceMetadata
 }

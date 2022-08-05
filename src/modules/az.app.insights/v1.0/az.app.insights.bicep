@@ -38,13 +38,13 @@ param appInsightsAnalyticWorkspaceResourceGroup string = resourceGroup().name
 param appInsightsTags object = {}
 
 // 1. Get the existing log workspace to attach the insights component to
-resource azAppLogAnalyticsWorkspaceDeployment 'Microsoft.OperationalInsights/workspaces@2020-10-01' existing = {
+resource azAppLogAnalyticsWorkspaceDeployment 'Microsoft.OperationalInsights/workspaces@2021-06-01' existing = {
   name: replace(replace(appInsightsAnalyticWorkspaceName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(appInsightsAnalyticWorkspaceResourceGroup, '@environment', environment), '@region', region))
 }
 
 // 2. Deploy the new instance of App insights under the requested log workspace
-resource azAppInsightsComponentsDeployment 'Microsoft.Insights/components@2020-02-02-preview' = {
+resource azAppInsightsComponentsDeployment 'Microsoft.Insights/components@2020-02-02' = {
   name: replace(replace('${appInsightsName}', '@environment', environment), '@region', region)
   location: appInsightsLocation
   kind: appInsightsKind

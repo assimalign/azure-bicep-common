@@ -10,6 +10,7 @@
         },
         "parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "resourceGroup": {
                     "$ref": "../../az.resource.group/v1.0/parameters.json#/definitions/resource-group"
@@ -138,6 +139,12 @@
                 "appServiceSlotsConfigNames": {
                     "$ref": "../../az.app.service/v1.0/parameters.json#/definitions/app-services-slots-config-names"
                 },
+                "appServiceEnvironment": {
+                    "$ref": "../../az.app.service/v1.0/parameters.json#/definitions/app-service-environment"
+                },
+                "appServiceEnvironments": {
+                    "$ref": "../../az.app.service/v1.0/parameters.json#/definitions/app-service-environments"
+                },
                 "appGateway": {
                     "$ref": "../../az.app.gateway/v1.0/parameters.json#/definitions/app-gateway"
                 },
@@ -189,6 +196,12 @@
                 "virtualNetworks": {
                     "$ref": "../../az.virtual.network/v1.0/parameters.json#/definitions/virtual-networks"
                 },
+                "virtualNetworkSubnet": {
+                    "$ref": "../../az.virtual.network/v1.0/parameters.json#/definitions/virtual-network-subnet"
+                },
+                "virtualNetworkSubnets": {
+                    "$ref": "../../az.virtual.network/v1.0/parameters.json#/definitions/virtual-network-subnets"
+                },
                 "virtualNetworksPeering": {
                     "$ref": "../../az.virtual.network/v1.0/parameters.json#/definitions/virtual-network-peering"
                 },
@@ -236,6 +249,12 @@
                 },
                 "privateDnsZoneSrvRecords": {
                     "$ref": "../../az.private.dns/v1.0/parameters.json#/definitions/private-dns-zone-srv-records"
+                },
+                "networkSecurityGroup": {
+                    "$ref": "../../az.network.security.group/v1.0/parameters.json#/definitions/network-security-group"
+                },
+                "networkSecurityGroups": {
+                    "$ref": "../../az.network.security.group/v1.0/parameters.json#/definitions/network-security-groups"
                 },
                 "eventHubNamespace": {
                     "$ref": "../../az.event.hub/v1.0/parameters.json#/definitions/event-hub-namespace"

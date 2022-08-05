@@ -4,6 +4,29 @@
     "$schema": "../../src/schemas/az/v1.0/parameters.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "appService": {
+            "value": {
+                "appServiceSiteConfigs": {
+                    "siteSettings": [],
+                    "siteAuthSettings": {
+                        "appServiceAuthIdentityGraphApiVersion": "",
+                        "appServiceAuthIdentityScopes": [],
+                        "appServiceAuthIdentityProvider": "AzureAD",
+                        "appServiceAuthIdentityAudiences": {
+                            "default": []
+                        },
+                        "appServiceAuthAction": "Return401",
+                        "appServiceAuthIdentityClientId": {
+                            "default": ""
+                        },
+                        "appServiceAuthIdentityClientSecretName": "",
+                        "appServiceAuthIdentityOpenIdIssuer": {
+                            "default": ""
+                        }
+                    }
+                }
+            }
+        },
         "resourceGroup": {
             "value": {
                 "resourceGroupName": "test-rg-@environment-@region",

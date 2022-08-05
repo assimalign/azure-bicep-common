@@ -32,20 +32,18 @@ param appConfigurationKeys array = []
 @description('Private endpoint configuration for the app configuration deployment')
 param appConfigurationPrivateEndpoint object = {}
 
-@description('Enables Managed System Identity')
-param appConfigurationEnableMsi bool = false
-
-@description('Disables public network access to the resource')
-param appConfigurationDisablePublicAccess bool = true
-
-@description('Enables RBAC over access policies')
-param appConfigurationEnableRbac bool = false
+@description('App Configuration optional settings.')
+param appConfigurationConfigs object = {}
 
 @description('The tags to attach to the resource when deployed')
 param appConfigurationTags object = {}
 
+var enableRbac = contains(appConfigurationConfigs, 'enableRbac') ? appConfigurationConfigs.enableRbac : false
+var enableMsi = contains(appConfigurationConfigs, 'enableMsi') && appConfigurationConfigs.enableMsi == true ? 'SystemAssigned' : 'None'
+var enablePublicAccess = contains(appConfigurationConfigs, 'enablePublicAccess') ? appConfigurationConfigs.enablePublicAccess : 'Enabled'
+
 // 1. Deploys a single instance of Azure App Configuration
-resource azAppConfigurationDeployment 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' = {
+resource azAppConfigurationDeployment 'Microsoft.AppConfiguration/configurationStores@2022-05-01' = {
   name: replace(replace(appConfigurationName, '@environment', environment), '@region', region)
   location: appConfigurationLocation
   sku: any((environment == 'dev') ? {
@@ -60,29 +58,30 @@ resource azAppConfigurationDeployment 'Microsoft.AppConfiguration/configurationS
     name: appConfigurationSku.default
   }))))
   identity: {
-    type: appConfigurationEnableMsi == true ? 'SystemAssigned' : 'None'
+    type: enableMsi
   }
   properties: {
-    disableLocalAuth: appConfigurationEnableRbac
-    publicNetworkAccess: appConfigurationDisablePublicAccess == true ? 'Disabled' : 'Enabled'
+    disableLocalAuth: enableRbac
+    publicNetworkAccess: enablePublicAccess
   }
   tags: union(appConfigurationTags, {
-    region: region
-    environment: environment
-  })
+      region: region
+      environment: environment
+    })
 }
 
 // 2. Deploy any Azure App Configuration Keys and values
-module azAppConfigurationKeysDeployement 'az.app.configuration.key.bicep' = [for key in appConfigurationKeys: if (!empty(appConfigurationKeys) && appConfigurationEnableRbac == false) {
+module azAppConfigurationKeysDeployement 'az.app.configuration.key.bicep' = [for key in appConfigurationKeys: if (!empty(appConfigurationKeys) && !enableRbac) {
   name: 'az-app-cfg-key-${guid('${azAppConfigurationDeployment.id}/${key.appConfigurationKey}')}'
   params: {
     environment: environment
     region: region
     appConfigurationName: appConfigurationName
-    appConfigurationKeyName: key.appConfigurationKey
+    appConfigurationKey: key.appConfigurationKey
     appConfigurationValue: key.appConfigurationValue
     appConfigurationContentType: key.appConfigurationValueContentType
-    appConfigurationValueLabels: contains(key, 'appConfigurationLabels') ? key.appConfigurationLabels : []
+    appConfigurationLabels: contains(key, 'appConfigurationLabels') ? key.appConfigurationLabels : []
+    appConfigurationValueEnvReplacements: contains(key, 'appConfigurationValueEnvReplacements') ? key.appConfigurationValueEnvReplacements : []
   }
 }]
 

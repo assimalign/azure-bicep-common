@@ -92,7 +92,7 @@
                         "prd": {
                             "$ref": "#/definitions/key-vault-sku"
                         },
-                        "default":{
+                        "default": {
                             "$ref": "#/definitions/key-vault-sku"
                         }
                     }
@@ -115,6 +115,39 @@
                                             "anyOf": [
                                                 {
                                                     "const": "Get"
+                                                },
+                                                {
+                                                    "const": "List"
+                                                },
+                                                {
+                                                    "const": "Update"
+                                                },
+                                                {
+                                                    "const": "Create"
+                                                },
+                                                {
+                                                    "const": "Import"
+                                                },
+                                                {
+                                                    "const": "Delete"
+                                                },
+                                                {
+                                                    "const": "Recover"
+                                                },
+                                                {
+                                                    "const": "Backup"
+                                                },
+                                                {
+                                                    "const": "Restore"
+                                                },
+                                                {
+                                                    "const": "GetRotationPolicy"
+                                                },
+                                                {
+                                                    "const": "SetRotationPolicy"
+                                                },
+                                                {
+                                                    "const": "Rotate"
                                                 }
                                             ]
                                         }
@@ -135,6 +168,15 @@
                                                 },
                                                 {
                                                     "const": "Delete"
+                                                },
+                                                {
+                                                    "const": "Recover"
+                                                },
+                                                {
+                                                    "const": "Backup"
+                                                },
+                                                {
+                                                    "const": "Restore"
                                                 }
                                             ]
                                         }
