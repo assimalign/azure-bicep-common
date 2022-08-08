@@ -38,4 +38,4 @@ $items | ForEach-Object {
 }
 
 
-Publish-AzBicepModule './src\modules\az.sql.server\v1.0\az.sql.server.bicep'  -Target 'br:aecbicep.azurecr.io:modules/az.sql.server:v1.0'
+#Publish-AzBicepModule './src\modules\az.sql.server\v1.0\az.sql.server.bicep'  -Target 'br:aecbicep.azurecr.io:modules/az.sql.server:v1.0'
