@@ -33,12 +33,12 @@ param storageAccountTableServiceConfigs object = {}
 param storageAccountTableServicePrivateEndpoint object = {}
 
 // 1. Get the existing Storage Account
-resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2021-04-01' existing = {
+resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2022-05-01' existing = {
   name: replace(replace(storageAccountName, '@environment', environment), '@region', region)
 }
 
 // 2. Deploy the Storage Account Table Service
-resource azStorageAccountTableServiceDeployment 'Microsoft.Storage/storageAccounts/tableServices@2021-09-01' = {
+resource azStorageAccountTableServiceDeployment 'Microsoft.Storage/storageAccounts/tableServices@2022-05-01' = {
   name: storageAccountTableServiceName
   parent: azStorageAccountResource
   properties: {

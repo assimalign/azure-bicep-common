@@ -51,22 +51,16 @@ resource azAppLogAnalyticsWorkspaceDeployment 'Microsoft.OperationalInsights/wor
       dailyQuotaGb: logAnalyticsWorkspaceDailyQuota
     }
     retentionInDays: logAnalyticsWorkspaceRetention
-    sku: any(environment == 'dev' ? {
-      name: logAnalyticsWorkspaceSku.dev
-    } : any(environment == 'qa' ? {
-      name: logAnalyticsWorkspaceSku.qa
-    } : any(environment == 'uat' ? {
-      name: logAnalyticsWorkspaceSku.uat
-    } : any(environment == 'prd' ? {
-      name: logAnalyticsWorkspaceSku.prd
+    sku: any(contains(logAnalyticsWorkspaceSku, environment) ? {
+      name: logAnalyticsWorkspaceSku[environment]
     } : {
       name: logAnalyticsWorkspaceSku.default
-    }))))
+    })
   }
   tags: union(logAnalyticsWorkspaceTags, {
-    region: empty(region) ? 'n/a' : region
-    environment: empty(environment) ? 'n/a' : environment
-  })
+      region: empty(region) ? 'n/a' : region
+      environment: empty(environment) ? 'n/a' : environment
+    })
 }
 
-output resource object = azAppLogAnalyticsWorkspaceDeployment
+output logAnalyticsWorkspace object = azAppLogAnalyticsWorkspaceDeployment

@@ -91,7 +91,7 @@ module azEventGridDomainSubscriptionsDeployment 'az.event.grid.domain.subscripti
 
 // 4. Deploy Private Endpoint if applicable
 module azEventGridPrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(eventGridDomainPrivateEndpoint)) {
-  name: !empty(eventGridDomainPrivateEndpoint) ? toLower('az-egd-priv-endpoint-${guid('${azEventGridDomainDeployment.id}/${eventGridDomainPrivateEndpoint.name}')}') : 'no-egd-private-endpoint-to-deploy'
+  name: !empty(eventGridDomainPrivateEndpoint) ? toLower('az-egd-priv-endpoint-${guid('${azEventGridDomainDeployment.id}/${eventGridDomainPrivateEndpoint.privateEndpointName}')}') : 'no-egd-private-endpoint-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -131,6 +131,8 @@ module azEventGridRoleAssignment '../../az.rbac/v1.0/az.rbac.role.assignment.bic
     azEventGridDomainSubscriptionsDeployment
   ]
 }]
+
+
 
 
 output eventGridDomain object = azEventGridDomainDeployment

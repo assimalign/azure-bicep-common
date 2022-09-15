@@ -108,7 +108,9 @@
                                 },
                                 "required": [
                                     "eventGridDomainName",
-                                    "eventGridDomainResourceGroup"
+                                    "eventGridDomainResourceGroup",
+                                    "eventGridDomainTopicName",
+                                    "eventGridDomainTopicSubscriptions"
                                 ]
                             }
                         ],
@@ -143,7 +145,9 @@
                             },
                             "required": [
                                 "eventGridDomainName",
-                                "eventGridDomainResourceGroup"
+                                "eventGridDomainResourceGroup",
+                                "eventGridDomainTopicName",
+                                "eventGridDomainTopicSubscriptions"
                             ]
                         }
                     ]
@@ -254,25 +258,13 @@
                 },
                 "eventGridDomainTopicSubscriptionEndpointType": {
                     "type": "string",
-                    "oneOf": [
-                        {
-                            "const": "AzureFunction"
-                        },
-                        {
-                            "const": "ServiceBusQueue"
-                        },
-                        {
-                            "const": "ServiceBusTopic"
-                        },
-                        {
-                            "const": "StorageQueue"
-                        },
-                        {
-                            "const": "EventHub"
-                        },
-                        {
-                            "const": "WebHook"
-                        }
+                    "enum": [
+                        "AzureFunction",
+                        "ServiceBusQueue",
+                        "ServiceBusTopic",
+                        "StorageQueue",
+                        "EventHub",
+                        "WebHook"
                     ]
                 },
                 "eventGridDomainTopicSubscriptionEndpointName": {
@@ -299,64 +291,26 @@
                         "properties": {
                             "operatorType": {
                                 "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "BoolEquals"
-                                    },
-                                    {
-                                        "const": "IsNotNull"
-                                    },
-                                    {
-                                        "const": "IsNotNullOrUndefined"
-                                    },
-                                    {
-                                        "const": "NumberGreaterThan"
-                                    },
-                                    {
-                                        "const": "NumberGreaterThanOrEquals"
-                                    },
-                                    {
-                                        "const": "NumberIn"
-                                    },
-                                    {
-                                        "const": "NumberInRange"
-                                    },
-                                    {
-                                        "const": "NumberNotIn"
-                                    },
-                                    {
-                                        "const": "NumberNotInRange"
-                                    },
-                                    {
-                                        "const": "NumberLessThan"
-                                    },
-                                    {
-                                        "const": "NumberLessThanOrEquals"
-                                    },
-                                    {
-                                        "const": "StringBeginsWith"
-                                    },
-                                    {
-                                        "const": "StringNotBeginsWith"
-                                    },
-                                    {
-                                        "const": "StringEndsWith"
-                                    },
-                                    {
-                                        "const": "StringNotEndsWith"
-                                    },
-                                    {
-                                        "const": "StringContains"
-                                    },
-                                    {
-                                        "const": "StringNotContains"
-                                    },
-                                    {
-                                        "const": "StringIn"
-                                    },
-                                    {
-                                        "const": "StringNotIn"
-                                    }
+                                "enum": [
+                                    "BoolEquals",
+                                    "IsNotNull",
+                                    "IsNotNullOrUndefined",
+                                    "NumberGreaterThan",
+                                    "NumberGreaterThanOrEquals",
+                                    "NumberIn",
+                                    "NumberInRange",
+                                    "NumberNotIn",
+                                    "NumberNotInRange",
+                                    "NumberLessThan",
+                                    "NumberLessThanOrEquals",
+                                    "StringBeginsWith",
+                                    "StringNotBeginsWith",
+                                    "StringEndsWith",
+                                    "StringNotEndsWith",
+                                    "StringContains",
+                                    "StringNotContains",
+                                    "StringIn",
+                                    "StringNotIn"
                                 ]
                             },
                             "key": {
@@ -408,13 +362,9 @@
                             },
                             "type": {
                                 "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Static"
-                                    },
-                                    {
-                                        "const": "Dynamic"
-                                    }
+                                "enum": [
+                                    "Static",
+                                    "Dynamic"
                                 ]
                             },
                             "value": {
@@ -536,25 +486,13 @@
                 },
                 "eventGridDomainSubscriptionEndpointType": {
                     "type": "string",
-                    "oneOf": [
-                        {
-                            "const": "AzureFunction"
-                        },
-                        {
-                            "const": "ServiceBusQueue"
-                        },
-                        {
-                            "const": "ServiceBusTopic"
-                        },
-                        {
-                            "const": "StorageQueue"
-                        },
-                        {
-                            "const": "EventHub"
-                        },
-                        {
-                            "const": "WebHook"
-                        }
+                    "enum": [
+                        "AzureFunction",
+                        "ServiceBusQueue",
+                        "ServiceBusTopic",
+                        "StorageQueue",
+                        "EventHub",
+                        "WebHook"
                     ]
                 },
                 "eventGridDomainSubscriptionEndpointName": {
@@ -581,64 +519,26 @@
                         "properties": {
                             "operatorType": {
                                 "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "BoolEquals"
-                                    },
-                                    {
-                                        "const": "IsNotNull"
-                                    },
-                                    {
-                                        "const": "IsNotNullOrUndefined"
-                                    },
-                                    {
-                                        "const": "NumberGreaterThan"
-                                    },
-                                    {
-                                        "const": "NumberGreaterThanOrEquals"
-                                    },
-                                    {
-                                        "const": "NumberIn"
-                                    },
-                                    {
-                                        "const": "NumberInRange"
-                                    },
-                                    {
-                                        "const": "NumberNotIn"
-                                    },
-                                    {
-                                        "const": "NumberNotInRange"
-                                    },
-                                    {
-                                        "const": "NumberLessThan"
-                                    },
-                                    {
-                                        "const": "NumberLessThanOrEquals"
-                                    },
-                                    {
-                                        "const": "StringBeginsWith"
-                                    },
-                                    {
-                                        "const": "StringNotBeginsWith"
-                                    },
-                                    {
-                                        "const": "StringEndsWith"
-                                    },
-                                    {
-                                        "const": "StringNotEndsWith"
-                                    },
-                                    {
-                                        "const": "StringContains"
-                                    },
-                                    {
-                                        "const": "StringNotContains"
-                                    },
-                                    {
-                                        "const": "StringIn"
-                                    },
-                                    {
-                                        "const": "StringNotIn"
-                                    }
+                                "enum": [
+                                    "BoolEquals",
+                                    "IsNotNull",
+                                    "IsNotNullOrUndefined",
+                                    "NumberGreaterThan",
+                                    "NumberGreaterThanOrEquals",
+                                    "NumberIn",
+                                    "NumberInRange",
+                                    "NumberNotIn",
+                                    "NumberNotInRange",
+                                    "NumberLessThan",
+                                    "NumberLessThanOrEquals",
+                                    "StringBeginsWith",
+                                    "StringNotBeginsWith",
+                                    "StringEndsWith",
+                                    "StringNotEndsWith",
+                                    "StringContains",
+                                    "StringNotContains",
+                                    "StringIn",
+                                    "StringNotIn"
                                 ]
                             },
                             "key": {
@@ -690,13 +590,9 @@
                             },
                             "type": {
                                 "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Static"
-                                    },
-                                    {
-                                        "const": "Dynamic"
-                                    }
+                                "enum": [
+                                    "Static",
+                                    "Dynamic"
                                 ]
                             },
                             "value": {
@@ -748,64 +644,26 @@
             ]
         },
         "event-grid-event-filters": {
-            "oneOf": [
-                {
-                    "const": "BoolEquals"
-                },
-                {
-                    "const": "IsNotNull"
-                },
-                {
-                    "const": "IsNotNullOrUndefined"
-                },
-                {
-                    "const": "NumberGreaterThan"
-                },
-                {
-                    "const": "NumberGreaterThanOrEquals"
-                },
-                {
-                    "const": "NumberIn"
-                },
-                {
-                    "const": "NumberInRange"
-                },
-                {
-                    "const": "NumberNotIn"
-                },
-                {
-                    "const": "NumberNotInRange"
-                },
-                {
-                    "const": "NumberLessThan"
-                },
-                {
-                    "const": "NumberLessThanOrEquals"
-                },
-                {
-                    "const": "StringBeginsWith"
-                },
-                {
-                    "const": "StringNotBeginsWith"
-                },
-                {
-                    "const": "StringEndsWith"
-                },
-                {
-                    "const": "StringNotEndsWith"
-                },
-                {
-                    "const": "StringContains"
-                },
-                {
-                    "const": "StringNotContains"
-                },
-                {
-                    "const": "StringIn"
-                },
-                {
-                    "const": "StringNotIn"
-                }
+            "enum": [
+                "BoolEquals",
+                "IsNotNull",
+                "IsNotNullOrUndefined",
+                "NumberGreaterThan",
+                "NumberGreaterThanOrEquals",
+                "NumberIn",
+                "NumberInRange",
+                "NumberNotIn",
+                "NumberNotInRange",
+                "NumberLessThan",
+                "NumberLessThanOrEquals",
+                "StringBeginsWith",
+                "StringNotBeginsWith",
+                "StringEndsWith",
+                "StringNotEndsWith",
+                "StringContains",
+                "StringNotContains",
+                "StringIn",
+                "StringNotIn"
             ]
         }
     }

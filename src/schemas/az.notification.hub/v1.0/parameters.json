@@ -40,27 +40,43 @@
                     "type": "string"
                 },
                 "notificationHubNamespaceSku": {
-                    "type": "object",
-                    "properties": {
-                        "dev": {
-                            "$ref": "#/definitions/notification-hub-namespace-sku"
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "$ref": "#/definitions/notification-hub-namespace-sku"
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
                         },
-                        "qa": {
-                            "$ref": "#/definitions/notification-hub-namespace-sku"
-                        },
-                        "uat": {
-                            "$ref": "#/definitions/notification-hub-namespace-sku"
-                        },
-                        "prd": {
-                            "$ref": "#/definitions/notification-hub-namespace-sku"
-                        },
-                        "default": {
-                            "$ref": "#/definitions/notification-hub-namespace-sku"
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "$ref": "#/definitions/notification-hub-namespace-sku"
+                                },
+                                "qa": {
+                                    "$ref": "#/definitions/notification-hub-namespace-sku"
+                                },
+                                "uat": {
+                                    "$ref": "#/definitions/notification-hub-namespace-sku"
+                                },
+                                "prd": {
+                                    "$ref": "#/definitions/notification-hub-namespace-sku"
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
                         }
-                    },
-                    "required": [
-                        "default"
                     ]
+                    
                 },
                 "notificationHubNamespaceHubs": {
                     "type": "array",
@@ -80,16 +96,10 @@
                                 "type": "array",
                                 "items": {
                                     "type": "string",
-                                    "anyOf": [
-                                        {
-                                            "const": "Listen"
-                                        },
-                                        {
-                                            "const": "Manage"
-                                        },
-                                        {
-                                            "const": "Send"
-                                        }
+                                    "enum": [
+                                        "Listen",
+                                        "Manage",
+                                        "Send"
                                     ]
                                 },
                                 "minItems": 1
@@ -217,16 +227,10 @@
         },
         "notification-hub-namespace-sku": {
             "type": "string",
-            "oneOf": [
-                {
-                    "const": "Free"
-                },
-                {
-                    "const": "Basic"
-                },
-                {
-                    "const": "Standard"
-                }
+            "enum":[
+                "Free",
+                "Basic",
+                "Standard"
             ]
         }
     }

@@ -42,9 +42,6 @@ param appServicePlanEnvironmentResourceGroup string = resourceGroup().name
 @description('')
 param appServicePlanTags object = {}
 
-// **************************************************************************************** //
-//               App Service Plan, App Insights, App Storage Act, and Apps Deploy           //
-// **************************************************************************************** //
 
 // 1. Get Existing ASE Environment if applicable
 resource azAppServicePlanAseResource 'Microsoft.Web/hostingEnvironments@2022-03-01' existing = if (!empty(appServicePlanEnvironmentName)) {
@@ -56,23 +53,21 @@ resource azAppServicePlanAseResource 'Microsoft.Web/hostingEnvironments@2022-03-
 resource azAppServicePlanDeployment 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: replace(replace(appServicePlanName, '@environment', environment), '@region', region)
   location: appServicePlanLocation
+
   properties: {
+
     hostingEnvironmentProfile: any(!empty(appServicePlanEnvironmentName) ? {
       id: azAppServicePlanAseResource.id
     } : null)
   }
   kind: appServicePlanOs
-  sku: any((environment == 'dev') ? {
-    name: appServicePlanSku.dev
-  } : any((environment == 'qa') ? {
-    name: appServicePlanSku.qa
-  } : any((environment == 'uat') ? {
-    name: appServicePlanSku.uat
-  } : any((environment == 'prd') ? {
-    name: appServicePlanSku.prd
+  sku: any(!empty(environment) && contains(appServicePlanSku, environment) ? {
+    name: appServicePlanSku[environment].name
+    capacity: appServicePlanSku[environment].capacity
   } : {
-    name: appServicePlanSku.default
-  }))))
+    name: appServicePlanSku.default.name
+    capacity: appServicePlanSku.default.capacity
+  })
   tags:  union(appServicePlanTags, {
     region: empty(region) ? 'n/a' : region
     environment: empty(environment) ? 'n/a' : environment
@@ -80,4 +75,4 @@ resource azAppServicePlanDeployment 'Microsoft.Web/serverfarms@2022-03-01' = {
 }
 
 // 3. Return Deployment Output
-output resource object = azAppServicePlanDeployment
+output appServiceEnvironment object = azAppServicePlanDeployment

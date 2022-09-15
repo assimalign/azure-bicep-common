@@ -48,26 +48,17 @@ resource azServiceBusNamespaceDeployment 'Microsoft.ServiceBus/namespaces@2018-0
   identity: any(serviceBusEnableMsi ? {
     type: 'SystemAssigned'
   } : json('null'))
-  sku: any(environment == 'dev' ? {
-    name: serviceBusSku.dev
-    tier: serviceBusSku.dev
-  } : any(environment == 'qa' ? {
-    name: serviceBusSku.qa
-    tier: serviceBusSku.qa
-  } : any(environment == 'uat' ? {
-    name: serviceBusSku.uat
-    tier: serviceBusSku.uat
-  } : any(environment == 'prd' ? {
-    name: serviceBusSku.prd
-    tier: serviceBusSku.prd
+  sku: any(contains(serviceBusSku, environment) ? {
+    name: serviceBusSku[environment]
+    tier: serviceBusSku[environment]
   } : {
     name: serviceBusSku.default
     tier: serviceBusSku.default
-  }))))
-  tags: union(serviceBusTags, {
-    region: empty(region) ? 'n/a' : region
-    environment: empty(environment) ? 'n/a' : environment
   })
+  tags: union(serviceBusTags, {
+      region: empty(region) ? 'n/a' : region
+      environment: empty(environment) ? 'n/a' : environment
+    })
 
   // Neet to use a different API version version than parent since preview supports managed identity while auth rules are supported up to 2017-04-01
   resource azServiceBusNamespaceAuthorizationRulesDeployment 'AuthorizationRules@2021-11-01' = [for policy in serviceBusPolicies: if (!empty(policy)) {

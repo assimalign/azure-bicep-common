@@ -33,12 +33,12 @@ param storageAccountBlobServiceContainers array = []
 param storageAccountBlobServiceConfigs object = {}
 
 // 1. Get the existing Storage Account
-resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2021-08-01' existing = {
+resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2022-05-01' existing = {
   name: replace(replace(storageAccountName, '@environment', environment), '@region', region)
 }
 
 // 2. Deploy the Blob Service resource
-resource azStorageAccountBlobServiceDeployment 'Microsoft.Storage/storageAccounts/blobServices@2021-09-01' = {
+resource azStorageAccountBlobServiceDeployment 'Microsoft.Storage/storageAccounts/blobServices@2022-05-01' = {
   name: storageAccountBlobServiceName
   parent: azStorageAccountResource
   properties: {
@@ -56,8 +56,8 @@ resource azStorageAccountBlobServiceDeployment 'Microsoft.Storage/storageAccount
       days: storageAccountBlobServiceConfigs.blobServiceRestorePolicy.days
       enabled: true
     } : json('null'))
-    deleteRetentionPolicy: any(contains(storageAccountBlobServiceConfigs, 'blobServiceRestorePolicy') ? {
-      days: storageAccountBlobServiceConfigs.blobServiceRestorePolicy.days
+    deleteRetentionPolicy: any(contains(storageAccountBlobServiceConfigs, 'blobServiceRetentionPolicy') ? {
+      days: storageAccountBlobServiceConfigs.blobServiceRetentionPolicy.days
       enabled: true
     } : json('null'))
   }

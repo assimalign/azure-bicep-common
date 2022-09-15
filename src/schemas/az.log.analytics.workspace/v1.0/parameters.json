@@ -50,53 +50,59 @@
                     "default": -1
                 },
                 "logAnalyticsWorkspaceSku": {
-                    "type": "object",
-                    "properties": {
-                        "dev": {
-                            "type": "string",
-                            "default": "PerGB2018",
-                            "oneOf": []
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "$ref": "#/definitions/log-analytics-workspace-sku"
+                                }
+                            },
+                            "required": [
+                               "default"
+                            ]
                         },
-                        "qa": {
-                            "$ref": "#/definitions/log-analytics-workspace-sku"
-                        },
-                        "uat": {
-                            "$ref": "#/definitions/log-analytics-workspace-sku"
-                        },
-                        "prd": {
-                            "$ref": "#/definitions/log-analytics-workspace-sku"
-                        },
-                        "default": {
-                            "$ref": "#/definitions/log-analytics-workspace-sku"
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "$ref": "#/definitions/log-analytics-workspace-sku"
+                                },
+                                "qa": {
+                                    "$ref": "#/definitions/log-analytics-workspace-sku"
+                                },
+                                "uat": {
+                                    "$ref": "#/definitions/log-analytics-workspace-sku"
+                                },
+                                "prd": {
+                                    "$ref": "#/definitions/log-analytics-workspace-sku"
+                                }
+                            },
+                            "required": [
+                               "dev",
+                               "qa",
+                               "uat",
+                               "prd"
+                            ]
                         }
-                    },
-                    "required": [
-                       "default"
                     ]
                 },
                 "logAnalyticsWorkspacePublicNetworkAccessForIngestion": {
                     "type": "string",
                     "default": "Enabled",
-                    "oneOf": [
-                        {
-                            "const": "Enabled"
-                        },
-                        {
-                            "const": "Disabled"
-                        }
+                    "enum":[
+                        "Enabled",
+                        "Disabled"
                     ]
                 },
                 "logAnalyticsWorkspacePublicNetworkAccessForQuery": {
                     "type": "string",
                     "default": "Enabled",
-                    "oneOf": [
-                        {
-                            "const": "Enabled"
-                        },
-                        {
-                            "const": "Disabled"
-                        }
+                    "enum":[
+                        "Enabled",
+                        "Disabled"
                     ]
+      
                 },
                 "logAnalyticsWorkspaceTags": {
                     "type": "object",

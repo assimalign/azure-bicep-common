@@ -1,6 +1,10 @@
 # Assimalign Bicep
 The repository is meant to be a starting convention for any organization trying to setup CI/CD via IaC (Infrastructure as Code) which targets that Azure platform. Out of the box there are various modules and corresponding JSON schemas which can help get environments setup within a day.
 
+The setup within this repository
+
+Assimalign LLC has a current setup 
+
 
 **NOTE: This repository does not contain all azure resource and should be used as a solution which can be iterated and improved upon. As mentioned, it is a starting convention.**
 
@@ -16,7 +20,8 @@ The repository is meant to be a starting convention for any organization trying 
 # Conventions
 
 
-1. All modules are referenced by folder and **NOT by container registry path**. This is so that each module has it's own life cycle. Meaning
+1. All modules are referenced by folder and **NOT by container registry path**. This is so that each module has it's own life cycle. Meaning if one module in a repository changes it doesn't effect the module referencing it in another repository.
+2. All modules **SHOULD** be created per ARM API Route (Azure Resource Management APIs). For example, if d
 
 ## Folder Structure
 Every Bicep module should be placed in a folder with the name of the Resource Provider in azure as well as a version folder for the module. The version folder will be parsed and used as the tag to be attached to the container registry repository when deployed.

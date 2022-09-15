@@ -28,30 +28,26 @@ param publicIpSku object
 param publicIpAllocationMethod string = 'Dynamic'
 
 @description('')
+param publicIpConfigs object = {}
+
+@description('')
 param publicIpTags object = {}
-
-
 
 // 1. Deploy Public Ip Address
 resource azPublicIpAddressDeployment 'Microsoft.Network/publicIPAddresses@2019-11-01' = {
-  name: replace(replace('${publicIpName}', '@environment', environment), '@region', region)
+  name: replace(replace(publicIpName, '@environment', environment), '@region', region)
   location: publicIpLocation
   properties: {
-    publicIPAllocationMethod: publicIpAllocationMethod   
+    publicIPAllocationMethod: publicIpAllocationMethod
+    dnsSettings: !contains(publicIpConfigs, 'dnsNameLabel') ? json('null') : {
+      domainNameLabel: replace(replace(publicIpConfigs.dnsNameLabel, '@environment', environment), '@region', region)
+    }
   }
-  sku: any(environment == 'dev' ? {
-    name: publicIpSku.dev
-  } : any(environment == 'qa' ?   {
-    name: publicIpSku.qa
-  } : any(environment == 'uat' ?  {
-    name: publicIpSku.uat
-  } : any(environment == 'prd' ?  {
-    name: publicIpSku.prd
-  } : {
-    name: 'Basic'
-  }))))
+  sku: {
+    name: contains(publicIpSku, environment) ? publicIpSku[environment] : publicIpSku.default
+  }
   tags: union(publicIpTags, {
-    region: empty(region) ? 'n/a' : region
-    environment: empty(environment) ? 'n/a' : environment
-  })
+      region: empty(region) ? 'n/a' : region
+      environment: empty(environment) ? 'n/a' : environment
+    })
 }

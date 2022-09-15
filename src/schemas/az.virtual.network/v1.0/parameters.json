@@ -42,14 +42,20 @@
                     "type": "string"
                 },
                 "virtualNetworkAddressSpaces": {
-                    "type": "array",
-                    "items": {
-                        "type": "string",
-                        "pattern": "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|^[0-9][0-9]|^[0-9])(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}(/[1-9]|/1[0-9]|/2[0-9]|/3[0-2])",
-                        "minLength": 9,
-                        "maxLength": 18
-                    },
-                    "minItems": 1
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/virtual-network-address-space"
+                        },
+                        {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[a-z]": {
+                                    "$ref": "#/definitions/virtual-network-address-space"
+                                }
+                            },
+                            "minProperties": 1
+                        }
+                    ]
                 },
                 "virtualNetworkSubnets": {
                     "type": "array",
@@ -133,16 +139,27 @@
         },
         "virtual-network-subnet-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "virtualNetworkSubnetName": {
                     "type": "string",
                     "description": "The name of the Subnet to create within the virtual network."
                 },
                 "virtualNetworkSubnetRange": {
-                    "type": "string",
-                    "pattern": "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|^[0-9][0-9]|^[0-9])(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}(/[1-9]|/1[0-9]|/2[0-9]|/3[0-2])",
-                    "minLength": 9,
-                    "maxLength": 18
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/virtual-network-subnet-address-space"
+                        },
+                        {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[a-z]": {
+                                    "$ref": "#/definitions/virtual-network-subnet-address-space"
+                                }
+                            },
+                            "minProperties": 1
+                        }
+                    ]
                 },
                 "virtualNetworkSubnetConfigs": {
                     "type": "object",
@@ -151,7 +168,54 @@
                             "type": "string",
                             "enum": [
                                 "Microsoft.Web/hostingEnvironments",
-                                "Microsoft.Orbital/orbitalGateways"
+                                "Microsoft.Orbital/orbitalGateways",
+                                "Microsoft.AISupercomputer/accounts/jobs",
+                                "Microsoft.AISupercomputer/accounts/models",
+                                "Microsoft.AISupercomputer/accounts/npu",
+                                "Microsoft.ApiManagement/service",
+                                "Microsoft.Apollo/npu",
+                                "Microsoft.AVS/PrivateClouds",
+                                "Microsoft.AzureCosmosDB/clusters",
+                                "Microsoft.BareMetal/AzureHostedService",
+                                "Microsoft.BareMetal/AzureVMware",
+                                "Microsoft.BareMetal/CrayServers",
+                                "Microsoft.Batch/batchAccounts",
+                                "Microsoft.CloudTest/hostedpools",
+                                "Microsoft.CloudTest/images",
+                                "Microsoft.CloudTest/pools",
+                                "Microsoft.Codespaces/plans",
+                                "Microsoft.ContainerInstance/containerGroups",
+                                "Microsoft.ContainerService/managedClusters",
+                                "Microsoft.Databricks/workspaces",
+                                "Microsoft.DBforMySQL/flexibleServers",
+                                "Microsoft.DBforMySQL/serversv2",
+                                "Microsoft.DBforPostgreSQL/flexibleServers",
+                                "Microsoft.DBforPostgreSQL/serversv2",
+                                "Microsoft.DBforPostgreSQL/singleServers",
+                                "Microsoft.DelegatedNetwork/controller",
+                                "Microsoft.DevCenter/networkConnection",
+                                "Microsoft.DocumentDB/cassandraClusters",
+                                "Microsoft.Fidalgo/networkSettings",
+                                "Microsoft.HardwareSecurityModules/dedicatedHSMs",
+                                "Microsoft.Kusto/clusters",
+                                "Microsoft.LabServices/labplans",
+                                "Microsoft.Logic/integrationServiceEnvironments",
+                                "Microsoft.MachineLearningServices/workspaces",
+                                "Microsoft.Netapp/volumes",
+                                "Microsoft.Network/dnsResolvers",
+                                "Microsoft.PowerPlatform/enterprisePolicies",
+                                "Microsoft.PowerPlatform/vnetaccesslinks",
+                                "Microsoft.ServiceFabricMesh/networks",
+                                "Microsoft.Singularity/accounts/jobs",
+                                "Microsoft.Singularity/accounts/models",
+                                "Microsoft.Singularity/accounts/npu",
+                                "Microsoft.Sql/managedInstances",
+                                "Microsoft.StoragePool/diskPools",
+                                "Microsoft.StreamAnalytics/streamingJobs",
+                                "Microsoft.Synapse/workspaces",
+                                "Microsoft.Web/serverFarms",
+                                "NGINX.NGINXPLUS/nginxDeployments",
+                                "PaloAltoNetworks.Cloudngfw/firewalls"
                             ]
                         },
                         "subnetPrivateEndpointNetworkPolicies": {
@@ -213,8 +277,7 @@
             },
             "required": [
                 "virtualNetworkSubnetName",
-                "virtualNetworkSubnetRange",
-                "virtualNetworkSubnetConfigs"
+                "virtualNetworkSubnetRange"
             ]
         },
         "virtual-network-peering": {
@@ -273,6 +336,109 @@
                 "remoteLinkName",
                 "remoteVirtualNetwork"
             ]
+        },
+        "virtual-network-address-space": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "default": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ip-address"
+                            },
+                            "minItems": 1
+                        }
+                    },
+                    "required": [
+                        "default"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                       
+                        "dev": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ip-address"
+                            },
+                            "minItems": 1
+                        },
+                        "qa": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ip-address"
+                            },
+                            "minItems": 1
+                        },
+                        "uat": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ip-address"
+                            },
+                            "minItems": 1
+                        },
+                        "prd": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ip-address"
+                            },
+                            "minItems": 1
+                        }
+                    },
+                    "required": [
+                        "dev",
+                        "qa",
+                        "uat",
+                        "prd"
+                    ]
+                }
+            ]
+        },
+        "virtual-network-subnet-address-space": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "default": {
+                            "$ref": "#/definitions/ip-address"
+                        }
+                    },
+                    "required": [
+                        "default"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "dev": {
+                            "$ref": "#/definitions/ip-address"
+                        },
+                        "qa": {
+                            "$ref": "#/definitions/ip-address"
+                        },
+                        "uat": {
+                            "$ref": "#/definitions/ip-address"
+                        },
+                        "prd": {
+                            "$ref": "#/definitions/ip-address"
+                        }
+                    },
+                    "required": [
+                        "dev",
+                        "qa",
+                        "uat",
+                        "prd"
+                    ]
+                }
+            ]
+        },
+        "ip-address": {
+            "type": "string",
+            "pattern": "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|^[0-9][0-9]|^[0-9])(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}(/[1-9]|/1[0-9]|/2[0-9]|/3[0-2])",
+            "minLength": 9,
+            "maxLength": 18
         }
     }
 }

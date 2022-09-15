@@ -84,22 +84,13 @@ resource azKeyVaultDeployment 'Microsoft.KeyVault/vaults@2021-10-01' = {
     enableSoftDelete: contains(keyVaultConfigs, 'keyVaultSoftDeleteEnabled') ? keyVaultConfigs.keyVaultSoftDeleteEnabled : true
     softDeleteRetentionInDays: contains(keyVaultConfigs, 'keyVaultSoftDeleteRetention') ? keyVaultConfigs.keyVaultSoftDeleteRetention : 7
     enablePurgeProtection: contains(keyVaultConfigs, 'keyVaultPurgeProtectionEnabled') ? keyVaultConfigs.keyVaultPurgeProtectionEnabled : json('null')
-    sku: any(environment == 'dev' ? {
-      name: keyVaultSku.dev
-      family: 'A'
-    } : any(environment == 'qa' ? {
-      name: keyVaultSku.qa
-      family: 'A'
-    } : any(environment == 'uat' ? {
-      name: keyVaultSku.uat
-      family: 'A'
-    } : any(environment == 'prd' ? {
-      name: keyVaultSku.dev
+    sku: any(contains(keyVaultSku, environment) ? {
+      name: keyVaultSku[environment]
       family: 'A'
     } : {
       name: keyVaultSku.default
       family: 'A'
-    }))))
+    })
     networkAcls: {
       defaultAction: keyVaultDefaultNetworkAccess
       ipRules: [for ip in keyVaultIpAddressAccessRules: {
@@ -111,9 +102,9 @@ resource azKeyVaultDeployment 'Microsoft.KeyVault/vaults@2021-10-01' = {
     }
   }
   tags: union(keyVaultTags, {
-    region: empty(region) ? 'n/a' : region
-    environment: empty(environment) ? 'n/a' : environment
-  })
+      region: empty(region) ? 'n/a' : region
+      environment: empty(environment) ? 'n/a' : environment
+    })
 }
 
 module azKeyVaultSecretDeployment 'az.key.vault.secret.bicep' = [for secret in keyVaultSecrets: if (!empty(keyVaultSecrets)) {

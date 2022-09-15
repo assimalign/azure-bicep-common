@@ -34,8 +34,8 @@ var inboundRules = [for rule in networkSecurityGroupInboundRules: {
     access: rule.access
     priority: rule.priority
     description: contains(rule, 'description') ? rule.description : json('null')
-    sourceAddressPrefix: contains(rule, 'sourceType') ? rule.description : '*'
-    destinationAddressPrefix: contains(rule, 'destinationType') ? rule.description : '*'
+    sourceAddressPrefix: contains(rule, 'sourceType') ? rule.sourceType : '*'
+    destinationAddressPrefix: contains(rule, 'destinationType') ? rule.destinationType : '*'
     destinationPortRange: contains(rule, 'destinationPorts') ? length(rule.destinationPorts) <= 1 ? first(rule.destinationPorts) : json('null') : '*'
     destinationPortRanges: contains(rule, 'destinationPorts') && length(rule.destinationPorts) > 1 ? rule.destinationPorts : []
     sourcePortRange: contains(rule, 'sourcePorts') ? length(rule.sourcePorts) <= 1 ? first(rule.sourcePorts) : json('null') : '*'
@@ -50,8 +50,8 @@ var outboundRules = [for rule in networkSecurityGroupOutboundRules: {
     access: rule.access
     priority: rule.priority
     description: contains(rule, 'description') ? rule.description : json('null')
-    sourceAddressPrefix: contains(rule, 'sourceType') ? rule.description : '*'
-    destinationAddressPrefix: contains(rule, 'destinationType') ? rule.description : '*'
+    sourceAddressPrefix: contains(rule, 'sourceType') ? rule.sourceType : '*'
+    destinationAddressPrefix: contains(rule, 'destinationType') ? rule.destinationType : '*'
     destinationPortRange: contains(rule, 'destinationPorts') ? length(rule.destinationPorts) <= 1 ? first(rule.destinationPorts) : json('null') : '*'
     destinationPortRanges: contains(rule, 'destinationPorts') && length(rule.destinationPorts) > 1 ? rule.destinationPorts : []
     sourcePortRange: contains(rule, 'sourcePorts') ? length(rule.sourcePorts) <= 1 ? first(rule.sourcePorts) : json('null') : '*'
@@ -64,7 +64,7 @@ var securityRules = union(
 )
 
 resource azNsgDeployment 'Microsoft.Network/networkSecurityGroups@2022-01-01' = if (empty(securityRules)) {
-  name: replace(replace(networkSecurityGroupName, '@environment', environment), '@region', region)
+  name: empty(securityRules) ? replace(replace(networkSecurityGroupName, '@environment', environment), '@region', region) : 'no-nsg'
   location: networkSecurityGroupLocation
   tags: union(networkSecurityGroupTags, {
       region: region
@@ -73,7 +73,7 @@ resource azNsgDeployment 'Microsoft.Network/networkSecurityGroups@2022-01-01' = 
 }
 
 resource azNsgWithSecurityRulesDeployment 'Microsoft.Network/networkSecurityGroups@2022-01-01' = if (!empty(securityRules)) {
-  name: replace(replace(networkSecurityGroupName, '@environment', environment), '@region', region)
+  name: !empty(securityRules) ? replace(replace(networkSecurityGroupName, '@environment', environment), '@region', region) : 'no-nsg'
   location: networkSecurityGroupLocation
   properties: {
     securityRules: securityRules

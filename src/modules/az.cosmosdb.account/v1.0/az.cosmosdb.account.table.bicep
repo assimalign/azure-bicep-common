@@ -11,18 +11,18 @@ param environment string = 'dev'
 param region string = ''
 
 @description('The name of the Database Account for the storage table')
-param cosmosDbAccountName string
+param cosmosAccountName string
 
 @description('The name of the table to deploy')
-param cosmosDbAccountTableName string
+param cosmosAccountTableName string
 
 resource azDocumentDbAccountDatabaseTableDeployment 'Microsoft.DocumentDB/databaseAccounts/tables@2021-06-15' = {
-  name: replace(replace('${cosmosDbAccountName}/${cosmosDbAccountTableName}', '@environment', environment), '@region', region)
+  name: replace(replace('${cosmosAccountName}/${cosmosAccountTableName}', '@environment', environment), '@region', region)
   properties: {
     resource: {
-      id: cosmosDbAccountTableName
+      id: cosmosAccountTableName
     }
   }
 }
 
-output resource object = azDocumentDbAccountDatabaseTableDeployment
+output cosmosAccountTableDatabase object = azDocumentDbAccountDatabaseTableDeployment

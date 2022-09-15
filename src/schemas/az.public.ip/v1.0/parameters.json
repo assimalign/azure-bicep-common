@@ -32,70 +32,58 @@
                     "type": "string"
                 },
                 "publicIpSku": {
-                    "type": "object",
-                    "properties": {
-                        "dev": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Basic"
-                                },
-                                {
-                                    "const": "Standard"
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "$ref": "#/definitions/public-ip-sku"
                                 }
+                            },
+                            "required": [
+                                "default"
                             ]
                         },
-                        "qa": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Basic"
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "$ref": "#/definitions/public-ip-sku"
                                 },
-                                {
-                                    "const": "Standard"
-                                }
-                            ]
-                        },
-                        "uat": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Basic"
+                                "qa": {
+                                    "$ref": "#/definitions/public-ip-sku"
                                 },
-                                {
-                                    "const": "Standard"
-                                }
-                            ]
-                        },
-                        "prd": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Basic"
+                                "uat": {
+                                    "$ref": "#/definitions/public-ip-sku"
                                 },
-                                {
-                                    "const": "Standard"
+                                "prd": {
+                                    "$ref": "#/definitions/public-ip-sku"
                                 }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
                             ]
                         }
-                    },
-                    "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
                     ]
                 },
                 "publicIpAllocationMethod": {
                     "type": "string",
-                    "oneOf": [
-                        {
-                            "const": "Dynamic"
-                        },
-                        {
-                            "const": "Static"
-                        }
+                    "enum": [
+                        "Dynamic",
+                        "Static"
                     ]
+                },
+                "publicIpConfigs": {
+                    "type": "object",
+                    "properties": {
+                        "dnsNameLabel": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
                 },
                 "publicIpTags": {
                     "type": "object",
@@ -111,6 +99,13 @@
                 "publicIpName",
                 "publicIpSku",
                 "publicIpAllocationMethod"
+            ]
+        },
+        "public-ip-sku": {
+            "type":"string",
+            "enum": [
+                "Basic",
+                "Standard"
             ]
         }
     }

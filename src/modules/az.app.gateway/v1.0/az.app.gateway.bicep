@@ -22,6 +22,9 @@ param appGatewayFrontend object
 @description('The Azure App Gateway routing rules. Reference Link: https://docs.microsoft.com/en-us/azure/application-gateway/configuration-request-routing-rules')
 param appGatewayRoutingRules array
 
+@description('')
+param appGatewayConfigs object = {}
+
 @description('The tags to attach to the resource when deployed')
 param appGatewayTags object = {}
 
@@ -29,13 +32,13 @@ param appGatewayTags object = {}
 //                              App Gateway Deployment                                      //
 // **************************************************************************************** //
 // 1. Get Virtual Network Subnet to reference for Ip Configurations
-resource azVirtualNetworkSubnetResource 'Microsoft.Network/virtualNetworks/subnets@2022-01-01' existing = {
+resource azVirtualNetworkSubnetResource 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
   name: replace(replace('${appGatewayFrontend.privateIp.privateIpVirtualNetwork}/${appGatewayFrontend.privateIp.privateIpSubnet}', '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace('${appGatewayFrontend.privateIp.privateIpResourceGroup}', '@environment', environment), '@region', region))
 }
 
 // 2. Get a Public IP address for the frontend of the gateway if applicable
-resource azPublicIpAddressNameResource 'Microsoft.Network/publicIPAddresses@2022-01-01' existing = if (!empty(appGatewayFrontend.publicIp)) {
+resource azPublicIpAddressNameResource 'Microsoft.Network/publicIPAddresses@2021-02-01' existing = if (!empty(appGatewayFrontend.publicIp)) {
   name: replace(replace('${appGatewayFrontend.publicIp.publicIpName}', '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace('${appGatewayFrontend.publicIp.publicIpResourceGroup}', '@environment', environment), '@region', region))
 }
@@ -44,7 +47,7 @@ resource azPublicIpAddressNameResource 'Microsoft.Network/publicIPAddresses@2022
 var backendAddressPools = [for pool in appGatewayBackend.receivers: {
   name: pool.name
   properties: {
-    backendAddresses: environment == 'dev' ? pool.addresses.dev : environment == 'qa' ? pool.addresses.qa : environment == 'uat' ? pool.addresses.uat : environment == 'prd' ? pool.addresses.prd : pool.addresses.default
+    backendAddresses: environment == 'dev' ? pool.addresses.dev : environment == 'qa' ? pool.addresses.qa : environment == 'uat' ? pool.addresses.uat : environment == 'prd' ? pool.addresses.prd :  pool.addresses.default
   }
 }]
 
@@ -175,11 +178,12 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2020-11-01' =
     backendAddressPools: backendAddressPools
     backendHttpSettingsCollection: backendPorts
     requestRoutingRules: routingRules
+    enableHttp2: contains(appGatewayConfigs, 'appGatewayHttp2Enabled') ? appGatewayConfigs.appGatewayHttp2Enabled : false
   }
   tags: union(appGatewayTags, {
-      region: empty(region) ? 'n/a' : region
-      environment: empty(environment) ? 'n/a' : environment
-    })
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 output appGateway object = applicationGateway

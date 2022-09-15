@@ -32,12 +32,12 @@ param storageAccountFileShareServiceConfigs object = {}
 param storageAccountFileShareServiceFileShares array = []
 
 // 1. Get the existing Storage Account
-resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2021-08-01' existing = {
+resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2022-05-01' existing = {
   name: replace(replace(storageAccountName, '@environment', environment), '@region', region)
 }
 
 // 2. Deploy the Storage Account File Share Service
-resource azStorageAccountFileShareServiceDeployment 'Microsoft.Storage/storageAccounts/fileServices@2021-08-01' = {
+resource azStorageAccountFileShareServiceDeployment 'Microsoft.Storage/storageAccounts/fileServices@2022-05-01' = {
   name: storageAccountFileShareServiceName
   parent: azStorageAccountResource
   properties: {

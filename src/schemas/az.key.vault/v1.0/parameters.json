@@ -55,47 +55,57 @@
                         "keyVaultAllowPublicNetworkAccess": {
                             "description": "Property to specify whether the vault will accept traffic from public internet. If set to 'disabled' all traffic except private endpoint traffic and that that originates from trusted services will be blocked. This will override the set firewall rules, meaning that even if the firewall rules are present we will not honor the rules.",
                             "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Disabled"
-                                },
-                                {
-                                    "const": "Enabled"
-                                }
+                            "enum": [
+                                "Disabled",
+                                "Enabled"
                             ]
                         }
                     }
                 },
                 "keyVaultCreationMode": {
                     "type": "string",
-                    "oneOf": [
-                        {
-                            "const": "default"
-                        },
-                        {
-                            "const": "recovery"
-                        }
+                    "enum": [
+                        "default",
+                        "recovery"
                     ]
                 },
                 "keyVaultSku": {
-                    "type": "object",
-                    "properties": {
-                        "dev": {
-                            "$ref": "#/definitions/key-vault-sku"
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "$ref": "#/definitions/key-vault-sku"
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
                         },
-                        "qa": {
-                            "$ref": "#/definitions/key-vault-sku"
-                        },
-                        "uat": {
-                            "$ref": "#/definitions/key-vault-sku"
-                        },
-                        "prd": {
-                            "$ref": "#/definitions/key-vault-sku"
-                        },
-                        "default": {
-                            "$ref": "#/definitions/key-vault-sku"
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "$ref": "#/definitions/key-vault-sku"
+                                },
+                                "qa": {
+                                    "$ref": "#/definitions/key-vault-sku"
+                                },
+                                "uat": {
+                                    "$ref": "#/definitions/key-vault-sku"
+                                },
+                                "prd": {
+                                    "$ref": "#/definitions/key-vault-sku"
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
                         }
-                    }
+                    ]
                 },
                 "keyVaultPolicies": {
                     "type": "array",
@@ -209,13 +219,9 @@
                 "keyVaultDefaultNetworkAccess": {
                     "type": "string",
                     "default": "Allow",
-                    "oneOf": [
-                        {
-                            "const": "Allow"
-                        },
-                        {
-                            "const": "Deny"
-                        }
+                    "enum": [
+                        "Allow",
+                        "Deny"
                     ]
                 },
                 "keyVaultPrivateEndpoint": {
@@ -272,28 +278,14 @@
                             },
                             "keyVaultSecretResourceType": {
                                 "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Microsoft.ServiceBus/namespaces/authorizationRules"
-                                    },
-                                    {
-                                        "const": "Microsoft.EventHub/namespaces/authorizationRules"
-                                    },
-                                    {
-                                        "const": "Microsoft.Storage/storageAccounts"
-                                    },
-                                    {
-                                        "const": "Microsoft.DocumentDB/databaseAccounts"
-                                    },
-                                    {
-                                        "const": "Microsoft.EventGrid/domains"
-                                    },
-                                    {
-                                        "const": "Microsoft.NotificationHubs/namespaces/authorizationRules"
-                                    },
-                                    {
-                                        "const": "Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules"
-                                    }
+                                "enum": [
+                                    "Microsoft.ServiceBus/namespaces/authorizationRules",
+                                    "Microsoft.EventHub/namespaces/authorizationRules",
+                                    "Microsoft.Storage/storageAccounts",
+                                    "Microsoft.DocumentDB/databaseAccounts",
+                                    "Microsoft.EventGrid/domains",
+                                    "Microsoft.NotificationHubs/namespaces/authorizationRules",
+                                    "Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules"
                                 ]
                             },
                             "keyVaultSecretResourceGroupOfResource": {

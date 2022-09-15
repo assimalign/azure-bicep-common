@@ -50,25 +50,41 @@
                 },
                 "sqlServerAccountAdministrators": {
                     "type": "object",
-                    "properties": {
-                        "dev": {
-                            "$ref": "#/definitions/sql-server-account-administrators"
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "$ref": "#/definitions/sql-server-account-administrators"
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
                         },
-                        "qa": {
-                            "$ref": "#/definitions/sql-server-account-administrators"
-                        },
-                        "uat": {
-                            "$ref": "#/definitions/sql-server-account-administrators"
-                        },
-                        "prd": {
-                            "$ref": "#/definitions/sql-server-account-administrators"
-                        },
-                        "default": {
-                            "$ref": "#/definitions/sql-server-account-administrators"
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "$ref": "#/definitions/sql-server-account-administrators"
+                                },
+                                "qa": {
+                                    "$ref": "#/definitions/sql-server-account-administrators"
+                                },
+                                "uat": {
+                                    "$ref": "#/definitions/sql-server-account-administrators"
+                                },
+                                "prd": {
+                                    "$ref": "#/definitions/sql-server-account-administrators"
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
                         }
-                    },
-                    "required": [
-                        "default"
                     ]
                 },
                 "sqlServerAccountVirtualNetworkRules": {
@@ -106,24 +122,16 @@
                     "properties": {
                         "sqlServerAccountPublicAccessEnabled": {
                             "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Enabled"
-                                },
-                                {
-                                    "const": "Disabled"
-                                }
+                            "enum": [
+                                "Enabled",
+                                "Disabled"
                             ]
                         },
                         "sqlServerAccountOutboundNetworkAccessEnabled": {
                             "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Enabled"
-                                },
-                                {
-                                    "const": "Disabled"
-                                }
+                            "enum": [
+                                "Enabled",
+                                "Disabled"
                             ]
                         }
                     }
@@ -155,32 +163,19 @@
             "type": "object",
             "properties": {
                 "azureAdLoginName": {
-                    "type": "string"
-                },
-                "azureAdObjectType": {
-                    "type": "string",
-                    "enum": [
-                        "User",
-                        "Group",
-                        "Application"
-                    ]
+                   "type": "string"
                 },
                 "azureAdTenantId": {
-                    "type": "string"
+                   "type": "string"
                 },
                 "azureAdObjectId": {
-                    "type": "string"
-                },
-                "azureAdAuthenticationOnly": {
-                    "type": "boolean"
+                   "type": "string"
                 }
             },
             "required": [
                 "azureAdLoginName",
-                "azureAdObjectType",
                 "azureAdTenantId",
-                "azureAdObjectId",
-                "azureAdAuthenticationOnly"
+                "azureAdObjectId"
             ]
         },
         "sql-server-account-databases": {
@@ -252,9 +247,6 @@
                 "sqlServerAccountDatabaseName": {
                     "type": "string"
                 },
-                "sqlServerAccountDatabaseLocation": {
-                    "type": "string"
-                },
                 "sqlServerAccountDatabaseConfigs": {
                     "type": "object",
                     "properties": {
@@ -263,38 +255,49 @@
                         },
                         "dbReadScale": {
                             "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Disabled"
-                                },
-                                {
-                                    "const": "Enabled"
-                                }
+                            "enum": [
+                                "Enabled",
+                                "Disabled"
                             ]
                         }
                     }
                 },
                 "sqlServerAccountDatabaseSku": {
-                    "type": "object",
-                    "properties": {
-                        "dev": {
-                            "$ref": "#/definitions/sql-server-account-database-sku"
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "$ref": "#/definitions/sql-server-account-database-sku"
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
                         },
-                        "qa": {
-                            "$ref": "#/definitions/sql-server-account-database-sku"
-                        },
-                        "uat": {
-                            "$ref": "#/definitions/sql-server-account-database-sku"
-                        },
-                        "prd": {
-                            "$ref": "#/definitions/sql-server-account-database-sku"
-                        },
-                        "default": {
-                            "$ref": "#/definitions/sql-server-account-database-sku"
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "$ref": "#/definitions/sql-server-account-database-sku"
+                                },
+                                "qa": {
+                                    "$ref": "#/definitions/sql-server-account-database-sku"
+                                },
+                                "uat": {
+                                    "$ref": "#/definitions/sql-server-account-database-sku"
+                                },
+                                "prd": {
+                                    "$ref": "#/definitions/sql-server-account-database-sku"
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
                         }
-                    },
-                    "required": [
-                        "default"
                     ]
                 },
                 "sqlServerAccountDatabaseTags": {

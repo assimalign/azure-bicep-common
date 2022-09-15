@@ -18,7 +18,7 @@ param virtualNetworkName string
 param virtualNetworkLocation string = resourceGroup().location
 
 @description('An list of address spaces to inlcude in the virtual network deployment')
-param virtualNetworkAddressSpaces array
+param virtualNetworkAddressSpaces object
 
 @description('A list of subnet ranges to include in the virtual network deployment')
 param virtualNetworkSubnets array = []
@@ -29,33 +29,42 @@ param virtualNetworkConfigs object = {}
 @description('')
 param virtualNetworkTags object = {}
 
+var subnets = [for subnet in virtualNetworkSubnets: {
+  name: replace(replace(subnet.virtualNetworkSubnetName, '@environment', environment), '@region', region)
+  properties: {
+    addressPrefix: contains(subnet.virtualNetworkSubnetRange, region) ? contains(subnet.virtualNetworkSubnetRange[region], environment) ? subnet.virtualNetworkSubnetRange[region][environment] : subnet.virtualNetworkSubnetRange[region].default : contains(subnet.virtualNetworkSubnetRange, environment) ? subnet.virtualNetworkSubnetRange[environment] : subnet.virtualNetworkSubnetRange.default
+    serviceEndpoints: contains(subnet, 'virtualNetworkSubnetConfigs') && contains(subnet.virtualNetworkSubnetConfigs, 'subnetServiceEndpoints') ? subnet.virtualNetworkSubnetConfigs.subnetServiceEndpoints : []
+    networkSecurityGroup: contains(subnet, 'virtualNetworkSubnetConfigs') && contains(subnet.virtualNetworkSubnetConfigs, 'subnetNetworkSecurityGroup') ? {
+      privateEndpointNetworkPolicies: contains(subnet, 'virtualNetworkSubnetConfigs') && contains(subnet.virtualNetworkSubnetConfigs, 'subnetPrivateEndpointNetworkPolicies') ? subnet.virtualNetworkSubnetConfigs.subnetPrivateEndpointNetworkPolicies : 'Disabled'
+      id: resourceId(replace(replace(subnet.virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgResourceGroup, '@environment', environment), '@region', region), 'Microsoft.Network/networkSecurityGroups', replace(replace(subnet.virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgName, '@environment', environment), '@region', region))
+    } : json('null')
+    delegations: contains(subnet, 'virtualNetworkSubnetConfigs') && contains(subnet.virtualNetworkSubnetConfigs, 'subnetDelegation') ? [
+      {
+        name: toLower(replace(subnet.virtualNetworkSubnetConfigs.subnetDelegation, '/', '.'))
+        properties: {
+          serviceName: subnet.virtualNetworkSubnetConfigs.subnetDelegation
+        }
+      }
+    ] : json('null')
+  }
+}]
+
 // 1. Deploy the Virtual Network
-resource azVirtualNetworkDeployment 'Microsoft.Network/virtualNetworks@2022-01-01' = {
+resource azVirtualNetworkDeployment 'Microsoft.Network/virtualNetworks@2021-03-01' = {
   name: replace(replace(virtualNetworkName, '@environment', environment), '@region', region)
   location: virtualNetworkLocation
   properties: {
     addressSpace: {
-      addressPrefixes: virtualNetworkAddressSpaces
+      addressPrefixes: contains(virtualNetworkAddressSpaces, region) ? contains(virtualNetworkAddressSpaces[region], environment) ? virtualNetworkAddressSpaces[region][environment] : virtualNetworkAddressSpaces[region].default :  contains(virtualNetworkAddressSpaces, environment) ? virtualNetworkAddressSpaces[environment] : virtualNetworkAddressSpaces.default
     }
+    subnets: subnets
     enableDdosProtection: contains(virtualNetworkConfigs, 'enableDdosProtection') ? virtualNetworkConfigs.enableDdosProtection : false
     enableVmProtection: contains(virtualNetworkConfigs, 'enableVmProtection') ? virtualNetworkConfigs.enableVmProtection : false
   }
   tags: union(virtualNetworkTags, {
-    region: empty(region) ? 'n/a' : region
-    environment: empty(environment) ? 'n/a' : environment
-  })
+      region: empty(region) ? 'n/a' : region
+      environment: empty(environment) ? 'n/a' : environment
+    })
 }
-
-module azVirtualNetorkSubnetDeployment './az.virtual.network.subnet.bicep' = [for subnet in virtualNetworkSubnets: if (!empty(virtualNetworkSubnets)) {
-  name: !empty(virtualNetworkSubnets) ? toLower('az-vnet-subnet-${guid('${azVirtualNetworkDeployment.id}/${subnet.virtualNetworkSubnetName}')}') : 'no-vnet-subnet-to-deploy'
-  params: {
-    region: region
-    environment: environment
-    virtualNetworkName: virtualNetworkName
-    virtualNetworkSubnetName: subnet.virtualNetworkSubnetName
-    virtualNetworkSubnetRange: subnet.virtualNetworkSubnetRange
-    virtualNetworkSubnetConfigs: subnet.virtualNetworkSubnetConfigs
-  }
-}]
 
 output virtualNetwork object = azVirtualNetworkDeployment

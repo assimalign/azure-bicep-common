@@ -39,26 +39,44 @@
                     "type": "string"
                 },
                 "appGatewaySku": {
-                    "type": "object",
-                    "properties": {
-                        "dev": {
-                            "$ref": "#/definitions/app-gateway-sku"
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "$ref": "#/definitions/app-gateway-sku"
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
                         },
-                        "qa": {
-                            "$ref": "#/definitions/app-gateway-sku"
-                        },
-                        "uat": {
-                            "$ref": "#/definitions/app-gateway-sku"
-                        },
-                        "prd": {
-                            "$ref": "#/definitions/app-gateway-sku"
-                        },
-                        "default": {
-                            "$ref": "#/definitions/app-gateway-sku"
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "$ref": "#/definitions/app-gateway-sku"
+                                },
+                                "qa": {
+                                    "$ref": "#/definitions/app-gateway-sku"
+                                },
+                                "uat": {
+                                    "$ref": "#/definitions/app-gateway-sku"
+                                },
+                                "prd": {
+                                    "$ref": "#/definitions/app-gateway-sku"
+                                },
+                                "default": {
+                                    "$ref": "#/definitions/app-gateway-sku"
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
                         }
-                    },
-                    "required": [
-                        "default"
                     ]
                 },
                 "appGatewayFrontend": {
@@ -150,13 +168,9 @@
                                     },
                                     "frontendProtocol": {
                                         "type": "string",
-                                        "oneOf": [
-                                            {
-                                                "const": "Http"
-                                            },
-                                            {
-                                                "const": "Https"
-                                            }
+                                        "enum":[
+                                            "Http",
+                                            "Https"
                                         ]
                                     }
                                 },
@@ -214,26 +228,42 @@
                                         "type": "string"
                                     },
                                     "addresses": {
-                                        "type": "object",
-                                        "properties": {
-                                            "dev": {
-                                                "$ref": "#/definitions/app-gateway-receiver-address"
+                                        "oneOf": [
+                                            {
+                                                "type": "object",
+                                                "properties": {
+                                                    "default": {
+                                                        "$ref": "#/definitions/app-gateway-receiver-address"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "default"
+                                                ]
                                             },
-                                            "qa": {
-                                                "$ref": "#/definitions/app-gateway-receiver-address"
-                                            },
-                                            "uat": {
-                                                "$ref": "#/definitions/app-gateway-receiver-address"
-                                            },
-                                            "prd": {
-                                                "$ref": "#/definitions/app-gateway-receiver-address"
-                                            },
-                                            "default": {
-                                                "$ref": "#/definitions/app-gateway-receiver-address"
+                                            {
+                                                "type": "object",
+                                                "properties": {
+                                                    "dev": {
+                                                        "$ref": "#/definitions/app-gateway-receiver-address"
+                                                    },
+                                                    "qa": {
+                                                        "$ref": "#/definitions/app-gateway-receiver-address"
+                                                    },
+                                                    "uat": {
+                                                        "$ref": "#/definitions/app-gateway-receiver-address"
+                                                    },
+                                                    "prd": {
+                                                        "$ref": "#/definitions/app-gateway-receiver-address"
+                                                    }
+      
+                                                },
+                                                "required": [
+                                                    "dev",
+                                                    "qa",
+                                                    "uat",
+                                                    "prd"
+                                                ]
                                             }
-                                        },
-                                        "required": [
-                                            "default"
                                         ]
                                     }
                                 },
@@ -332,27 +362,17 @@
             "properties": {
                 "tier": {
                     "type": "string",
-                    "oneOf": [
-                        {
-                            "const": "Standard"
-                        },
-                        {
-                            "const": "WAF"
-                        }
+                    "enum":[
+                        "Standard",
+                        "WAF"
                     ]
                 },
                 "size": {
                     "type": "string",
-                    "oneOf": [
-                        {
-                            "const": "Small"
-                        },
-                        {
-                            "const": "Medium"
-                        },
-                        {
-                            "const": "Large"
-                        }
+                    "enum":[
+                        "Small",
+                        "Medium",
+                        "Large"
                     ],
                     "capacity": {
                         "type": "number"

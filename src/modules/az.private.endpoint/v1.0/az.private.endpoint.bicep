@@ -45,7 +45,7 @@ param privateEndpointDnsZoneGroupName string
 param privateEndpointTags object = {}
 
 // 1. Get Existing Subnet Resource within a virtual network
-resource azVirtualNetworkSubnetResource 'Microsoft.Network/virtualNetworks/subnets@2021-05-01' existing = {
+resource azVirtualNetworkSubnetResource 'Microsoft.Network/virtualNetworks/subnets@2022-01-01' existing = {
   name: replace(replace('${privateEndpointVirtualNetworkName}/${privateEndpointVirtualNetworkSubnetName}', '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(privateEndpointVirtualNetworkResourceGroup, '@environment', environment), '@region', region))
 }
@@ -57,7 +57,7 @@ resource azPrivateDnsZoneResource 'Microsoft.Network/privateDnsZones@2020-06-01'
 }
 
 // 3. Deploy the private endpoint
-resource azPrivateEndpointDeployment 'Microsoft.Network/privateEndpoints@2021-05-01' = {
+resource azPrivateEndpointDeployment 'Microsoft.Network/privateEndpoints@2022-01-01' = {
   name: replace(replace(privateEndpointName, '@environment', environment), '@region', region)
   location: privateEndpointLocation
   properties: {
@@ -65,7 +65,7 @@ resource azPrivateEndpointDeployment 'Microsoft.Network/privateEndpoints@2021-05
       {
         name: replace(replace(privateEndpointName, '@environment', environment), '@region', region)
         properties: {
-          privateLinkServiceId: replace(replace(replace(privateEndpointResourceIdLink, '@environment', environment), '@region', region), '@subscription', subscription().subscriptionId)
+          privateLinkServiceId: any(replace(replace(replace(privateEndpointResourceIdLink, '@environment', environment), '@region', region), '@subscription', subscription().subscriptionId))
           groupIds: privateEndpointGroupIds
         }
       }

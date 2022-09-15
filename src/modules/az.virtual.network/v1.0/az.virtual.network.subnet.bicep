@@ -18,20 +18,20 @@ param virtualNetworkName string
 param virtualNetworkSubnetName string
 
 @description('The address range for this subnet within the given address space.')
-param virtualNetworkSubnetRange string 
+param virtualNetworkSubnetRange object 
 
 @description('')
-param virtualNetworkSubnetConfigs object
+param virtualNetworkSubnetConfigs object = {}
 
-resource azNetworkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2022-01-01' existing = if(contains(virtualNetworkSubnetConfigs, 'subnetNetworkSecurityGroup')) {
+resource azNetworkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2021-03-01' existing = if(contains(virtualNetworkSubnetConfigs, 'subnetNetworkSecurityGroup')) {
   name: replace(replace(virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgResourceGroup, '@environment', environment), '@region', region))
 }
 
-resource azVirtualNetworkSubnetDeployment 'Microsoft.Network/virtualNetworks/subnets@2022-01-01' = {
+resource azVirtualNetworkSubnetDeployment 'Microsoft.Network/virtualNetworks/subnets@2021-03-01' = {
   name: replace(replace('${virtualNetworkName}/${virtualNetworkSubnetName}', '@environment', environment), '@region', region)
   properties: {
-    addressPrefix: virtualNetworkSubnetRange
+    addressPrefix: contains(virtualNetworkSubnetRange, environment) ? virtualNetworkSubnetRange[environment] : virtualNetworkSubnetRange.default
     privateEndpointNetworkPolicies: contains(virtualNetworkSubnetConfigs, 'subnetPrivateEndpointNetworkPolicies') ? virtualNetworkSubnetConfigs.subnetPrivateEndpointNetworkPolicies : 'Disabled'
     serviceEndpoints: contains(virtualNetworkSubnetConfigs, 'subnetServiceEndpoints') ?  virtualNetworkSubnetConfigs.subnetServiceEndpoints : []
     networkSecurityGroup: contains(virtualNetworkSubnetConfigs, 'subnetNetworkSecurityGroup') ? {

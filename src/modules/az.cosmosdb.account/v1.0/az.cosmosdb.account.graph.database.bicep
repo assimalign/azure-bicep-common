@@ -12,41 +12,41 @@ param environment string = ''
 param region string = ''
 
 @description('The Cosmos Document Db Name')
-param cosmosDbAccountName string
+param cosmosAccountName string
 
 @description('The Cosmos Document Db Database Name')
-param cosmosDbAccountDatabaseName string
+param cosmosAccountDatabaseName string
 
 @description('A list of Cosmos Document Db Containers to deploy with the database')
-param cosmosDbAccountDatabaseContainers array = []
+param cosmosAccountDatabaseContainers array = []
 
 
 // 1. Deploy the Document Database
 resource azCosmosAccountGraphDatabaseDeployment 'Microsoft.DocumentDB/databaseAccounts/gremlinDatabases@2021-10-15' = {
-  name: replace(replace('${cosmosDbAccountName}/${cosmosDbAccountDatabaseName}', '@environment', environment), '@region', region)
+  name: replace(replace('${cosmosAccountName}/${cosmosAccountDatabaseName}', '@environment', environment), '@region', region)
   properties: {
     resource: {
-      id: replace(replace(cosmosDbAccountDatabaseName, '@environment', environment), '@region', region)
+      id: replace(replace(cosmosAccountDatabaseName, '@environment', environment), '@region', region)
     }
   }
 }
 
 // 2. Deploye Document DB Database Containers
-module azDocumentDbAccountDatabaseContainerDeployment 'az.cosmosdb.account.graph.database.container.bicep' = [for container in cosmosDbAccountDatabaseContainers: if(!empty(container)) {
-  name: !empty(cosmosDbAccountDatabaseContainers) ? toLower('az-docdb-container-${guid('${azCosmosAccountGraphDatabaseDeployment.id}/${container.cosmosDatabaseContainerName}')}') : 'no-dbdocument-containers-to-deploy'
+module azDocumentDbAccountDatabaseContainerDeployment 'az.cosmosdb.account.graph.database.container.bicep' = [for container in cosmosAccountDatabaseContainers: if(!empty(container)) {
+  name: !empty(cosmosAccountDatabaseContainers) ? toLower('az-docdb-container-${guid('${azCosmosAccountGraphDatabaseDeployment.id}/${container.cosmosAccountDatabaseContainerName}')}') : 'no-dbdocument-containers-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
-    cosmosDbAccountName: cosmosDbAccountName
-    cosmosDbAccountDatabaseName: cosmosDbAccountDatabaseName
-    cosmosDbAccountDatabaseContainerName: container.cosmosDatabaseContainerName 
-    cosmosDbAccountDatabaseContainerPartition: container.cosmosDatabaseContainerPartitionKey 
-    cosmosDbAccountDatabaseContainerIndexingPolicy: container.cosmosDatabaseContainerIndexingPolicy 
-    cosmosDbAccountDatabaseContainerUniqueKeyPolicies: container.cosmosDatabaseContainerUniqueKeyPolicy
-    cosmosDbAccountDatabaseContainerTtl: contains(container, 'cosmosDatabaseContainerTtl') ? container.cosmosDatabaseContainerTtl : 0
+    cosmosAccountName: cosmosAccountName
+    cosmosAccountDatabaseName: cosmosAccountDatabaseName
+    cosmosAccountDatabaseContainerName: container.cosmosAccountDatabaseContainerName 
+    cosmosAccountDatabaseContainerPartition: container.cosmosAccountDatabaseContainerPartition 
+    cosmosAccountDatabaseContainerIndexingPolicy: container.cosmosAccountDatabaseContainerIndexingPolicy 
+    cosmosAccountDatabaseContainerUniqueKeyPolicies: container.cosmosAccountDatabaseContainerUniqueKeyPolicies
+    cosmosAccountDatabaseContainerTtl: contains(container, 'cosmosAccountDatabaseContainerTtl') ? container.cosmosAccountDatabaseContainerTtl : 0
   }
 }]
 
 // 3. Return Deployment Output
-output cosmosGraphDB object = azCosmosAccountGraphDatabaseDeployment
+output cosmosAccountGraphDatabase object = azCosmosAccountGraphDatabaseDeployment

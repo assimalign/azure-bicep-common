@@ -5,7 +5,7 @@
             "type": "object",
             "properties": {
                 "value": {
-                    "$ref": "#/definitions/app-configuration-parameters"  
+                    "$ref": "#/definitions/app-configuration-parameters"
                 }
             },
             "required": [
@@ -19,7 +19,7 @@
                 "value": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/app-configuration-parameters"  
+                        "$ref": "#/definitions/app-configuration-parameters"
                     },
                     "minItems": 1
                 }
@@ -33,17 +33,13 @@
             "default": {
                 "appConfigurationName": "",
                 "appConfigurationSku": {
-                    "default": "Free",
                     "dev": "Free",
                     "qa": "Standard",
                     "uat": "Standard",
                     "prd": "Standard"
                 },
-                "appConfigurationConfigs": {
-                    "enableMsi": true,
-                    "enableRbac": true,
-                    "enablePublicAccess": "Disabled"
-                }
+                "appConfigurationEnableMsi": false,
+                "appConfigurationDisablePublicAccess": false
             },
             "additionalProperties": false,
             "properties": {
@@ -57,26 +53,17 @@
                 "appConfigurationResourceGroup": {
                     "type": "string"
                 },
-                "appConfigurationConfigs": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "properties": {
-                        "enableMsi": {
-                            "type": "boolean",
-                            "description": "Enables Managed System Identity for connecting to the deployed instance of Azure App Configuration."
-                        },
-                        "enableRbac": {
-                            "type": "boolean",
-                            "description": "Will disable Access Key Authentication and use RBAC only. If enabled, App Configuration Keys will not be deployable"
-                        },
-                        "enablePublicAccess": {
-                            "type": "string",
-                            "enum": [
-                                "Enabled",
-                                "Disabled"
-                            ]
-                        }
-                    }
+                "appConfigurationEnableMsi": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enables Managed System Identity for connecting to the deployed instance of Azure App Configuration."
+                },
+                "appConfigurationDisableLocalAuth": {
+                    "type": "boolean"
+                },
+                "appConfigurationDisablePublicAccess": {
+                    "type": "boolean",
+                    "default": false
                 },
                 "appConfigurationKeys": {
                     "type": "array",
@@ -99,36 +86,46 @@
                     "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
                 },
                 "appConfigurationSku": {
-                    "type": "object",
                     "description": "Sku Requirement for private endpoint",
                     "default": {
-                        "dev": "Free",
-                        "qa": "Standard",
-                        "uat": "Standard",
-                        "prd": "Standard",
                         "default": "Free"
                     },
-                    "properties": {
-                        "dev": {
-                            "$ref": "#/definitions/app-configuration-sku"
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "$ref": "#/definitions/app-configuration-sku"
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
                         },
-                        "qa": {
-                            "$ref": "#/definitions/app-configuration-sku"
-                        },
-                        "uat": {
-                            "$ref": "#/definitions/app-configuration-sku"
-                        },
-                        "prd": {
-                            "$ref": "#/definitions/app-configuration-sku"
-                        },
-                        "default": {
-                            "$ref": "#/definitions/app-configuration-sku"
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "$ref": "#/definitions/app-configuration-sku"
+                                },
+                                "qa": {
+                                    "$ref": "#/definitions/app-configuration-sku"
+                                },
+                                "uat": {
+                                    "$ref": "#/definitions/app-configuration-sku"
+                                },
+                                "prd": {
+                                    "$ref": "#/definitions/app-configuration-sku"
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
                         }
-                    },
-                    "required": [
-                        "default"
-                    ],
-                    "minProperties": 1
+                    ]
                 }
             },
             "required": [
@@ -172,59 +169,46 @@
         },
         "app-configuration-key": {
             "type": "object",
-            "default": {
-                "appConfigurationKey": "",
-                "appConfigurationValue": "",
-                "appConfigurationValueContentType": null
-            },
             "properties": {
                 "appConfigurationKey": {
                     "type": "string"
                 },
                 "appConfigurationValue": {
-                    "type": "string"
-                },
-                "appConfigurationValueEnvReplacements": {
-                    "description": "Specifies that a key should only be deployed within a specific environment.",
-                    "type": "object",
-                    "additionalProperties": false,
-                    "default": {
-                        "dev": [],
-                        "qa": [],
-                        "uat": [],
-                        "prd": []
-                    },
-                    "properties": {
-                        "dev": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
                         },
-                        "qa": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        },
-                        "uat": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        },
-                        "prd": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "type": "string"
+                                },
+                                "qa": {
+                                    "type": "string"
+                                },
+                                "uat": {
+                                    "type": "string"
+                                },
+                                "prd": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
                         }
-                    },
-                    "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
                     ]
                 },
                 "appConfigurationLabels": {

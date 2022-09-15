@@ -186,7 +186,9 @@
             "type": "object",
             "properties": {
                 "serviceBusQueueName": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 260
                 },
                 "serviceBusQueueSettings": {
                     "$ref": "#/definitions/service-bus-namespace-common-settings"
@@ -270,7 +272,9 @@
             "type": "object",
             "properties": {
                 "serviceBusTopicName": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 260
                 },
                 "serviceBusTopicSettings": {
                     "type": "object",
@@ -380,7 +384,9 @@
             "type": "object",
             "properties": {
                 "serviceBusTopicSubscriptionName": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50
                 },
                 "serviceBusTopicSubscriptionSettings": {
                     "$ref": "#/definitions/service-bus-namespace-common-settings"

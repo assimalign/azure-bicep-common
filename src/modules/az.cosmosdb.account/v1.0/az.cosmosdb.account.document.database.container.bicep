@@ -12,49 +12,49 @@ param environment string = ''
 param region string = ''
 
 @description('The name of the Document Db Account name to deploy')
-param cosmosDbAccountName string
+param cosmosAccountName string
 
 @description('The name of the Document Db Account')
-param cosmosDbAccountDatabaseName string
+param cosmosAccountDatabaseName string
 
 @description('The name of the container to deploy under the database')
-param cosmosDbAccountDatabaseContainerName string
+param cosmosAccountDatabaseContainerName string
 
 @description('The Partition Key(s) for the Document Db Container (Required)')
-param cosmosDbAccountDatabaseContainerPartition object
+param cosmosAccountDatabaseContainerPartition object
 
 @description('The default TTL (Time-To-Live) for each document')
-param cosmosDbAccountDatabaseContainerTtl int = 0
+param cosmosAccountDatabaseContainerTtl int = 0
 
 @description('The Unique Policies for the Document Db Container. (Optional)')
-param cosmosDbAccountDatabaseContainerUniqueKeyPolicies array = []
+param cosmosAccountDatabaseContainerUniqueKeyPolicies array = []
 
 @description('A list of Indexing policies for the Database Containers. (Optional)')
-param cosmosDbAccountDatabaseContainerIndexingPolicy object = {}
+param cosmosAccountDatabaseContainerIndexingPolicy object = {}
 
 
 // 1. Deploy Document DB Container
 resource azDocumentDbAccountDatabaseDeployment 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2021-06-15' = {
-  name: replace(replace('${cosmosDbAccountName}/${cosmosDbAccountDatabaseName}/${cosmosDbAccountDatabaseContainerName}', '@environment', environment), '@region', region)
+  name: replace(replace('${cosmosAccountName}/${cosmosAccountDatabaseName}/${cosmosAccountDatabaseContainerName}', '@environment', environment), '@region', region)
   properties: {   
-    resource: any(cosmosDbAccountDatabaseContainerTtl > 0 ? {
-      defaultTtl: cosmosDbAccountDatabaseContainerTtl
-      id: cosmosDbAccountDatabaseContainerName
-      partitionKey: cosmosDbAccountDatabaseContainerPartition
-      indexingPolicy: cosmosDbAccountDatabaseContainerIndexingPolicy
-      uniqueKeyPolicy: any(!empty(cosmosDbAccountDatabaseContainerUniqueKeyPolicies) ? {
-        uniqueKeys: cosmosDbAccountDatabaseContainerUniqueKeyPolicies
+    resource: any(cosmosAccountDatabaseContainerTtl > 0 ? {
+      defaultTtl: cosmosAccountDatabaseContainerTtl
+      id: cosmosAccountDatabaseContainerName
+      partitionKey: cosmosAccountDatabaseContainerPartition
+      indexingPolicy: cosmosAccountDatabaseContainerIndexingPolicy
+      uniqueKeyPolicy: any(!empty(cosmosAccountDatabaseContainerUniqueKeyPolicies) ? {
+        uniqueKeys: cosmosAccountDatabaseContainerUniqueKeyPolicies
       } : {})
     } : {
-      id: cosmosDbAccountDatabaseContainerName
-      partitionKey: cosmosDbAccountDatabaseContainerPartition
-      indexingPolicy: cosmosDbAccountDatabaseContainerIndexingPolicy
-      uniqueKeyPolicy: any(!empty(cosmosDbAccountDatabaseContainerUniqueKeyPolicies) ? {
-        uniqueKeys: cosmosDbAccountDatabaseContainerUniqueKeyPolicies
+      id: cosmosAccountDatabaseContainerName
+      partitionKey: cosmosAccountDatabaseContainerPartition
+      indexingPolicy: cosmosAccountDatabaseContainerIndexingPolicy
+      uniqueKeyPolicy: any(!empty(cosmosAccountDatabaseContainerUniqueKeyPolicies) ? {
+        uniqueKeys: cosmosAccountDatabaseContainerUniqueKeyPolicies
       } : {})
     })
   }
 }
 
 // 2. Return Deployment Output
-output cosmosDocumentDBContainer object = azDocumentDbAccountDatabaseDeployment
+output cosmosAccountDocumentDatabaseContainer object = azDocumentDbAccountDatabaseDeployment

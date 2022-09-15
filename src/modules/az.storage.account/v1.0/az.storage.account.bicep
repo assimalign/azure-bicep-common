@@ -97,26 +97,17 @@ var resourceAccess = [for resource in storageAccountResourceAccess: {
 }]
 
 // 1. Deploy Azure Storage Account
-resource azStorageAccountDeployment 'Microsoft.Storage/storageAccounts@2021-09-01' = {
+resource azStorageAccountDeployment 'Microsoft.Storage/storageAccounts@2022-05-01' = {
   name: replace(replace(storageAccountName, '@environment', environment), '@region', region)
   kind: storageAccountType
   location: storageAccountLocation
-  sku: any((environment == 'dev') ? {
-    name: '${storageAccountTier.dev}_${toUpper(storageAccountRedundancy.dev)}'
-    tier: storageAccountTier.dev
-  } : any((environment) == 'qa') ? {
-    name: '${storageAccountTier.qa}_${toUpper(storageAccountRedundancy.qa)}'
-    tier: storageAccountTier.qa
-  } : any((environment == 'uat') ? {
-    name: '${storageAccountTier.uat}_${toUpper(storageAccountRedundancy.uat)}'
-    tier: storageAccountTier.uat
-  } : any((environment == 'prd') ? {
-    name: '${storageAccountTier.prd}_${toUpper(storageAccountRedundancy.prd)}'
-    tier: storageAccountTier.prd
+  sku: any(contains(storageAccountTier, environment) ? {
+    name: '${storageAccountTier[environment]}_${toUpper(storageAccountRedundancy[environment])}'
+    tier: storageAccountTier[environment]
   } : {
     name: '${storageAccountTier.default}_${storageAccountRedundancy.default}'
     tier: storageAccountTier.default
-  })))
+  })
   properties: {
     accessTier: storageAccountAccessTier
     minimumTlsVersion: storageAccountTlsVersion
@@ -129,9 +120,9 @@ resource azStorageAccountDeployment 'Microsoft.Storage/storageAccounts@2021-09-0
     }
   }
   tags: union(storageAccountTags, {
-    region: empty(region) ? 'n/a' : region
-    environment: empty(environment) ? 'n/a' : environment
-  })
+      region: empty(region) ? 'n/a' : region
+      environment: empty(environment) ? 'n/a' : environment
+    })
 }
 
 // 2. Deploy Azure Storage Blob Services
@@ -176,8 +167,8 @@ module azStorageAccountQueueServiceDeployment 'az.storage.account.queue.services
     storageAccountName: storageAccountName
     storageAccountLocation: storageAccountLocation
     storageAccountQueueServiceName: 'default'
-    storageAccountQueueServiceQueues: contains(storageAccountQueueServices,'storageAccountQueueServiceQueues') ? storageAccountQueueServices.storageAccountQueueServiceQueues : []
-    storageAccountQueueServiceConfigs: contains(storageAccountQueueServices,'storageAccountQueueServiceConfigs') ? storageAccountQueueServices.storageAccountQueueServiceConfigs : {}
+    storageAccountQueueServiceQueues: contains(storageAccountQueueServices, 'storageAccountQueueServiceQueues') ? storageAccountQueueServices.storageAccountQueueServiceQueues : []
+    storageAccountQueueServiceConfigs: contains(storageAccountQueueServices, 'storageAccountQueueServiceConfigs') ? storageAccountQueueServices.storageAccountQueueServiceConfigs : {}
     storageAccountQueueServicePrivateEndpoint: contains(storageAccountQueueServices, 'storageAccountQueueServicePrivateEndpoint') ? storageAccountQueueServices.storageAccountQueueServicePrivateEndpoint : {}
   }
 }

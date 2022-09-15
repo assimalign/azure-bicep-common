@@ -12,7 +12,7 @@ param environment string = ''
 param region string = ''
 
 @description('The name of the Database Account/Server to be deployed')
-param cosmosDbAccountName string
+param cosmosAccountName string
 
 @allowed([
   'EnableDocument'
@@ -20,92 +20,118 @@ param cosmosDbAccountName string
   'EnableGremlin'
 ])
 @description('')
-param cosmosDbAccountType string = 'EnableDocument'
+param cosmosAccountType string = 'EnableDocument'
 
 @description('The deployment location of the Document Db Account')
-param cosmosDbAccountLocations array
+param cosmosAccountLocations array
 
 @description('The Cors policy for the Document Db Account')
-param cosmosDbAccountCorsPolicy array = []
+param cosmosAccountCorsPolicy array = []
 
 @description('The consitency policy for how data will be persisted')
-param cosmosDbAccountConsistencyPolicy object = {}
+param cosmosAccountConsistencyPolicy object = {}
 
 @description('The list of databases to deploy with the Document Db Account')
-param cosmosDbAccountDatabases array = []
+param cosmosAccountDatabases array = []
 
 @description('Enables System Managed Identity for this resource')
-param cosmosDbAccountEnableMsi bool = false
+param cosmosAccountEnableMsi bool = false
 
 @description('Enables multi region writes')
-param cosmosDbAccountEnableMultiRegionWrites bool = false
+param cosmosAccountEnableMultiRegionWrites bool = false
 
 @description('Enables free compute up to certain amount. Only good for one resource per subscription.')
-param cosmosDbAccountEnableFreeTier bool = true
+param cosmosAccountEnableFreeTier bool = true
 
 @description('')
 param cosmosAccountPrivateEndpoint object = {}
 
-@description('Custom attributes to attach to the document db deployment')
-param cosmosDbAccountTags object = {}
+@description('')
+param cosmosAccountVirtualNetworks array = []
 
-// **************************************************************************************** //
-//                             Cosmos DB Account Deployment                                 //
-// **************************************************************************************** //
+@description('')
+param cosmosAccountConfigs object = {}
+
+@description('')
+param cosmosAccountBackupPolicy object = {}
+
+@description('Custom attributes to attach to the document db deployment')
+param cosmosAccountTags object = {}
 
 // 1. Deploy the Document Db Account
 resource azCosmosDbAccountDeployment 'Microsoft.DocumentDB/databaseAccounts@2021-10-15' = {
-  name: replace(replace(cosmosDbAccountName, '@environment', environment), '@region', region)
+  name: replace(replace(cosmosAccountName, '@environment', environment), '@region', region)
   kind: 'GlobalDocumentDB'
-  location: first(cosmosDbAccountLocations).locationName
+  location: first(cosmosAccountLocations).locationName
   identity: {
-    type: cosmosDbAccountEnableMsi == true ? 'SystemAssigned' : 'None'
+    type: cosmosAccountEnableMsi == true ? 'SystemAssigned' : 'None'
   }
   properties: {
-    enableFreeTier: cosmosDbAccountEnableFreeTier
+    enableFreeTier: cosmosAccountEnableFreeTier
     databaseAccountOfferType: 'Standard'
     consistencyPolicy: {
-      defaultConsistencyLevel: !empty(cosmosDbAccountConsistencyPolicy) ? cosmosDbAccountConsistencyPolicy.consistencyLevel : 'Session'
+      defaultConsistencyLevel: !empty(cosmosAccountConsistencyPolicy) ? cosmosAccountConsistencyPolicy.consistencyLevel : 'Session'
     }
+    backupPolicy: empty(cosmosAccountBackupPolicy) ? json('null') : cosmosAccountBackupPolicy.policyType == 'Periodic' ? {
+      types: 'Periodic'
+      periodicModeProperties: {
+        backupIntervalInMinutes: cosmosAccountBackupPolicy.policyBackupInternal
+        backupRetentionIntervalInHours: cosmosAccountBackupPolicy.policyBackupRetentionInterval
+        backupStorageRedundancy: cosmosAccountBackupPolicy.policyBackupStorageRedundancy
+      }
+    } : {
+      type: 'Continuous'
+      migrationState: {
+        startTime: cosmosAccountBackupPolicy.policyBackupStartTime
+        targetType: cosmosAccountBackupPolicy.policyBackupTargetType
+      }
+    }
+    isVirtualNetworkFilterEnabled: contains(cosmosAccountConfigs, 'enableVirtualNetworkFiltering') ? cosmosAccountConfigs.enableVirtualNetworkFiltering : true
+    publicNetworkAccess: contains(cosmosAccountConfigs, 'disablePublicNetworkAccess') && cosmosAccountConfigs.disablePublicNetworkAccess == true ? 'Disabled' : 'Enabled'
+    disableLocalAuth: contains(cosmosAccountConfigs, 'disableLocalAuth') ? cosmosAccountConfigs.disableLocalAuth : false
+    virtualNetworkRules: [for vnet in cosmosAccountVirtualNetworks: any({
+      id: any(replace(replace(resourceId(vnet.virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', vnet.virtualNetworkName, vnet.virtualNetworkSubnetName), '@environment', environment), '@region', region))
+      ignoreMissingVNetServiceEndpoint: contains(vnet, 'VirtualNetworkMissingServiceEndpointIgnore') ? vnet.VirtualNetworkMissingServiceEndpointIgnore : true
+    })]
     // This will enable Table Storage APIs rather than 
-    capabilities: any(cosmosDbAccountType != 'EnableDocument' ? [
+    capabilities: any(cosmosAccountType != 'EnableDocument' ? [
       {
-        name: cosmosDbAccountType
+        name: cosmosAccountType
       }
     ] : [])
-    enableMultipleWriteLocations: cosmosDbAccountEnableMultiRegionWrites
-    locations: cosmosDbAccountLocations
-    cors: cosmosDbAccountCorsPolicy
+    enableMultipleWriteLocations: cosmosAccountEnableMultiRegionWrites
+    locations: cosmosAccountLocations
+    cors: cosmosAccountCorsPolicy
   }
-  tags: union(cosmosDbAccountTags, {
-    region: region
-    environment: environment
-  })
+  tags: union(cosmosAccountTags, {
+      region: region
+      environment: environment
+    })
 }
 
 // 2. Deploy Cosmos DB Document Database, if applicable
-module azCosmosDbAccountDocumentDatabaseDeployment 'az.cosmosdb.account.document.database.bicep' = [for database in cosmosDbAccountDatabases: if (!empty(cosmosDbAccountDatabases) && cosmosDbAccountType == 'EnableDocument') {
-  name: !empty(cosmosDbAccountDatabases) ? toLower('az-cosmosdb-docdb-${guid('${azCosmosDbAccountDeployment.id}/${database.cosmosDatabaseName}')}') : 'no-cosmosdb-document-databases-to-deploy'
+module azCosmosDbAccountDocumentDatabaseDeployment 'az.cosmosdb.account.document.database.bicep' = [for database in cosmosAccountDatabases: if (!empty(cosmosAccountDatabases) && cosmosAccountType == 'EnableDocument') {
+  name: !empty(cosmosAccountDatabases) ? toLower('az-cosmosdb-docdb-${guid('${azCosmosDbAccountDeployment.id}/${database.cosmosAccountDatabaseName}')}') : 'no-cosmosdb-document-databases-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
-    cosmosDbAccountName: cosmosDbAccountName
-    cosmosDbAccountDatabaseName: database.cosmosDatabaseName
-    cosmosDbAccountDatabaseContainers: contains(database, 'cosmosDatabaseContainers') ? database.cosmosDatabaseContainers : []
+    cosmosAccountName: cosmosAccountName
+    cosmosAccountDatabaseName: database.cosmosAccountDatabaseName
+    cosmosAccountDatabaseContainers: contains(database, 'cosmosAccountDatabaseContainers') ? database.cosmosAccountDatabaseContainers : []
   }
 }]
 
 // 3. Deploy Cosmos DB Graph Database, if applicable
-module azCosmosDbAccountGraphDatabaseDeployment 'az.cosmosdb.account.graph.database.bicep' = [for database in cosmosDbAccountDatabases: if (!empty(cosmosDbAccountDatabases) && cosmosDbAccountType == 'EnableGremlin') {
-  name: !empty(cosmosDbAccountDatabases) ? toLower('az-cosmosdb-graphdb-${guid('${azCosmosDbAccountDeployment.id}/${database.cosmosDatabaseName}')}') : 'no-cosmosdb-graph-databases-to-deploy'
+module azCosmosDbAccountGraphDatabaseDeployment 'az.cosmosdb.account.graph.database.bicep' = [for database in cosmosAccountDatabases: if (!empty(cosmosAccountDatabases) && cosmosAccountType == 'EnableGremlin') {
+  name: !empty(cosmosAccountDatabases) ? toLower('az-cosmosdb-graphdb-${guid('${azCosmosDbAccountDeployment.id}/${database.cosmosAccountDatabaseName}')}') : 'no-cosmosdb-graph-databases-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
-    cosmosDbAccountName: cosmosDbAccountName
-    cosmosDbAccountDatabaseName: database.cosmosDatabaseName
-    cosmosDbAccountDatabaseContainers: contains(database, 'cosmosDatabaseContainers') ? database.cosmosDatabaseContainers : []
+    cosmosAccountName: cosmosAccountName
+    cosmosAccountDatabaseName: database.cosmosAccountDatabaseName
+    cosmosAccountDatabaseContainers: contains(database, 'cosmosAccountDatabaseContainers') ? database.cosmosAccountDatabaseContainers : []
   }
 }]
 
@@ -117,7 +143,7 @@ module azCosmosDbAccountPrivateEndpointDeployment '../../az.private.endpoint/v1.
     region: region
     environment: environment
     privateEndpointName: cosmosAccountPrivateEndpoint.privateEndpointName
-    privateEndpointLocation: contains(cosmosAccountPrivateEndpoint, 'privateEndpointLocation') ? cosmosAccountPrivateEndpoint.privateEndpointLocation : first(cosmosDbAccountLocations)
+    privateEndpointLocation: contains(cosmosAccountPrivateEndpoint, 'privateEndpointLocation') ? cosmosAccountPrivateEndpoint.privateEndpointLocation : first(cosmosAccountLocations).privateEndpointLocation
     privateEndpointDnsZoneName: cosmosAccountPrivateEndpoint.privateEndpointDnsZoneName
     privateEndpointDnsZoneGroupName: 'privatelink-documents-azure-com'
     privateEndpointDnsZoneResourceGroup: cosmosAccountPrivateEndpoint.privateEndpointDnsZoneResourceGroup
