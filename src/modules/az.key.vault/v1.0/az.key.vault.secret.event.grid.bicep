@@ -24,15 +24,15 @@ param resourceName string
 param resourceGroupName string
 
 // 1. Get the existing Event Grid Resource
-resource azEventGridDomainExistingResource 'Microsoft.EventGrid/domains@2020-10-15-preview' existing = {
+resource azEventGridDomainExistingResource 'Microsoft.EventGrid/domains@2022-06-15' existing = {
   name: replace(replace('${resourceName}', '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace('${resourceGroupName}', '@environment', environment), '@region', region))
 }
 
 // 2. Create or Update Key Vault Secret with Event Grid Keys
-resource azEventGridDomainKeyVaultSecretDeployment 'Microsoft.KeyVault/vaults@2021-04-01-preview' existing = {
+resource azEventGridDomainKeyVaultSecretDeployment 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: replace(replace(keyVaultName, '@environment', environment), '@region', region)
-  resource azEventGridDomainPrimaryKeySecret 'secrets@2021-04-01-preview' = {
+  resource azEventGridDomainPrimaryKeySecret 'secrets' = {
     name: '${keyVaultSecretName}-primary-key'
     properties: {
       value: listKeys(azEventGridDomainExistingResource.id, azEventGridDomainExistingResource.apiVersion).key1

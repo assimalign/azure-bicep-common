@@ -24,21 +24,21 @@ param resourceName string
 param resourceGroupName string
 
 // 1. Get the existing Service Bus Namespace Authorization Rule Resource
-resource azServiceBusExistingResource 'Microsoft.ServiceBus/namespaces/AuthorizationRules@2021-01-01-preview' existing = {
+resource azServiceBusExistingResource 'Microsoft.ServiceBus/namespaces/AuthorizationRules@2021-11-01' existing = {
   name: replace(replace('${resourceName}', '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace('${resourceGroupName}', '@environment', environment), '@region', region))
 }
 
 // 2. Create or Update Key Vault Secret with Service Bus Namespace Authorization Rule Primary Key & Connection String
-resource azKeyVaultExistingResource 'Microsoft.KeyVault/vaults@2021-04-01-preview' existing = {
+resource azKeyVaultExistingResource 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: replace(replace(keyVaultName, '@environment', environment), '@region', region)
-  resource azServiceBusAuthPolicyConnectionStringSecret 'secrets@2021-04-01-preview' = {
+  resource azServiceBusAuthPolicyConnectionStringSecret 'secrets' = {
     name: '${keyVaultSecretName}-connection-string'
     properties: {
       value: listKeys(azServiceBusExistingResource.id, azServiceBusExistingResource.apiVersion).primaryConnectionString
     }
   }
-  resource azServiceBusAuthPolicyPrimaryKeySecret 'secrets@2021-04-01-preview' = {
+  resource azServiceBusAuthPolicyPrimaryKeySecret 'secrets' = {
     name: '${keyVaultSecretName}-primary-key'
     properties: {
       value: listKeys(azServiceBusExistingResource.id, azServiceBusExistingResource.apiVersion).primaryKey

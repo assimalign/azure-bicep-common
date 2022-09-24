@@ -53,9 +53,7 @@ resource azAppServicePlanAseResource 'Microsoft.Web/hostingEnvironments@2022-03-
 resource azAppServicePlanDeployment 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: replace(replace(appServicePlanName, '@environment', environment), '@region', region)
   location: appServicePlanLocation
-
   properties: {
-
     hostingEnvironmentProfile: any(!empty(appServicePlanEnvironmentName) ? {
       id: azAppServicePlanAseResource.id
     } : null)
@@ -75,4 +73,4 @@ resource azAppServicePlanDeployment 'Microsoft.Web/serverfarms@2022-03-01' = {
 }
 
 // 3. Return Deployment Output
-output appServiceEnvironment object = azAppServicePlanDeployment
+output appServicePlan object = azAppServicePlanDeployment

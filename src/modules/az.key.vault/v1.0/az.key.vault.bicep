@@ -65,7 +65,7 @@ param keyVaultCreationMode string = 'default'
 param keyVaultTags object = {}
 
 // 3. Deploy Key Vault
-resource azKeyVaultDeployment 'Microsoft.KeyVault/vaults@2021-10-01' = {
+resource azKeyVaultDeployment 'Microsoft.KeyVault/vaults@2022-07-01' = {
   name: replace(replace(keyVaultName, '@environment', environment), '@region', region)
   location: keyVaultLocation
   properties: {
@@ -97,7 +97,7 @@ resource azKeyVaultDeployment 'Microsoft.KeyVault/vaults@2021-10-01' = {
         value: ip.ipAddress
       }]
       virtualNetworkRules: [for networkRule in keyVaultVirtualNetworkAccessRules: {
-        id: replace(replace(resourceId('${networkRule.virtualNetworkResourceGroup}', 'Microsoft.Network/virtualNetworks/subnets', '${networkRule.virtualNetwork}', networkRule.virtualNetworkSubnet), '@environment', environment), '@region', region)
+        id: any(replace(replace(resourceId('${networkRule.virtualNetworkResourceGroup}', 'Microsoft.Network/virtualNetworks/subnets', '${networkRule.virtualNetwork}', networkRule.virtualNetworkSubnet), '@environment', environment), '@region', region))
       }]
     }
   }

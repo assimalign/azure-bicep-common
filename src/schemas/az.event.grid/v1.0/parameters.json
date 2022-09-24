@@ -63,13 +63,6 @@
                     },
                     "minItems": 1
                 },
-                "eventGridDomainSubscriptions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/event-grid-domain-subscription-parameters"
-                    },
-                    "minItems": 1
-                },
                 "eventGridDomainTags": {
                     "type": "object",
                     "patternProperties": {
@@ -285,6 +278,22 @@
                         "type": "string"
                     }
                 },
+                "eventGridDomainTopicSubscriptionEventSubjectFilters": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "subjectBeginsWith": {
+                            "type": "string"
+                        },
+                        "subjectEndsWith": {
+                            "type": "string"
+                        },
+                        "isSubjectCaseSensitive": {
+                            "type": "boolean"
+                        }
+                    },
+                    "minProperties": 1
+                },
                 "eventGridDomainTopicSubscriptionEventFilters": {
                     "type": "array",
                     "items": {
@@ -415,7 +424,100 @@
                 "eventGridDomainTopicSubscriptionEndpointResourceGroup"
             ]
         },
-        "event-grid-domain-subscriptions": {
+        "event-grid-system-topic": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/event-grid-system-topic-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "event-grid-system-topics": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/event-grid-system-topic-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "event-grid-system-topic-parameters": {
+            "type": "object",
+            "properties": {
+                "eventGridSystemTopicName": {
+                    "type": "string"
+                },
+                "eventGridSystemTopicLocation": {
+                    "type": "string"
+                },
+                "eventGridSystemTopicMsiEnabled": {
+                    "type": "boolean"
+                },
+                "eventGridSystemTopicSourceType": {
+                    "type": "string",
+                    "enum": [
+                        "Microsoft.Storage.StorageAccounts",
+                        "Microsoft.AgFoodPlatform.FarmBeats",
+                        "Microsoft.ApiManagement.Service",
+                        "Microsoft.AppConfiguration.ConfigurationStores",
+                        "Microsoft.Cache.Redis",
+                        "Microsoft.Communication.CommunicationServices",
+                        "Microsoft.ContainerRegistry.Registries",
+                        "Microsoft.Devices.IoTHubs",
+                        "Microsoft.EventGrid.Domains",
+                        "Microsoft.EventGrid.Topics",
+                        "Microsoft.Eventhub.Namespaces",
+                        "Microsoft.HealthcareApis.Workspaces",
+                        "Microsoft.KeyVault.vaults",
+                        "Microsoft.MachineLearningServices.Workspaces",
+                        "Microsoft.Maps.Accounts",
+                        "Microsoft.Media.MediaServices",
+                        "Microsoft.PolicyInsights.PolicyStates",
+                        "Microsoft.Resources.ResourceGroups",
+                        "Microsoft.Resources.Subscriptions",
+                        "Microsoft.ServiceBus.Namespaces",
+                        "Microsoft.SignalRService.SignalR",
+                        "Microsoft.Web.ServerFarms",
+                        "Microsoft.Web.Sites"
+                    ]
+                },
+                "eventGridSystemTopicSourceName": {
+                    "type": "string"
+                },
+                "eventGridSystemTopicSourceResourceGroup": {
+                    "type": "string"
+                },
+                "eventGridSystemTopicSubscriptions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/event-grid-system-topic-subscription-parameters"
+                    },
+                    "minItems": 1
+                },
+                "eventGridSystemTopicMsiRoleAssignments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "../../az.rbac/v1.0/parameters.json#/definitions/roleAssignment"
+                    }
+                }
+            },
+            "required": [
+                "eventGridSystemTopicName",
+                "eventGridSystemTopicSourceType",
+                "eventGridSystemTopicSourceName",
+                "eventGridSystemTopicSourceResourceGroup"
+            ]
+        },
+        "event-grid-system-topic-subscriptions": {
             "properties": {
                 "value": {
                     "type": "array",
@@ -423,20 +525,20 @@
                         "type": "object",
                         "allOf": [
                             {
-                                "$ref": "#/definitions/event-grid-domain-subscription-parameters"
+                                "$ref": "#/definitions/event-grid-system-topic-subscription-parameters"
                             },
                             {
                                 "properties": {
-                                    "eventGridDomainName": {
+                                    "eventGridSystemTopicName": {
                                         "type": "string"
                                     },
-                                    "eventGridDomainResourceGroup": {
+                                    "eventGridSystemTopicResourceGroup": {
                                         "type": "string"
                                     }
                                 },
                                 "required": [
-                                    "eventGridDomainName",
-                                    "eventGridDomainResourceGroup"
+                                    "eventGridSystemTopicName",
+                                    "eventGridSystemTopicResourceGroup"
                                 ]
                             }
                         ]
@@ -448,27 +550,27 @@
                 "value"
             ]
         },
-        "event-grid-domain-subscription": {
+        "event-grid-system-topic-subscription": {
             "type": "object",
             "properties": {
                 "value": {
                     "type": "object",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/event-grid-domain-subscription-parameters"
+                            "$ref": "#/definitions/event-grid-system-topic-subscription-parameters"
                         },
                         {
                             "properties": {
-                                "eventGridDomainName": {
+                                "eventGridSystemTopicName": {
                                     "type": "string"
                                 },
-                                "eventGridDomainResourceGroup": {
+                                "eventGridSystemTopicResourceGroup": {
                                     "type": "string"
                                 }
                             },
                             "required": [
-                                "eventGridDomainName",
-                                "eventGridDomainResourceGroup"
+                                "eventGridSystemTopicName",
+                                "eventGridSystemTopicResourceGroup"
                             ]
                         }
                     ]
@@ -478,13 +580,13 @@
                 "value"
             ]
         },
-        "event-grid-domain-subscription-parameters": {
+        "event-grid-system-topic-subscription-parameters": {
             "type": "object",
             "properties": {
-                "eventGridDomainSubscriptionName": {
+                "eventGridSystemTopicSubscriptionName": {
                     "type": "string"
                 },
-                "eventGridDomainSubscriptionEndpointType": {
+                "eventGridSystemTopicSubscriptionEndpointType": {
                     "type": "string",
                     "enum": [
                         "AzureFunction",
@@ -495,25 +597,186 @@
                         "WebHook"
                     ]
                 },
-                "eventGridDomainSubscriptionEndpointName": {
+                "eventGridSystemTopicSubscriptionEndpointName": {
                     "type": "string"
                 },
-                "eventGridDomainSubscriptionEndpointResourceGroup": {
+                "eventGridSystemTopicSubscriptionEndpointResourceGroup": {
                     "type": "string"
                 },
-                "eventGridDomainSubscriptionEventTypes": {
+                "eventGridSystemTopicSubscriptionEventTypes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "Microsoft.Storage.BlobCreated",
+                            "Microsoft.Storage.BlobDeleted",
+                            "Microsoft.Storage.BlobRenamed",
+                            "Microsoft.Storage.BlobTierChanged",
+                            "Microsoft.Storage.BlobInventoryPolicyCompleted",
+                            "Microsoft.Storage.AsyncOperationInitiated",
+                            "Microsoft.Storage.LifecyclePolicyCompleted",
+                            "Microsoft.Storage.DirectoryCreated",
+                            "Microsoft.Storage.DirectoryDeleted",
+                            "Microsoft.ApiManagement.UserCreated",
+                            "Microsoft.ApiManagement.UserUpdated",
+                            "Microsoft.ApiManagement.UserDeleted",
+                            "Microsoft.ApiManagement.APICreated",
+                            "Microsoft.ApiManagement.APIUpdated",
+                            "Microsoft.ApiManagement.APIDeleted",
+                            "Microsoft.ApiManagement.ProductCreated",
+                            "Microsoft.ApiManagement.ProductUpdated",
+                            "Microsoft.ApiManagement.ProductDeleted",
+                            "Microsoft.ApiManagement.ReleaseCreated",
+                            "Microsoft.ApiManagement.ReleaseUpdated",
+                            "Microsoft.ApiManagement.ReleaseDeleted",
+                            "Microsoft.ApiManagement.SubscriptionCreated",
+                            "Microsoft.ApiManagement.SubscriptionUpdated",
+                            "Microsoft.ApiManagement.SubscriptionDeleted",
+                            "Microsoft.AppConfiguration.KeyValueModified",
+                            "Microsoft.AppConfiguration.KeyValueDeleted",
+                            "Microsoft.Web/sites.BackupOperationStarted",
+                            "Microsoft.Web/sites.BackupOperationCompleted",
+                            "Microsoft.Web/sites.BackupOperationFailed",
+                            "Microsoft.Web/sites.RestoreOperationStarted",
+                            "Microsoft.Web/sites.RestoreOperationCompleted",
+                            "Microsoft.Web/sites.RestoreOperationFailed",
+                            "Microsoft.Web/sites.SlotSwapStarted",
+                            "Microsoft.Web/sites.SlotSwapCompleted",
+                            "Microsoft.Web/sites.SlotSwapFailed",
+                            "Microsoft.Web/sites.SlotSwapWithPreviewStarted",
+                            "Microsoft.Web/sites.SlotSwapWithPreviewCancelled",
+                            "Microsoft.Web/sites.AppUpdated.Restarted",
+                            "Microsoft.Web/sites.AppUpdated.Stopped",
+                            "Microsoft.Web/sites.AppUpdated.ChangedAppSettings",
+                            "Microsoft.Web/serverfarms.AppServicePlanUpdated",
+                            "Microsoft.Cache.ExportRDBCompleted",
+                            "Microsoft.Cache.ImportRDBCompleted",
+                            "Microsoft.Cache.PatchingCompleted",
+                            "Microsoft.Cache.ScalingCompleted",
+                            "Microsoft.Communication.ChatMessageReceived",
+                            "Microsoft.Communication.ChatMessageEdited",
+                            "Microsoft.Communication.ChatMessageDeleted",
+                            "Microsoft.Communication.ChatThreadCreatedWithUser",
+                            "Microsoft.Communication.ChatThreadWithUserDeleted",
+                            "Microsoft.Communication.ChatThreadPropertiesUpdatedPerUser",
+                            "Microsoft.Communication.ChatMemberAddedToThreadWithUser",
+                            "Microsoft.Communication.ChatMemberRemovedFromThreadWithUser",
+                            "Microsoft.Communication.ChatParticipantAddedToThreadWithUser",
+                            "Microsoft.Communication.ChatParticipantRemovedFromThreadWithUser",
+                            "Microsoft.Communication.ChatThreadCreated",
+                            "Microsoft.Communication.ChatThreadDeleted",
+                            "Microsoft.Communication.ChatThreadParticipantAdded",
+                            "Microsoft.Communication.ChatThreadParticipantRemoved",
+                            "Microsoft.Communication.ChatMessageReceivedInThread",
+                            "Microsoft.Communication.ChatThreadPropertiesUpdated",
+                            "Microsoft.Communication.ChatMessageEditedInThread",
+                            "Microsoft.Communication.ChatMessageDeletedInThread",
+                            "Microsoft.Communication.SMSReceived",
+                            "Microsoft.Communication.SMSDeliveryReportReceived",
+                            "Microsoft.Communication.RecordingFileStatusUpdated",
+                            "Microsoft.Communication.CallStarted",
+                            "Microsoft.Communication.CallEnded",
+                            "Microsoft.Communication.CallParticipantAdded",
+                            "Microsoft.Communication.CallParticipantRemoved",
+                            "Microsoft.Communication.UserDisconnected",
+                            "Microsoft.ContainerRegistry.ImagePushed",
+                            "Microsoft.ContainerRegistry.ImageDeleted",
+                            "Microsoft.ContainerRegistry.ChartPushed",
+                            "Microsoft.ContainerRegistry.ChartDeleted",
+                            "Microsoft.EventHub.CaptureFileCreated",
+                            "Microsoft.AgFoodPlatform.FarmerChanged",
+                            "Microsoft.AgFoodPlatform.FarmChanged",
+                            "Microsoft.AgFoodPlatform.BoundaryChanged",
+                            "Microsoft.AgFoodPlatform.FieldChanged",
+                            "Microsoft.AgFoodPlatform.SeasonalFieldChanged",
+                            "Microsoft.AgFoodPlatform.SeasonChanged",
+                            "Microsoft.AgFoodPlatform.CropChanged",
+                            "Microsoft.AgFoodPlatform.CropVarietyChanged",
+                            "Microsoft.AgFoodPlatform.SatelliteDataIngestionJobStatusChanged",
+                            "Microsoft.AgFoodPlatform.WeatherDataIngestionJobStatusChanged",
+                            "Microsoft.AgFoodPlatform.FarmOperationDataIngestionJobStatusChanged",
+                            "Microsoft.AgFoodPlatform.ApplicationDataChanged",
+                            "Microsoft.AgFoodPlatform.HarvestingDataChanged",
+                            "Microsoft.AgFoodPlatform.TillageDataChanged",
+                            "Microsoft.AgFoodPlatform.PlantingDataChanged",
+                            "FhirResourceCreated",
+                            "FhirResourceUpdated",
+                            "FhirResourceDeleted",
+                            "Microsoft.Devices.DeviceCreated",
+                            "Microsoft.Devices.DeviceDeleted",
+                            "Microsoft.Devices.DeviceConnected",
+                            "Microsoft.Devices.DeviceDisconnected",
+                            "Microsoft.Devices.DeviceTelemetry",
+                            "Microsoft.KeyVault.CertificateNewVersionCreated",
+                            "Microsoft.KeyVault.CertificateNearExpiry",
+                            "Microsoft.KeyVault.CertificateExpired",
+                            "Microsoft.KeyVault.KeyNewVersionCreated",
+                            "Microsoft.KeyVault.KeyNearExpiry",
+                            "Microsoft.KeyVault.KeyExpired",
+                            "Microsoft.KeyVault.SecretNewVersionCreated",
+                            "Microsoft.KeyVault.SecretNearExpiry",
+                            "Microsoft.KeyVault.SecretExpired",
+                            "Microsoft.KeyVault.VaultAccessPolicyChanged",
+                            "Microsoft.ContainerService.NewKubernetesVersionAvailable",
+                            "Microsoft.MachineLearningServices.ModelRegistered",
+                            "Microsoft.MachineLearningServices.ModelDeployed",
+                            "Microsoft.MachineLearningServices.RunCompleted",
+                            "Microsoft.MachineLearningServices.DatasetDriftDetected",
+                            "Microsoft.MachineLearningServices.RunStatusChanged",
+                            "Microsoft.Maps.GeofenceEntered",
+                            "Microsoft.Maps.GeofenceExited",
+                            "Microsoft.Maps.GeofenceResult",
+                            "Microsoft.Media.JobStateChange",
+                            "Microsoft.Media.JobScheduled",
+                            "Microsoft.Media.JobProcessing",
+                            "Microsoft.Media.JobCanceling",
+                            "Microsoft.Media.JobFinished",
+                            "Microsoft.Media.JobCanceled",
+                            "Microsoft.Media.JobErrored",
+                            "Microsoft.PolicyInsights.PolicyStateCreated",
+                            "Microsoft.PolicyInsights.PolicyStateChanged",
+                            "Microsoft.PolicyInsights.PolicyStateDeleted",
+                            "Microsoft.Resources.ResourceActionCancel",
+                            "Microsoft.Resources.ResourceActionFailure",
+                            "Microsoft.Resources.ResourceActionSuccess",
+                            "Microsoft.Resources.ResourceDeleteCancel",
+                            "Microsoft.Resources.ResourceDeleteFailure",
+                            "Microsoft.Resources.ResourceDeleteSuccess",
+                            "Microsoft.Resources.ResourceWriteCancel",
+                            "Microsoft.Resources.ResourceWriteFailure",
+                            "Microsoft.Resources.ResourceWriteSuccess",
+                            "Microsoft.ServiceBus.ActiveMessagesAvailableWithNoListeners",
+                            "Microsoft.ServiceBus.DeadletterMessagesAvailableWithNoListeners",
+                            "Microsoft.ServiceBus.ActiveMessagesAvailablePeriodicNotifications",
+                            "Microsoft.ServiceBus.DeadletterMessagesAvailablePeriodicNotifications",
+                            "Microsoft.SignalRService.ClientConnectionConnected",
+                            "Microsoft.SignalRService.ClientConnectionDisconnected"
+                        ]
+                    }
+                },
+                "eventGridSystemTopicSubscriptionEventLabels": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
-                "eventGridDomainSubscriptionEventLabels": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "eventGridSystemTopicSubscriptionEventSubjectFilters": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "subjectBeginsWith": {
+                            "type": "string"
+                        },
+                        "subjectEndsWith": {
+                            "type": "string"
+                        },
+                        "isSubjectCaseSensitive": {
+                            "type": "boolean"
+                        }
+                    },
+                    "minProperties": 1
                 },
-                "eventGridDomainSubscriptionEventFilters": {
+                "eventGridSystemTopicSubscriptionEventFilters": {
                     "type": "array",
                     "items": {
                         "properties": {
@@ -580,7 +843,7 @@
                         "value"
                     ]
                 },
-                "eventGridDomainSubscriptionEventHeaders": {
+                "eventGridSystemTopicSubscriptionEventHeaders": {
                     "type": "array",
                     "items": {
                         "type": "object",
@@ -606,10 +869,10 @@
                         ]
                     }
                 },
-                "eventGridDomainSubscriptionMsiEnabled": {
+                "eventGridSystemTopicSubscriptionMsiEnabled": {
                     "type": "boolean"
                 },
-                "eventGridDomainSubscriptionDeadLetterDestination": {
+                "eventGridSystemTopicSubscriptionDeadLetterDestination": {
                     "oneOf": [
                         {
                             "type": "null"
@@ -637,10 +900,10 @@
                 }
             },
             "required": [
-                "eventGridDomainSubscriptionName",
-                "eventGridDomainSubscriptionEndpointType",
-                "eventGridDomainSubscriptionEndpointName",
-                "eventGridDomainSubscriptionEndpointResourceGroup"
+                "eventGridSystemTopicSubscriptionName",
+                "eventGridSystemTopicSubscriptionEndpointType",
+                "eventGridSystemTopicSubscriptionEndpointName",
+                "eventGridSystemTopicSubscriptionEndpointResourceGroup"
             ]
         },
         "event-grid-event-filters": {

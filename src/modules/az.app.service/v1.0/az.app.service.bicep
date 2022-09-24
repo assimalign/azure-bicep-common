@@ -131,8 +131,6 @@ resource azAppServiceDeployment 'Microsoft.Web/sites@2022-03-01' = {
       region: empty(region) ? 'n/a' : region
       environment: empty(environment) ? 'n/a' : environment
     })
-
-  // Set Web Settings, if any
   resource azAppServiceWebConfigs 'config' = if (contains(appServiceSiteConfigs, 'webSettings')) {
     name: 'web'
     properties: {
@@ -149,14 +147,10 @@ resource azAppServiceDeployment 'Microsoft.Web/sites@2022-03-01' = {
       } : {})
     }
   }
-
-  // Set Metadata Settings, if any
   resource azAppServiceMetadataConfigs 'config' = if (contains(appServiceSiteConfigs, 'metaSettings')) {
     name: 'metadata'
     properties: appServiceSiteConfigs.metaSettings
   }
-
-  // Set Auth Settings, if any
   resource azAppServiceAuthSettings 'config' = if (contains(appServiceSiteConfigs, 'authSettings')) {
     name: 'authsettingsV2'
     properties: {

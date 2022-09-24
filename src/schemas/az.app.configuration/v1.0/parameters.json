@@ -219,7 +219,7 @@
                     },
                     "minItems": 1
                 },
-                "appConfigurationValueContentType": {
+                "appConfigurationContentType": {
                     "oneOf": [
                         {
                             "type": "string",
@@ -259,7 +259,7 @@
             "required": [
                 "appConfigurationKey",
                 "appConfigurationValue",
-                "appConfigurationValueContentType"
+                "appConfigurationContentType"
             ]
         },
         "app-configuration-sku": {

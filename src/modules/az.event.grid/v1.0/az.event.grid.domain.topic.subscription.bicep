@@ -29,6 +29,9 @@ param eventGridDomainTopicSubscriptionEventFilters array = []
 @description('Custom labels to categorize the event grid subscriptions')
 param eventGridDomainTopicSubscriptionEventLabels array = []
 
+@description('')
+param eventGridDomainTopicSubscriptionEventSubjectFilters object = {}
+
 @description('Csstom HTTP headers to add the request to the subscription endpoint')
 param eventGridDomainTopicSubscriptionEventHeaders array = []
 
@@ -67,6 +70,12 @@ var headers = [for header in eventGridDomainTopicSubscriptionEventHeaders: {
   })
 }]
 
+var subjectFilters = {
+  subjectBeginsWith: contains(eventGridDomainTopicSubscriptionEventSubjectFilters, 'subjectBeginsWith') ? replace(replace(eventGridDomainTopicSubscriptionEventSubjectFilters.subjectBeginsWith, '@environment', environment), '@region', region) : json('null')
+  subjectEndsWith: contains(eventGridDomainTopicSubscriptionEventSubjectFilters, 'subjectEndsWith') ? replace(replace(eventGridDomainTopicSubscriptionEventSubjectFilters.subjectEndsWith, '@environment', environment), '@region', region) : json('null')
+  isSubjectCaseSensitive: contains(eventGridDomainTopicSubscriptionEventSubjectFilters, 'isSubjectCaseSensitive') ? eventGridDomainTopicSubscriptionEventSubjectFilters.isSubjectCaseSensitive : false
+}
+
 // 1. Get an Existing Event Grid Domain Resource
 resource azEventGridDomainTopicResource 'Microsoft.EventGrid/domains/topics@2021-06-01-preview' existing = {
   name: replace(replace('${eventGridDomainName}/${eventGridDomainTopicName}', '@environment', environment), '@region', region)
@@ -85,32 +94,32 @@ resource azEventGridDomainWithMsiSubscriptionDeployment 'Microsoft.EventGrid/eve
         endpointType: 'AzureFunction'
         properties: {
           deliveryAttributeMappings: headers
-          resourceId: replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.Web/sites/functions', split(eventGridDomainTopicSubscriptionEndpointName, '/')[0], split(eventGridDomainTopicSubscriptionEndpointName, '/')[1]), '@environment', environment), '@region', region)
+          resourceId: any(replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.Web/sites/functions', split(eventGridDomainTopicSubscriptionEndpointName, '/')[0], split(eventGridDomainTopicSubscriptionEndpointName, '/')[1]), '@environment', environment), '@region', region))
         }
       } : any(eventGridDomainTopicSubscriptionEndpointType == 'ServiceBusQueue' ? {
         endpointType: 'ServiceBusQueue'
         properties: {
           deliveryAttributeMappings: headers
-          resourceId: replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.ServiceBus/namespaces/queues', split(eventGridDomainTopicSubscriptionEndpointName, '/')[0], split(eventGridDomainTopicSubscriptionEndpointName, '/')[1]), '@environment', environment), '@region', region)
+          resourceId: any(replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.ServiceBus/namespaces/queues', split(eventGridDomainTopicSubscriptionEndpointName, '/')[0], split(eventGridDomainTopicSubscriptionEndpointName, '/')[1]), '@environment', environment), '@region', region))
         }
       } : any(eventGridDomainTopicSubscriptionEndpointType == 'ServiceBusTopic' ? {
         endpointType: 'ServiceBusTopic'
         properties: {
           deliveryAttributeMappings: headers
-          resourceId: replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.ServiceBus/namespaces/topics', split(eventGridDomainTopicSubscriptionEndpointName, '/')[0], split(eventGridDomainTopicSubscriptionEndpointName, '/')[1]), '@environment', environment), '@region', region)
+          resourceId: any(replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.ServiceBus/namespaces/topics', split(eventGridDomainTopicSubscriptionEndpointName, '/')[0], split(eventGridDomainTopicSubscriptionEndpointName, '/')[1]), '@environment', environment), '@region', region))
         }
       } : any(eventGridDomainTopicSubscriptionEndpointType == 'EventHub' ? {
         endpointType: 'EventHub'
         properties: {
           deliveryAttributeMappings: headers
-          resourceId: replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.EventHub/namespaces/eventhubs', split(eventGridDomainTopicSubscriptionEndpointName, '/')[0], split(eventGridDomainTopicSubscriptionEndpointName, '/')[1]), '@environment', environment), '@region', region)
+          resourceId: any(replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.EventHub/namespaces/eventhubs', split(eventGridDomainTopicSubscriptionEndpointName, '/')[0], split(eventGridDomainTopicSubscriptionEndpointName, '/')[1]), '@environment', environment), '@region', region))
         }
       } : any(eventGridDomainTopicSubscriptionEndpointType == 'StorageQueue' ? {
         endpointType: 'StorageQueue'
         properties: {
           deliveryAttributeMappings: headers
           queueName: replace(last(split('${eventGridDomainTopicSubscriptionEndpointName}', '/')), '@environment', environment)
-          resourceId: replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.Storage/storageAccounts', first(split(eventGridDomainTopicSubscriptionEndpointName, '/'))), '@environment', environment), '@region', region)
+          resourceId: any(replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.Storage/storageAccounts', first(split(eventGridDomainTopicSubscriptionEndpointName, '/'))), '@environment', environment), '@region', region))
         }
       } : {})))))
       identity: {
@@ -122,19 +131,19 @@ resource azEventGridDomainWithMsiSubscriptionDeployment 'Microsoft.EventGrid/eve
         endpointType: 'StorageBlob'
         properties: {
           blobContainerName: eventGridDomainTopicSubscriptionDeadLetterDestination.storageAccountContainerName
-          resourceId: replace(replace(az.resourceId(eventGridDomainTopicSubscriptionDeadLetterDestination.storageAccountResourceGroupName, 'Microsoft.Storage/storageAccounts', eventGridDomainTopicSubscriptionDeadLetterDestination.storageAccountName), '@environment', environment), '@region', region)
+          resourceId: any(replace(replace(az.resourceId(eventGridDomainTopicSubscriptionDeadLetterDestination.storageAccountResourceGroupName, 'Microsoft.Storage/storageAccounts', eventGridDomainTopicSubscriptionDeadLetterDestination.storageAccountName), '@environment', environment), '@region', region))
         }
       }
       identity: {
         type: 'SystemAssigned'
       }
     } : json('null')
-    filter: any(empty(eventGridDomainTopicSubscriptionEventTypes) ? {
-      advancedFilters: eventGridDomainTopicSubscriptionEventFilters
-    } : {
-      advancedFilters: eventGridDomainTopicSubscriptionEventFilters
-      includedEventTypes: eventGridDomainTopicSubscriptionEventTypes
-    })
+    filter: any(union(empty(eventGridDomainTopicSubscriptionEventTypes) ? {
+        advancedFilters: eventGridDomainTopicSubscriptionEventFilters
+      } : {
+        advancedFilters: eventGridDomainTopicSubscriptionEventFilters
+        includedEventTypes: eventGridDomainTopicSubscriptionEventTypes
+      }, subjectFilters))
   }
 }
 
@@ -148,32 +157,32 @@ resource azEventGridDomainWithoutMsiSubscriptionDeployment 'Microsoft.EventGrid/
       endpointType: 'AzureFunction'
       properties: {
         deliveryAttributeMappings: headers
-        resourceId: replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.Web/sites/functions', split(eventGridDomainTopicSubscriptionEndpointName, '/')[0], split(eventGridDomainTopicSubscriptionEndpointName, '/')[1]), '@environment', environment), '@region', region)
+        resourceId: any(replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.Web/sites/functions', split(eventGridDomainTopicSubscriptionEndpointName, '/')[0], split(eventGridDomainTopicSubscriptionEndpointName, '/')[1]), '@environment', environment), '@region', region))
       }
     } : any(eventGridDomainTopicSubscriptionEndpointType == 'ServiceBusQueue' ? {
       endpointType: 'ServiceBusQueue'
       properties: {
         deliveryAttributeMappings: headers
-        resourceId: replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.ServiceBus/namespaces/queues', split(eventGridDomainTopicSubscriptionEndpointName, '/')[0], split(eventGridDomainTopicSubscriptionEndpointName, '/')[1]), '@environment', environment), '@region', region)
+        resourceId: any(replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.ServiceBus/namespaces/queues', split(eventGridDomainTopicSubscriptionEndpointName, '/')[0], split(eventGridDomainTopicSubscriptionEndpointName, '/')[1]), '@environment', environment), '@region', region))
       }
     } : any(eventGridDomainTopicSubscriptionEndpointType == 'ServiceBusTopic' ? {
       endpointType: 'ServiceBusTopic'
       properties: {
         deliveryAttributeMappings: headers
-        resourceId: replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.ServiceBus/namespaces/topics', split(eventGridDomainTopicSubscriptionEndpointName, '/')[0], split(eventGridDomainTopicSubscriptionEndpointName, '/')[1]), '@environment', environment), '@region', region)
+        resourceId: any(replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.ServiceBus/namespaces/topics', split(eventGridDomainTopicSubscriptionEndpointName, '/')[0], split(eventGridDomainTopicSubscriptionEndpointName, '/')[1]), '@environment', environment), '@region', region))
       }
     } : any(eventGridDomainTopicSubscriptionEndpointType == 'EventHub' ? {
       endpointType: 'EventHub'
       properties: {
         deliveryAttributeMappings: headers
-        resourceId: replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.EventHub/namespaces/eventhubs', split(eventGridDomainTopicSubscriptionEndpointName, '/')[0], split(eventGridDomainTopicSubscriptionEndpointName, '/')[1]), '@environment', environment), '@region', region)
+        resourceId: any(replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.EventHub/namespaces/eventhubs', split(eventGridDomainTopicSubscriptionEndpointName, '/')[0], split(eventGridDomainTopicSubscriptionEndpointName, '/')[1]), '@environment', environment), '@region', region))
       }
     } : any(eventGridDomainTopicSubscriptionEndpointType == 'StorageQueue' ? {
       endpointType: 'StorageQueue'
       properties: {
         deliveryAttributeMappings: headers
         queueName: replace(last(split('${eventGridDomainTopicSubscriptionEndpointName}', '/')), '@environment', environment)
-        resourceId: replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.Storage/storageAccounts', first(split(eventGridDomainTopicSubscriptionEndpointName, '/'))), '@environment', environment), '@region', region)
+        resourceId: any(replace(replace(az.resourceId(eventGridDomainTopicSubscriptionEndpointResourceGroup, 'Microsoft.Storage/storageAccounts', first(split(eventGridDomainTopicSubscriptionEndpointName, '/'))), '@environment', environment), '@region', region))
       }
     } : {})))))
     deadLetterDestination: !empty(eventGridDomainTopicSubscriptionDeadLetterDestination) ? {
@@ -181,15 +190,15 @@ resource azEventGridDomainWithoutMsiSubscriptionDeployment 'Microsoft.EventGrid/
       properties: {
         deliveryAttributeMappings: headers
         blobContainerName: eventGridDomainTopicSubscriptionDeadLetterDestination.storageAccountContainerName
-        resourceId: replace(replace(az.resourceId(eventGridDomainTopicSubscriptionDeadLetterDestination.storageAccountResourceGroupName, 'Microsoft.Storage/storageAccounts', eventGridDomainTopicSubscriptionDeadLetterDestination.storageAccountName), '@environment', environment), '@region', region)
+        resourceId: any(replace(replace(az.resourceId(eventGridDomainTopicSubscriptionDeadLetterDestination.storageAccountResourceGroupName, 'Microsoft.Storage/storageAccounts', eventGridDomainTopicSubscriptionDeadLetterDestination.storageAccountName), '@environment', environment), '@region', region))
       }
     } : json('null')
-    filter: any(empty(eventGridDomainTopicSubscriptionEventTypes) ? {
-      advancedFilters: eventGridDomainTopicSubscriptionEventFilters
-    } : {
-      advancedFilters: eventGridDomainTopicSubscriptionEventFilters
-      includedEventTypes: eventGridDomainTopicSubscriptionEventTypes
-    })
+    filter: any(union(empty(eventGridDomainTopicSubscriptionEventTypes) ? {
+        advancedFilters: eventGridDomainTopicSubscriptionEventFilters
+      } : {
+        advancedFilters: eventGridDomainTopicSubscriptionEventFilters
+        includedEventTypes: eventGridDomainTopicSubscriptionEventTypes
+      }, subjectFilters))
   }
 }
 

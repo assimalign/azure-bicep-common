@@ -38,6 +38,7 @@ module azEventGridDomainTopicSubscriptionsDeployment 'az.event.grid.domain.topic
     eventGridDomainTopicSubscriptionEndpointType: subscription.eventGridDomainTopicSubscriptionEndpointType
     eventGridDomainTopicSubscriptionEndpointName: subscription.eventGridDomainTopicSubscriptionEndpointName
     eventGridDomainTopicSubscriptionEndpointResourceGroup: subscription.eventGridDomainTopicSubscriptionEndpointResourceGroup
+    eventGridDomainTopicSubscriptionEventSubjectFilters: contains(subscription, 'eventGridDomainTopicSubscriptionEventSubjectFilters') ? subscription.eventGridDomainTopicSubscriptionEventSubjectFilters : {}
     eventGridDomainTopicSubscriptionEventTypes: contains(subscription, 'eventGridDomainTopicSubscriptionEventTypes') ? subscription.eventGridDomainTopicSubscriptionEventTypes : []
     eventGridDomainTopicSubscriptionEventFilters: contains(subscription, 'eventGridDomainTopicSubscriptionEventFilters') ? subscription.eventGridDomainTopicSubscriptionEventFilters : []
     eventGridDomainTopicSubscriptionEventLabels: contains(subscription, 'eventGridDomainTopicSubscriptionEventLabels') ? subscription.eventGridDomainTopicSubscriptionEventLabels : []

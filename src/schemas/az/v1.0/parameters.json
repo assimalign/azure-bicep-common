@@ -289,11 +289,17 @@
                 "eventGridDomainTopicSubscriptions": {
                     "$ref": "../../az.event.grid/v1.0/parameters.json#/definitions/event-grid-domain-topic-subscriptions"
                 },
-                "eventGridDomainSubscription": {
-                    "$ref": "../../az.event.grid/v1.0/parameters.json#/definitions/event-grid-domain-subscription"
+                "eventGridSystemTopic": {
+                    "$ref": "../../az.event.grid/v1.0/parameters.json#/definitions/event-grid-system-topic"
                 },
-                "eventGridDomainSubscriptions": {
-                    "$ref": "../../az.event.grid/v1.0/parameters.json#/definitions/event-grid-domain-subscriptions"
+                "eventGridSystemTopics": {
+                    "$ref": "../../az.event.grid/v1.0/parameters.json#/definitions/event-grid-system-topics"
+                },
+                "eventGridSystemTopicSubscription": {
+                    "$ref": "../../az.event.grid/v1.0/parameters.json#/definitions/event-grid-system-topic-subscription"
+                },
+                "eventGridSystemTopicSubscriptions": {
+                    "$ref": "../../az.event.grid/v1.0/parameters.json#/definitions/event-grid-system-topic-subscriptions"
                 },
                 "serviceBusNamespace": {
                     "$ref": "../../az.service.bus/v1.0/parameters.json#/definitions/service-bus-namespace"

@@ -20,9 +20,6 @@ param eventGridDomainLocation string = resourceGroup().location
 @description('A list of object with the Topics and Subscriptions to be deployed under the Event Grid Resource')
 param eventGridDomainTopics array = []
 
-@description('A list of subscriptions to deploy under the Event Grid')
-param eventGridDomainSubscriptions array = []
-
 @description('Configurations for implementing a Private Endpoint for the Event Grid Domain')
 param eventGridDomainPrivateEndpoint object = {}
 
@@ -66,27 +63,9 @@ module azEventGridDomainTopicsDeployment 'az.event.grid.domain.topic.bicep' = [f
     eventGridDomainTopicName: topic.eventGridDomainTopicName
     eventGridDomainTopicSubscriptions: contains(topic, 'eventGridDomainTopicSubscriptions') ? topic.eventGridDomainTopicSubscriptions : []
   }
-}]
-
-// 3. Deploy Event Grid Domain Subscriptions
-module azEventGridDomainSubscriptionsDeployment 'az.event.grid.domain.subscription.bicep' = [for (subscription, index) in eventGridDomainSubscriptions: if (!empty(subscription)) {
-  name: !empty(eventGridDomainSubscriptions) ? toLower('az-egd-subs-${guid('${azEventGridDomainDeployment.id}/${subscription.eventGridDomainSubscriptionName}')}') : 'no-eg-subs-to-deploy'
-  scope: resourceGroup()
-  params: {
-    region: region
-    environment: environment
-    eventGridDomainName: eventGridDomainName
-    eventGridDomainSubscriptionName: subscription.eventGridDomainSubscriptionName
-    eventGridDomainSubscriptionEndpointType: subscription.eventGridDomainSubscriptionEndpointType
-    eventGridDomainSubscriptionEndpointName: subscription.eventGridDomainSubscriptionEndpointName
-    eventGridDomainSubscriptionEndpointResourceGroup: subscription.eventGridDomainSubscriptionEndpointResourceGroup
-    eventGridDomainSubscriptionEventTypes: contains(subscription, 'eventGridDomainSubscriptionEventTypes') ? subscription.eventGridDomainSubscriptionEventTypes : []
-    eventGridDomainSubscriptionEventFilters: contains(subscription, 'eventGridDomainSubscriptionEventFilters') ? subscription.eventGridDomainSubscriptionEventFilters : []
-    eventGridDomainSubscriptionEventLabels: contains(subscription, 'eventGridDomainSubscriptionEventLabels') ? subscription.eventGridDomainSubscriptionEventLabels : []
-    eventGridDomainSubscriptionDeadLetterDestination: contains(subscription, 'eventGridDomainSubscriptionDeadLetterDestination') ? subscription.eventGridDomainSubscriptionDeadLetterDestination : {}
-    eventGridDomainSubscriptionEventHeaders: contains(subscription, 'eventGridDomainSubscriptionEventHeaders') ? subscription.eventGridDomainSubscriptionEventHeaders : []
-    eventGridDomainSubscriptionMsiEnabled: contains(subscription, 'eventGridDomainSubscriptionMsiEnabled') ? subscription.eventGridDomainSubscriptionMsiEnabled : false
-  }
+  dependsOn: [
+    azEventGridRoleAssignment // If using System Managed Identity
+  ]
 }]
 
 // 4. Deploy Private Endpoint if applicable
@@ -126,13 +105,7 @@ module azEventGridRoleAssignment '../../az.rbac/v1.0/az.rbac.role.assignment.bic
     resourceTypeAssigningRole: roleAssignment.resourceTypeAssigningRole
     resourcePrincipalIdReceivingRole: azEventGridDomainDeployment.identity.principalId
   }
-  dependsOn: [
-    azEventGridDomainTopicsDeployment
-    azEventGridDomainSubscriptionsDeployment
-  ]
 }]
-
-
 
 
 output eventGridDomain object = azEventGridDomainDeployment

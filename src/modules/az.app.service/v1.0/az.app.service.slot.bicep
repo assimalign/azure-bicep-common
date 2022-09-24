@@ -148,7 +148,6 @@ resource azAppServiceSlotDeployment 'Microsoft.Web/sites/slots@2022-03-01' = {
     name: 'metadata'
     properties: appServiceSlotSiteConfigs.metaSettings
   }
-
   resource azAppServiceAuthSettings 'config' = if (contains(appServiceSlotSiteConfigs, 'authSettings')) {
     name: 'authsettingsV2'
     properties: {
