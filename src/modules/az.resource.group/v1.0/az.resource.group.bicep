@@ -14,25 +14,6 @@ param region string = ''
 @description('The name of the resource group.')
 param resourceGroupName string
 
-@allowed([
-  'eastus'
-  'eastus2'
-  'westus'
-  'westus2'
-  'westus3'
-  'westcentralus'
-  'southcentralus'
-  'northcentralus'
-  'northeurope'
-  'swedencentral'
-  'uksouth'
-  'ukwest'
-  'westeurope'
-  'francecentral'
-  'germanywestcentral'
-  'norwayeast'
-  'switzerlandnorth'
-])
 @description('The location of the resource group')
 param resourceGroupLocation string
 

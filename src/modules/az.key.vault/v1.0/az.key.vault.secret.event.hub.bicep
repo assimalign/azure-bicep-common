@@ -24,21 +24,21 @@ param resourceName string
 param resourceGroupName string
 
 // 1. Get the existing Event Hub Authorization Rule Resource
-resource azEventHubNamespaceExistingResource 'Microsoft.EventHub/namespaces/authorizationRules@2021-01-01-preview' existing = {
+resource azEventHubNamespaceExistingResource 'Microsoft.EventHub/namespaces/authorizationRules@2021-11-01' existing = {
   name: replace(replace('${resourceName}', '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace('${resourceGroupName}', '@environment', environment), '@region', region))
 }
 
 // 2. Create or Update Key Vault Secret with Event Hub Authorization Rule Primary Key & Connection String
-resource azEventHubNamespaceKeyVaultSecretDeployment 'Microsoft.KeyVault/vaults@2021-04-01-preview' existing = {
+resource azEventHubNamespaceKeyVaultSecretDeployment 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: replace(replace(keyVaultName, '@environment', environment), '@region', region)
-  resource azEventHubNamespaceConnectionStringSecret 'secrets@2021-04-01-preview' = {
+  resource azEventHubNamespaceConnectionStringSecret 'secrets' = {
     name: '${keyVaultSecretName}-connection-string'
     properties: {
       value: listKeys(azEventHubNamespaceExistingResource.id, azEventHubNamespaceExistingResource.apiVersion).primaryConnectionString
     }
   }
-  resource azEventHubNamespacePrimaryKeySecret 'secrets@2021-04-01-preview' = {
+  resource azEventHubNamespacePrimaryKeySecret 'secrets' = {
     name: '${keyVaultSecretName}-primary-key'
     properties: {
       value: listKeys(azEventHubNamespaceExistingResource.id, azEventHubNamespaceExistingResource.apiVersion).primaryKey

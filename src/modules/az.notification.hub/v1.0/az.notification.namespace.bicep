@@ -42,28 +42,22 @@ resource azNotificationHubNamespaceDeployment 'Microsoft.NotificationHubs/namesp
     namespaceType: 'NotificationHub'
   }
   location: notificationHubNamespaceLocation
-  sku: any(environment == 'dev' && !empty(notificationHubNamespaceSku) ? {
-    name: notificationHubNamespaceSku.dev
-  } : any(environment == 'qa' && !empty(notificationHubNamespaceSku) ? {
-    name: notificationHubNamespaceSku.qa
-  } : any(environment == 'uat' && !empty(notificationHubNamespaceSku) ? {
-    name: notificationHubNamespaceSku.uat
-  } : any(environment == 'qa' && !empty(notificationHubNamespaceSku) ? {
-    name: notificationHubNamespaceSku.prd
+  sku: any(contains(notificationHubNamespaceSku, environment) ? {
+    name: notificationHubNamespaceSku[environment]
   } : {
     name: notificationHubNamespaceSku.default
-  }))))
+  })
   // 1.1 If applicable, deploy authorization rules
   resource azNotificationNamespaceAuthPolicyDeployment 'AuthorizationRules' = [for policy in notificationHubNamespacePolicies: if (!empty(policy)) {
-    name: !empty(notificationHubNamespacePolicies) ? policy.policyName : 'no-nh-polcies-to-deploy'
+    name: !empty(notificationHubNamespacePolicies) ? policy.notificationHubPolicyName : 'no-nh-polcies-to-deploy'
     properties: {
-      rights: !empty(notificationHubNamespacePolicies) ? policy.policyPermissions : []
+      rights: !empty(notificationHubNamespacePolicies) ? policy.notificationHubPolicyPermissions : []
     }
   }]
   tags: union(notificationHubNamespaceTags, {
-    region: empty(region) ? 'n/a' : region
-    environment: empty(environment) ? 'n/a' : environment
-  })
+      region: empty(region) ? 'n/a' : region
+      environment: empty(environment) ? 'n/a' : environment
+    })
 }
 
 // 2. Deploy the Notification Namespace Hubs, if any

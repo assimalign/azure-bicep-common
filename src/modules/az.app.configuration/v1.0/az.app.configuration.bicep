@@ -38,8 +38,8 @@ param appConfigurationEnableMsi bool = false
 @description('Disables public network access to the resource')
 param appConfigurationDisablePublicAccess bool = true
 
-@description('Enables RBAC over access policies')
-param appConfigurationEnableRbac bool = false
+@description('Disables local authentication to the app configuration.')
+param appConfigurationDisableLocalAuth bool = false
 
 @description('The tags to attach to the resource when deployed')
 param appConfigurationTags object = {}
@@ -48,41 +48,35 @@ param appConfigurationTags object = {}
 resource azAppConfigurationDeployment 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' = {
   name: replace(replace(appConfigurationName, '@environment', environment), '@region', region)
   location: appConfigurationLocation
-  sku: any((environment == 'dev') ? {
-    name: appConfigurationSku.dev
-  } : any((environment == 'qa') ? {
-    name: appConfigurationSku.qa
-  } : any((environment == 'uat') ? {
-    name: appConfigurationSku.uat
-  } : any((environment == 'prd') ? {
-    name: appConfigurationSku.prd
+  sku: contains(appConfigurationSku, environment) ? {
+    name: appConfigurationSku[environment]
   } : {
     name: appConfigurationSku.default
-  }))))
+  }
   identity: {
     type: appConfigurationEnableMsi == true ? 'SystemAssigned' : 'None'
   }
   properties: {
-    disableLocalAuth: appConfigurationEnableRbac
+    disableLocalAuth: appConfigurationDisableLocalAuth
     publicNetworkAccess: appConfigurationDisablePublicAccess == true ? 'Disabled' : 'Enabled'
   }
   tags: union(appConfigurationTags, {
-    region: region
-    environment: environment
-  })
+      region: region
+      environment: environment
+    })
 }
 
 // 2. Deploy any Azure App Configuration Keys and values
-module azAppConfigurationKeysDeployement 'az.app.configuration.key.bicep' = [for key in appConfigurationKeys: if (!empty(appConfigurationKeys) && appConfigurationEnableRbac == false) {
+module azAppConfigurationKeysDeployement 'az.app.configuration.key.bicep' = [for key in appConfigurationKeys: if (!empty(appConfigurationKeys) && appConfigurationDisableLocalAuth == false) {
   name: 'az-app-cfg-key-${guid('${azAppConfigurationDeployment.id}/${key.appConfigurationKey}')}'
   params: {
-    environment: environment
     region: region
+    environment: environment
     appConfigurationName: appConfigurationName
-    appConfigurationKeyName: key.appConfigurationKey
+    appConfigurationKey: key.appConfigurationKey
     appConfigurationValue: key.appConfigurationValue
-    appConfigurationContentType: key.appConfigurationValueContentType
-    appConfigurationValueLabels: contains(key, 'appConfigurationLabels') ? key.appConfigurationLabels : []
+    appConfigurationContentType: key.appConfigurationValueContentType ?? ''
+    appConfigurationLabels: contains(key, 'appConfigurationLabels') ? key.appConfigurationLabels : []
   }
 }]
 

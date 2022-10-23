@@ -36,25 +36,16 @@ param staticSiteSku object = {
 @description('')
 param staticSiteTags object = {}
 
-resource azStaticSiteDeployment 'Microsoft.Web/staticSites@2021-03-01' = {
+resource azStaticSiteDeployment 'Microsoft.Web/staticSites@2022-03-01' = {
   name: replace(replace(staticSiteName, '@environment', environment), '@region', region)
   location: staticSiteLocation
-  sku: any(environment == 'dev' ? {
-    name: staticSiteSku.dev
-    tier: staticSiteSku.dev
-  } : any(environment == 'qa' ? {
-    name: staticSiteSku.qa
-    tier: staticSiteSku.qa
-  } : any(environment == 'uat' ? {
-    name: staticSiteSku.uat
-    tier: staticSiteSku.uat
-  } : any(environment == 'prd' ? {
-    name: staticSiteSku.prd
-    tier: staticSiteSku.prd
+  sku: any(contains(staticSiteSku, environment) ? {
+    name: staticSiteSku[environment]
+    tier: staticSiteSku[environment]
   } : {
     name: staticSiteSku.default
     tier: staticSiteSku.default
-  }))))
+  })
   properties: {
      
   }

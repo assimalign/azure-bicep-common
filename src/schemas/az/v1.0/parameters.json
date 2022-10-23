@@ -10,6 +10,7 @@
         },
         "parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "resourceGroup": {
                     "$ref": "../../az.resource.group/v1.0/parameters.json#/definitions/resource-group"
@@ -132,11 +133,20 @@
                 "appServices": {
                     "$ref": "../../az.app.service/v1.0/parameters.json#/definitions/app-services"
                 },
+                "appServiceSlot": {
+                    "$ref": "../../az.app.service/v1.0/parameters.json#/definitions/app-services-slot"
+                },
                 "appServiceSlots": {
                     "$ref": "../../az.app.service/v1.0/parameters.json#/definitions/app-services-slots"
                 },
                 "appServiceSlotsConfigNames": {
                     "$ref": "../../az.app.service/v1.0/parameters.json#/definitions/app-services-slots-config-names"
+                },
+                "appServiceEnvironment": {
+                    "$ref": "../../az.app.service/v1.0/parameters.json#/definitions/app-service-environment"
+                },
+                "appServiceEnvironments": {
+                    "$ref": "../../az.app.service/v1.0/parameters.json#/definitions/app-service-environments"
                 },
                 "appGateway": {
                     "$ref": "../../az.app.gateway/v1.0/parameters.json#/definitions/app-gateway"
@@ -189,6 +199,12 @@
                 "virtualNetworks": {
                     "$ref": "../../az.virtual.network/v1.0/parameters.json#/definitions/virtual-networks"
                 },
+                "virtualNetworkSubnet": {
+                    "$ref": "../../az.virtual.network/v1.0/parameters.json#/definitions/virtual-network-subnet"
+                },
+                "virtualNetworkSubnets": {
+                    "$ref": "../../az.virtual.network/v1.0/parameters.json#/definitions/virtual-network-subnets"
+                },
                 "virtualNetworksPeering": {
                     "$ref": "../../az.virtual.network/v1.0/parameters.json#/definitions/virtual-network-peering"
                 },
@@ -237,6 +253,12 @@
                 "privateDnsZoneSrvRecords": {
                     "$ref": "../../az.private.dns/v1.0/parameters.json#/definitions/private-dns-zone-srv-records"
                 },
+                "networkSecurityGroup": {
+                    "$ref": "../../az.network.security.group/v1.0/parameters.json#/definitions/network-security-group"
+                },
+                "networkSecurityGroups": {
+                    "$ref": "../../az.network.security.group/v1.0/parameters.json#/definitions/network-security-groups"
+                },
                 "eventHubNamespace": {
                     "$ref": "../../az.event.hub/v1.0/parameters.json#/definitions/event-hub-namespace"
                 },
@@ -267,11 +289,17 @@
                 "eventGridDomainTopicSubscriptions": {
                     "$ref": "../../az.event.grid/v1.0/parameters.json#/definitions/event-grid-domain-topic-subscriptions"
                 },
-                "eventGridDomainSubscription": {
-                    "$ref": "../../az.event.grid/v1.0/parameters.json#/definitions/event-grid-domain-subscription"
+                "eventGridSystemTopic": {
+                    "$ref": "../../az.event.grid/v1.0/parameters.json#/definitions/event-grid-system-topic"
                 },
-                "eventGridDomainSubscriptions": {
-                    "$ref": "../../az.event.grid/v1.0/parameters.json#/definitions/event-grid-domain-subscriptions"
+                "eventGridSystemTopics": {
+                    "$ref": "../../az.event.grid/v1.0/parameters.json#/definitions/event-grid-system-topics"
+                },
+                "eventGridSystemTopicSubscription": {
+                    "$ref": "../../az.event.grid/v1.0/parameters.json#/definitions/event-grid-system-topic-subscription"
+                },
+                "eventGridSystemTopicSubscriptions": {
+                    "$ref": "../../az.event.grid/v1.0/parameters.json#/definitions/event-grid-system-topic-subscriptions"
                 },
                 "serviceBusNamespace": {
                     "$ref": "../../az.service.bus/v1.0/parameters.json#/definitions/service-bus-namespace"
@@ -368,18 +396,67 @@
                 },
                 "signalRServices": {
                     "$ref": "../../az.signalr/v1.0/parameters.json#/definitions/signalr-services"
+                },
+                "apimGateway": {
+                    "$ref": "../../az.apim/v1.0/parameters.json#/definitions/apim-gateway"
+                },
+                "apimGateways": {
+                    "$ref": "../../az.apim/v1.0/parameters.json#/definitions/apim-gateways"
+                },
+                "apimGatewayCertificate": {
+                    "$ref": "../../az.apim/v1.0/parameters.json#/definitions/apim-gateway-certificate"
+                },
+                "apimGatewayCertificates": {
+                    "$ref": "../../az.apim/v1.0/parameters.json#/definitions/apim-gateway-certificates"
+                },
+                "apimGatewayBackend": {
+                    "$ref": "../../az.apim/v1.0/parameters.json#/definitions/apim-gateway-backend"
+                },
+                "apimGatewayBackends": {
+                    "$ref": "../../az.apim/v1.0/parameters.json#/definitions/apim-gateway-backends"
+                },
+                "apimGatewayLogger": {
+                    "$ref": "../../az.apim/v1.0/parameters.json#/definitions/apim-gateway-logger"
+                },
+                "apimGatewayLoggers": {
+                    "$ref": "../../az.apim/v1.0/parameters.json#/definitions/apim-gateway-loggers"
+                },
+                "apimGatewayApi": {
+                    "$ref": "../../az.apim/v1.0/parameters.json#/definitions/apim-gateway-api"
+                },
+                "apimGatewayApis": {
+                    "$ref": "../../az.apim/v1.0/parameters.json#/definitions/apim-gateway-apis"
+                },
+                "apimGatewayApiOperation": {
+                    "$ref": "../../az.apim/v1.0/parameters.json#/definitions/apim-gateway-api-operation"
+                },
+                "apimGatewayApiOperations": {
+                    "$ref": "../../az.apim/v1.0/parameters.json#/definitions/apim-gateway-api-operations"
+                },
+                "apimGatewayOpenIdConnectProvider": {
+                    "$ref": "../../az.apim/v1.0/parameters.json#/definitions/apim-gateway-openid-connect-provider"
+                },
+                "apimGatewayOpenIdConnectProviders": {
+                    "$ref": "../../az.apim/v1.0/parameters.json#/definitions/apim-gateway-openid-connect-providers"
+                },
+                "apimGatewayIdentityProvider": {
+                    "description": "Identities view lets you manage authentication methods for users of the developer portal. By default, API Management requires username and password authentication, but you can also configure online identity providers, like AAD or AAD B2C.",
+                    "$ref": "../../az.apim/v1.0/parameters.json#/definitions/apim-gateway-identity-provider"
+                },
+                "apimGatewayIdentityProviders": {
+                    "description": "Identities view lets you manage authentication methods for users of the developer portal. By default, API Management requires username and password authentication, but you can also configure online identity providers, like AAD or AAD B2C.",
+                    "$ref": "../../az.apim/v1.0/parameters.json#/definitions/apim-gateway-identity-providers"
+                },
+                "databricksWorkspace": {
+                    "$ref": "../../az.databricks.workspace/v.10/parameters.json#/definitions/databricks-workspace"
+                },
+                "databricksWorkspaces": {
+                    "$ref": "../../az.databricks.workspace/v.10/parameters.json#/definitions/databricks-workspaces"
                 }
                 // "roleAssignments": {
                 //     "$ref": "az.rbac.role.assignment.schema.json#definitions/roleAssignments"
                 // },
-                // "apimGatewayApis": {
-                //     "$ref": "az.apim.gateway.apis.schema.json#definitions/apimGatewayApis"
-                // },
-                // "apimGatewayApisOperations": {
-                // },
-                // "apimGatewayBackends": {
-                //     "$ref": "az.apim.gateway.backend.schema.json#definitions/apimGatewayBackends"
-                // }
+                
             }
         }
     },

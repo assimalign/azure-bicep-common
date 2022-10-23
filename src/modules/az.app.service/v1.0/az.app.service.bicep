@@ -18,22 +18,15 @@ param appServiceName string
 param appServiceLocation string = resourceGroup().location
 
 @allowed([
-  'web'
+  'app'
+  'app,linux'
+  'app,linux,container'
+  'app,container,windows'
   'functionapp'
   'functionapp,linux'
 ])
 @description('appType')
 param appServiceType string
-
-@allowed([
-  'dotnet'
-  'java'
-  'node'
-  'python'
-  'php'
-])
-@description('The platform for the Function app: .NET Core, Java, Node.js, etc.,')
-param appServicePlatform string
 
 @description('Turns on System Managed Identity for the creted resources')
 param appServiceMsiEnabled bool = false
@@ -76,14 +69,17 @@ param appServiceTags object = {}
 // **************************************************************************************** //
 
 // Format Site Settings 
-var siteSettings = [for setting in appServiceSiteConfigs.siteSettings: {
-  name: replace(replace(setting.name, '@environment', environment), '@region', region)
-  value: replace(replace(setting.value, '@environment', environment), '@region', region)
+var siteSettings = [for item in items(contains(appServiceSiteConfigs, 'siteSettings') ? appServiceSiteConfigs.siteSettings : {}): {
+  name: replace(replace(item.key, '@environment', environment), '@region', region)
+  value: replace(replace(sys.contains(item.value, environment) ? item.value[environment] : item.value.default, '@environment', environment), '@region', region)
 }]
+
+var authSettingsAudienceValues = contains(appServiceSiteConfigs, 'authSettings') ? contains(appServiceSiteConfigs.authSettings.appAuthIdentityProviderAudiences, environment) ? appServiceSiteConfigs.authSettings.appAuthIdentityProviderAudiences[environment] : appServiceSiteConfigs.authSettings.appAuthIdentityProviderAudiences.default : []
+var authSettingAudiences = [for audience in authSettingsAudienceValues: replace(replace(audience, '@environment', environment), '@region', region)]
 
 // 1. Get the existing App Service Plan to attach to the 
 // Note: All web service (Function & Web Apps) have App Service Plans even if it is consumption Y1 Plans
-resource azAppServicePlanResource 'Microsoft.Web/serverfarms@2021-03-01' existing = {
+resource azAppServicePlanResource 'Microsoft.Web/serverfarms@2022-03-01' existing = {
   name: replace(replace(appServicePlanName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(appServicePlanResourceGroup, '@environment', environment), '@region', region))
 }
@@ -101,8 +97,8 @@ resource azAppServiceInsightsResource 'Microsoft.Insights/components@2020-02-02'
 }
 
 // 4.1 Deploy Function App, if applicable
-resource azAppServiceFunctionDeployment 'Microsoft.Web/sites@2021-03-01' = if (appServiceType == 'functionapp' || appServiceType == 'functionapp,linux') {
-  name: appServiceType == 'functionapp' || appServiceType == 'functionapp,linux' ? replace(replace('${appServiceName}', '@environment', environment), '@region', region) : 'no-function-app-to-deploy'
+resource azAppServiceDeployment 'Microsoft.Web/sites@2022-03-01' = {
+  name: replace(replace(appServiceName, '@environment', environment), '@region', region)
   location: appServiceLocation
   kind: appServiceType
   identity: {
@@ -110,152 +106,138 @@ resource azAppServiceFunctionDeployment 'Microsoft.Web/sites@2021-03-01' = if (a
   }
   properties: {
     serverFarmId: azAppServicePlanResource.id
-    httpsOnly: contains(appServiceSiteConfigs, 'siteHttpsOnly') ? appServiceSiteConfigs.siteHttpsOnly : false
     clientAffinityEnabled: false
+    httpsOnly: contains(appServiceSiteConfigs, 'webSettings') && contains(appServiceSiteConfigs.webSettings, 'httpsOnly') ? appServiceSiteConfigs.webSettings.httpsOnly : false
     // If there are slots to be deployed then let's have the slots override the site settings
     siteConfig: any(empty(appServiceSlots) ? {
-      alwaysOn: contains(appServiceSiteConfigs, 'siteAlwaysOn') ? appServiceSiteConfigs.siteAlwaysOn : false
       appSettings: union([
-        {
-          name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${azAppServiceStorageResource.name};AccountKey=${listKeys('${azAppServiceStorageResource.id}', '${azAppServiceStorageResource.apiVersion}').keys[0].value};EndpointSuffix=core.windows.net'
-        }
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: azAppServiceInsightsResource.properties.InstrumentationKey
-        }
-        {
-          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-          value: azAppServiceInsightsResource.properties.ConnectionString
-        }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: appServicePlatform
-        }
-      ], siteSettings)
+          {
+            name: 'AzureWebJobsStorage'
+            value: 'DefaultEndpointsProtocol=https;AccountName=${azAppServiceStorageResource.name};AccountKey=${listKeys('${azAppServiceStorageResource.id}', '${azAppServiceStorageResource.apiVersion}').keys[0].value};EndpointSuffix=core.windows.net'
+          }
+          {
+            name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+            value: azAppServiceInsightsResource.properties.InstrumentationKey
+          }
+          {
+            name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+            value: azAppServiceInsightsResource.properties.ConnectionString
+          }
+        ],
+        siteSettings)
     } : {})
   }
   tags: union(appServiceTags, {
-    region: empty(region) ? 'n/a' : region
-    environment: empty(environment) ? 'n/a' : environment
-  })
-
+      region: empty(region) ? 'n/a' : region
+      environment: empty(environment) ? 'n/a' : environment
+    })
   resource azAppServiceWebConfigs 'config' = if (contains(appServiceSiteConfigs, 'webSettings')) {
     name: 'web'
     properties: {
+      cors: contains(appServiceSiteConfigs.webSettings, 'cors') ? appServiceSiteConfigs.webSettings.cors : {}
+      ftpsState: contains(appServiceSiteConfigs.webSettings, 'ftpsState') ? appServiceSiteConfigs.webSettings.ftpsState : 'FtpsOnly'
+      alwaysOn: contains(appServiceSiteConfigs.webSettings, 'alwaysOn') ? appServiceSiteConfigs.webSettings.alwaysOn : false
       phpVersion: contains(appServiceSiteConfigs.webSettings, 'phpVersion') ? appServiceSiteConfigs.webSettings.phpVersion : json('null')
       nodeVersion: contains(appServiceSiteConfigs.webSettings, 'nodeVersion') ? appServiceSiteConfigs.webSettings.nodeVersion : json('null')
       javaVersion: contains(appServiceSiteConfigs.webSettings, 'javaVersion') ? appServiceSiteConfigs.webSettings.javaVersion : json('null')
       pythonVersion: contains(appServiceSiteConfigs.webSettings, 'pythonVersion') ? appServiceSiteConfigs.webSettings.pythonVersion : json('null')
       netFrameworkVersion: contains(appServiceSiteConfigs.webSettings, 'dotnetVersion') ? appServiceSiteConfigs.webSettings.dotnetVersion : json('null')
       apiManagementConfig: any(contains(appServiceSiteConfigs.webSettings, 'apimGateway') ? {
-        id: replace(replace(resourceId(appServiceSiteConfigs.webSettings.apimGateway.apimResourceGroupName, 'MMicrosoft.ApiManagement/apis', appServiceSiteConfigs.webSettings.apimGateway.apimName, appServiceSiteConfigs.webSettings.apimGateway.apimApiName), '@environment', environment), '@region', region)
+        id: replace(replace(resourceId(appServiceSiteConfigs.webSettings.apimGateway.apimGatewayResourceGroup, 'Microsoft.ApiManagement/service/apis', appServiceSiteConfigs.webSettings.apimGateway.apimGatewayName, appServiceSiteConfigs.webSettings.apimGateway.apimGatewayApiName), '@environment', environment), '@region', region)
       } : {})
     }
   }
-}
-
-// 4.2 Deploy Web App, if applicable
-resource azAppServiceWebDeployment 'Microsoft.Web/sites@2021-03-01' = if (appServiceType == 'web') {
-  name: appServiceType == 'web' ? replace('${appServiceName}', '@environment', environment) : 'no-web-app-to-deploy'
-  location: appServiceLocation
-  kind: appServiceType
-  identity: {
-    type: appServiceMsiEnabled == true ? 'SystemAssigned' : 'None'
+  resource azAppServiceMetadataConfigs 'config' = if (contains(appServiceSiteConfigs, 'metaSettings')) {
+    name: 'metadata'
+    properties: appServiceSiteConfigs.metaSettings
   }
-  properties: {
-    serverFarmId: azAppServicePlanResource.id
-    httpsOnly: contains(appServiceSiteConfigs, 'httpsOnly') ? appServiceSiteConfigs.httpsOnly : false
-    // If there are slots to be deployed then let's have the slots override the site settings
-    siteConfig: any(empty(appServiceSlots) ? {
-      alwaysOn: contains(appServiceSiteConfigs, 'alwaysOn') ? appServiceSiteConfigs.alwaysOn : false
-      appSettings: union([
-        {
-          name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${azAppServiceStorageResource.name};AccountKey=${listKeys('${azAppServiceStorageResource.id}', '${azAppServiceStorageResource.apiVersion}').keys[0].value}'
-        }
-        {
-          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${azAppServiceStorageResource.name};AccountKey=${listKeys('${azAppServiceStorageResource.id}', '${azAppServiceStorageResource.apiVersion}').keys[0].value}'
-        }
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: azAppServiceInsightsResource.properties.InstrumentationKey
-        }
-        {
-          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-          value: azAppServiceInsightsResource.properties.ConnectionString
-        }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: appServicePlatform
-        }
-      ], siteSettings) // If there are slots to be deployed then let's have the slots override the site settings
-    } : {})
-  }
-  tags: union(appServiceTags, {
-    region: empty(region) ? 'n/a' : region
-    environment: empty(environment) ? 'n/a' : environment
-  })
-  resource azAppServiceWebConfigs 'config' = if (contains(appServiceSiteConfigs, 'webSettings')) {
-    name: 'web'
+  resource azAppServiceAuthSettings 'config' = if (contains(appServiceSiteConfigs, 'authSettings')) {
+    name: 'authsettingsV2'
     properties: {
-      phpVersion: contains(appServiceSiteConfigs.webSettings, 'phpVersion') ? appServiceSiteConfigs.webSettings.phpVersion : json('null')
-      nodeVersion: contains(appServiceSiteConfigs.webSettings, 'nodeVersion') ? appServiceSiteConfigs.webSettings.nodeVersion : json('null')
-      javaVersion: contains(appServiceSiteConfigs.webSettings, 'javaVersion') ? appServiceSiteConfigs.webSettings.javaVersion : json('null')
-      pythonVersion: contains(appServiceSiteConfigs.webSettings, 'pythonVersion') ? appServiceSiteConfigs.webSettings.pythonVersion : json('null')
-      netFrameworkVersion: contains(appServiceSiteConfigs.webSettings, 'dotnetVersion') ? appServiceSiteConfigs.webSettings.dotnetVersion : json('null')
-      apiManagementConfig: any(contains(appServiceSiteConfigs.webSettings, 'apimGateway') ? {
-        id: replace(replace(resourceId(appServiceSiteConfigs.webSettings.apimGateway.apimResourceGroupName, 'MMicrosoft.ApiManagement/apis', appServiceSiteConfigs.webSettings.apimGateway.apimName, appServiceSiteConfigs.webSettings.apimGateway.apimApiName), '@environment', environment), '@region', region)
-      } : {})
+      globalValidation: {
+        requireAuthentication: true
+        unauthenticatedClientAction: appServiceSiteConfigs.authSettings.appAuthUnauthenticatedAction
+      }
+      identityProviders: {
+        // Azure Active Directory Provider
+        azureActiveDirectory: any(appServiceSiteConfigs.authSettings.appAuthIdentityProvider == 'AzureAD' ? {
+          enabled: true
+          registration: contains(appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientId, environment) ? {
+            clientId: appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientId[environment]
+            clientSecretSettingName: appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
+            openIdIssuer: appServiceSiteConfigs.authSettings.appAuthIdentityProviderOpenIdIssuer[environment]
+          } : {
+            clientId: appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientId.default
+            clientSecretSettingName: appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
+            openIdIssuer: appServiceSiteConfigs.authSettings.appAuthIdentityProviderOpenIdIssuer.default
+          }
+          validation: {
+            allowedAudiences: authSettingAudiences
+          }
+          isAutoProvisioned: false
+          login: {
+            tokenStore: {
+              enabled: true
+            }
+          }
+        } : json('null'))
+
+        // Facebook Provider
+        facebook: any(appServiceSiteConfigs.authSettings.appAuthIdentityProvider == 'Facebook' ? {
+          enabled: true
+          registration: contains(appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientId, environment) ? {
+            appId: appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientId[environment]
+            appSecretSettingName: appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
+          } : {
+            appId: appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientId.default
+            appSecretSettingName: appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
+          }
+          graphApiVersion: appServiceSiteConfigs.authSettings.appAuthIdentityProviderGraphApiVersion
+          login: {
+            scopes: appServiceSiteConfigs.authSettings.appAuthIdentityProviderScopes
+          }
+        } : json('null'))
+
+        // Github Provider
+        gitHub: any(appServiceSiteConfigs.authSettings.appAuthIdentityProvider == 'Github' ? {
+          enabled: true
+          registration: contains(appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientId, environment) ? {
+            clientId: appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientId[environment]
+            clientSecretSettingName: appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
+          } : {
+            clientId: appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientId.default
+            clientSecretSettingName: appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
+          }
+          login: {
+            scopes: appServiceSiteConfigs.authSettings.appAuthIdentityProviderScopes
+          }
+        } : json('null'))
+
+        // Google Provider
+        google: any(appServiceSiteConfigs.authSettings.appAuthIdentityProvider == 'Google' ? {
+          enabled: true
+          registration: contains(appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientId, environment) ? {
+            clientId: appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientId[environment]
+            clientSecretSettingName: appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
+          } : {
+            clientId: appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientId.default
+            clientSecretSettingName: appServiceSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
+          }
+          login: {
+            scopes: appServiceSiteConfigs.authSettings.appAuthIdentityProviderScopes
+          }
+          validation: {
+            allowedAudiences: authSettingAudiences
+          }
+        } : json('null'))
+      }
+      login: {
+        tokenStore: {
+          enabled: true
+        }
+      }
     }
   }
-}
-
-// 5. Set the Identity Provider if applicable
-module azAppServiceAuthSettings 'az.app.service.config.auth.v2.settings.bicep' = if (contains(appServiceSiteConfigs, 'siteAuthSettings')) {
-  name: contains(appServiceSiteConfigs, 'siteAuthSettings') ? 'az-app-service-config-auth-${guid(appServiceName)}' : 'no-app-service-auth-settings-to-deploy'
-  scope: resourceGroup()
-  params: {
-    region: region
-    environment: environment
-    appServiceName: appServiceName
-    appServiceAuthUnauthenticatedAction: appServiceSiteConfigs.siteAuthSettings.appServiceAuthAction
-    appServiceAuthIdentityProviderType: appServiceSiteConfigs.siteAuthSettings.appServiceAuthIdentityProvider
-    appServiceAuthIdentityProviderAudiences: appServiceSiteConfigs.siteAuthSettings.appServiceAuthIdentityAudiences
-    appServiceAuthIdentityProviderClientSecretName: appServiceSiteConfigs.siteAuthSettings.appServiceAuthIdentityClientSecretName
-    appServiceAuthIdentityProviderClientId: appServiceSiteConfigs.siteAuthSettings.appServiceAuthIdentityClientId
-    appServiceAuthIdentityProviderOpenIdIssuer: appServiceSiteConfigs.siteAuthSettings.appServiceAuthIdentityOpenIdIssuer
-    appServiceAuthIdentityProviderGraphApiVersion: appServiceSiteConfigs.siteAuthSettings.appServiceAuthIdentityGraphApiVersion
-    appServiceAuthIdentityProviderScopes: appServiceSiteConfigs.siteAuthSettings.appServiceAuthIdentityScopes
-  }
-  dependsOn: [
-    azAppServiceFunctionDeployment
-    azAppServiceWebDeployment
-  ]
-}
-
-// 6. Set Web App Metadata 
-module azAppServiceWebMetadataDeployment 'az.app.service.config.app.metadata.bicep' = if (appServiceType == 'web') {
-  name: 'az-app-service-config-meta-${guid(appServiceName)}'
-  scope: resourceGroup()
-  params: {
-    region: region
-    environment: environment
-    appServiceName: appServiceName
-    appServiceMetadata: any(appServicePlatform == 'dotnet' ? {
-      CURRENT_STACK: 'dotnetcore'
-    } : any(appServicePlatform == 'java' ? {
-      CURRENT_STACK: 'java'
-    } : any(appServicePlatform == 'php' ? {
-      CURRENT_STACK: 'php'
-    } : any(appServicePlatform == 'node' ? {
-      CURRENT_STACK: 'node'
-    } : {}))))
-  }
-  dependsOn: [
-    azAppServiceWebDeployment
-  ]
 }
 
 // 7. Sets App Service Config Names only
@@ -271,8 +253,7 @@ module azAppServiceSlotSpecificSettingsDeployment 'az.app.service.slot.config.na
     appSlotAzureStorageConfigNames: appServiceSlotsConfigNames.storageAccountSettingNames
   }
   dependsOn: [
-    azAppServiceFunctionDeployment
-    azAppServiceWebDeployment
+    azAppServiceDeployment
   ]
 }
 
@@ -294,7 +275,6 @@ module azAppServiceSlotDeployment 'az.app.service.slot.bicep' = [for slot in app
     appServiceSlotInsightsResourceGroup: appServiceAppInsightsResourceGroup
     appServiceSlotPlanName: appServicePlanName
     appServiceSlotPlanResourceGroup: appServicePlanResourceGroup
-    appServiceSlotPlatform: appServicePlatform
     appServiceSlotSiteConfigs: appServiceSiteConfigs
     appServiceSlotStorageAccountName: appServiceStorageAccountName
     appServiceSlotStorageAccountResourceGroup: appServiceStorageAccountResourceGroup
@@ -317,13 +297,9 @@ module azAppServiceRoleAssignment '../../az.rbac/v1.0/az.rbac.role.assignment.bi
     resourceGroupToScopeRoleAssignment: appRoleAssignment.resourceGroupToScopeRoleAssignment
     resourceRoleAssignmentScope: appRoleAssignment.resourceRoleAssignmentScope
     resourceTypeAssigningRole: appRoleAssignment.resourceTypeAssigningRole
-    resourcePrincipalIdReceivingRole: appServiceType == 'functionapp' || appServiceType == 'functionapp,linux' ? azAppServiceFunctionDeployment.identity.principalId : azAppServiceWebDeployment.identity.principalId
+    resourcePrincipalIdReceivingRole: azAppServiceDeployment.identity.principalId
   }
-  dependsOn: [
-    azAppServiceAuthSettings
-    azAppServiceSlotDeployment
-  ]
 }]
 
 // 10. Return Deployment Output
-output appService object = appServiceType == 'web' ? azAppServiceWebDeployment : azAppServiceFunctionDeployment
+output appService object = azAppServiceDeployment

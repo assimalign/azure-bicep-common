@@ -24,21 +24,21 @@ param resourceName string
 param resourceGroupName string
 
 // 1. Get the existing Document DB Resource
-resource azDocumentDbAccountExistingResource 'Microsoft.DocumentDB/databaseAccounts@2021-06-15' existing = {
+resource azDocumentDbAccountExistingResource 'Microsoft.DocumentDB/databaseAccounts@2022-05-15' existing = {
   name: replace(replace('${resourceName}', '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace('${resourceGroupName}', '@environment', environment), '@region', region))
 }
 
 // 2. Create or Update Key Vault Secret with Cosmos DB Primary Key & Connection String
-resource azDocumentDbAccountKeyVaultSecretDeployment 'Microsoft.KeyVault/vaults@2021-04-01-preview' existing = {
+resource azDocumentDbAccountKeyVaultSecretDeployment 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: replace(replace(keyVaultName, '@environment', environment), '@region', region)
-  resource azDocumentDbConnectionStringSecret 'secrets@2021-04-01-preview' = {
+  resource azDocumentDbConnectionStringSecret 'secrets' = {
     name: '${keyVaultSecretName}-connection-string'
     properties: {
       value: 'AccountEndpoint=https://${azDocumentDbAccountExistingResource.name}.documents.azure.com:443/;AccountKey=${listKeys(azDocumentDbAccountExistingResource.id, azDocumentDbAccountExistingResource.apiVersion).primaryMasterKey}'
     }
   }
-  resource azDocumentDbPrimaryKeySecret 'secrets@2021-04-01-preview' = {
+  resource azDocumentDbPrimaryKeySecret 'secrets' = {
     name: '${keyVaultSecretName}-primary-key'
     properties: {
       value: listKeys(azDocumentDbAccountExistingResource.id, azDocumentDbAccountExistingResource.apiVersion).primaryMasterKey

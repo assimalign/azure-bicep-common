@@ -22,6 +22,9 @@ param appGatewayFrontend object
 @description('The Azure App Gateway routing rules. Reference Link: https://docs.microsoft.com/en-us/azure/application-gateway/configuration-request-routing-rules')
 param appGatewayRoutingRules array
 
+@description('')
+param appGatewayConfigs object = {}
+
 @description('The tags to attach to the resource when deployed')
 param appGatewayTags object = {}
 
@@ -175,6 +178,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2020-11-01' =
     backendAddressPools: backendAddressPools
     backendHttpSettingsCollection: backendPorts
     requestRoutingRules: routingRules
+    enableHttp2: contains(appGatewayConfigs, 'appGatewayHttp2Enabled') ? appGatewayConfigs.appGatewayHttp2Enabled : false
   }
   tags: union(appGatewayTags, {
     region: empty(region) ? 'n/a' : region

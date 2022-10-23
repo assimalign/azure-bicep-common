@@ -15,11 +15,14 @@ param region string = ''
 param appServiceName string
 
 @allowed([
-  'web'
+  'app'
+  'app,linux'
+  'app,linux,container'
+  'app,container,windows'
   'functionapp'
   'functionapp,linux'
 ])
-@description('appType')
+@description('appServiceSlotType')
 param appServiceSlotType string
 
 @description('appType')
@@ -36,16 +39,6 @@ param appServiceSlotName string
 
 @description('The location/region the Azure App Service will be deployed to. ')
 param appServiceSlotLocation string = resourceGroup().location
-
-@allowed([
-  'dotnet'
-  'java'
-  'node'
-  'python'
-  'php'
-])
-@description('The platform for the Function app: .NET Core, Java, Node.js, etc.,')
-param appServiceSlotPlatform string
 
 @description('An Object specifying the storage specs for the deployment')
 param appServiceSlotStorageAccountName string
@@ -71,14 +64,19 @@ param appServiceSlotSiteConfigs object
 @description('Custom Attributes to attach to the app service deployment')
 param appServiceSlotTags object = {}
 
-var siteSettings = [for setting in appServiceSlotSiteConfigs.siteSettings: {
-  name: replace(replace(setting.name, '@environment', environment), '@region', region)
-  value: replace(replace(setting.value, '@environment', environment), '@region', region)
+// Format Site Settings 
+var siteSettings = [for item in items(contains(appServiceSlotSiteConfigs, 'siteSettings') ? appServiceSlotSiteConfigs.siteSettings : {}): {
+  name: replace(replace(item.key, '@environment', environment), '@region', region)
+  value: replace(replace(sys.contains(item.value, environment) ? item.value[environment] : item.value.default, '@environment', environment), '@region', region)
 }]
+
+// Formt auth settings if any
+var authSettingsAudienceValues = contains(appServiceSlotSiteConfigs, 'authSettings') ? contains(appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderAudiences, environment) ? appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderAudiences[environment] : appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderAudiences.default : []
+var authSettingAudiences = [for audience in authSettingsAudienceValues: replace(replace(audience, '@environment', environment), '@region', region)]
 
 // 1. Get the existing App Service Plan to attach to the 
 // Note: All web service (Function & Web Apps) have App Service Plans even if it is consumption Y1 Plans
-resource azAppServicePlanResource 'Microsoft.Web/serverfarms@2021-03-01' existing = {
+resource azAppServicePlanResource 'Microsoft.Web/serverfarms@2022-03-01' existing = {
   name: replace(replace(appServiceSlotPlanName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(appServiceSlotPlanResourceGroup, '@environment', environment), '@region', region))
 }
@@ -96,8 +94,8 @@ resource azAppServiceInsightsResource 'Microsoft.Insights/components@2020-02-02'
 }
 
 // 4.1 Deploy Function App, if applicable
-resource azAppServiceFunctionSlotDeployment 'Microsoft.Web/sites/slots@2021-03-01' = if (appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux') {
-  name: appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux' ? replace(replace('${appServiceName}/${appServiceSlotName}', '@environment', environment), '@region', region) : 'no-function-app-slot-to-deploy'
+resource azAppServiceSlotDeployment 'Microsoft.Web/sites/slots@2022-03-01' = {
+  name: replace(replace('${appServiceName}/${appServiceSlotName}', '@environment', environment), '@region', region)
   location: appServiceSlotLocation
   kind: appServiceSlotType
   identity: {
@@ -105,102 +103,136 @@ resource azAppServiceFunctionSlotDeployment 'Microsoft.Web/sites/slots@2021-03-0
   }
   properties: {
     serverFarmId: azAppServicePlanResource.id
-    httpsOnly: contains(appServiceSlotSiteConfigs, 'httpsOnly') ? appServiceSlotSiteConfigs.httpsOnly : false
+    httpsOnly: contains(appServiceSlotSiteConfigs, 'webSettings') && contains(appServiceSlotSiteConfigs.webSettings, 'httpsOnly') ? appServiceSlotSiteConfigs.webSettings.httpsOnly : false
     clientAffinityEnabled: false
     siteConfig: {
       alwaysOn: contains(appServiceSlotSiteConfigs, 'alwaysOn') ? appServiceSlotSiteConfigs.alwaysOn : false
       appSettings: union([
-        {
-          name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${azAppServiceStorageResource.name};AccountKey=${listKeys('${azAppServiceStorageResource.id}', '${azAppServiceStorageResource.apiVersion}').keys[0].value};EndpointSuffix=core.windows.net'
-        }
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: azAppServiceInsightsResource.properties.InstrumentationKey
-        }
-        {
-          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-          value: azAppServiceInsightsResource.properties.ConnectionString
-        }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: appServiceSlotPlatform
-        }
-      ], siteSettings)
+          {
+            name: 'AzureWebJobsStorage'
+            value: 'DefaultEndpointsProtocol=https;AccountName=${azAppServiceStorageResource.name};AccountKey=${listKeys('${azAppServiceStorageResource.id}', '${azAppServiceStorageResource.apiVersion}').keys[0].value};EndpointSuffix=core.windows.net'
+          }
+          {
+            name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+            value: azAppServiceInsightsResource.properties.InstrumentationKey
+          }
+          {
+            name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+            value: azAppServiceInsightsResource.properties.ConnectionString
+          }
+        ], siteSettings)
     }
   }
   tags: union(appServiceSlotTags, {
-    region: empty(region) ? 'n/a' : region
-    environment: empty(environment) ? 'n/a' : environment
-  })
+      region: empty(region) ? 'n/a' : region
+      environment: empty(environment) ? 'n/a' : environment
+    })
 
   resource azAppServiceLinkApim 'config' = if (contains(appServiceSlotSiteConfigs, 'webSettings')) {
     name: 'web'
     properties: {
+      cors: contains(appServiceSlotSiteConfigs.webSettings, 'cors') ? appServiceSlotSiteConfigs.webSettings.cors : {}
+      ftpsState: contains(appServiceSlotSiteConfigs.webSettings, 'ftpsState') ? appServiceSlotSiteConfigs.webSettings.ftpsState : 'FtpsOnly'
+      alwaysOn: contains(appServiceSlotSiteConfigs.webSettings, 'alwaysOn') ? appServiceSlotSiteConfigs.webSettings.alwaysOn : false
       phpVersion: contains(appServiceSlotSiteConfigs.webSettings, 'phpVersion') ? appServiceSlotSiteConfigs.webSettings.phpVersion : json('null')
       nodeVersion: contains(appServiceSlotSiteConfigs.webSettings, 'nodeVersion') ? appServiceSlotSiteConfigs.webSettings.nodeVersion : json('null')
       javaVersion: contains(appServiceSlotSiteConfigs.webSettings, 'javaVersion') ? appServiceSlotSiteConfigs.webSettings.javaVersion : json('null')
       pythonVersion: contains(appServiceSlotSiteConfigs.webSettings, 'pythonVersion') ? appServiceSlotSiteConfigs.webSettings.pythonVersion : json('null')
       netFrameworkVersion: contains(appServiceSlotSiteConfigs.webSettings, 'dotnetVersion') ? appServiceSlotSiteConfigs.webSettings.dotnetVersion : json('null')
       apiManagementConfig: any(contains(appServiceSlotSiteConfigs.webSettings, 'apimGateway') ? {
-        id: replace(replace(resourceId(appServiceSlotSiteConfigs.webSettings.apimGateway.apimResourceGroupName, 'MMicrosoft.ApiManagement/apis', appServiceSlotSiteConfigs.webSettings.apimGateway.apimName, appServiceSlotSiteConfigs.webSettings.apimGateway.apimApiName), '@environment', environment), '@region', region)
+        id: any(replace(replace(resourceId(appServiceSlotSiteConfigs.webSettings.apimGateway.apimGatewayResourceGroup, 'Microsoft.ApiManagement/service/apis', appServiceSlotSiteConfigs.webSettings.apimGateway.apimGatewayName, appServiceSlotSiteConfigs.webSettings.apimGateway.apimGatewayApiName), '@environment', environment), '@region', region))
       } : {})
     }
   }
-}
-
-// 4.2 Deploy Web App, if applicable
-resource azAppServiceWebSlotDeployment 'Microsoft.Web/sites/slots@2021-01-01' = if (appServiceSlotType == 'web') {
-  name: appServiceSlotType == 'web' ? replace('${appServiceName}/${appServiceSlotName}', '@environment', environment) : 'no-web-app/no-web-app-slot-to-deploy'
-  location: appServiceSlotLocation
-  identity: {
-    type: appServiceSlotMsiEnabled == true ? 'SystemAssigned' : 'None'
+  resource azAppServiceMetadataConfigs 'config' = if (contains(appServiceSlotSiteConfigs, 'metaSettings')) {
+    name: 'metadata'
+    properties: appServiceSlotSiteConfigs.metaSettings
   }
-  properties: {
-    serverFarmId: azAppServicePlanResource.id
-    httpsOnly: contains(appServiceSlotSiteConfigs, 'httpsOnly') ? appServiceSlotSiteConfigs.httpsOnly : false
-    siteConfig: {
-      alwaysOn: contains(appServiceSlotSiteConfigs, 'alwaysOn') ? appServiceSlotSiteConfigs.alwaysOn : false
-      appSettings: union([
-        {
-          name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${azAppServiceStorageResource.name};AccountKey=${listKeys('${azAppServiceStorageResource.id}', '${azAppServiceStorageResource.apiVersion}').keys[0].value}'
-        }
-        {
-          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${azAppServiceStorageResource.name};AccountKey=${listKeys('${azAppServiceStorageResource.id}', '${azAppServiceStorageResource.apiVersion}').keys[0].value}'
-        }
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: azAppServiceInsightsResource.properties.InstrumentationKey
-        }
-        {
-          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-          value: azAppServiceInsightsResource.properties.ConnectionString
-        }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: appServiceSlotPlatform
-        }
-      ], siteSettings) // If there are slots to be deployed then let's have the slots override the site settings
-    }
-  }
-  tags: union(appServiceSlotTags, {
-    region: empty(region) ? 'n/a' : region
-    environment: empty(environment) ? 'n/a' : environment
-  })
-
-  resource azAppServiceLinkApim 'config' = if (contains(appServiceSlotSiteConfigs, 'webSettings')) {
-    name: 'web'
+  resource azAppServiceAuthSettings 'config' = if (contains(appServiceSlotSiteConfigs, 'authSettings')) {
+    name: 'authsettingsV2'
     properties: {
-      phpVersion: contains(appServiceSlotSiteConfigs.webSettings, 'phpVersion') ? appServiceSlotSiteConfigs.webSettings.phpVersion : json('null')
-      nodeVersion: contains(appServiceSlotSiteConfigs.webSettings, 'nodeVersion') ? appServiceSlotSiteConfigs.webSettings.nodeVersion : json('null')
-      javaVersion: contains(appServiceSlotSiteConfigs.webSettings, 'javaVersion') ? appServiceSlotSiteConfigs.webSettings.javaVersion : json('null')
-      pythonVersion: contains(appServiceSlotSiteConfigs.webSettings, 'pythonVersion') ? appServiceSlotSiteConfigs.webSettings.pythonVersion : json('null')
-      netFrameworkVersion: contains(appServiceSlotSiteConfigs.webSettings, 'dotnetVersion') ? appServiceSlotSiteConfigs.webSettings.dotnetVersion : json('null')
-      apiManagementConfig: any(contains(appServiceSlotSiteConfigs.webSettings, 'apimGateway') ? {
-        id: replace(replace(resourceId(appServiceSlotSiteConfigs.webSettings.apimGateway.apimResourceGroupName, 'MMicrosoft.ApiManagement/apis', appServiceSlotSiteConfigs.webSettings.apimGateway.apimName, appServiceSlotSiteConfigs.webSettings.apimGateway.apimApiName), '@environment', environment), '@region', region)
-      } : {})
+      globalValidation: {
+        requireAuthentication: true
+        unauthenticatedClientAction: appServiceSlotSiteConfigs.authSettings.appAuthUnauthenticatedAction
+      }
+      identityProviders: {
+        // Azure Active Directory Provider
+        azureActiveDirectory: any(appServiceSlotSiteConfigs.authSettings.appAuthIdentityProvider == 'AzureAD' ? {
+          enabled: true
+          registration: contains(appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId, environment) ? {
+            clientId: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId[environment]
+            clientSecretSettingName: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
+            openIdIssuer: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderOpenIdIssuer[environment]
+          } : {
+            clientId: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId.default
+            clientSecretSettingName: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
+            openIdIssuer: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderOpenIdIssuer.default
+          }
+          validation: {
+            allowedAudiences: authSettingAudiences
+          }
+          isAutoProvisioned: false
+          login: {
+            tokenStore: {
+              enabled: true
+            }
+          }
+        } : json('null'))
+
+        // Facebook Provider
+        facebook: any(appServiceSlotSiteConfigs.authSettings.appAuthIdentityProvider == 'Facebook' ? {
+          enabled: true
+          registration: contains(appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId, environment) ? {
+            appId: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId[environment]
+            appSecretSettingName: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
+          } : {
+            appId: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId.default
+            appSecretSettingName: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
+          }
+          graphApiVersion: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderGraphApiVersion
+          login: {
+            scopes: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderScopes
+          }
+        } : json('null'))
+
+        // Github Provider
+        gitHub: any(appServiceSlotSiteConfigs.authSettings.appAuthIdentityProvider == 'Github' ? {
+          enabled: true
+          registration: contains(appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId, environment) ? {
+            clientId: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId[environment]
+            clientSecretSettingName: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
+          } : {
+            clientId: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId.default
+            clientSecretSettingName: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
+          }
+          login: {
+            scopes: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderScopes
+          }
+        } : json('null'))
+
+        // Google Provider
+        google: any(appServiceSlotSiteConfigs.authSettings.appAuthIdentityProvider == 'Google' ? {
+          enabled: true
+          registration: contains(appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId, environment) ? {
+            clientId: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId[environment]
+            clientSecretSettingName: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
+          } : {
+            clientId: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId.default
+            clientSecretSettingName: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
+          }
+          login: {
+            scopes: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderScopes
+          }
+          validation: {
+            allowedAudiences: authSettingAudiences
+          }
+        } : json('null'))
+      }
+      login: {
+        tokenStore: {
+          enabled: true
+        }
+      }
     }
   }
 }
@@ -218,35 +250,12 @@ module azAppServiceFunctionSlotFunctionsDeployment 'az.app.service.slot.function
     appSlotFunctionIsDiabled: function.isEnabled
   }
   dependsOn: [
-    azAppServiceFunctionSlotDeployment
+    azAppServiceSlotDeployment
   ]
 }]
 
-// 6. Set the Slots Identity Provider if applicable
-module azAppServiceAuthSettings 'az.app.service.slot.config.auth.v2.settings.bicep' = if (contains(appServiceSlotSiteConfigs, 'siteAuthSettings')) {
-  name: contains(appServiceSlotSiteConfigs, 'siteAuthSettings') ? 'az-app-slot-config-auth-${guid('${appServiceName}/${appServiceSlotName}')}' : 'no-app-service-slot-auth-settings-to-deploy'
-  scope: resourceGroup()
-  params: {
-    region: region
-    environment: environment
-    appServiceName: appServiceName
-    appServiceSlotName: appServiceSlotName
-    appServiceSlotAuthUnauthenticatedAction: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthAction
-    appServiceSlotAuthIdentityProviderType: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthIdentityProvider
-    appServiceSlotAuthIdentityProviderAudiences: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthIdentityAudiences
-    appServiceSlotAuthIdentityProviderClientSecretName: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthIdentityClientSecretName
-    appServiceSlotAuthIdentityProviderClientId: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthIdentityClientId
-    appServiceSlotAuthIdentityProviderOpenIdIssuer: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthIdentityOpenIdIssuer
-    appServiceSlotAuthIdentityProviderGraphApiVersion: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthIdentityGraphApiVersion
-    appServiceSlotAuthIdentityProviderScopes: appServiceSlotSiteConfigs.siteAuthSettings.appServiceAuthIdentityScopes
-  }
-  dependsOn: [
-    azAppServiceFunctionSlotDeployment
-  ]
-}
-
 // 7. Assignment RBAC Roles, if any, to App Service Slot Service Principal  
-module azAppServiceFunctionRoleAssignment '../../az.rbac/v1.0/az.rbac.role.assignment.bicep' = [for appSlotRoleAssignment in appServiceSlotMsiRoleAssignments: if (appServiceSlotMsiEnabled == true && !empty(appServiceSlotMsiRoleAssignments)) {
+module azAppServiceSlotFunctionRoleAssignment '../../az.rbac/v1.0/az.rbac.role.assignment.bicep' = [for appSlotRoleAssignment in appServiceSlotMsiRoleAssignments: if (appServiceSlotMsiEnabled == true && !empty(appServiceSlotMsiRoleAssignments)) {
   name: 'az-app-service-slot-rbac-${guid('${appServiceName}-${appServiceSlotName}-${appSlotRoleAssignment.resourceRoleName}')}'
   scope: resourceGroup(replace(replace(appSlotRoleAssignment.resourceGroupToScopeRoleAssignment, '@environment', environment), '@region', region))
   params: {
@@ -257,13 +266,9 @@ module azAppServiceFunctionRoleAssignment '../../az.rbac/v1.0/az.rbac.role.assig
     resourceGroupToScopeRoleAssignment: appSlotRoleAssignment.resourceGroupToScopeRoleAssignment
     resourceRoleAssignmentScope: appSlotRoleAssignment.resourceRoleAssignmentScope
     resourceTypeAssigningRole: appSlotRoleAssignment.resourceTypeAssigningRole
-    resourcePrincipalIdReceivingRole: appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux' ? azAppServiceFunctionSlotDeployment.identity.principalId : azAppServiceWebSlotDeployment.identity.principalId
+    resourcePrincipalIdReceivingRole: azAppServiceSlotDeployment.identity.principalId
   }
-  dependsOn: [
-    azAppServiceAuthSettings
-    azAppServiceFunctionSlotFunctionsDeployment
-  ]
 }]
 
 // 8. Return Deployment Output
-output resource object = appServiceSlotType == 'web' ? azAppServiceWebSlotDeployment : azAppServiceFunctionSlotDeployment
+output appServiceSlot object = azAppServiceSlotDeployment

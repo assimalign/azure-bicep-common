@@ -29,7 +29,7 @@ param storageAccountFileShareServiceShareName string
 @description('Access tier for specific share. GpV2 account can choose between TransactionOptimized (default), Hot, and Cool. FileStorage account can choose Premium.')
 param storageAccountFileShareServiceShareAccessTier string
 
-resource azStorageAccountFileShareDeployment 'Microsoft.Storage/storageAccounts/fileServices/shares@2021-08-01' = {
+resource azStorageAccountFileShareDeployment 'Microsoft.Storage/storageAccounts/fileServices/shares@2022-05-01' = {
   name: replace(replace('${storageAccountName}/${storageAccountFileShareServiceName}/${storageAccountFileShareServiceShareName}', '@environment', environment), '@region', region)
   properties: {
     accessTier: storageAccountFileShareServiceShareAccessTier

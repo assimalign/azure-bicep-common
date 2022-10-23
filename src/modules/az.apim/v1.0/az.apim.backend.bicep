@@ -12,19 +12,19 @@ param environment string = ''
 param region string = ''
 
 @description('The name of the API Management resource')
-param apimName string
+param apimGatewayName string
 
 @description('')
-param apimBackendName string
+param apimGatewayBackendName string
 
 @description('')
-param apimBackendTitle string = ''
+param apimGatewayBackendTitle string = ''
 
 @description('')
-param apimBackendDescription string = ''
+param apimGatewayBackendDescription string = ''
 
 @description('')
-param apimBackendRuntimeUrl string = ''
+param apimGatewayBackendRuntimeUrl object = {}
 
 @allowed([
   'CustomUrl'
@@ -32,28 +32,28 @@ param apimBackendRuntimeUrl string = ''
   'WebApp'
 ])
 @description('')
-param apimBackendType string = 'CustomUrl'
+param apimGatewayBackendType string = 'CustomUrl'
 
 @description('If adding an Azure Resource then specify the name of the resource to be added')
-param apimBackendSiteResourceName string = ''
+param apimGatewayBackendSiteResourceName string = ''
 
 @description('If adding an Azure Resource then specify the name of the resource group the resource lives in')
-param apimBackendSiteResourceGroupName string = ''
+param apimGatewayBackendSiteResourceGroupName string = ''
 
 // 1. Get existing Azure APIM resource
 resource azApimExistingResource 'Microsoft.ApiManagement/service@2021-01-01-preview' existing = {
-  name: replace(replace(apimName, '@environment', environment), '@region', region)
+  name: replace(replace(apimGatewayName, '@environment', environment), '@region', region)
 }
 
 // 2. If applicable, get existing app service to apply backend information
-resource azAppServiceExistingResource 'Microsoft.Web/sites@2021-01-15' existing = if (apimBackendType == 'FunctionApp' || apimBackendType == 'web') {
-  name: replace(replace(apimBackendSiteResourceName, '@environment', environment), '@region', region)
-  scope: resourceGroup(replace(replace(apimBackendSiteResourceGroupName, '@environment', environment), '@region', region))
+resource azAppServiceExistingResource 'Microsoft.Web/sites@2021-01-15' existing = if (apimGatewayBackendType == 'FunctionApp' || apimGatewayBackendType == 'web') {
+  name: replace(replace(apimGatewayBackendSiteResourceName, '@environment', environment), '@region', region)
+  scope: resourceGroup(replace(replace(apimGatewayBackendSiteResourceGroupName, '@environment', environment), '@region', region))
 }
 
 // 3. If applicable, set a named value for the function app
-resource azApimFunctionAppNamedValueDeployment 'Microsoft.ApiManagement/service/namedValues@2021-01-01-preview' = if (apimBackendType == 'FunctionApp') {
-  name: '${replace(replace(apimBackendName, '@environment', environment), '@region', region)}-bicep-key'
+resource azApimFunctionAppNamedValueDeployment 'Microsoft.ApiManagement/service/namedValues@2021-01-01-preview' = if (apimGatewayBackendType == 'FunctionApp') {
+  name: '${replace(replace(apimGatewayBackendName, '@environment', environment), '@region', region)}-bicep-key'
   parent: azApimExistingResource
   properties: {
     secret: true
@@ -68,14 +68,14 @@ resource azApimFunctionAppNamedValueDeployment 'Microsoft.ApiManagement/service/
 }
 
 // 4.1 If applicable, set the funciton app backend resource too allow routing access to Http Triggers 
-resource azApimFunctionAppBackendDeployment 'Microsoft.ApiManagement/service/backends@2021-01-01-preview' = if (apimBackendType == 'FunctionApp') {
-  name: apimBackendType == 'FunctionApp' ? replace(replace(apimBackendName, '@environment', environment), '@region', region) : 'no-backend-function-app-to-deploy'
+resource azApimFunctionAppBackendDeployment 'Microsoft.ApiManagement/service/backends@2021-01-01-preview' = if (apimGatewayBackendType == 'FunctionApp') {
+  name: apimGatewayBackendType == 'FunctionApp' ? replace(replace(apimGatewayBackendName, '@environment', environment), '@region', region) : 'no-backend-function-app-to-deploy'
   parent: azApimExistingResource
   properties: {
-    title: empty(apimBackendTitle) ? azAppServiceExistingResource.name : apimBackendTitle
-    description: empty(apimBackendDescription) ? 'Function App import for: ${azAppServiceExistingResource.name}' : apimBackendDescription
+    title: empty(apimGatewayBackendTitle) ? azAppServiceExistingResource.name : apimGatewayBackendTitle
+    description: empty(apimGatewayBackendDescription) ? 'Function App import for: ${azAppServiceExistingResource.name}' : apimGatewayBackendDescription
     protocol: 'http'
-    url: replace(replace(apimBackendRuntimeUrl, '@environment', environment), '@region', region)
+    url: replace(replace(contains(apimGatewayBackendRuntimeUrl, environment) ? apimGatewayBackendRuntimeUrl[environment] : apimGatewayBackendRuntimeUrl.default, '@environment', environment), '@region', region)
     resourceId: replace('${az.environment().resourceManager}/${azAppServiceExistingResource.id}', '///', '/')
     credentials: {
       header: {
@@ -88,27 +88,27 @@ resource azApimFunctionAppBackendDeployment 'Microsoft.ApiManagement/service/bac
 }
 
 // 4.2 If applicable, set the web app backend resource too allow routing access to Http Triggers 
-resource azApimWebAppBackendDeployment 'Microsoft.ApiManagement/service/backends@2021-01-01-preview' = if (apimBackendType == 'WebApp') {
-  name: apimBackendType == 'WebApp' ? replace(replace(apimBackendName, '@environment', environment), '@region', region) : 'no-backend-web-to-deploy'
+resource azApimWebAppBackendDeployment 'Microsoft.ApiManagement/service/backends@2021-01-01-preview' = if (apimGatewayBackendType == 'WebApp') {
+  name: apimGatewayBackendType == 'WebApp' ? replace(replace(apimGatewayBackendName, '@environment', environment), '@region', region) : 'no-backend-web-to-deploy'
   parent: azApimExistingResource
   properties: {
-    title: empty(apimBackendTitle) ? azAppServiceExistingResource.name : apimBackendTitle
-    description: empty(apimBackendDescription) ? 'Web App backend import for: ${azAppServiceExistingResource.name}' : apimBackendDescription
+    title: empty(apimGatewayBackendTitle) ? azAppServiceExistingResource.name : apimGatewayBackendTitle
+    description: empty(apimGatewayBackendDescription) ? 'Web App backend import for: ${azAppServiceExistingResource.name}' : apimGatewayBackendDescription
     protocol: 'http'
-    url: replace(replace(apimBackendRuntimeUrl, '@environment', environment), '@region', region)
+    url: replace(replace(contains(apimGatewayBackendRuntimeUrl, environment) ? apimGatewayBackendRuntimeUrl[environment] : apimGatewayBackendRuntimeUrl.default, '@environment', environment), '@region', region)
     resourceId: replace('${az.environment().resourceManager}/${azAppServiceExistingResource.id}', '///', '/')
   }
 }
 
 // 4.3 If applicable, set the web app backend resource too allow routing access to Http Triggers 
-resource azApimCustomUrlBackendDeployment 'Microsoft.ApiManagement/service/backends@2021-01-01-preview' = if (apimBackendType == 'CustomUrl') {
-  name: apimBackendType == 'CustomUrl' ? replace(replace(apimBackendName, '@environment', environment), '@region', region) : 'no-backend-custom-url-to-deploy'
+resource azApimCustomUrlBackendDeployment 'Microsoft.ApiManagement/service/backends@2021-01-01-preview' = if (apimGatewayBackendType == 'CustomUrl') {
+  name: apimGatewayBackendType == 'CustomUrl' ? replace(replace(apimGatewayBackendName, '@environment', environment), '@region', region) : 'no-backend-custom-url-to-deploy'
   parent: azApimExistingResource
   properties: {
-    title: apimBackendTitle
-    description: apimBackendDescription
+    title: apimGatewayBackendTitle
+    description: apimGatewayBackendDescription
     protocol: 'http'
-    url: replace(replace(apimBackendRuntimeUrl, '@environment', environment), '@region', region)
+    url: replace(replace(contains(apimGatewayBackendRuntimeUrl, environment) ? apimGatewayBackendRuntimeUrl[environment] : apimGatewayBackendRuntimeUrl.default, '@environment', environment), '@region', region)
     resourceId: replace('${az.environment().resourceManager}/${azAppServiceExistingResource.id}', '///', '/')
   }
 }

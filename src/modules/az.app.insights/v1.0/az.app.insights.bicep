@@ -44,7 +44,7 @@ resource azAppLogAnalyticsWorkspaceDeployment 'Microsoft.OperationalInsights/wor
 }
 
 // 2. Deploy the new instance of App insights under the requested log workspace
-resource azAppInsightsComponentsDeployment 'Microsoft.Insights/components@2020-02-02-preview' = {
+resource azAppInsightsComponentsDeployment 'Microsoft.Insights/components@2020-02-02' = {
   name: replace(replace('${appInsightsName}', '@environment', environment), '@region', region)
   location: appInsightsLocation
   kind: appInsightsKind

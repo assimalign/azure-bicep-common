@@ -34,45 +34,38 @@ param appServicePlanSku object = {
 }
 
 @description('The name of the ASE to attach to the app service plan')
-param appServicePlanAseName string = ''
+param appServicePlanEnvironmentName string = ''
 
 @description('The resource group the ASE lives under')
-param appServicePlanAseResourceGroup string = resourceGroup().name
+param appServicePlanEnvironmentResourceGroup string = resourceGroup().name
 
 @description('')
 param appServicePlanTags object = {}
 
-// **************************************************************************************** //
-//               App Service Plan, App Insights, App Storage Act, and Apps Deploy           //
-// **************************************************************************************** //
 
 // 1. Get Existing ASE Environment if applicable
-resource azAppServicePlanAseResource 'Microsoft.Web/hostingEnvironments@2021-03-01' existing = if (!empty(appServicePlanAseName)) {
-  name: replace(replace(appServicePlanAseName, '@environment', environment), '@region', region)
-  scope: resourceGroup(replace(replace(appServicePlanAseResourceGroup, '@environment', environment), '@region', region))
+resource azAppServicePlanAseResource 'Microsoft.Web/hostingEnvironments@2022-03-01' existing = if (!empty(appServicePlanEnvironmentName)) {
+  name: replace(replace(appServicePlanEnvironmentName, '@environment', environment), '@region', region)
+  scope: resourceGroup(replace(replace(appServicePlanEnvironmentResourceGroup, '@environment', environment), '@region', region))
 }
 
 // 2. Creates an app service plan under an ASE if applicable
-resource azAppServicePlanDeployment 'Microsoft.Web/serverfarms@2021-03-01' = {
+resource azAppServicePlanDeployment 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: replace(replace(appServicePlanName, '@environment', environment), '@region', region)
   location: appServicePlanLocation
   properties: {
-    hostingEnvironmentProfile: any(!empty(appServicePlanAseName) ? {
+    hostingEnvironmentProfile: any(!empty(appServicePlanEnvironmentName) ? {
       id: azAppServicePlanAseResource.id
     } : null)
   }
   kind: appServicePlanOs
-  sku: any((environment == 'dev') ? {
-    name: appServicePlanSku.dev
-  } : any((environment == 'qa') ? {
-    name: appServicePlanSku.qa
-  } : any((environment == 'uat') ? {
-    name: appServicePlanSku.uat
-  } : any((environment == 'prd') ? {
-    name: appServicePlanSku.prd
+  sku: any(!empty(environment) && contains(appServicePlanSku, environment) ? {
+    name: appServicePlanSku[environment].name
+    capacity: appServicePlanSku[environment].capacity
   } : {
-    name: appServicePlanSku.default
-  }))))
+    name: appServicePlanSku.default.name
+    capacity: appServicePlanSku.default.capacity
+  })
   tags:  union(appServicePlanTags, {
     region: empty(region) ? 'n/a' : region
     environment: empty(environment) ? 'n/a' : environment
@@ -80,4 +73,4 @@ resource azAppServicePlanDeployment 'Microsoft.Web/serverfarms@2021-03-01' = {
 }
 
 // 3. Return Deployment Output
-output resource object = azAppServicePlanDeployment
+output appServicePlan object = azAppServicePlanDeployment

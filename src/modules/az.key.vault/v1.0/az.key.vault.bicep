@@ -65,7 +65,7 @@ param keyVaultCreationMode string = 'default'
 param keyVaultTags object = {}
 
 // 3. Deploy Key Vault
-resource azKeyVaultDeployment 'Microsoft.KeyVault/vaults@2021-10-01' = {
+resource azKeyVaultDeployment 'Microsoft.KeyVault/vaults@2022-07-01' = {
   name: replace(replace(keyVaultName, '@environment', environment), '@region', region)
   location: keyVaultLocation
   properties: {
@@ -84,36 +84,27 @@ resource azKeyVaultDeployment 'Microsoft.KeyVault/vaults@2021-10-01' = {
     enableSoftDelete: contains(keyVaultConfigs, 'keyVaultSoftDeleteEnabled') ? keyVaultConfigs.keyVaultSoftDeleteEnabled : true
     softDeleteRetentionInDays: contains(keyVaultConfigs, 'keyVaultSoftDeleteRetention') ? keyVaultConfigs.keyVaultSoftDeleteRetention : 7
     enablePurgeProtection: contains(keyVaultConfigs, 'keyVaultPurgeProtectionEnabled') ? keyVaultConfigs.keyVaultPurgeProtectionEnabled : json('null')
-    sku: any(environment == 'dev' ? {
-      name: keyVaultSku.dev
-      family: 'A'
-    } : any(environment == 'qa' ? {
-      name: keyVaultSku.qa
-      family: 'A'
-    } : any(environment == 'uat' ? {
-      name: keyVaultSku.uat
-      family: 'A'
-    } : any(environment == 'prd' ? {
-      name: keyVaultSku.dev
+    sku: any(contains(keyVaultSku, environment) ? {
+      name: keyVaultSku[environment]
       family: 'A'
     } : {
       name: keyVaultSku.default
       family: 'A'
-    }))))
+    })
     networkAcls: {
       defaultAction: keyVaultDefaultNetworkAccess
       ipRules: [for ip in keyVaultIpAddressAccessRules: {
         value: ip.ipAddress
       }]
       virtualNetworkRules: [for networkRule in keyVaultVirtualNetworkAccessRules: {
-        id: replace(replace(resourceId('${networkRule.virtualNetworkResourceGroup}', 'Microsoft.Network/virtualNetworks/subnets', '${networkRule.virtualNetwork}', networkRule.virtualNetworkSubnet), '@environment', environment), '@region', region)
+        id: any(replace(replace(resourceId('${networkRule.virtualNetworkResourceGroup}', 'Microsoft.Network/virtualNetworks/subnets', '${networkRule.virtualNetwork}', networkRule.virtualNetworkSubnet), '@environment', environment), '@region', region))
       }]
     }
   }
   tags: union(keyVaultTags, {
-    region: empty(region) ? 'n/a' : region
-    environment: empty(environment) ? 'n/a' : environment
-  })
+      region: empty(region) ? 'n/a' : region
+      environment: empty(environment) ? 'n/a' : environment
+    })
 }
 
 module azKeyVaultSecretDeployment 'az.key.vault.secret.bicep' = [for secret in keyVaultSecrets: if (!empty(keyVaultSecrets)) {

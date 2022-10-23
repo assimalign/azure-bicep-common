@@ -18,18 +18,16 @@ param appName string
 param appSlotSettingNames array = []
 
 @description('')
-param appSlotConnectionStringNames array = [] 
+param appSlotConnectionStringNames array = []
 
 @description('')
 param appSlotAzureStorageConfigNames array = []
 
-
-
-resource azAppServiceSlotSpecificSettingDeployment 'Microsoft.Web/sites/config@2021-02-01' = {
+resource azAppServiceSlotSpecificSettingDeployment 'Microsoft.Web/sites/config@2022-03-01' = {
   name: replace(replace('${appName}/slotConfigNames', '@environment', environment), '@region', region)
   properties: {
     appSettingNames: appSlotSettingNames
     connectionStringNames: appSlotConnectionStringNames
-    azureStorageConfigNames:appSlotAzureStorageConfigNames
+    azureStorageConfigNames: appSlotAzureStorageConfigNames
   }
 }

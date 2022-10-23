@@ -71,36 +71,53 @@
                     "description": "An optional parameter to be used if scoping Bicep Deployment from the Subscription."
                 },
                 "cognitiveSearchSku": {
-                    "type": "object",
-                    "default": {
-                        "dev": "free",
-                        "qa": "free",
-                        "uat": "free",
-                        "prd": "free",
-                        "default": "free"
-                    },
-                    "properties": {
-                        "dev": {
-                            "type": "string",
-                            "$ref": "#/definitions/cognitive-search-sku"
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "type": "string",
+                                    "$ref": "#/definitions/cognitive-search-sku"
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
                         },
-                        "qa": {
-                            "type": "string",
-                            "$ref": "#/definitions/cognitive-search-sku"
-                        },
-                        "uat": {
-                            "type": "string",
-                            "$ref": "#/definitions/cognitive-search-sku"
-                        },
-                        "prd": {
-                            "type": "string",
-                            "$ref": "#/definitions/cognitive-search-sku"
-                        },
-                        "default": {
-                            "type": "string",
-                            "$ref": "#/definitions/cognitive-search-sku"
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "type": "string",
+                                    "$ref": "#/definitions/cognitive-search-sku"
+                                },
+                                "qa": {
+                                    "type": "string",
+                                    "$ref": "#/definitions/cognitive-search-sku"
+                                },
+                                "uat": {
+                                    "type": "string",
+                                    "$ref": "#/definitions/cognitive-search-sku"
+                                },
+                                "prd": {
+                                    "type": "string",
+                                    "$ref": "#/definitions/cognitive-search-sku"
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
                         }
+                    ],
+                    "default": {
+                        "dev": "free"
                     }
+                },
+                "cognitiveSearchMsiEnabled":{
+                    "type":"boolean"
                 },
                 "cognitiveSearchHostingMode": {
                     "type": "string",
@@ -111,6 +128,16 @@
                 },
                 "cognitiveSearchDisablePublicAccess": {
                     "type": "boolean"
+                },
+                "cognitiveSearchPrivateEndpoint": {
+                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
+                },
+                "cognitiveSearchMsiRoleAssignments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "../../az.rbac/v1.0/parameters.json#/definitions/roleAssignment"
+                    },
+                    "minItems": 1
                 },
                 "cognitiveSearchTags": {
                     "type": "object",

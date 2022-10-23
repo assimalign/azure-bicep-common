@@ -53,7 +53,7 @@ resource azCognitiveServicesExistingResource 'Microsoft.CognitiveServices/accoun
 
 // 2. Assign Resource Role Scoped to the resource
 resource azCognitiveServicesResourceScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'Resource') {
-  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
+  name: guid(resourcePrincipalIdReceivingRole, RoleDefinitionId[resourceRoleName], 'scope-resource')
   scope: azCognitiveServicesExistingResource
   properties: {
     principalId: resourcePrincipalIdReceivingRole
@@ -63,7 +63,7 @@ resource azCognitiveServicesResourceScopedRoleAssignmentDeployment 'Microsoft.Au
 
 // 3. Assign Resource Role Scoped to the Resource Group
 resource azCognitiveServicesResourceGroupScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'ResourceGroup') {
-  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
+  name: guid(resourcePrincipalIdReceivingRole, RoleDefinitionId[resourceRoleName], 'scope-resource-group')
   scope: resourceGroup()
   properties: {
     principalId: resourcePrincipalIdReceivingRole

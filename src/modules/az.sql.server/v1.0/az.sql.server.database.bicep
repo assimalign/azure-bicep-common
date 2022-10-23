@@ -29,58 +29,39 @@ param sqlServerAccountDatabaseConfigs object = {}
 @description('')
 param sqlServerAccountDatabaseTags object = {}
 
-var properties = any(environment == 'dev' ? {
-  minCapacity: contains(sqlServerAccountDatabaseSku.dev, 'dbMinCapacity') ? sqlServerAccountDatabaseSku.dev.dbMinCapacity : 1
-  requestedBackupStorageRedundancy: contains(sqlServerAccountDatabaseSku.dev, 'dbRedundancy') ? sqlServerAccountDatabaseSku.dev.dbRedundancy : 'Local'
-  readScale: sqlServerAccountDatabaseSku.dev.dbTier == 'Preimum' && contains(sqlServerAccountDatabaseConfigs, 'dbReadScale') ? sqlServerAccountDatabaseConfigs.dbReadScale : 'Disabled'
-  maxSizeBytes: sqlServerAccountDatabaseSku.dev.dbMaxGBSize * 1073741824
-} : any(environment == 'qa' ? {
-  minCapacity: contains(sqlServerAccountDatabaseSku.dev, 'dbMinCapacity') ? sqlServerAccountDatabaseSku.dev.dbMinCapacity : 1
-  requestedBackupStorageRedundancy: contains(sqlServerAccountDatabaseSku.qa, 'dbRedundancy') ? sqlServerAccountDatabaseSku.qa.dbRedundancy : 'Local'
-  readScale: sqlServerAccountDatabaseSku.qa.dbTier == 'Preimum' && contains(sqlServerAccountDatabaseConfigs, 'dbReadScale') ? sqlServerAccountDatabaseConfigs.dbReadScale : 'Disabled'
-  maxSizeBytes: sqlServerAccountDatabaseSku.qa.dbMaxGBSize * 1073741824
-} : any(environment == 'uat' ? {
-  minCapacity: contains(sqlServerAccountDatabaseSku.dev, 'dbMinCapacity') ? sqlServerAccountDatabaseSku.dev.dbMinCapacity : 1
-  requestedBackupStorageRedundancy: contains(sqlServerAccountDatabaseSku.uat, 'dbRedundancy') ? sqlServerAccountDatabaseSku.uat.dbRedundancy : 'Local'
-  readScale: sqlServerAccountDatabaseSku.uat.dbTier == 'Preimum' && contains(sqlServerAccountDatabaseConfigs, 'dbReadScale') ? sqlServerAccountDatabaseConfigs.dbReadScale : 'Disabled'
-  maxSizeBytes: sqlServerAccountDatabaseSku.uat.dbMaxGBSize * 1073741824
-} : any(environment == 'prd' ? {
-  minCapacity: contains(sqlServerAccountDatabaseSku.dev, 'dbMinCapacity') ? sqlServerAccountDatabaseSku.dev.dbMinCapacity : 1
-  requestedBackupStorageRedundancy: contains(sqlServerAccountDatabaseSku.prd, 'dbRedundancy') ? sqlServerAccountDatabaseSku.prd.dbRedundancy : 'Local'
-  readScale: sqlServerAccountDatabaseSku.prd.dbTier == 'Preimum' && contains(sqlServerAccountDatabaseConfigs, 'dbReadScale') ? sqlServerAccountDatabaseConfigs.dbReadScale : 'Disabled'
-  maxSizeBytes: sqlServerAccountDatabaseSku.prd.dbMaxGBSize * 1073741824
-} : {}))))
+var properties = any(contains(sqlServerAccountDatabaseSku, environment) ? {
+  minCapacity: contains(sqlServerAccountDatabaseSku[environment], 'dbMinCapacity') ? sqlServerAccountDatabaseSku[environment].dbMinCapacity : 1
+  requestedBackupStorageRedundancy: contains(sqlServerAccountDatabaseSku[environment], 'dbRedundancy') ? sqlServerAccountDatabaseSku[environment].dbRedundancy : 'Local'
+  readScale: sqlServerAccountDatabaseSku[environment].dbTier == 'Preimum' && contains(sqlServerAccountDatabaseConfigs, 'dbReadScale') ? sqlServerAccountDatabaseConfigs.dbReadScale : 'Disabled'
+  maxSizeBytes: sqlServerAccountDatabaseSku[environment].dbMaxGBSize * 1073741824
+} : {
+  minCapacity: contains(sqlServerAccountDatabaseSku.default, 'dbMinCapacity') ? sqlServerAccountDatabaseSku.default.dbMinCapacity : 1
+  requestedBackupStorageRedundancy: contains(sqlServerAccountDatabaseSku.default, 'dbRedundancy') ? sqlServerAccountDatabaseSku.default.dbRedundancy : 'Local'
+  readScale: sqlServerAccountDatabaseSku.default.dbTier == 'Preimum' && contains(sqlServerAccountDatabaseConfigs, 'dbReadScale') ? sqlServerAccountDatabaseConfigs.dbReadScale : 'Disabled'
+  maxSizeBytes: sqlServerAccountDatabaseSku.default.dbMaxGBSize * 1073741824
+})
 
-resource sqlServerDatabaseDeployment 'Microsoft.Sql/servers/databases@2021-08-01-preview' = {
+resource sqlServerDatabaseDeployment 'Microsoft.Sql/servers/databases@2022-02-01-preview' = {
   name: replace(replace('${sqlServerAccountName}/${sqlServerAccountDatabaseName}', '@environment', environment), '@region', region)
   location: sqlServerAccountDatabaseLocation
   properties: union({
-    collation: contains(sqlServerAccountDatabaseConfigs, 'dbCollation') ? sqlServerAccountDatabaseConfigs.dbCollation : 'SQL_Latin1_General_CP1_CI_AS'
-  }, properties)
-  sku: any(environment == 'dev' ? {
-    tier: sqlServerAccountDatabaseSku.dev.dbTier
-    name: sqlServerAccountDatabaseSku.dev.dbTier
-    capacity: sqlServerAccountDatabaseSku.dev.dbMaxCapacity
-  } : any(environment == 'qa' ? {
-    tier: sqlServerAccountDatabaseSku.qa.dbTier
-    name: sqlServerAccountDatabaseSku.qa.dbTier
-    capacity: sqlServerAccountDatabaseSku.qa.dbMaxCapacity
-  } : any(environment == 'uat' ? {
-    tier: sqlServerAccountDatabaseSku.uat.dbTier
-    name: sqlServerAccountDatabaseSku.uat.dbTier
-    capacity: sqlServerAccountDatabaseSku.uat.dbMaxCapacity
-  } : any(environment == 'prd' ? {
-    tier: sqlServerAccountDatabaseSku.prd.dbTier
-    name: sqlServerAccountDatabaseSku.prd.dbTier
-    capacity: sqlServerAccountDatabaseSku.prd.dbMaxCapacity
-  } : {}))))
-  tags: union(sqlServerAccountDatabaseTags, {
-    region: empty(region) ? 'n/a' : region
-    environment: empty(environment) ? 'n/a' : environment
+      collation: contains(sqlServerAccountDatabaseConfigs, 'dbCollation') ? sqlServerAccountDatabaseConfigs.dbCollation : 'SQL_Latin1_General_CP1_CI_AS'
+    }, properties)
+  sku: any(contains(sqlServerAccountDatabaseSku, environment) ? {
+    tier: sqlServerAccountDatabaseSku[environment].dbTier
+    name: sqlServerAccountDatabaseSku[environment].dbTier
+    capacity: sqlServerAccountDatabaseSku[environment].dbMaxCapacity
+  } : {
+    tier: sqlServerAccountDatabaseSku.default.dbTier
+    name: sqlServerAccountDatabaseSku.default.dbTier
+    capacity: sqlServerAccountDatabaseSku.default.dbMaxCapacity
   })
+  tags: union(sqlServerAccountDatabaseTags, {
+      region: empty(region) ? 'n/a' : region
+      environment: empty(environment) ? 'n/a' : environment
+    })
 }
 
-output resource object = sqlServerDatabaseDeployment
-
+output sqlServerDatabase object = sqlServerDatabaseDeployment
 
 // Publish-AzBicepModule -FilePath './src/modules/az.sql.server/v1.0/az.sql.server.database.bicep' -Target 'br:asalbicep.azurecr.io/modules/az.sql.server.database:v1.0'

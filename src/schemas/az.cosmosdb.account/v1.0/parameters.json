@@ -180,6 +180,9 @@
                             "failoverPriority": {
                                 "type": "number",
                                 "default": 0
+                            },
+                            "isZoneRedundant":{
+                                "type":"boolean"
                             }
                         },
                         "required": [
@@ -192,6 +195,12 @@
                 "cosmosAccountConsistencyPolicy": {
                     "type": "object",
                     "properties": {
+                        "consistencyMaxInterval": {
+                            "type": "number"
+                        },
+                        "consistencyMaxStalenessPrefix": {
+                            "type": "number"
+                        },
                         "consistencyLevel": {
                             "type": "string",
                             "oneOf": [
@@ -257,6 +266,102 @@
                 },
                 "cosmosAccountPrivateEndpoint": {
                     "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
+                },
+                "cosmosAccountVirtualNetworks": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "virtualNetworkName": {
+                                "type": "string"
+                            },
+                            "virtualNetworkSubnetName": {
+                                "type": "string"
+                            },
+                            "virtualNetworkResourceGroup": {
+                                "type": "string"
+                            },
+                            "VirtualNetworkMissingServiceEndpointIgnore": {
+                                "type": "boolean"
+                            }
+                        },
+                        "required": [
+                            "virtualNetworkName",
+                            "virtualNetworkSubnetName",
+                            "virtualNetworkResourceGroup"
+                        ]
+                    },
+                    "minItems": 1
+                },
+                "cosmosAccountBackupPolicy": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "policyType": {
+                                    "const": "Continuous"
+                                },
+                                "policyBackupStartTime": {
+                                    "type": "string"
+                                },
+                                "policyBackupTargetType": {
+                                    "enum": [
+                                        "Continuous",
+                                        "Periodic"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "policyType",
+                                "policyBackupStartTime",
+                                "policyBackupTargetType"
+                            ]
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "policyType": {
+                                    "const": "Periodic"
+                                },
+                                "policyBackupInternal": {
+                                    "description": "The backup interval should be in minutes",
+                                    "type": "number"
+                                },
+                                "policyBackupRetentionInterval": {
+                                    "description": "The backup retention interval should be in hours",
+                                    "type": "number"
+                                },
+                                "policyBackupStorageRedundancy": {
+                                    "enum": [
+                                        "Geo",
+                                        "Local",
+                                        "Zone"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "policyType",
+                                "policyBackupInternal",
+                                "policyBackupRetentionInterval",
+                                "policyBackupStorageRedundancy"
+                            ]
+                        }
+                    ]
+                },
+                "cosmosAccountConfigs": {
+                    "type": "object",
+                    "properties": {
+                        "disableLocalAuth": {
+                            "type": "boolean"
+                        },
+                        "disablePublicNetworkAccess": {
+                            "type": "boolean"
+                        },
+                        "enableVirtualNetworkFiltering": {
+                            "type": "boolean"
+                        }
+                    },
+                    "minProperties": 1
                 }
             },
             "required": [
@@ -336,11 +441,11 @@
         "cosmos-accounts-document-database-parameters": {
             "type": "object",
             "properties": {
-                "cosmosDatabaseName": {
+                "cosmosAccountDatabaseName": {
                     "type": "string",
                     "description": "The name of the Database."
                 },
-                "cosmosDatabaseContainers": {
+                "cosmosAccountDatabaseContainers": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/cosmos-accounts-document-database-container-parameters"
@@ -349,7 +454,7 @@
                 }
             },
             "required": [
-                "cosmosDatabaseName"
+                "cosmosAccountDatabaseName"
             ]
         },
         "cosmos-accounts-document-database-container": {
@@ -364,7 +469,7 @@
                         {
                             "type": "object",
                             "properties": {
-                                "cosmosDatabaseName": {
+                                "cosmosAccountDatabaseName": {
                                     "type": "string"
                                 },
                                 "cosmosAccountName": {
@@ -376,7 +481,7 @@
                                 }
                             },
                             "required": [
-                                "cosmosDatabaseName",
+                                "cosmosAccountDatabaseName",
                                 "cosmosAccountName"
                             ]
                         }
@@ -400,7 +505,7 @@
                             {
                                 "type": "object",
                                 "properties": {
-                                    "cosmosDatabaseName": {
+                                    "cosmosAccountDatabaseName": {
                                         "type": "string"
                                     },
                                     "cosmosAccountName": {
@@ -412,7 +517,7 @@
                                     }
                                 },
                                 "required": [
-                                    "cosmosDatabaseName",
+                                    "cosmosAccountDatabaseName",
                                     "cosmosAccountName"
                                 ]
                             }
@@ -428,24 +533,18 @@
         "cosmos-accounts-document-database-container-parameters": {
             "type": "object",
             "properties": {
-                "cosmosDatabaseContainerName": {
+                "cosmosAccountDatabaseContainerName": {
                     "type": "string"
                 },
-                "cosmosDatabaseContainerPartitionKey": {
+                "cosmosAccountDatabaseContainerPartitionKey": {
                     "type": "object",
                     "properties": {
                         "kind": {
                             "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Hash"
-                                },
-                                {
-                                    "const": "MultiHash"
-                                },
-                                {
-                                    "const": "Range"
-                                }
+                            "enum": [
+                                "Hash",
+                                "MultiHash",
+                                "Range"
                             ]
                         },
                         "paths": {
@@ -461,7 +560,7 @@
                         "paths"
                     ]
                 },
-                "cosmosDatabaseContainerUniqueKeyPolicy": {
+                "cosmosAccountDatabaseContainerUniqueKeyPolicy": {
                     "type": "array",
                     "items": {
                         "type": "object",
@@ -480,21 +579,15 @@
                         ]
                     }
                 },
-                "cosmosDatabaseContainerIndexingPolicy": {
+                "cosmosAccountDatabaseContainerIndexingPolicy": {
                     "properties": {
                         "indexingMode": {
                             "type": "string",
                             "default": "consistent",
-                            "oneOf": [
-                                {
-                                    "const": "consistent"
-                                },
-                                {
-                                    "const": "lazy"
-                                },
-                                {
-                                    "const": "none"
-                                }
+                            "enum": [
+                                "none",
+                                "consistent",
+                                "lazy"
                             ]
                         },
                         "includePaths": {
@@ -541,13 +634,9 @@
                                         },
                                         "order": {
                                             "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "ascending"
-                                                },
-                                                {
-                                                    "const": "descending"
-                                                }
+                                            "enum": [
+                                                "ascending",
+                                                "descending"
                                             ]
                                         }
                                     },
@@ -566,14 +655,14 @@
                         }
                     }
                 },
-                "cosmosDatabaseContainerTtl": {
+                "cosmosAccountDatabaseContainerTtl": {
                     "type": "number",
                     "minimum": 1
                 }
             },
             "required": [
-                "cosmosDatabaseContainerName",
-                "cosmosDatabaseContainerPartitionKey"
+                "cosmosAccountDatabaseContainerName",
+                "cosmosAccountDatabaseContainerPartitionKey"
             ]
         },
         "cosmos-accounts-graph-databases": {
@@ -648,11 +737,11 @@
         "cosmos-accounts-graph-database-parameters": {
             "type": "object",
             "properties": {
-                "cosmosDatabaseName": {
+                "cosmosAccountDatabaseName": {
                     "type": "string",
                     "description": "The name of the Database."
                 },
-                "cosmosDatabaseContainers": {
+                "cosmosAccountDatabaseContainers": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/cosmos-accounts-graph-database-container-parameters"
@@ -661,7 +750,7 @@
                 }
             },
             "required": [
-                "cosmosDatabaseName"
+                "cosmosAccountDatabaseName"
             ]
         },
         "cosmos-accounts-graph-database-container": {
@@ -676,7 +765,7 @@
                         {
                             "type": "object",
                             "properties": {
-                                "cosmosDatabaseName": {
+                                "cosmosAccountDatabaseName": {
                                     "type": "string"
                                 },
                                 "cosmosAccountName": {
@@ -688,7 +777,7 @@
                                 }
                             },
                             "required": [
-                                "cosmosDatabaseName",
+                                "cosmosAccountDatabaseName",
                                 "cosmosAccountName"
                             ]
                         }
@@ -712,7 +801,7 @@
                             {
                                 "type": "object",
                                 "properties": {
-                                    "cosmosDatabaseName": {
+                                    "cosmosAccountDatabaseName": {
                                         "type": "string"
                                     },
                                     "cosmosAccountName": {
@@ -724,7 +813,7 @@
                                     }
                                 },
                                 "required": [
-                                    "cosmosDatabaseName",
+                                    "cosmosAccountDatabaseName",
                                     "cosmosAccountName",
                                     "cosmosAccountResourceGroup"
                                 ]
@@ -741,24 +830,18 @@
         "cosmos-accounts-graph-database-container-parameters": {
             "type": "object",
             "properties": {
-                "cosmosDatabaseContainerName": {
+                "cosmosAccountDatabaseContainerName": {
                     "type": "string"
                 },
-                "cosmosDatabaseContainerPartitionKey": {
+                "cosmosAccountDatabaseContainerPartitionKey": {
                     "type": "object",
                     "properties": {
                         "kind": {
                             "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Hash"
-                                },
-                                {
-                                    "const": "MultiHash"
-                                },
-                                {
-                                    "const": "Range"
-                                }
+                            "enum": [
+                                "Hash",
+                                "MultiHash",
+                                "Range"
                             ]
                         },
                         "paths": {
@@ -774,7 +857,7 @@
                         "paths"
                     ]
                 },
-                "cosmosDatabaseContainerUniqueKeyPolicy": {
+                "cosmosAccountDatabaseContainerUniqueKeyPolicy": {
                     "type": "array",
                     "items": {
                         "type": "object",
@@ -793,21 +876,15 @@
                         ]
                     }
                 },
-                "cosmosDatabaseContainerIndexingPolicy": {
+                "cosmosAccountDatabaseContainerIndexingPolicy": {
                     "properties": {
                         "indexingMode": {
                             "type": "string",
                             "default": "consistent",
-                            "oneOf": [
-                                {
-                                    "const": "consistent"
-                                },
-                                {
-                                    "const": "lazy"
-                                },
-                                {
-                                    "const": "none"
-                                }
+                            "enum": [
+                                "none",
+                                "consistent",
+                                "lazy"
                             ]
                         },
                         "includePaths": {
@@ -854,13 +931,9 @@
                                         },
                                         "order": {
                                             "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "ascending"
-                                                },
-                                                {
-                                                    "const": "descending"
-                                                }
+                                            "enum": [
+                                                "ascending",
+                                                "descending"
                                             ]
                                         }
                                     },
@@ -879,16 +952,16 @@
                         }
                     }
                 },
-                "cosmosDatabaseContainerTtl": {
+                "cosmosAccountDatabaseContainerTtl": {
                     "type": "number",
                     "minimum": 1
                 }
             },
             "required": [
-                "cosmosDatabaseContainerName",
-                "cosmosDatabaseContainerPartitionKey",
-                "cosmosDatabaseContainerIndexingPolicy",
-                "cosmosDatabaseContainerUniqueKeyPolicy"
+                "cosmosAccountDatabaseContainerName",
+                "cosmosAccountDatabaseContainerPartitionKey",
+                "cosmosAccountDatabaseContainerIndexingPolicy",
+                "cosmosAccountDatabaseContainerUniqueKeyPolicy"
             ]
         },
         "cosmos-accounts-database-tables": {

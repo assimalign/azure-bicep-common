@@ -30,15 +30,15 @@ resource azNotificationNamespaceExistingResource 'Microsoft.NotificationHubs/nam
 }
 
 // 2. Create or Update Key Vault Secret with Notification Hub Namespace Authorization Rule Primary Key & Connection String
-resource azKeyVaultExistingResource 'Microsoft.KeyVault/vaults@2021-04-01-preview' existing = {
+resource azKeyVaultExistingResource 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: replace(replace(keyVaultName, '@environment', environment), '@region', region)
-  resource azNotificationNamespaceAuthPolicyConnectionStringSecret 'secrets@2021-04-01-preview' = {
+  resource azNotificationNamespaceAuthPolicyConnectionStringSecret 'secrets' = {
     name: '${keyVaultSecretName}-connection-string'
     properties: {
       value: listKeys(azNotificationNamespaceExistingResource.id, azNotificationNamespaceExistingResource.apiVersion).primaryConnectionString
     }
   }
-  resource azNotificationNamespaceAuthPolicyPrimaryKeySecret 'secrets@2021-04-01-preview' = {
+  resource azNotificationNamespaceAuthPolicyPrimaryKeySecret 'secrets' = {
     name: '${keyVaultSecretName}-primary-key'
     properties: {
       value: listKeys(azNotificationNamespaceExistingResource.id, azNotificationNamespaceExistingResource.apiVersion).primaryKey

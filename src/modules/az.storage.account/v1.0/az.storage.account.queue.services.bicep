@@ -33,12 +33,12 @@ param storageAccountQueueServicePrivateEndpoint object = {}
 param storageAccountQueueServiceQueues array = []
 
 // 1. Get the existing Storage Account
-resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2021-04-01' existing = {
+resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2022-05-01' existing = {
   name: replace(replace(storageAccountName, '@environment', environment), '@region', region)
 }
 
 // 2. Deploy the Storage Account Queue Service
-resource azStorageAccountQueueServiceDeployment 'Microsoft.Storage/storageAccounts/queueServices@2021-04-01' = {
+resource azStorageAccountQueueServiceDeployment 'Microsoft.Storage/storageAccounts/queueServices@2022-05-01' = {
   name: storageAccountQueueServiceName
   parent: azStorageAccountResource
   properties: {

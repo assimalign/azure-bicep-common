@@ -41,25 +41,13 @@
                 },
                 "appInsightsKind": {
                     "type": "string",
-                    "oneOf": [
-                        {
-                            "const": "web"
-                        },
-                        {
-                            "const": "ios"
-                        },
-                        {
-                            "const": "other"
-                        },
-                        {
-                            "const": "store"
-                        },
-                        {
-                            "const": "java"
-                        },
-                        {
-                            "const": "phone"
-                        }
+                    "enum": [
+                        "web",
+                        "ios",
+                        "other",
+                        "store",
+                        "java",
+                        "phone"
                     ]
                 },
                 "appInsightsAnalyticWorkspaceName": {

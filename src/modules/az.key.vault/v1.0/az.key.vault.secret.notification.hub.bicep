@@ -23,27 +23,26 @@ param resourceName string
 @description('The resource group name of the resource with sensitive information to upload into the key vault for secure access')
 param resourceGroupName string
 
-
 // 1. Get an existing Notification Hub Authorization Rule resource
-resource azNotificationHubExistingResource 'Microsoft.NotificationHubs/namespaces/notificationHubs/AuthorizationRules@2017-04-01' existing =  {
+resource azNotificationHubExistingResource 'Microsoft.NotificationHubs/namespaces/notificationHubs/AuthorizationRules@2017-04-01' existing = {
   name: replace(replace('${resourceName}', '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace('${resourceGroupName}', '@environment', environment), '@region', region))
 }
 
 // 2. Create or Update Key Vault with Notification Hub Connection String & Primary Key
-resource azKeyVaultExistingResource 'Microsoft.KeyVault/vaults@2021-04-01-preview' existing =  {
+resource azKeyVaultExistingResource 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
   name: replace(replace(keyVaultName, '@environment', environment), '@region', region)
-  resource azNotificationHubAuthPolicyConnectionStringSecret 'secrets@2021-04-01-preview' = {
+  resource azNotificationHubAuthPolicyConnectionStringSecret 'secrets' = {
     name: '${keyVaultSecretName}-connection-string'
     properties: {
-      value: listKeys(azNotificationHubExistingResource.id, azNotificationHubExistingResource.apiVersion).primaryConnectionString 
+      value: listKeys(azNotificationHubExistingResource.id, azNotificationHubExistingResource.apiVersion).primaryConnectionString
     }
   }
 
-  resource azNotificationHubAuthPolicyPrimaryKeySecret 'secrets@2021-04-01-preview' = {
-    name:'${keyVaultSecretName}-primary-key'
+  resource azNotificationHubAuthPolicyPrimaryKeySecret 'secrets' = {
+    name: '${keyVaultSecretName}-primary-key'
     properties: {
-      value: listKeys(azNotificationHubExistingResource.id, azNotificationHubExistingResource.apiVersion).primaryKey 
+      value: listKeys(azNotificationHubExistingResource.id, azNotificationHubExistingResource.apiVersion).primaryKey
     }
   }
 }

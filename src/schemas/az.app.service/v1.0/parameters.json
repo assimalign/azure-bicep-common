@@ -21,7 +21,8 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/app-service-parameters"
-                    }
+                    },
+                    "minItems": 1
                 }
             },
             "required": [
@@ -37,42 +38,19 @@
                 "appServiceResourceGroup": {
                     "type": "string"
                 },
-                "appServiceLocation": {
-                    "type": "string"
-                },
                 "appServiceType": {
                     "type": "string",
-                    "oneOf": [
-                        {
-                            "const": "web"
-                        },
-                        {
-                            "const": "functionapp"
-                        },
-                        {
-                            "const": "functionapp,linux"
-                        }
+                    "enum": [
+                        "app",
+                        "app,linux",
+                        "app,linux,container",
+                        "app,container,windows",
+                        "functionapp",
+                        "functionapp,linux"
                     ]
                 },
-                "appServicePlatform": {
-                    "type": "string",
-                    "oneOf": [
-                        {
-                            "const": "dotnet"
-                        },
-                        {
-                            "const": "java"
-                        },
-                        {
-                            "const": "node"
-                        },
-                        {
-                            "const": "python"
-                        },
-                        {
-                            "const": "php"
-                        }
-                    ]
+                "appServiceLocation": {
+                    "type": "string"
                 },
                 "appServiceMsiEnabled": {
                     "type": "boolean",
@@ -105,121 +83,7 @@
                     "type": "string"
                 },
                 "appServiceSiteConfigs": {
-                    "type": "object",
-                    "properties": {
-                        "httpsOnly": {
-                            "type": "boolean",
-                            "default": true
-                        },
-                        "alwaysOn": {
-                            "type": "boolean"
-                        },
-                        "webSettings": {
-                            "type": "object",
-                            "properties": {
-                                "dotnetVersion": {
-                                    "enum": [
-                                        "v6.0",
-                                        "v3.1"
-                                    ]
-                                },
-                                "phpVersion": {
-                                    "enum": [
-                                        ""
-                                    ]
-                                },
-                                "pythonVersion": {
-                                    "enum": [
-                                        ""
-                                    ]
-                                },
-                                "nodeVersion": {
-                                    "enum": [
-                                        ""
-                                    ]
-                                },
-                                "powerShellVersion": {
-                                    "enum": [
-                                        ""
-                                    ]
-                                },
-                                "apimGateway": {
-                                    "type": "object",
-                                    "description": "Link an APIM Gateway to the Web App Deployment",
-                                    "properties": {
-                                        "apimApiName": {
-                                            "type": "string"
-                                        },
-                                        "apimName": {
-                                            "type": "string"
-                                        },
-                                        "apimResourceGroupName": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "apimApiName",
-                                        "apimName",
-                                        "apimResourceGroupName"
-                                    ]
-                                }
-                            }
-                        },
-                        "siteSettings": {
-                            "type": "array",
-                            "description": "The site settings for the app service",
-                            "items": {
-                                "anyOf": [
-                                    {
-                                        "type": "object",
-                                        "enum": [
-                                            {
-                                                "name": "FUNCTIONS_EXTENSION_VERSION",
-                                                "value": "~4"
-                                            },
-                                            {
-                                                "name": "FUNCTIONS_EXTENSION_VERSION",
-                                                "value": "~3"
-                                            },
-                                            {
-                                                "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                                                "value": "~16"
-                                            },
-                                            {
-                                                "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                                                "value": "~14"
-                                            },
-                                            {
-                                                "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                                                "value": "~12"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            "name": {
-                                                "type": "string"
-                                            },
-                                            "value": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    }
-                                ],
-                                "required": [
-                                    "name",
-                                    "value"
-                                ]
-                            }
-                        },
-                        "siteAuthSettings": {
-                            "$ref": "#/definitions/app-services-auth-settings"
-                        }
-                    },
-                    "required": [
-                        "siteSettings"
-                    ]
+                    "$ref": "#/definitions/app-service-site-configs"
                 },
                 "appServiceSlots": {
                     "type": "array",
@@ -249,7 +113,7 @@
                             }
                         },
                         "required": [
-                            "name",
+                            "appServiceSlotName",
                             "functions"
                         ]
                     }
@@ -270,10 +134,18 @@
             "required": [
                 "appServiceName",
                 "appServiceType",
-                "appServicePlatform",
                 "appServiceStorageAccountName",
-                "appServiceAppInsightsName",
-                "appServiceSiteConfigs"
+                "appServiceAppInsightsName"
+            ]
+        },
+        "app-services-slot": {
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/app-service-slot-parameters"
+                }
+            },
+            "required": [
+                "value"
             ]
         },
         "app-services-slots": {
@@ -281,167 +153,117 @@
                 "value": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "appServiceName": {
-                                "type": "string",
-                                "description": "The Azure App Service in which the slot will rollup under."
-                            },
-                            "appServiceSlotName": {
-                                "type": "string"
-                            },
-                            "appServiceSlotLocation": {
-                                "type": "string"
-                            },
-                            "appServiceSlotType": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "web"
-                                    },
-                                    {
-                                        "const": "functionapp"
-                                    },
-                                    {
-                                        "const": "functionapp,linux"
-                                    }
-                                ]
-                            },
-                            "appServiceSlotPlatform": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "dotnet"
-                                    },
-                                    {
-                                        "const": "java"
-                                    },
-                                    {
-                                        "const": "node"
-                                    },
-                                    {
-                                        "const": "python"
-                                    },
-                                    {
-                                        "const": "php"
-                                    }
-                                ]
-                            },
-                            "appServiceSlotPlatformVersion": {
-                                "type": "string"
-                            },
-                            "appServiceSlotMsiEnabled": {
-                                "type": "boolean",
-                                "default": false
-                            },
-                            "appServiceSlotMsiRoleAssignments": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "../../az.rbac/v1.0/parameters.json#/definitions/roleAssignment"
-                                }
-                            },
-                            "appServiceSlotPlanName": {
-                                "type": "string",
-                                "description": "The name of the App Service Plan"
-                            },
-                            "appServiceSlotPlanResourceGroup": {
-                                "type": "string",
-                                "description": "The name of the resource group in which the App Service Plan lives in"
-                            },
-                            "appServiceSlotStorageAccountName": {
-                                "type": "string"
-                            },
-                            "appServiceSlotStorageAccountResourceGroup": {
-                                "type": "string"
-                            },
-                            "appServiceSlotAppInsightsName": {
-                                "type": "string"
-                            },
-                            "appServiceSlotAppInsightsResourceGroup": {
-                                "type": "string"
-                            },
-                            "appServiceSlotSiteConfigs": {
-                                "type": "object",
-                                "properties": {
-                                    "siteHttpsOnly": {
-                                        "type": "boolean",
-                                        "default": true
-                                    },
-                                    "siteAlwaysOn": {
-                                        "type": "boolean"
-                                    },
-                                    "siteSettings": {
-                                        "type": "array",
-                                        "description": "The site settings for the app service",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "name": {
-                                                    "type": "string"
-                                                },
-                                                "value": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "name",
-                                                "value"
-                                            ]
-                                        }
-                                    },
-                                    "siteAuthSettings": {
-                                        "$ref": "#/definitions/app-services-auth-settings"
-                                    },
-                                    "siteApimSettings": {
-                                        "type": "object",
-                                        "properties": {
-                                            "apimApiName": {
-                                                "type": "string"
-                                            },
-                                            "apimName": {
-                                                "type": "string"
-                                            },
-                                            "apimResourceGroupName": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "required": [
-                                            "apimApiName",
-                                            "apimName",
-                                            "apimResourceGroupName"
-                                        ]
-                                    }
-                                },
-                                "required": [
-                                    "siteSettings"
-                                ]
-                            },
-                            "appServiceSlotTags": {
-                                "type": "object",
-                                "patternProperties": {
-                                    "^[a-z]": {
-                                        "type": "string"
-                                    }
-                                },
-                                "minProperties": 1
-                            }
-                        },
-                        "required": [
-                            "appServiceName",
-                            "appServiceSlotName",
-                            "appServiceSlotType",
-                            "appServiceSlotPlatform",
-                            "appServiceSlotPlatformVersion",
-                            "appServiceSlotStorageAccountName",
-                            "appServiceSlotAppInsightsName",
-                            "appServiceSlotSiteConfigs"
-                        ]
+                        "$ref": "#/definitions/app-service-slot-parameters"
                     },
                     "minItems": 1
                 }
             },
             "required": [
                 "value"
+            ]
+        },
+        "app-service-slot-parameters": {
+            "type": "object",
+            "properties": {
+                "appServiceName": {
+                    "type": "string",
+                    "description": "The Azure App Service in which the slot will rollup under."
+                },
+                "appServiceSlotName": {
+                    "type": "string"
+                },
+                "appServiceSlotLocation": {
+                    "type": "string"
+                },
+                "appServiceSlotType": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "web"
+                        },
+                        {
+                            "const": "functionapp"
+                        },
+                        {
+                            "const": "functionapp,linux"
+                        }
+                    ]
+                },
+                "appServiceSlotPlatform": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "dotnet"
+                        },
+                        {
+                            "const": "java"
+                        },
+                        {
+                            "const": "node"
+                        },
+                        {
+                            "const": "python"
+                        },
+                        {
+                            "const": "php"
+                        }
+                    ]
+                },
+                "appServiceSlotPlatformVersion": {
+                    "type": "string"
+                },
+                "appServiceSlotMsiEnabled": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "appServiceSlotMsiRoleAssignments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "../../az.rbac/v1.0/parameters.json#/definitions/roleAssignment"
+                    },
+                    "minItems": 1
+                },
+                "appServiceSlotPlanName": {
+                    "type": "string",
+                    "description": "The name of the App Service Plan"
+                },
+                "appServiceSlotPlanResourceGroup": {
+                    "type": "string",
+                    "description": "The name of the resource group in which the App Service Plan lives in"
+                },
+                "appServiceSlotStorageAccountName": {
+                    "type": "string"
+                },
+                "appServiceSlotStorageAccountResourceGroup": {
+                    "type": "string"
+                },
+                "appServiceSlotAppInsightsName": {
+                    "type": "string"
+                },
+                "appServiceSlotAppInsightsResourceGroup": {
+                    "type": "string"
+                },
+                "appServiceSlotSiteConfigs": {
+                    "$ref": "#/definitions/app-service-site-configs"
+                },
+                "appServiceSlotTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "appServiceName",
+                "appServiceSlotName",
+                "appServiceSlotType",
+                "appServiceSlotPlatform",
+                "appServiceSlotPlatformVersion",
+                "appServiceSlotStorageAccountName",
+                "appServiceSlotAppInsightsName"
             ]
         },
         "app-services-slots-config-names": {
@@ -537,7 +359,7 @@
                     "items": {
                         "$ref": "#/definitions/app-services-plan-parameters"
                     },
-                    "maxItems": 1
+                    "minItems": 1
                 }
             },
             "required": [
@@ -568,37 +390,107 @@
                     ]
                 },
                 "appServicePlanSku": {
-                    "type": "object",
-                    "properties": {
-                        "dev": {
-                            "type": "string",
-                            "$ref": "#/definitions/app-service-plan-sku"
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "$ref": "#/definitions/app-service-plan-sku"
+                                        },
+                                        "capacity": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    "required": [
+                                        "name",
+                                        "capacity"
+                                    ]
+                                },
+                                "qa": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "$ref": "#/definitions/app-service-plan-sku"
+                                        },
+                                        "capacity": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    "required": [
+                                        "name",
+                                        "capacity"
+                                    ]
+                                },
+                                "uat": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "$ref": "#/definitions/app-service-plan-sku"
+                                        },
+                                        "capacity": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    "required": [
+                                        "name",
+                                        "capacity"
+                                    ]
+                                },
+                                "prd": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "$ref": "#/definitions/app-service-plan-sku"
+                                        },
+                                        "capacity": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    "required": [
+                                        "name",
+                                        "capacity"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
                         },
-                        "qa": {
-                            "type": "string",
-                            "$ref": "#/definitions/app-service-plan-sku"
-                        },
-                        "uat": {
-                            "type": "string",
-                            "$ref": "#/definitions/app-service-plan-sku"
-                        },
-                        "prd": {
-                            "type": "string",
-                            "$ref": "#/definitions/app-service-plan-sku"
-                        },
-                        "default": {
-                            "type": "string",
-                            "$ref": "#/definitions/app-service-plan-sku"
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "$ref": "#/definitions/app-service-plan-sku"
+                                        },
+                                        "capacity": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    "required": [
+                                        "name",
+                                        "capacity"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
                         }
-                    },
-                    "required": [
-                        "default"
                     ]
                 },
-                "appServicePlanAseName": {
+                "appServicePlanEnvironmentName": {
                     "type": "string"
                 },
-                "appServicePlanAseResourceGroup": {
+                "appServicePlanEnvironmentResourceGroup": {
                     "type": "string"
                 },
                 "appServicePlanTags": {
@@ -615,818 +507,115 @@
                 "appServicePlanName"
             ]
         },
-        "app-service-environments": {
+        "app-service-environment": {
+            "type": "object",
             "properties": {
                 "value": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "name": {
-                                "type": "string"
-                            },
-                            "plans": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "type": "string"
-                                        },
-                                        "os": {
-                                            "type": "string",
-                                            "oneOf": [
-                                                {
-                                                    "const": "windows"
-                                                },
-                                                {
-                                                    "const": "linux"
-                                                }
-                                            ]
-                                        },
-                                        "sku": {
-                                            "type": "object",
-                                            "properties": {
-                                                "dev": {
-                                                    "type": "string",
-                                                    "oneOf": [
-                                                        {
-                                                            "const": "D1"
-                                                        },
-                                                        {
-                                                            "const": "B1"
-                                                        }
-                                                    ]
-                                                },
-                                                "qa": {
-                                                    "type": "string"
-                                                },
-                                                "uat": {
-                                                    "type": "string"
-                                                },
-                                                "prd": {
-                                                    "type": "string"
-                                                },
-                                                "default": {
-                                                    
-                                                }
-                                            },
-                                            "required": [
-                                                "dev",
-                                                "qa",
-                                                "uat",
-                                                "prd",
-                                                "default"
-                                            ]
-                                        },
-                                        "storage": {
-                                            "type": "object",
-                                            "properties": {
-                                                "name": {
-                                                    "type": "string"
-                                                },
-                                                "type": {
-                                                    "type": "string",
-                                                    "oneOf": [
-                                                        {
-                                                            "const": "Storage"
-                                                        },
-                                                        {
-                                                            "const": "StorageV2"
-                                                        },
-                                                        {
-                                                            "const": "BlobStorage"
-                                                        },
-                                                        {
-                                                            "const": "BlockBlobStorage"
-                                                        },
-                                                        {
-                                                            "const": "FileStorage"
-                                                        }
-                                                    ]
-                                                },
-                                                "accessTier": {
-                                                    "type": "string",
-                                                    "oneOf": [
-                                                        {
-                                                            "const": "hot"
-                                                        },
-                                                        {
-                                                            "const": "cool"
-                                                        }
-                                                    ]
-                                                },
-                                                "tier": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "dev": {
-                                                            "type": "string"
-                                                        },
-                                                        "qa": {
-                                                            "type": "string"
-                                                        },
-                                                        "uat": {
-                                                            "type": "string"
-                                                        },
-                                                        "prd": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "dev",
-                                                        "qa",
-                                                        "uat",
-                                                        "prd"
-                                                    ]
-                                                },
-                                                "redundancy": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "dev": {
-                                                            "type": "string",
-                                                            "oneOf": [
-                                                                {
-                                                                    "const": "lrs"
-                                                                },
-                                                                {
-                                                                    "const": "grs"
-                                                                },
-                                                                {
-                                                                    "const": "grzs"
-                                                                }
-                                                            ]
-                                                        },
-                                                        "qa": {
-                                                            "type": "string",
-                                                            "oneOf": [
-                                                                {
-                                                                    "const": "lrs"
-                                                                },
-                                                                {
-                                                                    "const": "grs"
-                                                                },
-                                                                {
-                                                                    "const": "grzs"
-                                                                }
-                                                            ]
-                                                        },
-                                                        "uat": {
-                                                            "type": "string",
-                                                            "oneOf": [
-                                                                {
-                                                                    "const": "lrs"
-                                                                },
-                                                                {
-                                                                    "const": "grs"
-                                                                },
-                                                                {
-                                                                    "const": "grzs"
-                                                                }
-                                                            ]
-                                                        },
-                                                        "prd": {
-                                                            "type": "string",
-                                                            "oneOf": [
-                                                                {
-                                                                    "const": "lrs"
-                                                                },
-                                                                {
-                                                                    "const": "grs"
-                                                                },
-                                                                {
-                                                                    "const": "grzs"
-                                                                }
-                                                            ]
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "dev",
-                                                        "qa",
-                                                        "uat",
-                                                        "prd"
-                                                    ]
-                                                },
-                                                "defaultNetworkAccess": {
-                                                    "type": "string",
-                                                    "default": "Allow",
-                                                    "oneOf": [
-                                                        {
-                                                            "const": "Allow"
-                                                        },
-                                                        {
-                                                            "const": "Deny"
-                                                        }
-                                                    ]
-                                                },
-                                                "virtualNetworks": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "allowAccess": {
-                                                                "type": "boolean",
-                                                                "default": true
-                                                            },
-                                                            "virtualNetwork": {
-                                                                "type": "string"
-                                                            },
-                                                            "virtualNetworkSubnet": {
-                                                                "type": "string"
-                                                            },
-                                                            "virtualNetworkResourceGroup": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "allowAccess",
-                                                            "virtualNetwork",
-                                                            "virtualNetworkSubnet",
-                                                            "virtualNetworkResourceGroup"
-                                                        ]
-                                                    }
-                                                },
-                                                "resourceAccess": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "resourceName": {
-                                                                "type": "string"
-                                                            },
-                                                            "resourceType": {
-                                                                "type": "string"
-                                                            },
-                                                            "resourceGroup": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "resourceName",
-                                                            "resourceType",
-                                                            "resourceGroup"
-                                                        ]
-                                                    }
-                                                },
-                                                "blobServices": {
-                                                    "oneOf": [
-                                                        {
-                                                            "type": "null"
-                                                        },
-                                                        {
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "containers": {
-                                                                    "type": "array",
-                                                                    "items": {
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "name": {
-                                                                                "type": "string"
-                                                                            }
-                                                                        },
-                                                                        "required": [
-                                                                            "name"
-                                                                        ]
-                                                                    }
-                                                                },
-                                                                "privateEndpoint": {
-                                                                    "oneOf": [
-                                                                        {
-                                                                            "type": "object",
-                                                                            "properties": {
-                                                                                "name": {
-                                                                                    "type": "string"
-                                                                                },
-                                                                                "privateDnsZone": {
-                                                                                    "type": "string"
-                                                                                },
-                                                                                "privateDnsZoneResourceGroup": {
-                                                                                    "type": "string",
-                                                                                    "description": ""
-                                                                                },
-                                                                                "virtualNetwork": {
-                                                                                    "type": "string"
-                                                                                },
-                                                                                "virtualNetworkSubnet": {
-                                                                                    "type": "string"
-                                                                                },
-                                                                                "virtualNetworkResourceGroup": {
-                                                                                    "type": "string"
-                                                                                }
-                                                                            },
-                                                                            "required": [
-                                                                                "name",
-                                                                                "privateDnsZone",
-                                                                                "privateDnsZoneResourceGroup",
-                                                                                "virtualNetwork",
-                                                                                "virtualNetworkSubnet",
-                                                                                "virtualNetworkResourceGroup"
-                                                                            ]
-                                                                        },
-                                                                        {
-                                                                            "type": "null"
-                                                                        }
-                                                                    ]
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "containers",
-                                                                "privateEndpoint"
-                                                            ]
-                                                        }
-                                                    ]
-                                                },
-                                                "tableServices": {
-                                                    "oneOf": [
-                                                        {
-                                                            "type": "null"
-                                                        },
-                                                        {
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "tables": {
-                                                                    "type": "array",
-                                                                    "items": {
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "name": {
-                                                                                "type": "string"
-                                                                            }
-                                                                        },
-                                                                        "required": [
-                                                                            "name"
-                                                                        ]
-                                                                    }
-                                                                },
-                                                                "privateEndpoint": {
-                                                                    "oneOf": [
-                                                                        {
-                                                                            "type": "object",
-                                                                            "properties": {
-                                                                                "name": {
-                                                                                    "type": "string"
-                                                                                },
-                                                                                "privateDnsZone": {
-                                                                                    "type": "string"
-                                                                                },
-                                                                                "privateDnsZoneResourceGroup": {
-                                                                                    "type": "string",
-                                                                                    "description": ""
-                                                                                },
-                                                                                "virtualNetwork": {
-                                                                                    "type": "string"
-                                                                                },
-                                                                                "virtualNetworkSubnet": {
-                                                                                    "type": "string"
-                                                                                },
-                                                                                "virtualNetworkResourceGroup": {
-                                                                                    "type": "string"
-                                                                                }
-                                                                            },
-                                                                            "required": [
-                                                                                "name",
-                                                                                "privateDnsZone",
-                                                                                "privateDnsZoneResourceGroup",
-                                                                                "virtualNetwork",
-                                                                                "virtualNetworkSubnet",
-                                                                                "virtualNetworkResourceGroup"
-                                                                            ]
-                                                                        },
-                                                                        {
-                                                                            "type": "null"
-                                                                        }
-                                                                    ]
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "tables",
-                                                                "privateEndpoint"
-                                                            ]
-                                                        }
-                                                    ]
-                                                },
-                                                "queueServices": {
-                                                    "oneOf": [
-                                                        {
-                                                            "type": "null"
-                                                        },
-                                                        {
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "queues": {
-                                                                    "type": "array",
-                                                                    "items": {
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "name": {
-                                                                                "type": "string"
-                                                                            }
-                                                                        },
-                                                                        "required": [
-                                                                            "name"
-                                                                        ]
-                                                                    }
-                                                                },
-                                                                "privateEndpoint": {
-                                                                    "oneOf": [
-                                                                        {
-                                                                            "type": "object",
-                                                                            "properties": {
-                                                                                "name": {
-                                                                                    "type": "string"
-                                                                                },
-                                                                                "privateDnsZone": {
-                                                                                    "type": "string"
-                                                                                },
-                                                                                "privateDnsZoneResourceGroup": {
-                                                                                    "type": "string",
-                                                                                    "description": ""
-                                                                                },
-                                                                                "virtualNetwork": {
-                                                                                    "type": "string"
-                                                                                },
-                                                                                "virtualNetworkSubnet": {
-                                                                                    "type": "string"
-                                                                                },
-                                                                                "virtualNetworkResourceGroup": {
-                                                                                    "type": "string"
-                                                                                }
-                                                                            },
-                                                                            "required": [
-                                                                                "name",
-                                                                                "privateDnsZone",
-                                                                                "privateDnsZoneResourceGroup",
-                                                                                "virtualNetwork",
-                                                                                "virtualNetworkSubnet",
-                                                                                "virtualNetworkResourceGroup"
-                                                                            ]
-                                                                        },
-                                                                        {
-                                                                            "type": "null"
-                                                                        }
-                                                                    ]
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "queues",
-                                                                "privateEndpoint"
-                                                            ]
-                                                        }
-                                                    ]
-                                                },
-                                                "fileShareServices": {
-                                                    "oneOf": [
-                                                        {
-                                                            "type": "null"
-                                                        },
-                                                        {
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "fileShares": {
-                                                                    "type": "array",
-                                                                    "items": {
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "name": {
-                                                                                "type": "string"
-                                                                            },
-                                                                            "accessTier": {
-                                                                                "type": "string",
-                                                                                "oneOf": [
-                                                                                    {
-                                                                                        "const": "cool"
-                                                                                    },
-                                                                                    {
-                                                                                        "const": "hot"
-                                                                                    }
-                                                                                ]
-                                                                            }
-                                                                        },
-                                                                        "required": [
-                                                                            "name",
-                                                                            "accessTier"
-                                                                        ]
-                                                                    }
-                                                                },
-                                                                "privateEndpoint": {
-                                                                    "oneOf": [
-                                                                        {
-                                                                            "type": "object",
-                                                                            "properties": {
-                                                                                "name": {
-                                                                                    "type": "string"
-                                                                                },
-                                                                                "privateDnsZone": {
-                                                                                    "type": "string"
-                                                                                },
-                                                                                "privateDnsZoneResourceGroup": {
-                                                                                    "type": "string",
-                                                                                    "description": ""
-                                                                                },
-                                                                                "virtualNetwork": {
-                                                                                    "type": "string"
-                                                                                },
-                                                                                "virtualNetworkSubnet": {
-                                                                                    "type": "string"
-                                                                                },
-                                                                                "virtualNetworkResourceGroup": {
-                                                                                    "type": "string"
-                                                                                }
-                                                                            },
-                                                                            "required": [
-                                                                                "name",
-                                                                                "privateDnsZone",
-                                                                                "privateDnsZoneResourceGroup",
-                                                                                "virtualNetwork",
-                                                                                "virtualNetworkSubnet",
-                                                                                "virtualNetworkResourceGroup"
-                                                                            ]
-                                                                        },
-                                                                        {
-                                                                            "type": "null"
-                                                                        }
-                                                                    ]
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "fileShares",
-                                                                "privateEndpoint"
-                                                            ]
-                                                        }
-                                                    ]
-                                                }
-                                            },
-                                            "if": {
-                                                "properties": {
-                                                    "type": {
-                                                        "oneOf": [
-                                                            {
-                                                                "const": "Storage"
-                                                            },
-                                                            {
-                                                                "const": "StorageV2"
-                                                            }
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            "then": {
-                                                "properties": {
-                                                    "tier": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "dev": {
-                                                                "type": "string",
-                                                                "oneOf": [
-                                                                    {
-                                                                        "const": "Standard"
-                                                                    },
-                                                                    {
-                                                                        "const": "Premium"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "qa": {
-                                                                "type": "string",
-                                                                "oneOf": [
-                                                                    {
-                                                                        "const": "Standard"
-                                                                    },
-                                                                    {
-                                                                        "const": "Premium"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "uat": {
-                                                                "type": "string",
-                                                                "oneOf": [
-                                                                    {
-                                                                        "const": "Standard"
-                                                                    },
-                                                                    {
-                                                                        "const": "Premium"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "prd": {
-                                                                "type": "string",
-                                                                "oneOf": [
-                                                                    {
-                                                                        "const": "Standard"
-                                                                    },
-                                                                    {
-                                                                        "const": "Premium"
-                                                                    }
-                                                                ]
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "dev",
-                                                            "qa",
-                                                            "uat",
-                                                            "prd"
-                                                        ]
-                                                    },
-                                                    "redundancy": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "dev": {
-                                                                "type": "string",
-                                                                "oneOf": [
-                                                                    {
-                                                                        "const": "lrs"
-                                                                    },
-                                                                    {
-                                                                        "const": "grs"
-                                                                    },
-                                                                    {
-                                                                        "const": "grzs"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "qa": {
-                                                                "type": "string",
-                                                                "oneOf": [
-                                                                    {
-                                                                        "const": "lrs"
-                                                                    },
-                                                                    {
-                                                                        "const": "grs"
-                                                                    },
-                                                                    {
-                                                                        "const": "grzs"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "uat": {
-                                                                "type": "string",
-                                                                "oneOf": [
-                                                                    {
-                                                                        "const": "lrs"
-                                                                    },
-                                                                    {
-                                                                        "const": "grs"
-                                                                    },
-                                                                    {
-                                                                        "const": "grzs"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "prd": {
-                                                                "type": "string",
-                                                                "oneOf": [
-                                                                    {
-                                                                        "const": "lrs"
-                                                                    },
-                                                                    {
-                                                                        "const": "grs"
-                                                                    },
-                                                                    {
-                                                                        "const": "grzs"
-                                                                    }
-                                                                ]
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "dev",
-                                                            "qa",
-                                                            "uat",
-                                                            "prd"
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            "else": {
-                                                "properties": {
-                                                    "tier": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "dev": {
-                                                                "type": "string",
-                                                                "oneOf": [
-                                                                    {
-                                                                        "const": "Premium"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "qa": {
-                                                                "type": "string",
-                                                                "oneOf": [
-                                                                    {
-                                                                        "const": "Premium"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "uat": {
-                                                                "type": "string",
-                                                                "oneOf": [
-                                                                    {
-                                                                        "const": "Premium"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "prd": {
-                                                                "type": "string",
-                                                                "oneOf": [
-                                                                    {
-                                                                        "const": "Premium"
-                                                                    }
-                                                                ]
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "dev",
-                                                            "qa",
-                                                            "uat",
-                                                            "prd"
-                                                        ]
-                                                    },
-                                                    "redundancy": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "dev": {
-                                                                "type": "string",
-                                                                "oneOf": [
-                                                                    {
-                                                                        "const": "lrs"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "qa": {
-                                                                "type": "string",
-                                                                "oneOf": [
-                                                                    {
-                                                                        "const": "lrs"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "uat": {
-                                                                "type": "string",
-                                                                "oneOf": [
-                                                                    {
-                                                                        "const": "lrs"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "prd": {
-                                                                "type": "string",
-                                                                "oneOf": [
-                                                                    {
-                                                                        "const": "lrs"
-                                                                    }
-                                                                ]
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "dev",
-                                                            "qa",
-                                                            "uat",
-                                                            "prd"
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            "required": [
-                                                "name",
-                                                "type",
-                                                "tier",
-                                                "accessTier",
-                                                "defaultNetworkAccess",
-                                                "virtualNetworks",
-                                                "resourceAccess",
-                                                "blobServices",
-                                                "tableServices",
-                                                "queueServices",
-                                                "fileShareServices"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "name",
-                                        "os",
-                                        "sku",
-                                        "storage"
-                                    ]
-                                }
-                            }
-                        }
-                    }
+                    "$ref": "#/definitions/app-service-environment-parameters"
                 }
             },
             "required": [
                 "value"
             ]
         },
+        "app-service-environments": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/app-service-environment-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-service-environment-parameters": {
+            "type": "object",
+            "properties": {
+                "appServiceEnvironmentName": {
+                    "type": "string"
+                },
+                "appServiceEnvironmentResourceGroup": {
+                    "type": "string"
+                },
+                "appServiceEnvironmentType": {
+                    "type": "string",
+                    "default": "ASEV3",
+                    "enum": [
+                        "ASEV3",
+                        "ASEV2",
+                        "ASEV1"
+                    ]
+                },
+                "appServiceEnvironmentLocation": {
+                    "type": "string"
+                },
+                "appServiceEnvironmentVirtualNetwork": {
+                    "type": "object",
+                    "properties": {
+                        "virtualNetworkName": {
+                            "type": "string"
+                        },
+                        "virtualNetworkSubnetName": {
+                            "type": "string"
+                        },
+                        "virtualNetworkResourceGroup": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "virtualNetworkName",
+                        "virtualNetworkSubnetName",
+                        "virtualNetworkResourceGroup"
+                    ]
+                },
+                "appServiceEnvironmentConfigs": {
+                    "type": "object",
+                    "properties": {
+                        "isZoneRedundant": {
+                            "type": "string"
+                        },
+                        "dedicatedHostCount": {
+                            "type": "string"
+                        },
+                        "internalLoadBalancingMode": {
+                            "type": "string",
+                            "enum": [
+                                "Publishing",
+                                "Web",
+                                "Web, Publishing"
+                            ]
+                        }
+                    }
+                }
+            },
+            "required": [
+                "appServiceEnvironmentName",
+                "appServiceEnvironmentVirtualNetwork"
+            ]
+        },
         "app-services-auth-settings": {
             "type": "object",
             "default": {
-                "appServiceAuthAction": "Return401",
-                "appServiceAuthIdentityClientId": "",
-                "appServiceAuthIdentityClientSecretName": "",
-                "appServiceAuthIdentityOpenIdIssuer": "https://sts.windows.net/{tenant Id} or https://login.microsoft.com/{tenant Id}"
+                "appAuthUnauthenticatedAction": "Return401",
+                "appAuthIdentityClientId": {
+                    "default": ""
+                },
+                "appAuthIdentityAudiences": {
+                    "default": []
+                },
+                "appAuthIdentityProvider": "AzureAD",
+                "appAuthIdentityClientSecretName": "{the name of the config that holds the secret}",
+                "appAuthIdentityOpenIdIssuer": {
+                    "default": "https://sts.windows.net/{tenant Id} or https://login.microsoft.com/{tenant Id}"
+                }
             },
             "properties": {
-                "appServiceAuthAction": {
+                "appAuthUnauthenticatedAction": {
                     "type": "string",
                     "description": "The unauthenticated action",
                     "oneOf": [
@@ -1444,114 +633,391 @@
                         }
                     ]
                 },
-                "appServiceAuthIdentityProvider": {
+                "appAuthIdentityProvider": {
                     "type": "string",
-                    "oneOf": [
-                        {
-                            "const": "AzureAD"
-                        },
-                        {
-                            "const": "Google"
-                        },
-                        {
-                            "const": "Github"
-                        },
-                        {
-                            "const": "Facebook"
-                        }
+                    "enum": [
+                        "AzureAD",
+                        "Google",
+                        "Github",
+                        "Facebook"
                     ]
                 },
-                "appServiceAuthIdentityClientSecretName": {
+                "appAuthIdentityProviderClientSecretName": {
                     "type": "string"
                 },
-                "appServiceAuthIdentityClientId": {
-                    "type": "object",
-                    "properties": {
-                        "dev": {
-                            "type": "string"
+                "appAuthIdentityProviderClientId": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
                         },
-                        "qa": {
-                            "type": "string"
-                        },
-                        "uat": {
-                            "type": "string"
-                        },
-                        "prd": {
-                            "type": "string"
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "type": "string"
+                                },
+                                "qa": {
+                                    "type": "string"
+                                },
+                                "uat": {
+                                    "type": "string"
+                                },
+                                "prd": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
                         }
-                    },
-                    "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
                     ]
                 },
-                "appServiceAuthIdentityOpenIdIssuer": {
-                    "type": "object",
-                    "properties": {
-                        "dev": {
-                            "type": "string"
+                "appAuthIdentityProviderOpenIdIssuer": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
                         },
-                        "qa": {
-                            "type": "string"
-                        },
-                        "uat": {
-                            "type": "string"
-                        },
-                        "prd": {
-                            "type": "string"
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "type": "string"
+                                },
+                                "qa": {
+                                    "type": "string"
+                                },
+                                "uat": {
+                                    "type": "string"
+                                },
+                                "prd": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
                         }
-                    },
-                    "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
                     ]
                 },
-                "appServiceAuthIdentityScopes": {
+                "appAuthIdentityProviderScopes": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
-                "appServiceAuthIdentityAudiences": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "appAuthIdentityProviderAudiences": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "qa": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "uat": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "prd": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
+                        }
+                    ]
                 },
-                "appServiceAuthIdentityGraphApiVersion": {
+                "appAuthIdentityProviderGraphApiVersion": {
                     "type": "string"
                 }
             },
             "required": [
-                "appServiceAuthAction",
-                "appServiceAuthIdentityProvider",
-                "appServiceAuthIdentityClientId",
-                "appServiceAuthIdentityClientSecretName",
-                "appServiceAuthIdentityOpenIdIssuer",
-                "appServiceAuthIdentityScopes",
-                "appServiceAuthIdentityAudiences",
-                "appServiceAuthIdentityGraphApiVersion"
+                "appAuthUnauthenticatedAction",
+                "appAuthIdentityProvider",
+                "appAuthIdentityProviderClientId",
+                "appAuthIdentityProviderClientSecretName",
+                "appAuthIdentityProviderOpenIdIssuer",
+                "appAuthIdentityProviderScopes",
+                "appAuthIdentityProviderAudiences",
+                "appAuthIdentityProviderGraphApiVersion"
             ]
         },
         "app-service-plan-sku": {
+            "type": "string",
+            "enum": [
+                "F1",
+                "D1",
+                "B1",
+                "I1",
+                "I2",
+                "I3",
+                "I1V2",
+                "I2V2",
+                "I3V2"
+            ]
+        },
+        "app-service-site-configs": {
+            "type": "object",
+            "minProperties": 1,
+            "properties": {
+                "webSettings": {
+                    "type": "object",
+                    "properties": {
+                        "dotnetVersion": {
+                            "enum": [
+                                "v6.0",
+                                "v3.1"
+                            ]
+                        },
+                        "phpVersion": {
+                            "enum": [
+                                ""
+                            ]
+                        },
+                        "pythonVersion": {
+                            "enum": [
+                                ""
+                            ]
+                        },
+                        "nodeVersion": {
+                            "enum": [
+                                ""
+                            ]
+                        },
+                        "powerShellVersion": {
+                            "enum": [
+                                ""
+                            ]
+                        },
+                        "httpsOnly": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "alwaysOn": {
+                            "type": "boolean"
+                        },
+                        "ftpsState": {
+                            "type": "string",
+                            "enum": [
+                                "FtpsOnly",
+                                "AllAllowed",
+                                "Disabled"
+                            ]
+                        },
+                        "cors": {
+                            "type": "object",
+                            "properties": {
+                                "allowedOrigins": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "minItems": 1
+                                },
+                                "supportCredentials": {
+                                    "type": "boolean"
+                                }
+                            }
+                        },
+                        "apimGateway": {
+                            "type": "object",
+                            "description": "Link an APIM Gateway to the Web App Deployment",
+                            "properties": {
+                                "apimGatewayApiName": {
+                                    "type": "string"
+                                },
+                                "apimGatewayName": {
+                                    "type": "string"
+                                },
+                                "apimGateweayResourceGroup": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "apimGatewayApiName",
+                                "apimGatewayName",
+                                "apimGatewayResourceGroup"
+                            ]
+                        }
+                    }
+                },
+                "siteSettings": {
+                    "description": "The site settings for the app service",
+                    "type": "object",
+                    "properties": {
+                        "DOCKER_REGISTRY_SERVER_URL": {
+                            "$ref": "#/definitions/app-service-site-settings-params"
+                        },
+                        "DOCKER_REGISTRY_SERVER_USERNAME": {
+                            "$ref": "#/definitions/app-service-site-settings-params"
+                        },
+                        "DOCKER_REGISTRY_SERVER_PASSWORD": {
+                            "$ref": "#/definitions/app-service-site-settings-params"
+                        },
+                        "WEBSITES_ENABLE_APP_SERVICE_STORAGE": {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                   "enum": [
+                                    "true",
+                                    "false"
+                                   ]
+                                }
+                            }
+                        },
+                        "WEBSITE_RUN_FROM_PACKAGE": {
+                            "const": {
+                                "default": "1"
+                            }
+                        },
+                        "FUNCTIONS_EXTENSION_VERSION": {
+                            "enum": [
+                                {
+                                    "default": "~3"
+                                },
+                                {
+                                    "default": "~4"
+                                }
+                            ]
+                        },
+                        "FUNCTIONS_WORKER_RUNTIME": {
+                            "enum": [
+                                {
+                                    "default": "dotnet"
+                                },
+                                {
+                                    "default": "java"
+                                },
+                                {
+                                    "default": "node"
+                                },
+                                {
+                                    "default": "python"
+                                },
+                                {
+                                    "default": "php"
+                                }
+                            ]
+                        }
+                    },
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "$ref": "#/definitions/app-service-site-settings-params"
+                        }
+                    }
+                },
+                "authSettings": {
+                    "$ref": "#/definitions/app-services-auth-settings"
+                },
+                "metaSettings": {
+                    "type": "object",
+                    "properties": {
+                        "CURRENT_STACK": {
+                            "enum": [
+                                "dotnetcore",
+                                "java",
+                                "php",
+                                "node"
+                            ]
+                        }
+                    },
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            }
+        },
+        "app-service-site-settings-params": {
             "oneOf": [
                 {
-                    "const": "F1"
+                    "type": "object",
+                    "properties": {
+                        "default": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "default"
+                    ]
                 },
                 {
-                    "const": "D1"
-                },
-                {
-                    "const": "B1",
-                    "description": "$12.41 USD/Month"
-                },
-                {
-                    "const": "B2",
-                    "description": "$24.82 USD/Month"
+                    "type": "object",
+                    "properties": {
+                        "dev": {
+                            "type": "string"
+                        },
+                        "qa": {
+                            "type": "string"
+                        },
+                        "uat": {
+                            "type": "string"
+                        },
+                        "prd": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "dev",
+                        "qa",
+                        "uat",
+                        "prd"
+                    ]
                 }
             ]
         }

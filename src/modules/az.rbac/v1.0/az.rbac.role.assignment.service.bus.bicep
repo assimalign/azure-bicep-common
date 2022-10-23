@@ -41,7 +41,7 @@ resource azServiceBusExistingResource 'Microsoft.ServiceBus/namespaces@2021-11-0
 
 // 2. Assign Resource Role Scoped to the resource
 resource azServiceBusResourceScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'Resource') {
-  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
+  name: guid(resourcePrincipalIdReceivingRole, RoleDefinitionId[resourceRoleName], 'scope-resource')
   scope: azServiceBusExistingResource
   properties: {
     principalId: resourcePrincipalIdReceivingRole
@@ -51,7 +51,7 @@ resource azServiceBusResourceScopedRoleAssignmentDeployment 'Microsoft.Authoriza
 
 // 3. Assign Resource Role Scoped to the Resource Group
 resource azServiceBusResourceGroupScopedRoleAssignmentDeployment 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if (resourceRoleAssignmentScope == 'ResourceGroup') {
-  name: guid('${resourcePrincipalIdReceivingRole}/${RoleDefinitionId[resourceRoleName]}')
+  name: guid(resourcePrincipalIdReceivingRole, RoleDefinitionId[resourceRoleName], 'scope-resource-group')
   scope: resourceGroup()
   properties: {
     principalId: resourcePrincipalIdReceivingRole
