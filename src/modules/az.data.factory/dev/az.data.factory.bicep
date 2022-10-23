@@ -48,7 +48,6 @@ resource azDataFactoryDeployment 'Microsoft.DataFactory/factories@2018-06-01' = 
     environment: empty(environment) ? 'n/a' : environment
   })
 
-  resource t     
 }
 
 
