@@ -75,7 +75,7 @@ module azAppConfigurationKeysDeployement 'az.app.configuration.key.bicep' = [for
     appConfigurationName: appConfigurationName
     appConfigurationKey: key.appConfigurationKey
     appConfigurationValue: key.appConfigurationValue
-    appConfigurationContentType: key.appConfigurationValueContentType ?? ''
+    appConfigurationContentType: key.appConfigurationContentType ?? ''
     appConfigurationLabels: contains(key, 'appConfigurationLabels') ? key.appConfigurationLabels : []
   }
 }]
