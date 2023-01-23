@@ -24,13 +24,7 @@ param serviceBusTopics array = []
 param serviceBusQueues array = []
 
 @description('The pricing tier to be used for the service bus.')
-param serviceBusSku object = {
-  dev: 'Basic'
-  qa: 'Basic'
-  uat: 'Basic'
-  prd: 'Basic'
-  default: 'Basic'
-}
+param serviceBusSku object 
 
 @description('')
 param serviceBusEnableMsi bool = false

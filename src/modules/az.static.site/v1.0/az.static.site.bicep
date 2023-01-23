@@ -22,7 +22,7 @@ param staticSiteName string
   'westeurope'
 ])
 @description('The static site location')
-param staticSiteLocation string
+param staticSiteLocation string = 'eastus2'
 
 @description('The pricing tier for the static site')
 param staticSiteSku object = {

@@ -22,7 +22,7 @@ param cosmosAccountDatabaseContainers array = []
 
 
 // 1. Deploy the Document Database
-resource azCosmosAccountDocumentDatabaseDeployment 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2021-10-15' = {
+resource azCosmosAccountDocumentDatabaseDeployment 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2022-08-15'= {
   name: replace(replace('${cosmosAccountName}/${cosmosAccountDatabaseName}', '@environment', environment), '@region', region)
   properties: {
     resource: {

@@ -59,7 +59,7 @@ param cosmosAccountBackupPolicy object = {}
 param cosmosAccountTags object = {}
 
 // 1. Deploy the Document Db Account
-resource azCosmosDbAccountDeployment 'Microsoft.DocumentDB/databaseAccounts@2021-10-15' = {
+resource azCosmosDbAccountDeployment 'Microsoft.DocumentDB/databaseAccounts@2022-08-15' = {
   name: replace(replace(cosmosAccountName, '@environment', environment), '@region', region)
   kind: 'GlobalDocumentDB'
   location: first(cosmosAccountLocations).locationName

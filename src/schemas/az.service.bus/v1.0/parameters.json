@@ -43,33 +43,47 @@
                     "type": "boolean"
                 },
                 "serviceBusSku": {
-                    "type": "object",
+                    "description": "Sku Requirement for private endpoint",
                     "default": {
-                        "dev": "Basic",
-                        "qa": "Basic",
-                        "uat": "Standard",
-                        "prd": "Premium"
+                        "default": "Free"
                     },
-                    "properties": {
-                        "dev": {
-                            "$ref": "#/definitions/service-bus-sku"
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "$ref": "#/definitions/service-bus-sku"
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
                         },
-                        "qa": {
-                            "$ref": "#/definitions/service-bus-sku"
-                        },
-                        "uat": {
-                            "$ref": "#/definitions/service-bus-sku"
-                        },
-                        "prd": {
-                            "$ref": "#/definitions/service-bus-sku"
-                        },
-                        "default": {
-                            "$ref": "#/definitions/service-bus-sku"
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "$ref": "#/definitions/service-bus-sku"
+                                },
+                                "qa": {
+                                    "$ref": "#/definitions/service-bus-sku"
+                                },
+                                "uat": {
+                                    "$ref": "#/definitions/service-bus-sku"
+                                },
+                                "prd": {
+                                    "$ref": "#/definitions/service-bus-sku"
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
                         }
-                    },
-                    "required": [
-                        "default"
                     ]
+          
                 },
                 "serviceBusQueues": {
                     "type": "array",
@@ -103,7 +117,8 @@
                 }
             },
             "required": [
-                "serviceBusName"
+                "serviceBusName",
+                "ServiceBusSku"
             ]
         },
         "service-bus-sku": {

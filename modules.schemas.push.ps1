@@ -1,8 +1,16 @@
 param (
+    [Parameter(Mandatory = $true)]
     [string]$storageAccountName,
+    [Parameter(Mandatory = $true)]
     [string]$storageAccountResourceGroup,
+    [Parameter(Mandatory = $true)]
     [string]$storageAccountContainerName
 )
+
+
+Connect-AzAccount -Subscription '3c1b7889-444a-48a3-b2b4-275e2ff15584'
+Set-AzContext -Subscription '3c1b7889-444a-48a3-b2b4-275e2ff15584'
+
 
 $account = Get-AzStorageAccount -ResourceGroupName $storageAccountResourceGroup -Name $storageAccountName 
 $items = Get-ChildItem './src' -Recurse -Include '*.json'

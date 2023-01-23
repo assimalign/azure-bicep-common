@@ -52,66 +52,68 @@
                     ]
                 },
                 "staticSiteSku": {
-                    "type": "object",
-                    "properties": {
-                        "dev": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Free"
-                                },
-                                {
-                                    "const": "Standard"
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "type": "string",
+                                    "enum": [
+                                        "Free",
+                                        "Standard"
+                                    ]
                                 }
+                            },
+                            "required": [
+                                "default"
                             ]
                         },
-                        "qa": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Free"
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "type": "string",
+                                    "enum": [
+                                        "Free",
+                                        "Standard"
+                                    ]
                                 },
-                                {
-                                    "const": "Standard"
-                                }
-                            ]
-                        },
-                        "uat": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Free"
+                                "qa": {
+                                    "type": "string",
+                                    "enum": [
+                                        "Free",
+                                        "Standard"
+                                    ]
                                 },
-                                {
-                                    "const": "Standard"
-                                }
-                            ]
-                        },
-                        "prd": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Free"
+                                "uat": {
+                                    "type": "string",
+                                    "enum": [
+                                        "Free",
+                                        "Standard"
+                                    ]
                                 },
-                                {
-                                    "const": "Standard"
-                                }
-                            ]
-                        },
-                        "default": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "Free"
+                                "prd": {
+                                    "type": "string",
+                                    "enum": [
+                                        "Free",
+                                        "Standard"
+                                    ]
                                 },
-                                {
-                                    "const": "Standard"
+                                "default": {
+                                    "type": "string",
+                                    "enum": [
+                                        "Free",
+                                        "Standard"
+                                    ]
                                 }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
                             ]
                         }
-                    },
-                    "required": [
-                        "default"
                     ]
                 },
                 "staticSiteTags": {
@@ -125,8 +127,7 @@
                 }
             },
             "required": [
-                "staticSiteName",
-                "staticSiteLocation"
+                "staticSiteName"
             ]
         }
     }

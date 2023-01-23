@@ -279,13 +279,14 @@
                             "keyVaultSecretResourceType": {
                                 "type": "string",
                                 "enum": [
-                                    "Microsoft.ServiceBus/namespaces/authorizationRules",
-                                    "Microsoft.EventHub/namespaces/authorizationRules",
-                                    "Microsoft.Storage/storageAccounts",
-                                    "Microsoft.DocumentDB/databaseAccounts",
-                                    "Microsoft.EventGrid/domains",
-                                    "Microsoft.NotificationHubs/namespaces/authorizationRules",
-                                    "Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules"
+                                    "Microsoft.ServiceBus/Namespaces/AuthorizationRules",
+                                    "Microsoft.EventHub/Namespaces/AuthorizationRules",
+                                    "Microsoft.Storage/StorageAccounts",
+                                    "Microsoft.DocumentDB/DatabaseAccounts",
+                                    "Microsoft.EventGrid/Domains",
+                                    "Microsoft.NotificationHubs/Namespaces/AuthorizationRules",
+                                    "Microsoft.NotificationHubs/Namespaces/NotificationHubs/AuthorizationRules",
+                                    "Microsoft.Insights/Components"
                                 ]
                             },
                             "keyVaultSecretResourceGroupOfResource": {

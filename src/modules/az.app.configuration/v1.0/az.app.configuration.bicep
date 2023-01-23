@@ -48,10 +48,8 @@ param appConfigurationTags object = {}
 resource azAppConfigurationDeployment 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' = {
   name: replace(replace(appConfigurationName, '@environment', environment), '@region', region)
   location: appConfigurationLocation
-  sku: contains(appConfigurationSku, environment) ? {
-    name: appConfigurationSku[environment]
-  } : {
-    name: appConfigurationSku.default
+  sku: {
+    name: contains(appConfigurationSku, environment) ? appConfigurationSku[environment] : appConfigurationSku.default
   }
   identity: {
     type: appConfigurationEnableMsi == true ? 'SystemAssigned' : 'None'

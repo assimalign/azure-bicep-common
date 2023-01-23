@@ -34,7 +34,7 @@ param cosmosAccountDatabaseContainerIndexingPolicy object = {}
 
 
 // 1. Deploy Document DB Container
-resource azDocumentDbAccountDatabaseDeployment 'Microsoft.DocumentDB/databaseAccounts/gremlinDatabases/graphs@2021-10-15' = {
+resource azDocumentDbAccountDatabaseDeployment 'Microsoft.DocumentDB/databaseAccounts/gremlinDatabases/graphs@2022-08-15' = {
   name: replace(replace('${cosmosAccountName}/${cosmosAccountDatabaseName}/${cosmosAccountDatabaseContainerName}', '@environment', environment), '@region', region)
   properties: {   
     resource: any(cosmosAccountDatabaseContainerTtl > 0 ? {

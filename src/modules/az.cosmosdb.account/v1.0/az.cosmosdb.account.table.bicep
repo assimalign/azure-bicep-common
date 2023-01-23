@@ -16,7 +16,7 @@ param cosmosAccountName string
 @description('The name of the table to deploy')
 param cosmosAccountTableName string
 
-resource azDocumentDbAccountDatabaseTableDeployment 'Microsoft.DocumentDB/databaseAccounts/tables@2021-06-15' = {
+resource azDocumentDbAccountDatabaseTableDeployment 'Microsoft.DocumentDB/databaseAccounts/tables@2022-08-15' = {
   name: replace(replace('${cosmosAccountName}/${cosmosAccountTableName}', '@environment', environment), '@region', region)
   properties: {
     resource: {
