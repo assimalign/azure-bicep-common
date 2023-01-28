@@ -1,6 +1,6 @@
 param (
-    [Parameter(Mandatory = $true)]
-    [string]$azureContextName,
+    # [Parameter(Mandatory = $true)]
+    # [string]$azureContextName,
     
     [Parameter(Mandatory = $true)]
     [string]$containerRegistryName,
