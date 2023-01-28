@@ -23,7 +23,7 @@ if ($null -eq $containerRegistry) {
 
 $containerRegistryUrl = $containerRegistry.LoginServer
 
-$items = Get-ChildItem './src/modules/az.cosmosdb.account/v1.0' -Recurse -Include '*.bicep'
+$items = Get-ChildItem './src' -Recurse -Include '*.bicep'
 Write-Host $items.Length + "Bicep modules were found." -ForegroundColor Blue
 
 $context = Get-AzContext
