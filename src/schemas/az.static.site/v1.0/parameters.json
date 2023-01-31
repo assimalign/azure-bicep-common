@@ -31,6 +31,9 @@
                 "staticSiteName": {
                     "type": "string"
                 },
+                "staticSiteResourceGroup": {
+                    "type": "string"
+                },
                 "staticSiteLocation": {
                     "type": "string",
                     "oneOf": [
