@@ -818,6 +818,7 @@
                     "properties": {
                         "dotnetVersion": {
                             "enum": [
+                                "v7.0",
                                 "v6.0",
                                 "v3.1"
                             ]
@@ -895,69 +896,76 @@
                     }
                 },
                 "siteSettings": {
-                    "description": "The site settings for the app service",
                     "type": "object",
-                    "properties": {
-                        "DOCKER_REGISTRY_SERVER_URL": {
-                            "$ref": "#/definitions/app-service-site-settings-params"
-                        },
-                        "DOCKER_REGISTRY_SERVER_USERNAME": {
-                            "$ref": "#/definitions/app-service-site-settings-params"
-                        },
-                        "DOCKER_REGISTRY_SERVER_PASSWORD": {
-                            "$ref": "#/definitions/app-service-site-settings-params"
-                        },
-                        "WEBSITES_ENABLE_APP_SERVICE_STORAGE": {
-                            "type": "object",
+                    "minProperties": 1,
+                    "description": "The site settings for the app service. Settings must be specified with either a default or environment specific value. \n\r Example (default only): \n\r \"{Config Name}\": \" { \n\r \"default\": \"{Config Value}\" \n\r } \n\r \n\r Example (Environment Specific): \n\r \"{Config Name}\": \" { \n\r \"dev\": \"{Config Value}\", \n\r \"qa\": \"{Config Value}\", \n\r \"uat\": \"{Config Value}\", \n\r \"prd\": \"{Config Value}\" \n\r}",
+                    "allOf": [
+                        {
                             "properties": {
-                                "default": {
-                                   "enum": [
-                                    "true",
-                                    "false"
-                                   ]
+                                "DOCKER_REGISTRY_SERVER_URL": {
+                                    "$ref": "#/definitions/app-service-site-settings-params"
+                                },
+                                "DOCKER_REGISTRY_SERVER_USERNAME": {
+                                    "$ref": "#/definitions/app-service-site-settings-params"
+                                },
+                                "DOCKER_REGISTRY_SERVER_PASSWORD": {
+                                    "$ref": "#/definitions/app-service-site-settings-params"
+                                },
+                                "WEBSITES_ENABLE_APP_SERVICE_STORAGE": {
+                                    "type": "object",
+                                    "properties": {
+                                        "default": {
+                                           "enum": [
+                                            "true",
+                                            "false"
+                                           ]
+                                        }
+                                    }
+                                },
+                                "WEBSITE_RUN_FROM_PACKAGE": {
+                                    "const": {
+                                        "default": "1"
+                                    }
+                                },
+                                "FUNCTIONS_EXTENSION_VERSION": {
+                                    "enum": [
+                                        {
+                                            "default": "~3"
+                                        },
+                                        {
+                                            "default": "~4"
+                                        }
+                                    ]
+                                },
+                                "FUNCTIONS_WORKER_RUNTIME": {
+                                    "enum": [
+                                        {
+                                            "default": "dotnet"
+                                        },
+                                        {
+                                            "default": "java"
+                                        },
+                                        {
+                                            "default": "node"
+                                        },
+                                        {
+                                            "default": "python"
+                                        },
+                                        {
+                                            "default": "php"
+                                        }
+                                    ]
                                 }
                             }
                         },
-                        "WEBSITE_RUN_FROM_PACKAGE": {
-                            "const": {
-                                "default": "1"
+                        {
+                            "patternProperties": {
+                                "^[a-z]": {
+                                    "$ref": "#/definitions/app-service-site-settings-params"
+                                }
                             }
-                        },
-                        "FUNCTIONS_EXTENSION_VERSION": {
-                            "enum": [
-                                {
-                                    "default": "~3"
-                                },
-                                {
-                                    "default": "~4"
-                                }
-                            ]
-                        },
-                        "FUNCTIONS_WORKER_RUNTIME": {
-                            "enum": [
-                                {
-                                    "default": "dotnet"
-                                },
-                                {
-                                    "default": "java"
-                                },
-                                {
-                                    "default": "node"
-                                },
-                                {
-                                    "default": "python"
-                                },
-                                {
-                                    "default": "php"
-                                }
-                            ]
                         }
-                    },
-                    "patternProperties": {
-                        "^[a-z]": {
-                            "$ref": "#/definitions/app-service-site-settings-params"
-                        }
-                    }
+                    ]
                 },
                 "authSettings": {
                     "$ref": "#/definitions/app-services-auth-settings"
@@ -984,6 +992,7 @@
             }
         },
         "app-service-site-settings-params": {
+            "minProperties": 1,
             "oneOf": [
                 {
                     "type": "object",

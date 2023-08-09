@@ -1,11 +1,6 @@
 # Assimalign Bicep
 The repository is meant to be a starting convention for any organization trying to setup CI/CD via IaC (Infrastructure as Code) which targets that Azure platform. Out of the box there are various modules and corresponding JSON schemas which can help get environments setup within a day.
 
-The setup within this repository
-
-Assimalign LLC has a current setup 
-
-
 **NOTE: This repository does not contain all azure resource and should be used as a solution which can be iterated and improved upon. As mentioned, it is a starting convention.**
 
 - [Assimalign Bicep](#assimalign-bicep)
@@ -21,13 +16,13 @@ Assimalign LLC has a current setup
 
 
 1. All modules are referenced by folder and **NOT by container registry path**. This is so that each module has it's own life cycle. Meaning if one module in a repository changes it doesn't effect the module referencing it in another repository.
-2. All modules **SHOULD** be created per ARM API Route (Azure Resource Management APIs). For example, if d
+2. All modules **SHOULD** represent a literal segment in each ARM API route. 
 
 ## Folder Structure
 Every Bicep module should be placed in a folder with the name of the Resource Provider in azure as well as a version folder for the module. The version folder will be parsed and used as the tag to be attached to the container registry repository when deployed.
 
 ## JSON Schemas
-When a bicep module is created there should be a corresponding JSON Schema that helps with validation. This will help guid the user to input the correct parameters.
+When a bicep module is created there should be a corresponding JSON Schema that helps with validation. This will help guide the user to input the correct parameters.
 
 
 ## Token Replacements
@@ -63,3 +58,5 @@ Below is a quick setup guid to get the repository imported and deployed into you
 
 3. Import the Github Repository into an Azure DevOps repository
 4. Using the existing `azure-pipeline.yml` create a new build pipeline and run it
+   - NOTE: The deployment can take up to an hour.
+

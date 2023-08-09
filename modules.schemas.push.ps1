@@ -1,8 +1,10 @@
 param (
     [Parameter(Mandatory = $true)]
     [string]$storageAccountName,
+
     [Parameter(Mandatory = $true)]
     [string]$storageAccountResourceGroup,
+    
     [Parameter(Mandatory = $true)]
     [string]$storageAccountContainerName
 )
