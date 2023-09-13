@@ -13,7 +13,9 @@
         "appService": {
             "value": {
                 "appServiceSiteConfigs": {
-                    "siteSettings": [],
+                    "siteSettings": {
+                        
+                    },
                     "siteAuthSettings": {
                         "appServiceAuthIdentityGraphApiVersion": "",
                         "appServiceAuthIdentityScopes": [],
