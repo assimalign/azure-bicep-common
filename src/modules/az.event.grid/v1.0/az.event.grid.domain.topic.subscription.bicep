@@ -77,13 +77,13 @@ var subjectFilters = {
 }
 
 // 1. Get an Existing Event Grid Domain Resource
-resource azEventGridDomainTopicResource 'Microsoft.EventGrid/domains/topics@2021-06-01-preview' existing = {
+resource azEventGridDomainTopicResource 'Microsoft.EventGrid/domains/topics@2022-06-15' existing = {
   name: replace(replace('${eventGridDomainName}/${eventGridDomainTopicName}', '@environment', environment), '@region', region)
   scope: resourceGroup()
 }
 
 // 2. Deploy the Event Grid Subscription to the Event Grid Domain Topic
-resource azEventGridDomainWithMsiSubscriptionDeployment 'Microsoft.EventGrid/eventSubscriptions@2021-06-01-preview' = if (eventGridDomainTopicSubscriptionMsiEnabled == true) {
+resource azEventGridDomainWithMsiSubscriptionDeployment 'Microsoft.EventGrid/eventSubscriptions@2022-06-15' = if (eventGridDomainTopicSubscriptionMsiEnabled == true) {
   name: eventGridDomainTopicSubscriptionMsiEnabled == true ? replace(replace(eventGridDomainTopicSubscriptionName, '@environment', environment), '@region', region) : 'no-egd-subscription-with-msi'
   scope: azEventGridDomainTopicResource
   properties: {
@@ -147,7 +147,7 @@ resource azEventGridDomainWithMsiSubscriptionDeployment 'Microsoft.EventGrid/eve
   }
 }
 
-resource azEventGridDomainWithoutMsiSubscriptionDeployment 'Microsoft.EventGrid/eventSubscriptions@2021-06-01-preview' = if (eventGridDomainTopicSubscriptionMsiEnabled == false) {
+resource azEventGridDomainWithoutMsiSubscriptionDeployment 'Microsoft.EventGrid/eventSubscriptions@2022-06-15' = if (eventGridDomainTopicSubscriptionMsiEnabled == false) {
   name: eventGridDomainTopicSubscriptionMsiEnabled == false ? replace(replace(eventGridDomainTopicSubscriptionName, '@environment', environment), '@region', region) : 'no-egd-subscription-without-msi'
   scope: azEventGridDomainTopicResource
   properties: {

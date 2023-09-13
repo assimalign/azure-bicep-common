@@ -214,11 +214,23 @@
                 "vpnGateways": {
                     "$ref": "../../az.vpn/v1.0/parameters.json#/definitions/vpn-gateways"
                 },
+                "natGateway": {
+                    "$ref": "../../az.nat.gateway/v1.0/parameters.json#/definitions/nat-gateway"
+                },
+                "natGateways": {
+                    "$ref": "../../az.nat.gateway/v1.0/parameters.json#/definitions/nat-gateways"
+                },
                 "publicIpAddress": {
                     "$ref": "../../az.public.ip/v1.0/parameters.json#/definitions/public-ip-address"
                 },
                 "publicIpAddresses": {
                     "$ref": "../../az.public.ip/v1.0/parameters.json#/definitions/public-ip-addresses"
+                },
+                "publicIpPrefix": {
+                    "$ref": "../../az.public.ip/v1.0/parameters.json#/definitions/public-ip-prefix"
+                },
+                "publicIpPrefixes": {
+                    "$ref": "../../az.public.ip/v1.0/parameters.json#/definitions/public-ip-prefixes"
                 },
                 "privateEndpoint": {
                     "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint"

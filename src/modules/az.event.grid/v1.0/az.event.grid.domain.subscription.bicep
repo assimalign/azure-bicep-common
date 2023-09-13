@@ -65,12 +65,12 @@ var headers = [for header in eventGridDomainSubscriptionEventHeaders: {
 }]
 
 // 1. Get Event Grid Domain Resource
-resource azEventGridDomainResource 'Microsoft.EventGrid/domains@2020-10-15-preview' existing = {
+resource azEventGridDomainResource 'Microsoft.EventGrid/domains@2022-06-15' existing = {
   name: replace('${eventGridDomainName}', '@environment', environment)
 }
 
 // 2. Deploy the Event Grid Subscription to the Event Grid Domain Topic
-resource azEventGridDomainWithMsiSubscriptionDeployment 'Microsoft.EventGrid/eventSubscriptions@2021-06-01-preview' = if (eventGridDomainSubscriptionMsiEnabled == true) {
+resource azEventGridDomainWithMsiSubscriptionDeployment 'Microsoft.EventGrid/eventSubscriptions@2022-06-15' = if (eventGridDomainSubscriptionMsiEnabled == true) {
   name: eventGridDomainSubscriptionMsiEnabled == true ? replace(replace(eventGridDomainSubscriptionName, '@environment', environment), '@region', region) : 'no-egd-subscription-with-msi'
   scope: azEventGridDomainResource
   properties: {
@@ -134,7 +134,7 @@ resource azEventGridDomainWithMsiSubscriptionDeployment 'Microsoft.EventGrid/eve
   }
 }
 
-resource azEventGridDomainWithoutMsiSubscriptionDeployment 'Microsoft.EventGrid/eventSubscriptions@2021-06-01-preview' = if (eventGridDomainSubscriptionMsiEnabled == false) {
+resource azEventGridDomainWithoutMsiSubscriptionDeployment 'Microsoft.EventGrid/eventSubscriptions@2022-06-15' = if (eventGridDomainSubscriptionMsiEnabled == false) {
   name: eventGridDomainSubscriptionMsiEnabled == false ? replace(replace(eventGridDomainSubscriptionName, '@environment', environment), '@region', region) : 'no-egd-subscription-without-msi'
   scope: azEventGridDomainResource
   properties: {

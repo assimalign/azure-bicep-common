@@ -102,10 +102,66 @@
             ]
         },
         "public-ip-sku": {
-            "type":"string",
+            "type": "string",
             "enum": [
                 "Basic",
                 "Standard"
+            ]
+        },
+        "public-ip-prefix": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/public-ip-prefix-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-ip-prefixes": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/public-ip-prefix-parameters"
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-ip-prefix-parameters": {
+            "type": "object",
+            "properties": {
+                "publicIpPrefixName": {
+                    "type": "string"
+                },
+                "publicIpPrefixTier": {
+                    "enum": [
+                        "Global",
+                        "Regional"
+                    ]
+                },
+                "publicIpPrefixAddressVersion": {
+                    "enum": [
+                        "IPv4",
+                        "IPv6"
+                    ]
+                },
+                "publicIpPrefixTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "publicIpPrefixName"
             ]
         }
     }

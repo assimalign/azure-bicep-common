@@ -21,7 +21,7 @@ param eventGridDomainTopicName string
 param eventGridDomainTopicSubscriptions array = []
 
 // 1. Deploy the Event Grid Domain Topic
-resource azEventGridTopicDomainDeployment 'Microsoft.EventGrid/domains/topics@2020-10-15-preview' = {
+resource azEventGridTopicDomainDeployment 'Microsoft.EventGrid/domains/topics@2022-06-15' = {
   name: replace(replace('${eventGridDomainName}/${eventGridDomainTopicName}', '@environment', environment), '@region', region)
 }
 

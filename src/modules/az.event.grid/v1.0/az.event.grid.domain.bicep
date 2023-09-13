@@ -36,7 +36,7 @@ param eventGridDomainDisablePublicAccess bool = false
 param eventGridDomainTags object = {}
 
 // 1. Deploy Event Grid Domain
-resource azEventGridDomainDeployment 'Microsoft.EventGrid/domains@2021-12-01' = {
+resource azEventGridDomainDeployment 'Microsoft.EventGrid/domains@2022-06-15' = {
   name: replace(replace('${eventGridDomainName}', '@environment', environment), '@region', region)
   location: eventGridDomainLocation
   identity: {

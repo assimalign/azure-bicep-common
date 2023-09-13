@@ -4,6 +4,12 @@
     "$schema": "../../src/schemas/az/v1.0/parameters.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "natGateway": {},
+        "publicIpPrefix": {
+            "value": {
+                "publicIpPrefixName": ""
+            }
+        },
         "appService": {
             "value": {
                 "appServiceSiteConfigs": {
