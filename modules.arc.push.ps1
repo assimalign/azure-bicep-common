@@ -9,38 +9,41 @@ param (
     [string]$containerRegistryResourceGroup
 )
 
-# Get the existing Azure Container Registry
-$containerRegistry = Get-AzContainerRegistry `
-    -Name $containerRegistryName `
-    -ResourceGroupName $containerRegistryResourceGroup `
-    -ErrorAction SilentlyContinue
 
+Write-Host "- Checking that 'Az.Resources' module is installed" -ForegroundColor Blue
+if (!(Get-Module -ListAvailable -Name 'Az.Resources')) {
+    Write-Host "- Installing 'Az.Resources' Module" -ForegroundColor Blue
+    Install-Module Az.Resources
+}
+
+# Get the existing Azure Container Registry
+Write-Host "- Retreiving Azure Container Registry '$containerRegistryName' in resource Group '$containerRegistryResourceGroup'" -ForegroundColor Blue
+$registry = Get-AzContainerRegistry -Name $containerRegistryName -ResourceGroupName $containerRegistryResourceGroup -ErrorAction SilentlyContinue
 
 # Validate the Container Registry exist
-if ($null -eq $containerRegistry) {
+Write-Host "- Validating Azure Container Registry Exists." -ForegroundColor Blue
+if ($null -eq $registry) {
     Write-Error -Message "The Container Registry '$containerRegistryName' in Resource Group '$containerRegistryResourceGroup' was not found."
 }
 
-$containerRegistryUrl = $containerRegistry.LoginServer
-
+$registryUrl = $registry.LoginServer
 $items = Get-ChildItem './src' -Recurse -Include '*.bicep'
-Write-Host $items.Length + "Bicep modules were found." -ForegroundColor Blue
+Write-Host "- " + $items.Length + "Bicep modules were found." -ForegroundColor Blue
 
+Write-Host "- Retreiving Azure Get-AzContext"
 $context = Get-AzContext
-#Connect-AzAccount -ContextName $context.Name
+
 $items | ForEach-Object {
-   
     $paths = $_.DirectoryName.Split('\')
     $version = $paths[$paths.Length - 1]
-
     if ($version -match "[a-zA-Z]{1}\d{1,2}\.\d{1,2}") {
 
+        $filePath = $_.FullName
         $moduleName = $_.BaseName
-        $modulePath = "br:$containerRegistryUrl/modules/$moduleName" + ":" + $version
+        $modulePath = "br:$registryUrl/modules/$moduleName" + ":" + $version
         
         Write-Host "Pushing $modulePath" -ForegroundColor Green
-
-        Publish-AzBicepModule $_.FullName -Target $modulePath -Force
+        Publish-AzBicepModule -FilePath $filePath -Target $modulePath -DefaultProfile $context -Force
     }   
 }
 
