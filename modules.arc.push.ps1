@@ -9,6 +9,7 @@ param (
     [string]$containerRegistryResourceGroup
 )
 
+winget install -e --id Microsoft.Bicep
 
 Write-Host "- Checking that 'Az.Resources' module is installed" -ForegroundColor Blue
 Install-Module Az.Resources -SkipPublisherCheck -AcceptLicense
