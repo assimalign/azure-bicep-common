@@ -27,6 +27,7 @@ $items = Get-ChildItem './src' -Recurse -Include '*.bicep'
 Write-Host $items.Length + "Bicep modules were found." -ForegroundColor Blue
 
 $context = Get-AzContext
+Connect-AzAccount -ContextName $context.Name
 $items | ForEach-Object {
    
     $paths = $_.DirectoryName.Split('\')
@@ -38,7 +39,7 @@ $items | ForEach-Object {
         $modulePath = "br:$containerRegistryUrl/modules/$moduleName" + ":" + $version
         
         Write-Host "Pushing $modulePath" -ForegroundColor Green
-        Publish-AzBicepModule -FilePath $_.FullName -Target $modulePath -DefaultProfile $context
+        Publish-AzBicepModule -FilePath $_.FullName -Target $modulePath -DefaultProfile $context -Force
     }   
 }
 
