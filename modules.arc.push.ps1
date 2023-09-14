@@ -9,7 +9,7 @@ param (
     [string]$containerRegistryResourceGroup
 )
 
-bicep upgrade
+bicep --version
 
 Write-Host "- Checking that 'Az.Resources' module is installed" -ForegroundColor Blue
 if (!(Get-Module -ListAvailable -Name 'Az.Resources')) {
