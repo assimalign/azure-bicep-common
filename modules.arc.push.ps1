@@ -27,7 +27,7 @@ $items = Get-ChildItem './src' -Recurse -Include '*.bicep'
 Write-Host $items.Length + "Bicep modules were found." -ForegroundColor Blue
 
 $context = Get-AzContext
-Connect-AzAccount -ContextName $context.Name
+#Connect-AzAccount -ContextName $context.Name
 $items | ForEach-Object {
    
     $paths = $_.DirectoryName.Split('\')
