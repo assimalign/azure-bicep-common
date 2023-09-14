@@ -12,6 +12,7 @@ param (
 
 Write-Host "- Checking that 'Az.Resources' module is installed" -ForegroundColor Blue
 Install-Module Az.Resources -SkipPublisherCheck -AcceptLicense
+Install-Module Az.Bicep -Force -SkipPublisherCheck -AcceptLicense
 if (!(Get-Module -ListAvailable -Name 'Az.Resources')) {
     Write-Host "- Installing 'Az.Resources' Module" -ForegroundColor Blue
 }
