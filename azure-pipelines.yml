@@ -4,7 +4,7 @@ trigger:
 - development
 
 pool:
-  vmImage: windows-latests
+  vmImage: windows-latest
 
 variables:
   - group: bicep.release.variables
