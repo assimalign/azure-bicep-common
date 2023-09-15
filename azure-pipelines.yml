@@ -28,7 +28,7 @@ steps:
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   inputs:
     azureSubscription: $(azure-devops-service-principal)
-    azurePowerShellVersion: 'LatestVersion'
+    preferredAzurePowerShellVersion: '10.3.0'
     pwsh: true
     ScriptType: 'FilePath'
     ScriptPath: 'modules.arc.push.ps1'
