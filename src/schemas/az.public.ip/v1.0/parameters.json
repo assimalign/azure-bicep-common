@@ -31,6 +31,9 @@
                 "publicIpName": {
                     "type": "string"
                 },
+                "publicIpResourceGroup": {
+                    "type": "string"
+                },
                 "publicIpSku": {
                     "oneOf": [
                         {
@@ -136,6 +139,9 @@
             "type": "object",
             "properties": {
                 "publicIpPrefixName": {
+                    "type": "string"
+                },
+                "publicIpPrefixResourceGroup": {
                     "type": "string"
                 },
                 "publicIpPrefixTier": {

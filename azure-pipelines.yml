@@ -4,7 +4,7 @@ trigger:
 - development
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: windows-latest
 
 variables:
   - group: bicep.release.variables
@@ -29,6 +29,7 @@ steps:
   inputs:
     azureSubscription: $(azure-devops-service-principal)
     azurePowerShellVersion: 'LatestVersion'
+    pwsh: true
     ScriptType: 'FilePath'
     ScriptPath: 'modules.arc.push.ps1'
     ScriptArguments:
