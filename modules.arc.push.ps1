@@ -41,7 +41,7 @@ $items | ForEach-Object {
         $modulePath = "br:$registryUrl/modules/$moduleName" + ":" + $version
         
         Write-Host "Pushing $modulePath" -ForegroundColor Green
-        Publish-AzBicepModule -FilePath $filePath -Target $modulePath -DefaultProfile $context -Force
+        Publish-AzBicepModule -FilePath $filePath -Target $modulePath
     }   
 }
 
