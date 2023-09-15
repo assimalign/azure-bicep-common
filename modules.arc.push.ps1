@@ -14,6 +14,8 @@ if (!(Get-Module -ListAvailable -Name 'Az.Resources')) {
     Write-Host "- Installing 'Az.Resources' Module" -ForegroundColor Blue
 }
 
+Import-Module Az.Resources -Verbose
+
 # Get the existing Azure Container Registry
 Write-Host "- Retreiving Azure Container Registry '$containerRegistryName' in resource Group '$containerRegistryResourceGroup'" -ForegroundColor Blue
 $registry = Get-AzContainerRegistry -Name $containerRegistryName -ResourceGroupName $containerRegistryResourceGroup -ErrorAction SilentlyContinue
