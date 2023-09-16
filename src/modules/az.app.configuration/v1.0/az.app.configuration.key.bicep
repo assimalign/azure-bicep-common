@@ -32,7 +32,7 @@ resource azAppConfigurationKeyValuesDeployment 'Microsoft.AppConfiguration/confi
   name: replace(replace('${appConfigurationName}/${appConfigurationKey}', '@environment', environment), '@region', region)
   properties: {
     value: replace(replace(value, '@environment', environment), '@region', region)
-    contentType: empty(appConfigurationContentType) ? json('null') : appConfigurationContentType
+    contentType: empty(appConfigurationContentType) ? null : appConfigurationContentType
   }
 }
 
@@ -41,8 +41,6 @@ resource azAppConfigurationKeyValuesWithLabelsDeployment 'Microsoft.AppConfigura
   name: replace(replace('${appConfigurationName}/${appConfigurationKey}$${label}', '@environment', environment), '@region', region)
   properties: {
     value: replace(replace(value, '@environment', environment), '@region', region)
-    contentType: empty(appConfigurationContentType) ? json('null') : appConfigurationContentType
+    contentType: empty(appConfigurationContentType) ? null : appConfigurationContentType
   }
 }]
-
-//Publish-AzBicepModule -FilePath './src/modules/az.app.configuration/v1.0/az.app.configuration.key.bicep' -Target 'br:es2acrdevbicep.azurecr.io/modules/az.app.configuration:v1.0'

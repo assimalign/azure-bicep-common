@@ -271,6 +271,17 @@
                                 "nsgName",
                                 "nsgResourceGroup"
                             ]
+                        },
+                        "subnetNatGateway": {
+                            "type": "object",
+                            "properties": {
+                                "natGatewayName": {
+                                    "type": "string"
+                                },
+                                "natGatewayResourceGroup": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 }

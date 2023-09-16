@@ -134,11 +134,11 @@ resource azAppServiceSlotDeployment 'Microsoft.Web/sites/slots@2022-03-01' = {
       cors: contains(appServiceSlotSiteConfigs.webSettings, 'cors') ? appServiceSlotSiteConfigs.webSettings.cors : {}
       ftpsState: contains(appServiceSlotSiteConfigs.webSettings, 'ftpsState') ? appServiceSlotSiteConfigs.webSettings.ftpsState : 'FtpsOnly'
       alwaysOn: contains(appServiceSlotSiteConfigs.webSettings, 'alwaysOn') ? appServiceSlotSiteConfigs.webSettings.alwaysOn : false
-      phpVersion: contains(appServiceSlotSiteConfigs.webSettings, 'phpVersion') ? appServiceSlotSiteConfigs.webSettings.phpVersion : json('null')
-      nodeVersion: contains(appServiceSlotSiteConfigs.webSettings, 'nodeVersion') ? appServiceSlotSiteConfigs.webSettings.nodeVersion : json('null')
-      javaVersion: contains(appServiceSlotSiteConfigs.webSettings, 'javaVersion') ? appServiceSlotSiteConfigs.webSettings.javaVersion : json('null')
-      pythonVersion: contains(appServiceSlotSiteConfigs.webSettings, 'pythonVersion') ? appServiceSlotSiteConfigs.webSettings.pythonVersion : json('null')
-      netFrameworkVersion: contains(appServiceSlotSiteConfigs.webSettings, 'dotnetVersion') ? appServiceSlotSiteConfigs.webSettings.dotnetVersion : json('null')
+      phpVersion: contains(appServiceSlotSiteConfigs.webSettings, 'phpVersion') ? appServiceSlotSiteConfigs.webSettings.phpVersion : null
+      nodeVersion: contains(appServiceSlotSiteConfigs.webSettings, 'nodeVersion') ? appServiceSlotSiteConfigs.webSettings.nodeVersion : null
+      javaVersion: contains(appServiceSlotSiteConfigs.webSettings, 'javaVersion') ? appServiceSlotSiteConfigs.webSettings.javaVersion : null
+      pythonVersion: contains(appServiceSlotSiteConfigs.webSettings, 'pythonVersion') ? appServiceSlotSiteConfigs.webSettings.pythonVersion : null
+      netFrameworkVersion: contains(appServiceSlotSiteConfigs.webSettings, 'dotnetVersion') ? appServiceSlotSiteConfigs.webSettings.dotnetVersion : null
       apiManagementConfig: any(contains(appServiceSlotSiteConfigs.webSettings, 'apimGateway') ? {
         id: any(replace(replace(resourceId(appServiceSlotSiteConfigs.webSettings.apimGateway.apimGatewayResourceGroup, 'Microsoft.ApiManagement/service/apis', appServiceSlotSiteConfigs.webSettings.apimGateway.apimGatewayName, appServiceSlotSiteConfigs.webSettings.apimGateway.apimGatewayApiName), '@environment', environment), '@region', region))
       } : {})

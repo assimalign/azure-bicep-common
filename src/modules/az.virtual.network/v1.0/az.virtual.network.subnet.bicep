@@ -18,32 +18,40 @@ param virtualNetworkName string
 param virtualNetworkSubnetName string
 
 @description('The address range for this subnet within the given address space.')
-param virtualNetworkSubnetRange object 
+param virtualNetworkSubnetRange object
 
 @description('')
 param virtualNetworkSubnetConfigs object = {}
 
-resource azNetworkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2021-03-01' existing = if(contains(virtualNetworkSubnetConfigs, 'subnetNetworkSecurityGroup')) {
+var properties = {
+  addressPrefix: contains(virtualNetworkSubnetRange, environment) ? virtualNetworkSubnetRange[environment] : virtualNetworkSubnetRange.default
+  privateEndpointNetworkPolicies: contains(virtualNetworkSubnetConfigs, 'subnetPrivateEndpointNetworkPolicies') ? virtualNetworkSubnetConfigs.subnetPrivateEndpointNetworkPolicies : 'Disabled'
+  serviceEndpoints: contains(virtualNetworkSubnetConfigs, 'subnetServiceEndpoints') ? virtualNetworkSubnetConfigs.subnetServiceEndpoints : []
+  networkSecurityGroup: contains(virtualNetworkSubnetConfigs, 'subnetNetworkSecurityGroup') ? {
+    id: azNetworkSecurityGroup.id
+  } : null
+  natGateway: contains(virtualNetworkSubnetConfigs, 'subnetNatGateway') ? {
+    id: replace(replace(resourceId(virtualNetworkSubnetConfigs.natGatewayResourceGroup, 'Microsoft.Network/natGateways', virtualNetworkSubnetConfigs.natGatewayName), '@environment', environment), '@region', region)
+  } : null
+  delegations: contains(virtualNetworkSubnetConfigs, 'subnetDelegation') ? [
+    {
+      name: toLower(replace(virtualNetworkSubnetConfigs.subnetDelegation, '/', '.'))
+      properties: {
+        serviceName: virtualNetworkSubnetConfigs.subnetDelegation
+      }
+    }
+  ] : null
+}
+
+resource azNetworkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2021-03-01' existing = if (contains(virtualNetworkSubnetConfigs, 'subnetNetworkSecurityGroup')) {
   name: replace(replace(virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgResourceGroup, '@environment', environment), '@region', region))
 }
 
 resource azVirtualNetworkSubnetDeployment 'Microsoft.Network/virtualNetworks/subnets@2021-03-01' = {
   name: replace(replace('${virtualNetworkName}/${virtualNetworkSubnetName}', '@environment', environment), '@region', region)
-  properties: {
-    addressPrefix: contains(virtualNetworkSubnetRange, environment) ? virtualNetworkSubnetRange[environment] : virtualNetworkSubnetRange.default
-    privateEndpointNetworkPolicies: contains(virtualNetworkSubnetConfigs, 'subnetPrivateEndpointNetworkPolicies') ? virtualNetworkSubnetConfigs.subnetPrivateEndpointNetworkPolicies : 'Disabled'
-    serviceEndpoints: contains(virtualNetworkSubnetConfigs, 'subnetServiceEndpoints') ?  virtualNetworkSubnetConfigs.subnetServiceEndpoints : []
-    networkSecurityGroup: contains(virtualNetworkSubnetConfigs, 'subnetNetworkSecurityGroup') ? {
-      id: azNetworkSecurityGroup.id
-    } : json('null')
-    delegations: contains(virtualNetworkSubnetConfigs, 'subnetDelegation') ? [
-      {
-        name: toLower(replace(virtualNetworkSubnetConfigs.subnetDelegation, '/', '.'))
-        properties: {
-          serviceName: virtualNetworkSubnetConfigs.subnetDelegation
-        }
-      }
-    ] : json('null')
-  }
+  properties: properties
 }
+
+
+output virtualNetworkSubnet object = azVirtualNetworkSubnetDeployment

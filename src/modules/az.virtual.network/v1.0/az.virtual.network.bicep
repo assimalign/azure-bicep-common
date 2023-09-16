@@ -37,7 +37,10 @@ var subnets = [for subnet in virtualNetworkSubnets: {
     networkSecurityGroup: contains(subnet, 'virtualNetworkSubnetConfigs') && contains(subnet.virtualNetworkSubnetConfigs, 'subnetNetworkSecurityGroup') ? {
       privateEndpointNetworkPolicies: contains(subnet, 'virtualNetworkSubnetConfigs') && contains(subnet.virtualNetworkSubnetConfigs, 'subnetPrivateEndpointNetworkPolicies') ? subnet.virtualNetworkSubnetConfigs.subnetPrivateEndpointNetworkPolicies : 'Disabled'
       id: resourceId(replace(replace(subnet.virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgResourceGroup, '@environment', environment), '@region', region), 'Microsoft.Network/networkSecurityGroups', replace(replace(subnet.virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgName, '@environment', environment), '@region', region))
-    } : json('null')
+    } : null
+    natGateway: contains(subnet, 'virtualNetworkSubnetConfigs') && contains(subnet.virtualNetworkSubnetConfigs, 'subnetNatGateway') ? {
+      id: replace(replace(resourceId(subnet.virtualNetworkSubnetConfigs.natGatewayResourceGroup, 'Microsoft.Network/natGateways', subnet.virtualNetworkSubnetConfigs.natGatewayName), '@environment', environment), '@region', region)
+    } : null
     delegations: contains(subnet, 'virtualNetworkSubnetConfigs') && contains(subnet.virtualNetworkSubnetConfigs, 'subnetDelegation') ? [
       {
         name: toLower(replace(subnet.virtualNetworkSubnetConfigs.subnetDelegation, '/', '.'))
@@ -45,7 +48,7 @@ var subnets = [for subnet in virtualNetworkSubnets: {
           serviceName: subnet.virtualNetworkSubnetConfigs.subnetDelegation
         }
       }
-    ] : json('null')
+    ] : null
   }
 }]
 

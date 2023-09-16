@@ -59,22 +59,13 @@ resource azVirtualNetworkGatewayDeployment 'Microsoft.Network/virtualNetworkGate
    properties: {
       gatewayType: 'Vpn'
       vpnType: vpnGatewayNetworkType
-      sku: any(environment == 'dev' ? {
-         name: vpnGatewaySku.dev
-         tier: vpnGatewaySku.dev
-      } : any(environment == 'qa' ? {
-         name: vpnGatewaySku.qa
-         tier: vpnGatewaySku.qa
-      } : any(environment == 'uat' ? {
-         name: vpnGatewaySku.uat
-         tier: vpnGatewaySku.uat
-      } : any(environment == 'prd' ? {
-         name: vpnGatewaySku.prd
-         tier: vpnGatewaySku.prd
+      sku: contains(vpnGatewaySku, environment) ? {
+         name: vpnGatewaySku[environment]
+         tier: vpnGatewaySku[environment]
       } : {
-         name: 'VpnGw1'
-         tier: 'VpnGw1'
-      }))))
+         name: vpnGatewaySku.default
+         tier: vpnGatewaySku.default
+      }
       ipConfigurations: [
          {
             name: 'default'
@@ -107,6 +98,7 @@ resource azVirtualNetworkGatewayDeployment 'Microsoft.Network/virtualNetworkGate
          aadIssuer: 'https://sts.windows.net/${subscription().tenantId}/'
       } : {}))
    }
+   
    dependsOn: [
       azVirtualNetworkSubnetResource
    ]

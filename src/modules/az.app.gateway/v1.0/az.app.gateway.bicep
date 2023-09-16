@@ -28,9 +28,6 @@ param appGatewayConfigs object = {}
 @description('The tags to attach to the resource when deployed')
 param appGatewayTags object = {}
 
-// **************************************************************************************** //
-//                              App Gateway Deployment                                      //
-// **************************************************************************************** //
 // 1. Get Virtual Network Subnet to reference for Ip Configurations
 resource azVirtualNetworkSubnetResource 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
   name: replace(replace('${appGatewayFrontend.privateIp.privateIpVirtualNetwork}/${appGatewayFrontend.privateIp.privateIpSubnet}', '@environment', environment), '@region', region)
