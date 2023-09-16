@@ -12,35 +12,39 @@ param environment string = ''
 param region string = ''
 
 @description('')
-param gatewayName string
+param natGatewayName string
 
 @description('')
-param gatewayPublicIpAddresses array
+param natGatewayResourceLocation string = resourceGroup().location
 
 @description('')
-param gatewayPublicIpPrefixes array
+param natGatewayPublicIpAddresses array
 
 @description('')
-param gatewayTags object = {}
+param natGatewayPublicIpPrefixes array = []
 
-var publicIpAddresses = [for ip in gatewayPublicIpAddresses: {
-  id: replace(replace(resourceId(ip.resourceGroup, 'Microsoft.Network/publicIPAddresses', ip.name), '@environment', environment), '@region', region)
+@description('')
+param natGatewayTags object = {}
+
+var publicIpAddresses = [for ip in natGatewayPublicIpAddresses: {
+  id: replace(replace(resourceId(ip.publicIpResourceGroup, 'Microsoft.Network/publicIPAddresses', ip.publicIpName), '@environment', environment), '@region', region)
 }]
 
-var publicIpPrefixes = [for prefix in gatewayPublicIpPrefixes: {
-  id: replace(replace(resourceId(prefix.resourceGroup, 'Microsoft.Network/publicIPPrefixes', prefix.name), '@environment', environment), '@region', region)
+var publicIpPrefixes = [for prefix in natGatewayPublicIpPrefixes: {
+  id: replace(replace(resourceId(prefix.publicIpPrefixResourceGroup, 'Microsoft.Network/publicIPPrefixes', prefix.publicIpPrefixName), '@environment', environment), '@region', region)
 }]
 
 resource azNatGatewayDeployment 'Microsoft.Network/natGateways@2023-05-01' = {
-  name: replace(replace('${gatewayName}', '@environment', environment), '@region', region)
+  name: replace(replace(natGatewayName, '@environment', environment), '@region', region)
   sku: {
     name: 'Standard'
   }
+  location: natGatewayResourceLocation
   properties: {
     publicIpPrefixes: publicIpPrefixes
     publicIpAddresses: publicIpAddresses
   }
-  tags: union(gatewayTags, {
+  tags: union(natGatewayTags, {
       region: empty(region) ? 'n/a' : region
       environment: empty(environment) ? 'n/a' : environment
     })

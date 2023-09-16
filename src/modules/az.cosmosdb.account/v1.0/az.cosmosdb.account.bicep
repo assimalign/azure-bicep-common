@@ -72,7 +72,7 @@ resource azCosmosDbAccountDeployment 'Microsoft.DocumentDB/databaseAccounts@2022
     consistencyPolicy: {
       defaultConsistencyLevel: !empty(cosmosAccountConsistencyPolicy) ? cosmosAccountConsistencyPolicy.consistencyLevel : 'Session'
     }
-    backupPolicy: empty(cosmosAccountBackupPolicy) ? json('null') : cosmosAccountBackupPolicy.policyType == 'Periodic' ? {
+    backupPolicy: empty(cosmosAccountBackupPolicy) ? null : cosmosAccountBackupPolicy.policyType == 'Periodic' ? {
       types: 'Periodic'
       periodicModeProperties: {
         backupIntervalInMinutes: cosmosAccountBackupPolicy.policyBackupInternal

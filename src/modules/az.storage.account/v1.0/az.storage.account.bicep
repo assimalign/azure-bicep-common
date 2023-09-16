@@ -82,7 +82,7 @@ param storageAccountTags object = {}
 // Setup the Virtual Networks Allowed or Denied for the Storage Account
 var virtualNetworks = [for network in storageAccountVirtualNetworks: {
   action: network.allowAccess == true ? 'Allow' : null
-  id: replace(replace(resourceId('${network.virtualNetworkResourceGroup}', 'Microsoft.Network/virtualNetworks/subnets', '${network.virtualNetwork}', network.virtualNetworkSubnet), '@environment', environment), '@region', region)
+  id: replace(replace(resourceId(network.virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', network.virtualNetwork, network.virtualNetworkSubnet), '@environment', environment), '@region', region)
 }]
 
 // Setup IP Rules for the virtualnetwork
@@ -93,7 +93,7 @@ var ipRules = [for ipRule in storageAccountIpRules: {
 
 // Setup allowed azure resource that can access the storage account
 var resourceAccess = [for resource in storageAccountResourceAccess: {
-  resourceId: replace(resourceId('${resource.resource}', 'Microsoft.Network/virtualNetworks/subnet', '${resource.resourceName}'), '@environment', environment)
+  resourceId: replace(resourceId(resource.resource, 'Microsoft.Network/virtualNetworks/subnet', resource.resourceName), '@environment', environment)
 }]
 
 // 1. Deploy Azure Storage Account

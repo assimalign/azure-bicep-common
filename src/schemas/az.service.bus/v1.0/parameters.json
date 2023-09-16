@@ -118,7 +118,7 @@
             },
             "required": [
                 "serviceBusName",
-                "ServiceBusSku"
+                "serviceBusSku"
             ]
         },
         "service-bus-sku": {

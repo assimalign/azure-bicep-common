@@ -30,7 +30,54 @@
         "nat-gateway-parameters": {
             "type": "object",
             "properties": {
-                
+                "natGatewayName": {
+                    "type": "string"
+                },
+                "natGatewayResourceGroup": {
+                    "type": "string"
+                },
+                "natGatewayResourceLocation": {
+                    "type": "string"
+                },
+                "natGatewayPublicIpAddresses": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "publicIpName": {
+                                "type": "string"
+                            },
+                            "publicIpResourceGroup": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "minItems": 1
+                },
+                "natGatewayPublicIpPrefixes": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "publicIpPrefixName": {
+                                "type": "string"
+                            },
+                            "publicIpPrefixResourceGroup": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "minItems": 1
+                },
+                "natGatewayTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
             }
         }
     }

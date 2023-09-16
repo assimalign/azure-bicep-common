@@ -44,13 +44,13 @@ param appServicePlanTags object = {}
 
 
 // 1. Get Existing ASE Environment if applicable
-resource azAppServicePlanAseResource 'Microsoft.Web/hostingEnvironments@2022-03-01' existing = if (!empty(appServicePlanEnvironmentName)) {
+resource azAppServicePlanAseResource 'Microsoft.Web/hostingEnvironments@2022-09-01' existing = if (!empty(appServicePlanEnvironmentName)) {
   name: replace(replace(appServicePlanEnvironmentName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(appServicePlanEnvironmentResourceGroup, '@environment', environment), '@region', region))
 }
 
 // 2. Creates an app service plan under an ASE if applicable
-resource azAppServicePlanDeployment 'Microsoft.Web/serverfarms@2022-03-01' = {
+resource azAppServicePlanDeployment 'Microsoft.Web/serverfarms@2022-09-01' = {
   name: replace(replace(appServicePlanName, '@environment', environment), '@region', region)
   location: appServicePlanLocation
   properties: {

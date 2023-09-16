@@ -64,15 +64,14 @@ param appServiceSiteConfigs object = {}
 @description('Custom Attributes to attach to the app service deployment')
 param appServiceTags object = {}
 
-// **************************************************************************************** //
-//                              Function App Deployment                                     //
-// **************************************************************************************** //
+
 
 // Format Site Settings 
 var siteSettings = [for item in items(contains(appServiceSiteConfigs, 'siteSettings') ? appServiceSiteConfigs.siteSettings : {}): {
   name: replace(replace(item.key, '@environment', environment), '@region', region)
   value: replace(replace(sys.contains(item.value, environment) ? item.value[environment] : item.value.default, '@environment', environment), '@region', region)
 }]
+
 
 var authSettingsAudienceValues = contains(appServiceSiteConfigs, 'authSettings') ? contains(appServiceSiteConfigs.authSettings.appAuthIdentityProviderAudiences, environment) ? appServiceSiteConfigs.authSettings.appAuthIdentityProviderAudiences[environment] : appServiceSiteConfigs.authSettings.appAuthIdentityProviderAudiences.default : []
 var authSettingAudiences = [for audience in authSettingsAudienceValues: replace(replace(audience, '@environment', environment), '@region', region)]
@@ -97,7 +96,7 @@ resource azAppServiceInsightsResource 'Microsoft.Insights/components@2020-02-02'
 }
 
 // 4.1 Deploy Function App, if applicable
-resource azAppServiceDeployment 'Microsoft.Web/sites@2022-03-01' = {
+resource azAppServiceDeployment 'Microsoft.Web/sites@2022-09-01' = {
   name: replace(replace(appServiceName, '@environment', environment), '@region', region)
   location: appServiceLocation
   kind: appServiceType
@@ -105,6 +104,8 @@ resource azAppServiceDeployment 'Microsoft.Web/sites@2022-03-01' = {
     type: appServiceMsiEnabled == true ? 'SystemAssigned' : 'None'
   }
   properties: {
+    vnetRouteAllEnabled: contains(appServiceSiteConfigs, 'virtualNetworkSettings') && contains(appServiceSiteConfigs.virtualNetworkSettings, 'routeAllOutboundTraffic') ? appServiceSiteConfigs.virtualNetworkSettings.routeAllOutboundTraffic : false
+    virtualNetworkSubnetId:contains(appServiceSiteConfigs, 'virtualNetworkSettings') ? replace(replace(resourceId(appServiceSiteConfigs.virtualNetworkSettings.virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', appServiceSiteConfigs.virtualNetworkSettings.virtualNetworkName, appServiceSiteConfigs.virtualNetworkSettings.virtualNetworkSubnetName), '@environment', environment), '@region', region) : null
     serverFarmId: azAppServicePlanResource.id
     clientAffinityEnabled: false
     httpsOnly: contains(appServiceSiteConfigs, 'webSettings') && contains(appServiceSiteConfigs.webSettings, 'httpsOnly') ? appServiceSiteConfigs.webSettings.httpsOnly : false
@@ -123,6 +124,11 @@ resource azAppServiceDeployment 'Microsoft.Web/sites@2022-03-01' = {
             name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
             value: azAppServiceInsightsResource.properties.ConnectionString
           }
+          {
+            name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
+            value: '~2'
+            slotSetting: true
+          }
         ],
         siteSettings)
     } : {})
@@ -137,11 +143,11 @@ resource azAppServiceDeployment 'Microsoft.Web/sites@2022-03-01' = {
       cors: contains(appServiceSiteConfigs.webSettings, 'cors') ? appServiceSiteConfigs.webSettings.cors : {}
       ftpsState: contains(appServiceSiteConfigs.webSettings, 'ftpsState') ? appServiceSiteConfigs.webSettings.ftpsState : 'FtpsOnly'
       alwaysOn: contains(appServiceSiteConfigs.webSettings, 'alwaysOn') ? appServiceSiteConfigs.webSettings.alwaysOn : false
-      phpVersion: contains(appServiceSiteConfigs.webSettings, 'phpVersion') ? appServiceSiteConfigs.webSettings.phpVersion : json('null')
-      nodeVersion: contains(appServiceSiteConfigs.webSettings, 'nodeVersion') ? appServiceSiteConfigs.webSettings.nodeVersion : json('null')
-      javaVersion: contains(appServiceSiteConfigs.webSettings, 'javaVersion') ? appServiceSiteConfigs.webSettings.javaVersion : json('null')
-      pythonVersion: contains(appServiceSiteConfigs.webSettings, 'pythonVersion') ? appServiceSiteConfigs.webSettings.pythonVersion : json('null')
-      netFrameworkVersion: contains(appServiceSiteConfigs.webSettings, 'dotnetVersion') ? appServiceSiteConfigs.webSettings.dotnetVersion : json('null')
+      phpVersion: contains(appServiceSiteConfigs.webSettings, 'phpVersion') ? appServiceSiteConfigs.webSettings.phpVersion : null
+      nodeVersion: contains(appServiceSiteConfigs.webSettings, 'nodeVersion') ? appServiceSiteConfigs.webSettings.nodeVersion : null
+      javaVersion: contains(appServiceSiteConfigs.webSettings, 'javaVersion') ? appServiceSiteConfigs.webSettings.javaVersion : null
+      pythonVersion: contains(appServiceSiteConfigs.webSettings, 'pythonVersion') ? appServiceSiteConfigs.webSettings.pythonVersion : null
+      netFrameworkVersion: contains(appServiceSiteConfigs.webSettings, 'dotnetVersion') ? appServiceSiteConfigs.webSettings.dotnetVersion : null
       apiManagementConfig: any(contains(appServiceSiteConfigs.webSettings, 'apimGateway') ? {
         id: replace(replace(resourceId(appServiceSiteConfigs.webSettings.apimGateway.apimGatewayResourceGroup, 'Microsoft.ApiManagement/service/apis', appServiceSiteConfigs.webSettings.apimGateway.apimGatewayName, appServiceSiteConfigs.webSettings.apimGateway.apimGatewayApiName), '@environment', environment), '@region', region)
       } : {})
@@ -180,7 +186,7 @@ resource azAppServiceDeployment 'Microsoft.Web/sites@2022-03-01' = {
               enabled: true
             }
           }
-        } : json('null'))
+        } : null)
 
         // Facebook Provider
         facebook: any(appServiceSiteConfigs.authSettings.appAuthIdentityProvider == 'Facebook' ? {
@@ -196,7 +202,7 @@ resource azAppServiceDeployment 'Microsoft.Web/sites@2022-03-01' = {
           login: {
             scopes: appServiceSiteConfigs.authSettings.appAuthIdentityProviderScopes
           }
-        } : json('null'))
+        } : null)
 
         // Github Provider
         gitHub: any(appServiceSiteConfigs.authSettings.appAuthIdentityProvider == 'Github' ? {
@@ -211,7 +217,7 @@ resource azAppServiceDeployment 'Microsoft.Web/sites@2022-03-01' = {
           login: {
             scopes: appServiceSiteConfigs.authSettings.appAuthIdentityProviderScopes
           }
-        } : json('null'))
+        } : null)
 
         // Google Provider
         google: any(appServiceSiteConfigs.authSettings.appAuthIdentityProvider == 'Google' ? {
@@ -229,7 +235,7 @@ resource azAppServiceDeployment 'Microsoft.Web/sites@2022-03-01' = {
           validation: {
             allowedAudiences: authSettingAudiences
           }
-        } : json('null'))
+        } : null)
       }
       login: {
         tokenStore: {

@@ -991,6 +991,23 @@
                         }
                     },
                     "minProperties": 1
+                },
+                "virtualNetworkSettings": {
+                    "description": "Only use this settings when setting up",
+                    "properties": {
+                        "routeAllOutboundTraffic": {
+                            "type": "boolean"
+                        },
+                        "virtualNetworkName": {
+                            "type": "string"
+                        },
+                        "virtualNetworkSubnetName": {
+                            "type": "string"
+                        },
+                        "virtualNetworkResourceGroup": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },
