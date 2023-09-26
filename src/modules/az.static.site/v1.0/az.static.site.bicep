@@ -47,7 +47,7 @@ resource azStaticSiteDeployment 'Microsoft.Web/staticSites@2022-03-01' = {
     tier: staticSiteSku.default
   })
   properties: {
-     
+    
   }
   tags: union(staticSiteTags, {
     region: empty(region) ? 'n/a' : region

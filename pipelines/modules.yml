@@ -1,0 +1,29 @@
+trigger: 
+  branches: 
+    include:
+      - main
+      - development
+  paths: 
+    include:
+        - src/modules
+
+
+pool:
+  vmImage: windows-latest
+
+variables:
+  - group: bicep.release.variables
+
+steps:  
+- task: AzurePowerShell@5
+  displayName: 'Upcert Bicep Modules'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  inputs:
+    azureSubscription: $(azure-devops-service-principal)
+    preferredAzurePowerShellVersion: '10.3.0'
+    pwsh: true
+    ScriptType: 'FilePath'
+    ScriptPath: 'modules.arc.push.ps1'
+    ScriptArguments:
+      -containerRegistryName $(azure-arc)
+      -containerRegistryResourceGroup $(azure-arc-rg)

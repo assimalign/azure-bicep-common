@@ -105,7 +105,7 @@ resource azAppServiceDeployment 'Microsoft.Web/sites@2022-09-01' = {
   }
   properties: {
     vnetRouteAllEnabled: contains(appServiceSiteConfigs, 'virtualNetworkSettings') && contains(appServiceSiteConfigs.virtualNetworkSettings, 'routeAllOutboundTraffic') ? appServiceSiteConfigs.virtualNetworkSettings.routeAllOutboundTraffic : false
-    virtualNetworkSubnetId:contains(appServiceSiteConfigs, 'virtualNetworkSettings') ? replace(replace(resourceId(appServiceSiteConfigs.virtualNetworkSettings.virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', appServiceSiteConfigs.virtualNetworkSettings.virtualNetworkName, appServiceSiteConfigs.virtualNetworkSettings.virtualNetworkSubnetName), '@environment', environment), '@region', region) : null
+    virtualNetworkSubnetId: contains(appServiceSiteConfigs, 'virtualNetworkSettings') ? replace(replace(resourceId(appServiceSiteConfigs.virtualNetworkSettings.virtualNetworkResourceGroup, 'Microsoft.Network/VirtualNetworks/subnets', appServiceSiteConfigs.virtualNetworkSettings.virtualNetworkName, appServiceSiteConfigs.virtualNetworkSettings.virtualNetworkSubnetName), '@environment', environment), '@region', region) : null
     serverFarmId: azAppServicePlanResource.id
     clientAffinityEnabled: false
     httpsOnly: contains(appServiceSiteConfigs, 'webSettings') && contains(appServiceSiteConfigs.webSettings, 'httpsOnly') ? appServiceSiteConfigs.webSettings.httpsOnly : false
@@ -127,6 +127,11 @@ resource azAppServiceDeployment 'Microsoft.Web/sites@2022-09-01' = {
           {
             name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
             value: '~2'
+            slotSetting: true
+          }
+          {
+            name: 'DiagnosticServices_EXTENSION_VERSION'
+            value: '~3'
             slotSetting: true
           }
         ],

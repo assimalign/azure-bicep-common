@@ -33,3 +33,6 @@ $items | ForEach-Object {
         Publish-AzBicepModule -FilePath $filePath -Target $modulePath -DefaultProfile $context -Force
     }   
 }
+
+
+Publish-AzBicepModule -FilePath 'C:\Source\repos\assimalign\github\azure-bicep-common\src\modules\az.app.service\v1.0\az.app.service.bicep' -Target 'br:aecbicep.azurecr.io/modules/az.app.service:v1.0' -Force

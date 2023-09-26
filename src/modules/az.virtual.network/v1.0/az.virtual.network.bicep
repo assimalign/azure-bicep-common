@@ -39,7 +39,7 @@ var subnets = [for subnet in virtualNetworkSubnets: {
       id: resourceId(replace(replace(subnet.virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgResourceGroup, '@environment', environment), '@region', region), 'Microsoft.Network/networkSecurityGroups', replace(replace(subnet.virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgName, '@environment', environment), '@region', region))
     } : null
     natGateway: contains(subnet, 'virtualNetworkSubnetConfigs') && contains(subnet.virtualNetworkSubnetConfigs, 'subnetNatGateway') ? {
-      id: replace(replace(resourceId(subnet.virtualNetworkSubnetConfigs.natGatewayResourceGroup, 'Microsoft.Network/natGateways', subnet.virtualNetworkSubnetConfigs.natGatewayName), '@environment', environment), '@region', region)
+      id: replace(replace(resourceId(subnet.virtualNetworkSubnetConfigs.subnetNatGateway.natGatewayResourceGroup, 'Microsoft.Network/natGateways', subnet.virtualNetworkSubnetConfigs.subnetNatGateway.natGatewayName), '@environment', environment), '@region', region)
     } : null
     delegations: contains(subnet, 'virtualNetworkSubnetConfigs') && contains(subnet.virtualNetworkSubnetConfigs, 'subnetDelegation') ? [
       {

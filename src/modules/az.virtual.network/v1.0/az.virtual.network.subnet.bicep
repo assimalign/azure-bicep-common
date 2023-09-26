@@ -31,7 +31,7 @@ var properties = {
     id: azNetworkSecurityGroup.id
   } : null
   natGateway: contains(virtualNetworkSubnetConfigs, 'subnetNatGateway') ? {
-    id: replace(replace(resourceId(virtualNetworkSubnetConfigs.natGatewayResourceGroup, 'Microsoft.Network/natGateways', virtualNetworkSubnetConfigs.natGatewayName), '@environment', environment), '@region', region)
+    id: replace(replace(resourceId(virtualNetworkSubnetConfigs.subnetNatGateway.natGatewayResourceGroup, 'Microsoft.Network/natGateways', virtualNetworkSubnetConfigs.subnetNatGateway.natGatewayName), '@environment', environment), '@region', region)
   } : null
   delegations: contains(virtualNetworkSubnetConfigs, 'subnetDelegation') ? [
     {
