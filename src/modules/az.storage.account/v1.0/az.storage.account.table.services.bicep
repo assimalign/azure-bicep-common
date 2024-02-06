@@ -33,24 +33,30 @@ param storageAccountTableServiceConfigs object = {}
 param storageAccountTableServicePrivateEndpoint object = {}
 
 // 1. Get the existing Storage Account
-resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2022-05-01' existing = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
   name: replace(replace(storageAccountName, '@environment', environment), '@region', region)
 }
 
 // 2. Deploy the Storage Account Table Service
-resource azStorageAccountTableServiceDeployment 'Microsoft.Storage/storageAccounts/tableServices@2022-05-01' = {
+resource storageAccountTableService 'Microsoft.Storage/storageAccounts/tableServices@2023-01-01' = {
   name: storageAccountTableServiceName
-  parent: azStorageAccountResource
+  parent: storageAccount
   properties: {
-    cors: !contains(storageAccountTableServiceConfigs, 'tableServiceCorsPolicy') ? json('null') : {
-      corsRules: storageAccountTableServiceConfigs.tableServiceCorsPolicy
+    cors: {
+      corsRules: [for rule in storageAccountTableServiceConfigs!.tableServiceCorsPolicy ?? []: {
+        allowedMethods: rule.methods
+        allowedOrigins: rule.origins
+        exposedHeaders: []
+        allowedHeaders: contains(rule, 'headers') ? rule.headers : []
+        maxAgeInSeconds: contains(rule, 'maxAge') ? rule.maxAge : 0
+      }]
     }
   }
 }
 
 // 3. Deploy Storage Account Tables if applicable
-module azStorageAccountTableServiceTablesDeployment 'az.storage.account.table.services.tables.bicep' = [for table in storageAccountTableServiceTables: if (!empty(table)) {
-  name: !empty(storageAccountTableServiceTables) ? toLower('az-stg-table-${guid('${azStorageAccountTableServiceDeployment.id}/${table.storageAccountTableName}')}') : 'no-table-service-to-deploy'
+module storageAccountTableServiceTable 'az.storage.account.table.services.tables.bicep' = [for table in storageAccountTableServiceTables: if (!empty(table)) {
+  name: !empty(storageAccountTableServiceTables) ? toLower('table-${guid('${storageAccountTableService.id}/${table.storageAccountTableName}')}') : 'no-table-service-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -62,8 +68,8 @@ module azStorageAccountTableServiceTablesDeployment 'az.storage.account.table.se
 }]
 
 // 4. Deploy Storage Account Table Service Private Endpoint if applicable
-module azStorageTableServicePrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(storageAccountTableServicePrivateEndpoint)) {
-  name: !empty(storageAccountTableServicePrivateEndpoint) ? toLower('az-stg-table-priv-endpoint-${guid('${azStorageAccountTableServiceDeployment.id}/${storageAccountTableServicePrivateEndpoint.privateEndpointName}')}') : 'no-stg-table-priv-endpoint'
+module storageTableServicePrivateEndpoint '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(storageAccountTableServicePrivateEndpoint)) {
+  name: !empty(storageAccountTableServicePrivateEndpoint) ? toLower('table-priv-endpoint-${guid('${storageAccountTableService.id}/${storageAccountTableServicePrivateEndpoint.privateEndpointName}')}') : 'no-stg-table-priv-endpoint'
   scope: resourceGroup()
   params: {
     region: region
@@ -76,7 +82,7 @@ module azStorageTableServicePrivateEndpointDeployment '../../az.private.endpoint
     privateEndpointVirtualNetworkName: storageAccountTableServicePrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: storageAccountTableServicePrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: storageAccountTableServicePrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
-    privateEndpointResourceIdLink: azStorageAccountResource.id
+    privateEndpointResourceIdLink: storageAccount.id
     privateEndpointTags: contains(storageAccountTableServicePrivateEndpoint, 'privateEndpointTags') ? storageAccountTableServicePrivateEndpoint.privateEndpointTags : {}
     privateEndpointGroupIds: [
       'table'
@@ -84,4 +90,4 @@ module azStorageTableServicePrivateEndpointDeployment '../../az.private.endpoint
   }
 }
 
-output storageAccountTableService object = azStorageAccountTableServiceDeployment
+output storageAccountTableService object = storageAccountTableService

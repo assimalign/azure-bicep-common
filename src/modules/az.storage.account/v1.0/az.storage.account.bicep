@@ -79,26 +79,11 @@ param storageAccountFileShareServices object = {}
 @description('The tags to attach to the resource when deployed')
 param storageAccountTags object = {}
 
-// Setup the Virtual Networks Allowed or Denied for the Storage Account
-var virtualNetworks = [for network in storageAccountVirtualNetworks: {
-  action: network.allowAccess == true ? 'Allow' : null
-  id: replace(replace(resourceId(network.virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', network.virtualNetwork, network.virtualNetworkSubnet), '@environment', environment), '@region', region)
-}]
-
-// Setup IP Rules for the virtualnetwork
-var ipRules = [for ipRule in storageAccountIpRules: {
-  action: 'Allow'
-  value: ipRule.ipAddress
-}]
-
-// Setup allowed azure resource that can access the storage account
-var resourceAccess = [for resource in storageAccountResourceAccess: {
-  resourceId: replace(resourceId(resource.resource, 'Microsoft.Network/virtualNetworks/subnet', resource.resourceName), '@environment', environment)
-}]
+func format(name string, env string, region string) string => replace(replace(name, '@environment', env), '@region', region)
 
 // 1. Deploy Azure Storage Account
-resource azStorageAccountDeployment 'Microsoft.Storage/storageAccounts@2022-05-01' = {
-  name: replace(replace(storageAccountName, '@environment', environment), '@region', region)
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+  name: format(storageAccountName, environment, region)
   kind: storageAccountType
   location: storageAccountLocation
   sku: any(contains(storageAccountTier, environment) ? {
@@ -113,9 +98,26 @@ resource azStorageAccountDeployment 'Microsoft.Storage/storageAccounts@2022-05-0
     minimumTlsVersion: storageAccountTlsVersion
     networkAcls: {
       defaultAction: storageAccountDefaultNetworkAccess
-      virtualNetworkRules: virtualNetworks
-      resourceAccessRules: resourceAccess
-      ipRules: ipRules
+      virtualNetworkRules: [for network in storageAccountVirtualNetworks: {
+        action: network.allowAccess == true ? 'Allow' : null
+        id: resourceId(
+          format(network.virtualNetworkResourceGroup, environment, region),
+          'Microsoft.Network/virtualNetworks/subnets',
+          format(network.virtualNetwork, environment, region),
+          format(network.virtualNetworkSubnet, environment, region)
+        )
+      }]
+      resourceAccessRules: [for resource in storageAccountResourceAccess: {
+        resourceId: resourceId(
+          format(resource.resource, environment, region),
+          'Microsoft.Network/virtualNetworks/subnet',
+          format(resource.resourceName, environment, region)
+        )
+      }]
+      ipRules: [for ipRule in storageAccountIpRules: {
+        action: 'Allow'
+        value: ipRule.ipAddress
+      }]
       bypass: storageAccountVirtualNetworkBypass
     }
   }
@@ -126,8 +128,8 @@ resource azStorageAccountDeployment 'Microsoft.Storage/storageAccounts@2022-05-0
 }
 
 // 2. Deploy Azure Storage Blob Services
-module azStorageAccountBlobServiceDeployment 'az.storage.account.blob.services.bicep' = if (!empty(storageAccountBlobServices) && (startsWith(storageAccountType, 'Storage') || startsWith(storageAccountType, 'Blob'))) {
-  name: !empty(storageAccountBlobServices) ? toLower('az-stg-blob-services-${guid('${azStorageAccountDeployment.id}/blob-service-deployment')}') : 'no-stg-blob-service-to-deploy'
+module storageAccountBlobService 'az.storage.account.blob.services.bicep' = if (!empty(storageAccountBlobServices) && (startsWith(storageAccountType, 'Storage') || startsWith(storageAccountType, 'Blob'))) {
+  name: !empty(storageAccountBlobServices) ? toLower('blob-services-${guid('${storageAccount.id}/blob-service-deployment')}') : 'no-stg-blob-service-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -142,8 +144,8 @@ module azStorageAccountBlobServiceDeployment 'az.storage.account.blob.services.b
 }
 
 // 3. Deploy Azure File Share Services
-module azStorageAccountFileShareServiceDeployment 'az.storage.account.fileshare.services.bicep' = if (!empty(storageAccountFileShareServices) && (startsWith(storageAccountType, 'Storage') || startsWith(storageAccountType, 'FileStorage'))) {
-  name: !empty(storageAccountFileShareServices) ? toLower('az-stg-fs-service-${guid('${azStorageAccountDeployment.id}/file-share-service-deployment')}') : 'no-stg-fs-service-to-deploy'
+module storageAccountFileShareService 'az.storage.account.fileshare.services.bicep' = if (!empty(storageAccountFileShareServices) && (startsWith(storageAccountType, 'Storage') || startsWith(storageAccountType, 'FileStorage'))) {
+  name: !empty(storageAccountFileShareServices) ? toLower('fileshare-services-${guid('${storageAccount.id}/file-share-service-deployment')}') : 'no-stg-fs-service-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -158,8 +160,8 @@ module azStorageAccountFileShareServiceDeployment 'az.storage.account.fileshare.
 }
 
 // 4. Deploy Azure Queue Services
-module azStorageAccountQueueServiceDeployment 'az.storage.account.queue.services.bicep' = if (!empty(storageAccountQueueServices) && startsWith(storageAccountType, 'Storage')) {
-  name: !empty(storageAccountQueueServices) ? toLower('az-stg-queue-services-${guid('${azStorageAccountDeployment.id}/queues-service-deployment')}') : 'no-stg-queues-service-to-deploy'
+module storageAccountQueueService 'az.storage.account.queue.services.bicep' = if (!empty(storageAccountQueueServices) && startsWith(storageAccountType, 'Storage')) {
+  name: !empty(storageAccountQueueServices) ? toLower('queue-services-${guid('${storageAccount.id}/queues-service-deployment')}') : 'no-stg-queues-service-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -174,8 +176,8 @@ module azStorageAccountQueueServiceDeployment 'az.storage.account.queue.services
 }
 
 // 5. Deploy Azure Queue Services
-module azStorageAccountTableServiceDeployment 'az.storage.account.table.services.bicep' = if (!empty(storageAccountTableServices) && startsWith(storageAccountType, 'Storage')) {
-  name: !empty(storageAccountTableServices) ? toLower('az-stg-table-services-${guid('${azStorageAccountDeployment.id}/table-service-deployment')}') : 'no-stg-table-service-to-deploy'
+module storageAccountTableService 'az.storage.account.table.services.bicep' = if (!empty(storageAccountTableServices) && startsWith(storageAccountType, 'Storage')) {
+  name: !empty(storageAccountTableServices) ? toLower('table-services-${guid('${storageAccount.id}/table-service-deployment')}') : 'no-stg-table-service-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -190,12 +192,12 @@ module azStorageAccountTableServiceDeployment 'az.storage.account.table.services
 }
 
 output storageAccount object = {
-  resourceId: azStorageAccountDeployment.id
-  name: azStorageAccountDeployment.name
-  location: azStorageAccountDeployment.location
-  properties: azStorageAccountDeployment.properties
-  sku: azStorageAccountDeployment.sku
-  tags: azStorageAccountDeployment.tags
-  kind: azStorageAccountDeployment.kind
-  apiVersion: azStorageAccountDeployment.apiVersion
+  resourceId: storageAccount.id
+  name: storageAccount.name
+  location: storageAccount.location
+  properties: storageAccount.properties
+  sku: storageAccount.sku
+  tags: storageAccount.tags
+  kind: storageAccount.kind
+  apiVersion: storageAccount.apiVersion
 }

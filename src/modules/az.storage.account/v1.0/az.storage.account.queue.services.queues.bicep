@@ -20,8 +20,8 @@ param storageAccountQueueServiceName string
 @description('The name of the blob storage container to deploy')
 param storageAccountQueueServiceQueueName string
 
-resource azStorageAccountQueueDeployment 'Microsoft.Storage/storageAccounts/queueServices/queues@2022-05-01' = {
+resource storageAccountQueueServieQueue 'Microsoft.Storage/storageAccounts/queueServices/queues@2023-01-01' = {
   name: replace(replace('${storageAccountName}/${storageAccountQueueServiceName}/${storageAccountQueueServiceQueueName}', '@environment', environment), '@region', region)
 }
 
-output storageAccountQueue object = azStorageAccountQueueDeployment
+output storageAccountQueue object = storageAccountQueueServieQueue

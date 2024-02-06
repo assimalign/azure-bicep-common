@@ -32,25 +32,31 @@ param storageAccountFileShareServiceConfigs object = {}
 param storageAccountFileShareServiceFileShares array = []
 
 // 1. Get the existing Storage Account
-resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2022-05-01' existing = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
   name: replace(replace(storageAccountName, '@environment', environment), '@region', region)
 }
 
 // 2. Deploy the Storage Account File Share Service
-resource azStorageAccountFileShareServiceDeployment 'Microsoft.Storage/storageAccounts/fileServices@2022-05-01' = {
+resource storageAccountFileShareService 'Microsoft.Storage/storageAccounts/fileServices@2023-01-01' = {
   name: storageAccountFileShareServiceName
-  parent: azStorageAccountResource
+  parent: storageAccount
   properties: {
-    shareDeleteRetentionPolicy: !contains(storageAccountFileShareServiceConfigs, 'fileShareServiceRetentionPolicy') ? json('null') : storageAccountFileShareServiceConfigs.fileShareServiceRetentionPolicy
-    cors: !contains(storageAccountFileShareServiceConfigs, 'fileShareServiceCorsPolicy') ?  json('null') : {
-      corsRules: storageAccountFileShareServiceConfigs.fileShareServiceCorsPolicy
+    shareDeleteRetentionPolicy: !contains(storageAccountFileShareServiceConfigs, 'fileShareServiceRetentionPolicy') ? null : storageAccountFileShareServiceConfigs.fileShareServiceRetentionPolicy
+    cors: {
+      corsRules: [for rule in storageAccountFileShareServiceConfigs!.fileShareServiceCorsPolicy ?? []: {
+        allowedMethods: rule.methods
+        allowedOrigins: rule.origins
+        exposedHeaders: []
+        allowedHeaders: contains(rule, 'headers') ? rule.headers : []
+        maxAgeInSeconds: contains(rule, 'maxAge') ? rule.maxAge : 0
+      }]
     }
   }
 }
 
 // 3. Deploy the File Share Service if applicable
-module azStorageAccountFileSharesDeployment 'az.storage.account.fileshare.services.shares.bicep' = [for fileShare in storageAccountFileShareServiceFileShares: if (!empty(fileShare)) {
-  name: !empty(storageAccountFileShareServiceFileShares) ? toLower('az-stg-fs-share-${guid('${azStorageAccountFileShareServiceDeployment.id}/${fileShare.storageAccountFileShareName}')}') : 'no-fs-service-to-deploy'
+module storageAccountFileShares 'az.storage.account.fileshare.services.shares.bicep' = [for fileShare in storageAccountFileShareServiceFileShares: if (!empty(fileShare)) {
+  name: !empty(storageAccountFileShareServiceFileShares) ? toLower('fs-share-${guid('${storageAccountFileShareService.id}/${fileShare.storageAccountFileShareName}')}') : 'no-fs-service-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -63,8 +69,8 @@ module azStorageAccountFileSharesDeployment 'az.storage.account.fileshare.servic
 }]
 
 // 4. Deploy Storage Account File Share Service Private Endpoint if applicable
-module azStorageFileShareServicePrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(storageAccountFileShareServicePrivateEndpoint)) {
-  name: !empty(storageAccountFileShareServicePrivateEndpoint) ? toLower('az-stg-fs-priv-endpoint-${guid('${azStorageAccountFileShareServiceDeployment.id}/${storageAccountFileShareServicePrivateEndpoint.privateEndpointName}')}') : 'no-stg-fs-priv-endpoint'
+module storageFileShareServicePrivateEndpoint '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(storageAccountFileShareServicePrivateEndpoint)) {
+  name: !empty(storageAccountFileShareServicePrivateEndpoint) ? toLower('fs-share-priv-endpoint-${guid('${storageAccountFileShareService.id}/${storageAccountFileShareServicePrivateEndpoint.privateEndpointName}')}') : 'no-stg-fs-priv-endpoint'
   scope: resourceGroup()
   params: {
     region: region
@@ -77,7 +83,7 @@ module azStorageFileShareServicePrivateEndpointDeployment '../../az.private.endp
     privateEndpointVirtualNetworkName: storageAccountFileShareServicePrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: storageAccountFileShareServicePrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: storageAccountFileShareServicePrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
-    privateEndpointResourceIdLink: azStorageAccountResource.id
+    privateEndpointResourceIdLink: storageAccount.id
     privateEndpointTags: contains(storageAccountFileShareServicePrivateEndpoint, 'privateEndpointTags') ? storageAccountFileShareServicePrivateEndpoint.privateEndpointTags : {}
     privateEndpointGroupIds: [
       'file'
@@ -85,4 +91,4 @@ module azStorageFileShareServicePrivateEndpointDeployment '../../az.private.endp
   }
 }
 
-output storageAccountFileShareService object = azStorageAccountFileShareServiceDeployment
+output storageAccountFileShareService object = storageAccountFileShareService

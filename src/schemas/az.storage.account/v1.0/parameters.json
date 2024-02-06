@@ -613,32 +613,9 @@
                         "tableServiceCorsPolicy": {
                             "type": "array",
                             "items": {
-                                "type": "object",
-                                "properties": {
-                                    "allowedOrigins": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 1
-                                    },
-                                    "allowedMethods": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 1
-                                    },
-                                    "allowedHeaders": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 1
-                                    }
-                                },
-                                "minProperties": 1
-                            }
+                                "$ref": "#/definitions/storage-account-cors-parameters"
+                            },
+                            "minItems": 1
                         }
                     },
                     "minProperties": 1
@@ -820,35 +797,12 @@
                 "storageAccountQueueServiceConfigs": {
                     "type": "object",
                     "properties": {
-                        "queueServiceCors": {
+                        "queueServiceCorsPolicy": {
                             "type": "array",
                             "items": {
-                                "type": "object",
-                                "properties": {
-                                    "allowedOrigins": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 1
-                                    },
-                                    "allowedMethods": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 1
-                                    },
-                                    "allowedHeaders": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 1
-                                    }
-                                },
-                                "minProperties": 1
-                            }
+                                "$ref": "#/definitions/storage-account-cors-parameters"
+                            },
+                            "minItems": 1
                         }
                     },
                     "minProperties": 1
@@ -1023,31 +977,7 @@
                         "fileShareServiceCorsPolicy": {
                             "type": "array",
                             "items": {
-                                "type": "object",
-                                "properties": {
-                                    "allowedOrigins": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 1
-                                    },
-                                    "allowedMethods": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 1
-                                    },
-                                    "allowedHeaders": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 1
-                                    }
-                                },
-                                "minProperties": 1
+                                "$ref": "#/definitions/storage-account-cors-parameters"
                             },
                             "minItems": 1
                         }
@@ -1243,6 +1173,13 @@
                             "required": [
                                 "days"
                             ]
+                        },
+                        "blobServiceCorsPolicy": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/storage-account-cors-parameters"
+                            },
+                            "minItems": 1
                         }
                     }
                 },
@@ -1357,6 +1294,44 @@
             },
             "required": [
                 "storageAccountBlobContainerName"
+            ]
+        },
+        "storage-account-cors-parameters": {
+            "type": "object",
+            "properties": {
+                "origins": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "headers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "methods": {
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "GET",
+                            "PUT",
+                            "POST",
+                            "DELETE",
+                            "OPTIONS",
+                            "MERGE"
+                        ]
+                    }
+                },
+                "maxAge": {
+                    "type": "number",
+                    "definitions": {}
+                }
+            },
+            "required": [
+                "origins",
+                "methods"
             ]
         }
     }

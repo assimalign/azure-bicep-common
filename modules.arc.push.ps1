@@ -3,7 +3,10 @@ param (
     [string]$containerRegistryName,
 
     [Parameter(Mandatory = $true)]
-    [string]$containerRegistryResourceGroup
+    [string]$containerRegistryResourceGroup,
+
+    [Parameter(Mandatory = $false)]
+    [string]$module
 )
 
 # Get the existing Azure Container Registry
@@ -15,8 +18,10 @@ if ($null -eq $registry) {
     Write-Error -Message "The Container Registry '$containerRegistryName' in Resource Group '$containerRegistryResourceGroup' was not found."
 }
 
+$directory = [string]::Join('/', './src/modules', $module)
+
 $registryUrl = $registry.LoginServer
-$items = Get-ChildItem './src' -Recurse -Include '*.bicep'
+$items = Get-ChildItem $directory -Recurse -Include '*.bicep'
 Write-Host "- " + $items.Length + "Bicep modules were found." -ForegroundColor Blue
 
 $context = Get-AzContext
@@ -35,4 +40,4 @@ $items | ForEach-Object {
 }
 
 
-Publish-AzBicepModule -FilePath 'C:\Source\repos\assimalign\github\azure-bicep-common\src\modules\az.app.service\v1.0\az.app.service.bicep' -Target 'br:aecbicep.azurecr.io/modules/az.app.service:v1.0' -Force
+#Publish-AzBicepModule -FilePath 'C:\Source\repos\assimalign\github\azure-bicep-common\src\modules\az.app.service\v1.0\az.app.service.bicep' -Target 'br:aecbicep.azurecr.io/modules/az.app.service:v1.0' -Force

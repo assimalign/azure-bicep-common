@@ -8,5 +8,8 @@
             "VisualStudioCode",
             "VisualStudio"
         ]
+    },
+    "experimentalFeaturesEnabled": {
+        "userDefinedFunctions": true
     }
 }

@@ -20,9 +20,9 @@ param storageAccountTableServiceName string = 'default'
 @description('The name of the blob storage container to deploy')
 param storageAccountTableServiceTableName string
 
-resource azStorageAccountTableDeployment 'Microsoft.Storage/storageAccounts/tableServices/tables@2022-05-01' = {
+resource storageAccountTableServiceTable 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-01-01' = {
   name: replace(replace('${storageAccountName}/${storageAccountTableServiceName}/${storageAccountTableServiceTableName}', '@environment', environment), '@region', region)
 }
 
 
-output storageAccountTable object = azStorageAccountTableDeployment
+output storageAccountTable object = storageAccountTableServiceTable

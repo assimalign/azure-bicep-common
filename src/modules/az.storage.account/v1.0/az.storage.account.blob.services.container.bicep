@@ -28,11 +28,11 @@ param storageAccountBlobContainerName string
 @description('')
 param storageAccountBlobContainerPublicAccess string = 'None'
 
-resource azStorageAccountBlobDeployment 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-05-01' = {
+resource storageAccountBlobServiceContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
   name: replace(replace('${storageAccountName}/${storageAccountBlobServiceName}/${storageAccountBlobContainerName}', '@environment', environment), '@region', region)
   properties: {
     publicAccess: storageAccountBlobContainerPublicAccess
   }
 }
 
-output storageAccountBlobContainer object = azStorageAccountBlobDeployment
+output storageAccountBlobServiceContainer object = storageAccountBlobServiceContainer

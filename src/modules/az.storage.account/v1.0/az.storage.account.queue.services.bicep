@@ -33,24 +33,30 @@ param storageAccountQueueServicePrivateEndpoint object = {}
 param storageAccountQueueServiceQueues array = []
 
 // 1. Get the existing Storage Account
-resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2022-05-01' existing = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
   name: replace(replace(storageAccountName, '@environment', environment), '@region', region)
 }
 
 // 2. Deploy the Storage Account Queue Service
-resource azStorageAccountQueueServiceDeployment 'Microsoft.Storage/storageAccounts/queueServices@2022-05-01' = {
+resource storageAccountQueueService 'Microsoft.Storage/storageAccounts/queueServices@2023-01-01' = {
   name: storageAccountQueueServiceName
-  parent: azStorageAccountResource
+  parent: storageAccount
   properties: {
-    cors: !contains(storageAccountQueueServiceConfigs, 'queueServiceCors') ? json('null') : {
-      corsRules: storageAccountQueueServiceConfigs.queueServiceCors
+    cors: {
+      corsRules: [for rule in storageAccountQueueServiceConfigs!.queueServiceCorsPolicy ?? []: {
+        allowedMethods: rule.methods
+        allowedOrigins: rule.origins
+        exposedHeaders: []
+        allowedHeaders: contains(rule, 'headers') ? rule.headers : []
+        maxAgeInSeconds: contains(rule, 'maxAge') ? rule.maxAge : 0
+      }]
     }
   }
 }
 
 // 3. Deploy any Queues Service queues if any
-module azStorageAccountQueuesDeployment 'az.storage.account.queue.services.queues.bicep' = [for queue in storageAccountQueueServiceQueues: if (!empty(queue)) {
-  name: !empty(storageAccountQueueServiceQueues) ? toLower('az-stg-queues-${guid('${azStorageAccountQueueServiceDeployment.id}/${queue.storageAccountQueueName}')}') : 'no-queue-service-to-deploy'
+module storageAccountQueues 'az.storage.account.queue.services.queues.bicep' = [for queue in storageAccountQueueServiceQueues: if (!empty(queue)) {
+  name: !empty(storageAccountQueueServiceQueues) ? toLower('queues-${guid('${storageAccountQueueService.id}/${queue.storageAccountQueueName}')}') : 'no-queue-service-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -62,8 +68,8 @@ module azStorageAccountQueuesDeployment 'az.storage.account.queue.services.queue
 }]
 
 // 4. Deploy Storage Account Queue Service Private Endpoint if applicable
-module azStorageQueueServicePrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(storageAccountQueueServicePrivateEndpoint)) {
-  name: !empty(storageAccountQueueServicePrivateEndpoint) ? toLower('az-stg-queue-priv-endpoint-${guid('${azStorageAccountQueueServiceDeployment.id}/${storageAccountQueueServicePrivateEndpoint.privateEndpointName}')}') : 'no-stg-queue-priv-endpoint'
+module storageQueueServicePrivateEndpoint '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(storageAccountQueueServicePrivateEndpoint)) {
+  name: !empty(storageAccountQueueServicePrivateEndpoint) ? toLower('queue-priv-endpoint-${guid('${storageAccountQueueService.id}/${storageAccountQueueServicePrivateEndpoint.privateEndpointName}')}') : 'no-stg-queue-priv-endpoint'
   scope: resourceGroup()
   params: {
     region: region
@@ -76,7 +82,7 @@ module azStorageQueueServicePrivateEndpointDeployment '../../az.private.endpoint
     privateEndpointVirtualNetworkName: storageAccountQueueServicePrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: storageAccountQueueServicePrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: storageAccountQueueServicePrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
-    privateEndpointResourceIdLink: azStorageAccountResource.id
+    privateEndpointResourceIdLink: storageAccount.id
     privateEndpointTags: contains(storageAccountQueueServicePrivateEndpoint, 'privateEndpointTags') ? storageAccountQueueServicePrivateEndpoint.privateEndpointTags : {}
     privateEndpointGroupIds: [
       'queue'
@@ -84,4 +90,4 @@ module azStorageQueueServicePrivateEndpointDeployment '../../az.private.endpoint
   }
 }
 
-output storageAccountQueueService object = azStorageAccountQueueServiceDeployment
+output storageAccountQueueService object = storageAccountQueueService

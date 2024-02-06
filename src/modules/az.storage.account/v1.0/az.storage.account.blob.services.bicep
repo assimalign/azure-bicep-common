@@ -32,16 +32,27 @@ param storageAccountBlobServiceContainers array = []
 @description('')
 param storageAccountBlobServiceConfigs object = {}
 
+func format(name string, env string, region string) string => replace(replace(name, '@environment', env), '@region', region)
+
 // 1. Get the existing Storage Account
-resource azStorageAccountResource 'Microsoft.Storage/storageAccounts@2022-05-01' existing = {
-  name: replace(replace(storageAccountName, '@environment', environment), '@region', region)
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
+  name: format(storageAccountName, environment, region)
 }
 
 // 2. Deploy the Blob Service resource
-resource azStorageAccountBlobServiceDeployment 'Microsoft.Storage/storageAccounts/blobServices@2022-05-01' = {
+resource storageAccountBlobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' = {
   name: storageAccountBlobServiceName
-  parent: azStorageAccountResource
+  parent: storageAccount
   properties: {
+    cors: {
+      corsRules: [for rule in storageAccountBlobServiceConfigs!.blobServiceCorsPolicy ?? []: {
+        allowedMethods: rule.methods
+        allowedOrigins: rule.origins
+        exposedHeaders: []
+        allowedHeaders: contains(rule, 'headers') ? rule.headers : []
+        maxAgeInSeconds: contains(rule, 'maxAge') ? rule.maxAge : 0
+      }]
+    }
     automaticSnapshotPolicyEnabled: contains(storageAccountBlobServiceConfigs, 'blobServiceEnableSnapshot') ? storageAccountBlobServiceConfigs.blobServiceEnableSnapshot : false
     isVersioningEnabled: contains(storageAccountBlobServiceConfigs, 'blobServiceEnableVersioning') ? storageAccountBlobServiceConfigs.blobServiceEnableVersioning : false
     containerDeleteRetentionPolicy: any(contains(storageAccountBlobServiceConfigs, 'blobServiceRetentionPolicy') ? {
@@ -64,8 +75,8 @@ resource azStorageAccountBlobServiceDeployment 'Microsoft.Storage/storageAccount
 }
 
 // 3. Deploy any Blob Service Container if available
-module azStorageAccountBlobServiceContainerDeployment 'az.storage.account.blob.services.container.bicep' = [for container in storageAccountBlobServiceContainers: if (!empty(container)) {
-  name: !empty(storageAccountBlobServiceContainers) ? toLower('az-stg-blob-container-${guid('${azStorageAccountBlobServiceDeployment.id}/${container.storageAccountBlobContainerName}')}') : 'no-container-to-deploy'
+module storageAccountBlobServiceContainer 'az.storage.account.blob.services.container.bicep' = [for container in storageAccountBlobServiceContainers: if (!empty(container)) {
+  name: !empty(storageAccountBlobServiceContainers) ? toLower('blob-container-${guid('${storageAccountBlobService.id}/${container.storageAccountBlobContainerName}')}') : 'no-container-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -78,8 +89,8 @@ module azStorageAccountBlobServiceContainerDeployment 'az.storage.account.blob.s
 }]
 
 // 4. Deploy Storage Account Blob Service Private Endpoint if applicable
-module azStorageBlobServicePrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(storageAccountBlobServicePrivateEndpoint)) {
-  name: !empty(storageAccountBlobServicePrivateEndpoint) ? toLower('az-stg-blob-priv-endpoint-${guid('${azStorageAccountBlobServiceDeployment.id}/${storageAccountBlobServicePrivateEndpoint.privateEndpointName}')}') : 'no-stg-blob-priv-endpoint'
+module storageBlobServicePrivateEndpoint '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(storageAccountBlobServicePrivateEndpoint)) {
+  name: !empty(storageAccountBlobServicePrivateEndpoint) ? toLower('blob-priv-endpoint-${guid('${storageAccountBlobService.id}/${storageAccountBlobServicePrivateEndpoint.privateEndpointName}')}') : 'no-stg-blob-priv-endpoint'
   scope: resourceGroup()
   params: {
     region: region
@@ -92,7 +103,7 @@ module azStorageBlobServicePrivateEndpointDeployment '../../az.private.endpoint/
     privateEndpointVirtualNetworkName: storageAccountBlobServicePrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: storageAccountBlobServicePrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: storageAccountBlobServicePrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
-    privateEndpointResourceIdLink: azStorageAccountResource.id
+    privateEndpointResourceIdLink: storageAccount.id
     privateEndpointTags: contains(storageAccountBlobServicePrivateEndpoint, 'privateEndpointTags') ? storageAccountBlobServicePrivateEndpoint.privateEndpointTags : {}
     privateEndpointGroupIds: [
       'blob'
@@ -100,4 +111,4 @@ module azStorageBlobServicePrivateEndpointDeployment '../../az.private.endpoint/
   }
 }
 
-output storageAccountBlobService object = azStorageAccountBlobServiceDeployment
+output storageAccountBlobService object = storageAccountBlobService
