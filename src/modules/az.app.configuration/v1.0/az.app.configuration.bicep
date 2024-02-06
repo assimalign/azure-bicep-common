@@ -45,7 +45,7 @@ param appConfigurationDisableLocalAuth bool = false
 param appConfigurationTags object = {}
 
 // 1. Deploys a single instance of Azure App Configuration
-resource azAppConfigurationDeployment 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' = {
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
   name: replace(replace(appConfigurationName, '@environment', environment), '@region', region)
   location: appConfigurationLocation
   sku: {
@@ -65,8 +65,8 @@ resource azAppConfigurationDeployment 'Microsoft.AppConfiguration/configurationS
 }
 
 // 2. Deploy any Azure App Configuration Keys and values
-module azAppConfigurationKeysDeployement 'az.app.configuration.key.bicep' = [for key in appConfigurationKeys: if (!empty(appConfigurationKeys) && appConfigurationDisableLocalAuth == false) {
-  name: 'az-app-cfg-key-${guid('${azAppConfigurationDeployment.id}/${key.appConfigurationKey}')}'
+module appConfigKeys 'az.app.configuration.key.bicep' = [for key in appConfigurationKeys: if (!empty(appConfigurationKeys) && appConfigurationDisableLocalAuth == false) {
+  name: 'appc-${guid('${appConfig.id}/${key.appConfigurationKey}')}'
   params: {
     region: region
     environment: environment
@@ -79,8 +79,8 @@ module azAppConfigurationKeysDeployement 'az.app.configuration.key.bicep' = [for
 }]
 
 // 2. Deploys a private endpoint, if applicable, for an instance of Azure App Configuration
-module azAppConfigurationPrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(appConfigurationPrivateEndpoint)) {
-  name: !empty(appConfigurationPrivateEndpoint) ? toLower('az-app-cfg-pri-endp-${guid('${azAppConfigurationDeployment.id}/${appConfigurationPrivateEndpoint.privateEndpointName}')}') : 'no-app-cfg-pri-endp-to-deploy'
+module appConfigPrivateEndpoint '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(appConfigurationPrivateEndpoint)) {
+  name: !empty(appConfigurationPrivateEndpoint) ? toLower('az-app-cfg-pri-endp-${guid('${appConfig.id}/${appConfigurationPrivateEndpoint.privateEndpointName}')}') : 'no-app-cfg-pri-endp-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -93,7 +93,7 @@ module azAppConfigurationPrivateEndpointDeployment '../../az.private.endpoint/v1
     privateEndpointVirtualNetworkName: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
-    privateEndpointResourceIdLink: azAppConfigurationDeployment.id
+    privateEndpointResourceIdLink: appConfig.id
     privateEndpointTags: contains(appConfigurationPrivateEndpoint, 'privateEndpointTags') ? appConfigurationPrivateEndpoint.privateEndpointTags : {}
     privateEndpointGroupIds: [
       'configurationStores'
@@ -102,4 +102,4 @@ module azAppConfigurationPrivateEndpointDeployment '../../az.private.endpoint/v1
 }
 
 // 3. Return Deployment ouput
-output appConfiguration object = azAppConfigurationDeployment
+output appConfiguration object = appConfig

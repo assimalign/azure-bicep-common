@@ -26,21 +26,23 @@ param appConfigurationLabels array = []
 @description('The content type of the configuration value')
 param appConfigurationContentType string = ''
 
+func format(name string, env string, region string) string => replace(replace(name, '@environment', env), '@region', region)
+
 var value = !empty(environment) && contains(appConfigurationValue, environment) ? appConfigurationValue[environment] : appConfigurationValue.default
 
-resource azAppConfigurationKeyValuesDeployment 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = if (empty(appConfigurationLabels) || contains(appConfigurationLabels, 'default')) {
-  name: replace(replace('${appConfigurationName}/${appConfigurationKey}', '@environment', environment), '@region', region)
+resource azAppConfigurationKeyValuesDeployment 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = if (empty(appConfigurationLabels) || contains(appConfigurationLabels, 'default')) {
+  name: format('${appConfigurationName}/${appConfigurationKey}', environment, region)
   properties: {
-    value: replace(replace(value, '@environment', environment), '@region', region)
+    value: format(value, environment, region)
     contentType: empty(appConfigurationContentType) ? null : appConfigurationContentType
   }
 }
 
 // Deploys the same configuration value with different labels
-resource azAppConfigurationKeyValuesWithLabelsDeployment 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = [for label in appConfigurationLabels: if (label != 'default' && !empty(appConfigurationLabels)) {
-  name: replace(replace('${appConfigurationName}/${appConfigurationKey}$${label}', '@environment', environment), '@region', region)
+resource azAppConfigurationKeyValuesWithLabelsDeployment 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = [for label in appConfigurationLabels: if (label != 'default' && !empty(appConfigurationLabels)) {
+  name: format('${appConfigurationName}/${appConfigurationKey}$${label}', environment, region)
   properties: {
-    value: replace(replace(value, '@environment', environment), '@region', region)
+    value: format(value, environment, region)
     contentType: empty(appConfigurationContentType) ? null : appConfigurationContentType
   }
 }]

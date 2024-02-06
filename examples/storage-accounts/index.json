@@ -6,6 +6,12 @@
             "value": {
                 "storageAccountName": "",
                 "storageAccountBlobServices": {
+                    "storageAccountBlobServiceName": "default",
+                    "storageAccountBlobServiceContainers": [
+                        {
+                            "storageAccountBlobContainerName": ""
+                        }
+                    ],
                     "storageAccountBlobServiceConfigs": {
                         "blobServiceCorsPolicy": [
                             {
@@ -16,6 +22,7 @@
                             }
                         ]
                     }
+                    
                 }
             }
         }

@@ -28,108 +28,40 @@ param appGatewayConfigs object = {}
 @description('The tags to attach to the resource when deployed')
 param appGatewayTags object = {}
 
+func format(name string, env string, region string) string => replace(replace(name, '@environment', env), '@region', region)
+
 // 1. Get Virtual Network Subnet to reference for Ip Configurations
-resource azVirtualNetworkSubnetResource 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
-  name: replace(replace('${appGatewayFrontend.privateIp.privateIpVirtualNetwork}/${appGatewayFrontend.privateIp.privateIpSubnet}', '@environment', environment), '@region', region)
-  scope: resourceGroup(replace(replace('${appGatewayFrontend.privateIp.privateIpResourceGroup}', '@environment', environment), '@region', region))
+resource virtualNetworkSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-06-01' existing = {
+  name: format('${appGatewayFrontend.privateIp.privateIpVirtualNetwork}/${appGatewayFrontend.privateIp.privateIpSubnet}', environment, region)
+  scope: resourceGroup(format(appGatewayFrontend.privateIp.privateIpResourceGroup, environment, region))
 }
 
 // 2. Get a Public IP address for the frontend of the gateway if applicable
-resource azPublicIpAddressNameResource 'Microsoft.Network/publicIPAddresses@2021-02-01' existing = if (!empty(appGatewayFrontend.publicIp)) {
-  name: replace(replace('${appGatewayFrontend.publicIp.publicIpName}', '@environment', environment), '@region', region)
-  scope: resourceGroup(replace(replace('${appGatewayFrontend.publicIp.publicIpResourceGroup}', '@environment', environment), '@region', region))
+resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2023-06-01' existing = if (!empty(appGatewayFrontend.publicIp)) {
+  name: format(appGatewayFrontend.publicIp.publicIpName, environment, region)
+  scope: resourceGroup(format(appGatewayFrontend.publicIp.publicIpResourceGroup, environment, region))
 }
 
-// Format the Backend Pool
-var backendAddressPools = [for pool in appGatewayBackend.receivers: {
-  name: pool.name
-  properties: {
-    backendAddresses: environment == 'dev' ? pool.addresses.dev : environment == 'qa' ? pool.addresses.qa : environment == 'uat' ? pool.addresses.uat : environment == 'prd' ? pool.addresses.prd :  pool.addresses.default
-  }
-}]
-
-//
-var backendPorts = [for port in appGatewayBackend.ports: {
-  name: port.name
-  properties: {
-    cookieBasedAffinity: 'Disabled'
-    port: port.backendPort
-    protocol: port.backendProtocol
-    requestTimeout: port.backendRequestTimeout
-  }
-}]
-
-// Format Frontend Ports to receive requests on
-var frontenPorts = [for port in appGatewayFrontend.ports: {
-  name: port.name
-  properties: {
-    port: port.frontendPort
-  }
-}]
-
-// format HttpListener Vairables
-var frontendHttpListeners = [for listener in appGatewayFrontend.listeners: {
-  name: listener.name
-  properties: {
-    frontendIPConfiguration: {
-      id: '${resourceId('Microsoft.Network/applicationGateways', replace(replace('${appGatewayName}', '@environment', environment), '@region', region))}/frontendIPConfigurations/${listener.frontendIp}'
-    }
-    frontendPort: {
-      id: '${resourceId('Microsoft.Network/applicationGateways', replace(replace('${appGatewayName}', '@environment', environment), '@region', region))}/frontendPorts/${listener.frontendPort}'
-    }
-    protocol: listener.frontendProtocol
-    sslCertificate: null
-  }
-}]
-
-//
-var routingRules = [for rule in appGatewayRoutingRules: {
-  name: rule.name
-  properties: {
-    ruleType: rule.routeType
-    httpListener: {
-      id: '${resourceId('Microsoft.Network/applicationGateways', replace(replace('${appGatewayName}', '@environment', environment), '@region', region))}/httpListeners/${rule.routeFromHttpListener}'
-    }
-    backendAddressPool: {
-      id: '${resourceId('Microsoft.Network/applicationGateways', replace(replace('${appGatewayName}', '@environment', environment), '@region', region))}/backendAddressPools/${rule.routeToBackendPool}'
-    }
-    backendHttpSettings: {
-      id: '${resourceId('Microsoft.Network/applicationGateways', replace(replace('${appGatewayName}', '@environment', environment), '@region', region))}/backendHttpSettingsCollection/${rule.routeToBackendPort}'
-    }
-  }
-}]
-
-resource applicationGateway 'Microsoft.Network/applicationGateways@2020-11-01' = {
-  name: replace(replace('${appGatewayName}', '@environment', environment), '@region', region)
+resource appGateway 'Microsoft.Network/applicationGateways@2023-06-01' = {
+  name: format(appGatewayName, environment, region)
   location: appGatewayLocation
   properties: {
-    sku: any(environment == 'dev' ? {
-      name: '${appGatewaySku.dev.tier}_${appGatewaySku.dev.size}'
-      tier: appGatewaySku.dev.tier
-      capacity: appGatewaySku.dev.capacity
-    } : any(environment == 'qa' ? {
-      name: '${appGatewaySku.qa.tier}_${appGatewaySku.qa.size}'
-      tier: appGatewaySku.qa.tier
-      capacity: appGatewaySku.qa.capacity
-    } : any(environment == 'uat' ? {
-      name: '${appGatewaySku.uat.tier}_${appGatewaySku.uat.size}'
-      tier: appGatewaySku.uat.tier
-      capacity: appGatewaySku.uat.capacity
-    } : any(environment == 'prd' ? {
-      name: '${appGatewaySku.prd.tier}_${appGatewaySku.prd.size}'
-      tier: appGatewaySku.prd.tier
-      capacity: appGatewaySku.prd.capacity
+    sku: any(!empty(environment) && contains(appGatewaySku, environment) ? {
+      name: '${appGatewaySku[environment].tier}_${appGatewaySku[environment].size}'
+      tier: appGatewaySku[environment].tier
+      capacity: appGatewaySku[environment].capacity
+
     } : {
       name: '${appGatewaySku.default.tier}_${appGatewaySku.default.size}'
       tier: appGatewaySku.default.tier
       capacity: appGatewaySku.default.capacity
-    }))))
+    })
     gatewayIPConfigurations: [
       {
-        name: replace(replace('${appGatewayName}-ip-configuration', '@environment', environment), '@region', region)
+        name: format('${appGatewayName}-ip-configuration', environment, region)
         properties: {
           subnet: {
-            id: azVirtualNetworkSubnetResource.id
+            id: virtualNetworkSubnet.id
           }
         }
       }
@@ -139,7 +71,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2020-11-01' =
         name: appGatewayFrontend.publicIp.name
         properties: {
           publicIPAddress: {
-            id: azPublicIpAddressNameResource.id
+            id: publicIpAddress.id
           }
         }
       }
@@ -147,7 +79,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2020-11-01' =
         name: appGatewayFrontend.privateIp.name
         properties: {
           subnet: {
-            id: azVirtualNetworkSubnetResource.id
+            id: virtualNetworkSubnet.id
           }
         }
       }
@@ -156,7 +88,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2020-11-01' =
         name: appGatewayFrontend.publicIp.name
         properties: {
           publicIPAddress: {
-            id: azPublicIpAddressNameResource.id
+            id: publicIpAddress.id
           }
         }
       }
@@ -165,22 +97,66 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2020-11-01' =
         name: appGatewayFrontend.privateIp.name
         properties: {
           subnet: {
-            id: azVirtualNetworkSubnetResource.id
+            id: virtualNetworkSubnet.id
           }
         }
       }
     ] : [])))
-    frontendPorts: frontenPorts
-    httpListeners: frontendHttpListeners
-    backendAddressPools: backendAddressPools
-    backendHttpSettingsCollection: backendPorts
-    requestRoutingRules: routingRules
+    frontendPorts: [for port in appGatewayFrontend.ports: {
+      name: port.name
+      properties: {
+        port: port.frontendPort
+      }
+    }]
+    httpListeners: [for listener in appGatewayFrontend.listeners: {
+      name: listener.name
+      properties: {
+        frontendIPConfiguration: {
+          id: any('${resourceId('Microsoft.Network/applicationGateways', format(appGatewayName, environment, region))}/frontendIPConfigurations/${listener.frontendIp}')
+        }
+        frontendPort: {
+          id: any('${resourceId('Microsoft.Network/applicationGateways', format(appGatewayName, environment, region))}/frontendPorts/${listener.frontendPort}')
+        }
+        protocol: listener.frontendProtocol
+        sslCertificate: null
+      }
+    }]
+    backendAddressPools: [for pool in appGatewayBackend.receivers: {
+      name: pool.name
+      properties: {
+        backendAddresses: !empty(environment) && contains(appGatewaySku, environment) ? pool.addresses[environment] : pool.addresses.default
+      }
+    }]
+    backendHttpSettingsCollection: [for port in appGatewayBackend.ports: {
+      name: port.name
+      properties: {
+        cookieBasedAffinity: 'Disabled'
+        port: port.backendPort
+        protocol: port.backendProtocol
+        requestTimeout: port.backendRequestTimeout
+      }
+    }]
+    requestRoutingRules: [for rule in appGatewayRoutingRules: {
+      name: rule.name
+      properties: {
+        ruleType: rule.routeType
+        httpListener: {
+          id: any('${resourceId('Microsoft.Network/applicationGateways', format(appGatewayName, environment, region))}/httpListeners/${rule.routeFromHttpListener}')
+        }
+        backendAddressPool: {
+          id: any('${resourceId('Microsoft.Network/applicationGateways', format(appGatewayName, environment, region))}/backendAddressPools/${rule.routeToBackendPool}')
+        }
+        backendHttpSettings: {
+          id: any('${resourceId('Microsoft.Network/applicationGateways', format(appGatewayName, environment, region))}/backendHttpSettingsCollection/${rule.routeToBackendPort}')
+        }
+      }
+    }]
     enableHttp2: contains(appGatewayConfigs, 'appGatewayHttp2Enabled') ? appGatewayConfigs.appGatewayHttp2Enabled : false
   }
   tags: union(appGatewayTags, {
-    region: empty(region) ? 'n/a' : region
-    environment: empty(environment) ? 'n/a' : environment
-  })
+      region: empty(region) ? 'n/a' : region
+      environment: empty(environment) ? 'n/a' : environment
+    })
 }
 
-output appGateway object = applicationGateway
+output appGateway object = appGateway

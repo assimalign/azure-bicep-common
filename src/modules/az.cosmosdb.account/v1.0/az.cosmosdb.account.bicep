@@ -59,7 +59,7 @@ param cosmosAccountBackupPolicy object = {}
 param cosmosAccountTags object = {}
 
 // 1. Deploy the Document Db Account
-resource azCosmosDbAccountDeployment 'Microsoft.DocumentDB/databaseAccounts@2022-08-15' = {
+resource cosmosdbAccount 'Microsoft.DocumentDB/databaseAccounts@2023-11-15' = {
   name: replace(replace(cosmosAccountName, '@environment', environment), '@region', region)
   kind: 'GlobalDocumentDB'
   location: first(cosmosAccountLocations).locationName
@@ -111,7 +111,7 @@ resource azCosmosDbAccountDeployment 'Microsoft.DocumentDB/databaseAccounts@2022
 
 // 2. Deploy Cosmos DB Document Database, if applicable
 module azCosmosDbAccountDocumentDatabaseDeployment 'az.cosmosdb.account.document.database.bicep' = [for database in cosmosAccountDatabases: if (!empty(cosmosAccountDatabases) && cosmosAccountType == 'EnableDocument') {
-  name: !empty(cosmosAccountDatabases) ? toLower('az-cosmosdb-docdb-${guid('${azCosmosDbAccountDeployment.id}/${database.cosmosAccountDatabaseName}')}') : 'no-cosmosdb-document-databases-to-deploy'
+  name: !empty(cosmosAccountDatabases) ? toLower('az-cosmosdb-docdb-${guid('${cosmosdbAccount.id}/${database.cosmosAccountDatabaseName}')}') : 'no-cosmosdb-document-databases-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -124,7 +124,7 @@ module azCosmosDbAccountDocumentDatabaseDeployment 'az.cosmosdb.account.document
 
 // 3. Deploy Cosmos DB Graph Database, if applicable
 module azCosmosDbAccountGraphDatabaseDeployment 'az.cosmosdb.account.graph.database.bicep' = [for database in cosmosAccountDatabases: if (!empty(cosmosAccountDatabases) && cosmosAccountType == 'EnableGremlin') {
-  name: !empty(cosmosAccountDatabases) ? toLower('az-cosmosdb-graphdb-${guid('${azCosmosDbAccountDeployment.id}/${database.cosmosAccountDatabaseName}')}') : 'no-cosmosdb-graph-databases-to-deploy'
+  name: !empty(cosmosAccountDatabases) ? toLower('az-cosmosdb-graphdb-${guid('${cosmosdbAccount.id}/${database.cosmosAccountDatabaseName}')}') : 'no-cosmosdb-graph-databases-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -137,7 +137,7 @@ module azCosmosDbAccountGraphDatabaseDeployment 'az.cosmosdb.account.graph.datab
 
 // 4. Deploys a private endpoint, if applicable, for an instance of Azure Document DB Account
 module azCosmosDbAccountPrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(cosmosAccountPrivateEndpoint)) {
-  name: !empty(cosmosAccountPrivateEndpoint) ? toLower('az-cosmosdb-priv-endp-${guid('${azCosmosDbAccountDeployment.id}/${cosmosAccountPrivateEndpoint.privateEndpointName}')}') : 'no-cosmosdb-priv-endp-to-deploy'
+  name: !empty(cosmosAccountPrivateEndpoint) ? toLower('az-cosmosdb-priv-endp-${guid('${cosmosdbAccount.id}/${cosmosAccountPrivateEndpoint.privateEndpointName}')}') : 'no-cosmosdb-priv-endp-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -150,7 +150,7 @@ module azCosmosDbAccountPrivateEndpointDeployment '../../az.private.endpoint/v1.
     privateEndpointVirtualNetworkName: cosmosAccountPrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: cosmosAccountPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: cosmosAccountPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
-    privateEndpointResourceIdLink: azCosmosDbAccountDeployment.id
+    privateEndpointResourceIdLink: cosmosdbAccount.id
     privateEndpointTags: contains(cosmosAccountPrivateEndpoint, 'privateEndpointTags') ? cosmosAccountPrivateEndpoint.privateEndpointTags : {}
     privateEndpointGroupIds: [
       'Sql'
@@ -159,4 +159,4 @@ module azCosmosDbAccountPrivateEndpointDeployment '../../az.private.endpoint/v1.
 }
 
 // 5. Return Deployment Output
-output cosmosAccount object = azCosmosDbAccountDeployment
+output cosmosAccount object = cosmosdbAccount
