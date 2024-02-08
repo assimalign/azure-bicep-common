@@ -51,7 +51,7 @@ param cognitiveSearchTags object = {}
 var skuName = contains(cognitiveSearchSku, environment) ? cognitiveSearchSku[environment] : cognitiveSearchSku.default
 
 // 1. Deploy Cognitive Search
-resource azCognitiveSearchDeployment 'Microsoft.Search/searchServices@2020-08-01' = {
+resource cognitiveSearch 'Microsoft.Search/searchServices@2020-08-01' = {
   name: replace(replace(cognitiveSearchName, '@environment', environment), '@region', region)
   location: cognitiveSearchLocation
   sku: {
@@ -70,7 +70,7 @@ resource azCognitiveSearchDeployment 'Microsoft.Search/searchServices@2020-08-01
     })
 }
 
-module azAppServiceRoleAssignment '../../az.rbac/v1.0/az.rbac.role.assignment.bicep' = [for appRoleAssignment in cognitiveSearchMsiRoleAssignments: if (cognitiveSearchMsiEnabled == true && !empty(cognitiveSearchMsiRoleAssignments)) {
+module cognitiveSearchRoleAssignment '../../az.rbac/v1.0/az.rbac.role.assignment.bicep' = [for appRoleAssignment in cognitiveSearchMsiRoleAssignments: if (cognitiveSearchMsiEnabled == true && !empty(cognitiveSearchMsiRoleAssignments)) {
   name: 'az-cog-srch-rbac-${guid('${cognitiveSearchName}-${appRoleAssignment.resourceRoleName}')}'
   scope: resourceGroup(replace(replace(appRoleAssignment.resourceGroupToScopeRoleAssignment, '@environment', environment), '@region', region))
   params: {
@@ -81,13 +81,13 @@ module azAppServiceRoleAssignment '../../az.rbac/v1.0/az.rbac.role.assignment.bi
     resourceGroupToScopeRoleAssignment: appRoleAssignment.resourceGroupToScopeRoleAssignment
     resourceRoleAssignmentScope: appRoleAssignment.resourceRoleAssignmentScope
     resourceTypeAssigningRole: appRoleAssignment.resourceTypeAssigningRole
-    resourcePrincipalIdReceivingRole: azCognitiveSearchDeployment.identity.principalId
+    resourcePrincipalIdReceivingRole: cognitiveSearch.identity.principalId
   }
 }]
 
 // 2. Deploys a private endpoint, if applicable, for an instance of Azure Cognitive Search
 module azAppConfigurationPrivateEndpointDeployment '../../az.private.endpoint/v1.0/az.private.endpoint.bicep' = if (!empty(cognitiveSearchPrivateEndpoint)) {
-  name: !empty(cognitiveSearchPrivateEndpoint) ? toLower('az-search-pri-endp-${guid('${azCognitiveSearchDeployment.id}/${cognitiveSearchPrivateEndpoint.privateEndpointName}')}') : 'no-app-cfg-pri-endp-to-deploy'
+  name: !empty(cognitiveSearchPrivateEndpoint) ? toLower('az-search-pri-endp-${guid('${cognitiveSearch.id}/${cognitiveSearchPrivateEndpoint.privateEndpointName}')}') : 'no-app-cfg-pri-endp-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -100,7 +100,7 @@ module azAppConfigurationPrivateEndpointDeployment '../../az.private.endpoint/v1
     privateEndpointVirtualNetworkName: cognitiveSearchPrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: cognitiveSearchPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: cognitiveSearchPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
-    privateEndpointResourceIdLink: azCognitiveSearchDeployment.id
+    privateEndpointResourceIdLink: cognitiveSearch.id
     privateEndpointTags: contains(cognitiveSearchPrivateEndpoint, 'privateEndpointTags') ? cognitiveSearchPrivateEndpoint.privateEndpointTags : {}
     privateEndpointGroupIds: [
       'searchService'
@@ -108,4 +108,4 @@ module azAppConfigurationPrivateEndpointDeployment '../../az.private.endpoint/v1
   }
 }
 
-output cognitiveSearch object = azCognitiveSearchDeployment
+output cognitiveSearch object = cognitiveSearch
