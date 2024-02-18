@@ -1,0 +1,19 @@
+{
+    "$schema": "../../modules/schema.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appConfiguration": {
+            "value": {
+                "appConfigurationName": "",
+                "appConfigurationSku": {
+                    "dev": "Free",
+                    "qa": "Standard",
+                    "uat": "Standard",
+                    "prd": "Standard"
+                },
+                "appConfigurationEnableMsi": false,
+                "appConfigurationDisablePublicAccess": false
+            }
+        }
+    }
+}

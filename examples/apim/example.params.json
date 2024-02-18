@@ -1,0 +1,24 @@
+{
+    "$schema": "../../schemas/az/parameters.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "apimGateway": {
+            "value": {
+                // Required Params
+                "apimGatewayName": "",
+                "apimGatewayPublisher": "",
+                "apimGatewayPublisherEmail": "",
+                "apimGatewaySku": {
+                    "default": {
+                        "name": "Basic",
+                        "capacity": 0
+                    }
+                },
+                // optional Params
+                "apimGatewayTags": {
+                    "some-tag-key": "some-tag-value"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,1057 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "app-service": {
+            "type": "object",
+            "description": "Deploy a single Azure App Service,",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/app-service-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-services": {
+            "type": "object",
+            "description": "Deploy multiple Azure App Service,",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/app-service-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-service-parameters": {
+            "type": "object",
+            "properties": {
+                "appServiceName": {
+                    "type": "string"
+                },
+                "appServiceResourceGroup": {
+                    "type": "string"
+                },
+                "appServiceType": {
+                    "type": "string",
+                    "enum": [
+                        "app",
+                        "app,linux",
+                        "app,linux,container",
+                        "app,container,windows",
+                        "functionapp",
+                        "functionapp,linux"
+                    ]
+                },
+                "appServiceLocation": {
+                    "type": "string"
+                },
+                "appServiceMsiEnabled": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "appServiceMsiRoleAssignments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "../rbac/parameters.json#/definitions/roleAssignment"
+                    }
+                },
+                "appServicePlanName": {
+                    "type": "string",
+                    "description": "The name of the App Service Plan"
+                },
+                "appServicePlanResourceGroup": {
+                    "type": "string",
+                    "description": "The name of the resource group in which the App Service Plan lives in"
+                },
+                "appServiceStorageAccountName": {
+                    "type": "string"
+                },
+                "appServiceStorageAccountResourceGroup": {
+                    "type": "string"
+                },
+                "appServiceAppInsightsName": {
+                    "type": "string"
+                },
+                "appServiceAppInsightsResourceGroup": {
+                    "type": "string"
+                },
+                "appServiceSiteConfigs": {
+                    "$ref": "#/definitions/app-service-site-configs"
+                },
+                "appServiceSlots": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "appServiceSlotName": {
+                                "type": "string"
+                            },
+                            "functions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "isEnabled": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "name",
+                                        "isEnabled"
+                                    ]
+                                }
+                            }
+                        },
+                        "required": [
+                            "appServiceSlotName",
+                            "functions"
+                        ]
+                    }
+                },
+                "appServiceSlotsConfigNames": {
+                    "$ref": "#/definitions/app-services-slots-config-name"
+                },
+                "appServiceTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "appServiceName",
+                "appServiceType",
+                "appServiceStorageAccountName",
+                "appServiceAppInsightsName"
+            ]
+        },
+        "app-services-slot": {
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/app-service-slot-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-services-slots": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/app-service-slot-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-service-slot-parameters": {
+            "type": "object",
+            "properties": {
+                "appServiceName": {
+                    "type": "string",
+                    "description": "The Azure App Service in which the slot will rollup under."
+                },
+                "appServiceSlotName": {
+                    "type": "string"
+                },
+                "appServiceSlotLocation": {
+                    "type": "string"
+                },
+                "appServiceSlotType": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "web"
+                        },
+                        {
+                            "const": "functionapp"
+                        },
+                        {
+                            "const": "functionapp,linux"
+                        }
+                    ]
+                },
+                "appServiceSlotPlatform": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "dotnet"
+                        },
+                        {
+                            "const": "java"
+                        },
+                        {
+                            "const": "node"
+                        },
+                        {
+                            "const": "python"
+                        },
+                        {
+                            "const": "php"
+                        }
+                    ]
+                },
+                "appServiceSlotPlatformVersion": {
+                    "type": "string"
+                },
+                "appServiceSlotMsiEnabled": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "appServiceSlotMsiRoleAssignments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "../rbac/parameters.json#/definitions/roleAssignment"
+                    },
+                    "minItems": 1
+                },
+                "appServiceSlotPlanName": {
+                    "type": "string",
+                    "description": "The name of the App Service Plan"
+                },
+                "appServiceSlotPlanResourceGroup": {
+                    "type": "string",
+                    "description": "The name of the resource group in which the App Service Plan lives in"
+                },
+                "appServiceSlotStorageAccountName": {
+                    "type": "string"
+                },
+                "appServiceSlotStorageAccountResourceGroup": {
+                    "type": "string"
+                },
+                "appServiceSlotAppInsightsName": {
+                    "type": "string"
+                },
+                "appServiceSlotAppInsightsResourceGroup": {
+                    "type": "string"
+                },
+                "appServiceSlotSiteConfigs": {
+                    "$ref": "#/definitions/app-service-site-configs"
+                },
+                "appServiceSlotTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "appServiceName",
+                "appServiceSlotName",
+                "appServiceSlotType",
+                "appServiceSlotPlatform",
+                "appServiceSlotPlatformVersion",
+                "appServiceSlotStorageAccountName",
+                "appServiceSlotAppInsightsName"
+            ]
+        },
+        "app-services-slots-config-names": {
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "appServiceSlotName": {
+                                "type": "string"
+                            },
+                            "appServiceSlotResourceGroupName": {
+                                "type": "string"
+                            },
+                            "appServiceSlotSettingNames": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "appServiceSlotConnectionStringSettingNames": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "appServiceSlotStorageAccountSettingNames": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": [
+                            "appServiceSlotName",
+                            "appServiceSlotResourceGroupName",
+                            "appServiceSlotSettingNames",
+                            "appServiceSlotConnectionStringSettingNames",
+                            "appServiceSlotStorageAccountSettingNames"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-services-slots-config-name": {
+            "description": "Specify configurations names to be recognized as slot only settings.",
+            "properties": {
+                "appSettingNames": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "connectionStringSettingNames": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "storageAccountSettingNames": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "appSettingNames",
+                "connectionStringSettingNames",
+                "storageAccountSettingNames"
+            ]
+        },
+        "app-services-plan": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/app-services-plan-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-services-plans": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/app-services-plan-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-services-plan-parameters": {
+            "type": "object",
+            "properties": {
+                "appServicePlanName": {
+                    "type": "string"
+                },
+                "appServicePlanLocation": {
+                    "type": "string"
+                },
+                "appServicePlanResourceGroup": {
+                    "type": "string"
+                },
+                "appServicePlanOs": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "windows"
+                        },
+                        {
+                            "const": "linux"
+                        }
+                    ]
+                },
+                "appServicePlanSku": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "$ref": "#/definitions/app-service-plan-sku"
+                                        },
+                                        "capacity": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    "required": [
+                                        "name",
+                                        "capacity"
+                                    ]
+                                },
+                                "qa": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "$ref": "#/definitions/app-service-plan-sku"
+                                        },
+                                        "capacity": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    "required": [
+                                        "name",
+                                        "capacity"
+                                    ]
+                                },
+                                "uat": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "$ref": "#/definitions/app-service-plan-sku"
+                                        },
+                                        "capacity": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    "required": [
+                                        "name",
+                                        "capacity"
+                                    ]
+                                },
+                                "prd": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "$ref": "#/definitions/app-service-plan-sku"
+                                        },
+                                        "capacity": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    "required": [
+                                        "name",
+                                        "capacity"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "$ref": "#/definitions/app-service-plan-sku"
+                                        },
+                                        "capacity": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    "required": [
+                                        "name",
+                                        "capacity"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
+                        }
+                    ]
+                },
+                "appServicePlanEnvironmentName": {
+                    "type": "string"
+                },
+                "appServicePlanEnvironmentResourceGroup": {
+                    "type": "string"
+                },
+                "appServicePlanTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "appServicePlanName"
+            ]
+        },
+        "app-service-environment": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/app-service-environment-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-service-environments": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/app-service-environment-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "app-service-environment-parameters": {
+            "type": "object",
+            "properties": {
+                "appServiceEnvironmentName": {
+                    "type": "string"
+                },
+                "appServiceEnvironmentResourceGroup": {
+                    "type": "string"
+                },
+                "appServiceEnvironmentType": {
+                    "type": "string",
+                    "default": "ASEV3",
+                    "enum": [
+                        "ASEV3",
+                        "ASEV2",
+                        "ASEV1"
+                    ]
+                },
+                "appServiceEnvironmentLocation": {
+                    "type": "string"
+                },
+                "appServiceEnvironmentVirtualNetwork": {
+                    "type": "object",
+                    "properties": {
+                        "virtualNetworkName": {
+                            "type": "string"
+                        },
+                        "virtualNetworkSubnetName": {
+                            "type": "string"
+                        },
+                        "virtualNetworkResourceGroup": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "virtualNetworkName",
+                        "virtualNetworkSubnetName",
+                        "virtualNetworkResourceGroup"
+                    ]
+                },
+                "appServiceEnvironmentConfigs": {
+                    "type": "object",
+                    "properties": {
+                        "isZoneRedundant": {
+                            "type": "string"
+                        },
+                        "dedicatedHostCount": {
+                            "type": "string"
+                        },
+                        "internalLoadBalancingMode": {
+                            "type": "string",
+                            "enum": [
+                                "Publishing",
+                                "Web",
+                                "Web, Publishing"
+                            ]
+                        }
+                    }
+                }
+            },
+            "required": [
+                "appServiceEnvironmentName",
+                "appServiceEnvironmentVirtualNetwork"
+            ]
+        },
+        "app-services-auth-settings": {
+            "type": "object",
+            "default": {
+                "appAuthUnauthenticatedAction": "Return401",
+                "appAuthIdentityClientId": {
+                    "default": ""
+                },
+                "appAuthIdentityAudiences": {
+                    "default": []
+                },
+                "appAuthIdentityProvider": "AzureAD",
+                "appAuthIdentityClientSecretName": "{the name of the config that holds the secret}",
+                "appAuthIdentityOpenIdIssuer": {
+                    "default": "https://sts.windows.net/{tenant Id} or https://login.microsoft.com/{tenant Id}"
+                }
+            },
+            "properties": {
+                "appAuthUnauthenticatedAction": {
+                    "type": "string",
+                    "description": "The unauthenticated action",
+                    "oneOf": [
+                        {
+                            "const": "RedirectToLoginPage"
+                        },
+                        {
+                            "const": "AllowAnonymous"
+                        },
+                        {
+                            "const": "Return401"
+                        },
+                        {
+                            "const": "Return403"
+                        }
+                    ]
+                },
+                "appAuthIdentityProvider": {
+                    "type": "string",
+                    "enum": [
+                        "AzureAD",
+                        "Google",
+                        "Github",
+                        "Facebook"
+                    ]
+                },
+                "appAuthIdentityProviderClientSecretName": {
+                    "type": "string"
+                },
+                "appAuthIdentityProviderClientId": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "type": "string"
+                                },
+                                "qa": {
+                                    "type": "string"
+                                },
+                                "uat": {
+                                    "type": "string"
+                                },
+                                "prd": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
+                        }
+                    ]
+                },
+                "appAuthIdentityProviderOpenIdIssuer": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "type": "string"
+                                },
+                                "qa": {
+                                    "type": "string"
+                                },
+                                "uat": {
+                                    "type": "string"
+                                },
+                                "prd": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
+                        }
+                    ]
+                },
+                "appAuthIdentityProviderScopes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "appAuthIdentityProviderAudiences": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "dev": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "qa": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "uat": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "prd": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "dev",
+                                "qa",
+                                "uat",
+                                "prd"
+                            ]
+                        }
+                    ]
+                },
+                "appAuthIdentityProviderGraphApiVersion": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "appAuthUnauthenticatedAction",
+                "appAuthIdentityProvider",
+                "appAuthIdentityProviderClientId",
+                "appAuthIdentityProviderClientSecretName",
+                "appAuthIdentityProviderOpenIdIssuer",
+                "appAuthIdentityProviderScopes",
+                "appAuthIdentityProviderAudiences",
+                "appAuthIdentityProviderGraphApiVersion"
+            ]
+        },
+        "app-service-plan-sku": {
+            "type": "string",
+            "enum": [
+                "F1",
+                "D1",
+                "B1",
+                "S1",
+                "S2",
+                "S3",
+                "I1",
+                "I2",
+                "I3",
+                "I1V2",
+                "I2V2",
+                "I3V2"
+            ]
+        },
+        "app-service-site-configs": {
+            "type": "object",
+            "minProperties": 1,
+            "properties": {
+                "webSettings": {
+                    "type": "object",
+                    "properties": {
+                        "dotnetVersion": {
+                            "enum": [
+                                "v7.0",
+                                "v6.0",
+                                "v3.1"
+                            ]
+                        },
+                        "phpVersion": {
+                            "enum": [
+                                ""
+                            ]
+                        },
+                        "pythonVersion": {
+                            "enum": [
+                                ""
+                            ]
+                        },
+                        "nodeVersion": {
+                            "enum": [
+                                ""
+                            ]
+                        },
+                        "powerShellVersion": {
+                            "enum": [
+                                ""
+                            ]
+                        },
+                        "httpsOnly": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "alwaysOn": {
+                            "type": "boolean"
+                        },
+                        "ftpsState": {
+                            "type": "string",
+                            "enum": [
+                                "FtpsOnly",
+                                "AllAllowed",
+                                "Disabled"
+                            ]
+                        },
+                        "cors": {
+                            "type": "object",
+                            "properties": {
+                                "allowedOrigins": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "minItems": 1
+                                },
+                                "supportCredentials": {
+                                    "type": "boolean"
+                                }
+                            }
+                        },
+                        "apimGateway": {
+                            "type": "object",
+                            "description": "Link an APIM Gateway to the Web App Deployment",
+                            "properties": {
+                                "apimGatewayApiName": {
+                                    "type": "string"
+                                },
+                                "apimGatewayName": {
+                                    "type": "string"
+                                },
+                                "apimGateweayResourceGroup": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "apimGatewayApiName",
+                                "apimGatewayName",
+                                "apimGatewayResourceGroup"
+                            ]
+                        }
+                    }
+                },
+                "siteSettings": {
+                    "type": "object",
+                    "minProperties": 1,
+                    "description": "The site settings for the app service. Settings must be specified with either a default or environment specific value. \n\r Example (default only): \n\r \"{Config Name}\": \" { \n\r \"default\": \"{Config Value}\" \n\r } \n\r \n\r Example (Environment Specific): \n\r \"{Config Name}\": \" { \n\r \"dev\": \"{Config Value}\", \n\r \"qa\": \"{Config Value}\", \n\r \"uat\": \"{Config Value}\", \n\r \"prd\": \"{Config Value}\" \n\r}",
+                    "allOf": [
+                        {
+                            "properties": {
+                                "DOCKER_REGISTRY_SERVER_URL": {
+                                    "$ref": "#/definitions/app-service-site-settings-params"
+                                },
+                                "DOCKER_REGISTRY_SERVER_USERNAME": {
+                                    "$ref": "#/definitions/app-service-site-settings-params"
+                                },
+                                "DOCKER_REGISTRY_SERVER_PASSWORD": {
+                                    "$ref": "#/definitions/app-service-site-settings-params"
+                                },
+                                "WEBSITES_ENABLE_APP_SERVICE_STORAGE": {
+                                    "type": "object",
+                                    "properties": {
+                                        "default": {
+                                           "enum": [
+                                            "true",
+                                            "false"
+                                           ]
+                                        }
+                                    }
+                                },
+                                "WEBSITE_RUN_FROM_PACKAGE": {
+                                    "const": {
+                                        "default": "1"
+                                    }
+                                },
+                                "FUNCTIONS_EXTENSION_VERSION": {
+                                    "enum": [
+                                        {
+                                            "default": "~3"
+                                        },
+                                        {
+                                            "default": "~4"
+                                        }
+                                    ]
+                                },
+                                "FUNCTIONS_WORKER_RUNTIME": {
+                                    "enum": [
+                                        {
+                                            "default": "dotnet"
+                                        },
+                                        {
+                                            "default": "dotnet-isolated"
+                                        },
+                                        {
+                                            "default": "java"
+                                        },
+                                        {
+                                            "default": "node"
+                                        },
+                                        {
+                                            "default": "python"
+                                        },
+                                        {
+                                            "default": "php"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "patternProperties": {
+                                "^[a-z]": {
+                                    "$ref": "#/definitions/app-service-site-settings-params"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "authSettings": {
+                    "$ref": "#/definitions/app-services-auth-settings"
+                },
+                "metaSettings": {
+                    "type": "object",
+                    "properties": {
+                        "CURRENT_STACK": {
+                            "enum": [
+                                "dotnetcore",
+                                "java",
+                                "php",
+                                "node"
+                            ]
+                        }
+                    },
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                },
+                "virtualNetworkSettings": {
+                    "description": "Only use this settings when setting up",
+                    "properties": {
+                        "routeAllOutboundTraffic": {
+                            "type": "boolean"
+                        },
+                        "virtualNetworkName": {
+                            "type": "string"
+                        },
+                        "virtualNetworkSubnetName": {
+                            "type": "string"
+                        },
+                        "virtualNetworkResourceGroup": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "app-service-site-settings-params": {
+            "minProperties": 1,
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "default": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "default"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "dev": {
+                            "type": "string"
+                        },
+                        "qa": {
+                            "type": "string"
+                        },
+                        "uat": {
+                            "type": "string"
+                        },
+                        "prd": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "dev",
+                        "qa",
+                        "uat",
+                        "prd"
+                    ]
+                }
+            ]
+        }
+    }
+}

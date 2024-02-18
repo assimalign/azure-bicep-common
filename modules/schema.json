@@ -1,0 +1,461 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Assimalign Modularized Parameter Schema for Azure Bicep Deployments",
+    "type": "object",
+    "properties": {
+        "contentVersion": {
+            "type": "string",
+            "description": "A 4 number format for the version number of this parameter file. For example, 1.0.0.0",
+            "const": "1.0.0.0"
+        },
+        "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "resourceGroup": {
+                    "$ref": "./resource-group/parameters.json#/definitions/resource-group"
+                },
+                "resourceGroups": {
+                    "$ref": "./resource-group/parameters.json#/definitions/resource-groups"
+                },
+                "appConfiguration": {
+                    "$ref": "./app-configuration/parameters.json#/definitions/app-configuration"
+                },
+                "appConfigurations": {
+                    "$ref": "./app-configuration/parameters.json#/definitions/app-configurations"
+                },
+                "appConfigurationKeys": {
+                    "$ref": "./app-configuration/parameters.json#/definitions/app-configurations-keys"
+                },
+                "cosmosAccount": {
+                    "$ref": "./cosmos/parameters.json#/definitions/cosmos-account"
+                },
+                "cosmosAccounts": {
+                    "$ref": "./cosmos/parameters.json#/definitions/cosmos-accounts"
+                },
+                "cosmosAccountsDocumentDatabase": {
+                    "$ref": "./cosmos/parameters.json#/definitions/cosmos-accounts-document-database"
+                },
+                "cosmosAccountsDocumentDatabases": {
+                    "$ref": "./cosmos/parameters.json#/definitions/cosmos-accounts-document-databases"
+                },
+                "cosmosAccountsDocumentDatabaseContainer": {
+                    "$ref": "./cosmos/parameters.json#/definitions/cosmos-accounts-document-database-container"
+                },
+                "cosmosAccountsDocumentDatabaseContainers": {
+                    "$ref": "./cosmos/parameters.json#/definitions/cosmos-accounts-document-database-containers"
+                },
+                "cosmosAccountsGraphDatabase": {
+                    "$ref": "./cosmos/parameters.json#/definitions/cosmos-accounts-graph-database"
+                },
+                "cosmosAccountsGraphDatabases": {
+                    "$ref": "./cosmos/parameters.json#/definitions/cosmos-accounts-graph-databases"
+                },
+                "cosmosAccountsGraphDatabaseContainer": {
+                    "$ref": "./cosmos/parameters.json#/definitions/cosmos-accounts-graph-database-container"
+                },
+                "cosmosAccountsGraphDatabaseContainers": {
+                    "$ref": "./cosmos/parameters.json#/definitions/cosmos-accounts-graph-database-containers"
+                },
+                "privateEndpoint": {
+                    "$ref": "./private-endpoint/parameters.json#/definitions/private-endpoint"
+                },
+                "privateEndpoints": {
+                    "$ref": "./private-endpoint/parameters.json#/definitions/private-endpoints"
+                },
+                "logAnalyticWorkspace": {
+                    "$ref": "./log-analytics-workspace/parameters.json#/definitions/log-analytic-workspace"
+                },
+                "logAnalyticWorkspaces": {
+                    "$ref": "./log-analytics-workspace/parameters.json#/definitions/log-analytic-workspaces"
+                },
+                "virtualNetwork": {
+                    "$ref": "./virtual-network/parameters.json#/definitions/virtual-network"
+                },
+                "virtualNetworks": {
+                    "$ref": "./virtual-network/parameters.json#/definitions/virtual-networks"
+                },
+                "virtualNetworkSubnet": {
+                    "$ref": "./virtual-network/parameters.json#/definitions/virtual-network-subnet"
+                },
+                "virtualNetworkSubnets": {
+                    "$ref": "./virtual-network/parameters.json#/definitions/virtual-network-subnets"
+                },
+                "virtualNetworksPeering": {
+                    "$ref": "./virtual-network/parameters.json#/definitions/virtual-network-peering"
+                },
+                "virtualNetworksPeerings": {
+                    "$ref": "./virtual-network/parameters.json#/definitions/virtual-network-peerings"
+                },
+                "vpnGateway": {
+                    "$ref": "./vpn/parameters.json#/definitions/vpn-gateway"
+                },
+                "vpnGateways": {
+                    "$ref": "./vpn/parameters.json#/definitions/vpn-gateways"
+                },
+                "natGateway": {
+                    "$ref": "./nat-gateway/parameters.json#/definitions/nat-gateway"
+                },
+                "natGateways": {
+                    "$ref": "./nat-gateway/parameters.json#/definitions/nat-gateways"
+                },
+                "storageAccount": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-account"
+                },
+                "storageAccounts": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-accounts"
+                },
+                "storageAccountBlobService": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-account-blob-service"
+                },
+                "storageAccountBlobServices": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-account-blob-services"
+                },
+                "storageAccountBlobServiceContainer": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-account-blob-service-container"
+                },
+                "storageAccountBlobServiceContainers": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-account-blob-service-containers"
+                },
+                "storageAccountFileShareService": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-account-file-share-service"
+                },
+                "storageAccountFileShareServices": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-account-file-share-services"
+                },
+                "storageAccountFileShareServiceShare": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-account-file-share-service-share"
+                },
+                "storageAccountFileShareServiceShares": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-account-file-share-service-shares"
+                },
+                "storageAccountQueueService": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-account-queue-service"
+                },
+                "storageAccountQueueServices": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-account-queue-services"
+                },
+                "storageAccountQueueServiceQueue": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-account-queue-service-queue"
+                },
+                "storageAccountQueueServiceQueues": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-account-queue-service-queues"
+                },
+                "storageAccountTableService": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-account-table-service"
+                },
+                "storageAccountTableServices": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-account-table-services"
+                },
+                "storageAccountTableServiceTable": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-account-table-service-table"
+                },
+                "storageAccountTableServiceTables": {
+                    "$ref": "./storage-account/parameters.json#/definitions/storage-account-table-service-tables"
+                },
+                "staticSite": {
+                    "$ref": "./static-site/parameters.json#/definitions/static-site"
+                },
+                "staticSites": {
+                    "$ref": "./static-site/parameters.json#/definitions/static-sites"
+                },
+                "appGateway": {
+                    "$ref": "./app-gateway/parameters.json#/definitions/app-gateway"
+                },
+                "appGateways": {
+                    "$ref": "./app-gateway/parameters.json#/definitions/app-gateways"
+                },
+                "appInsight": {
+                    "$ref": "./app-insights/parameters.json#/definitions/app-insight"
+                },
+                "appInsights": {
+                    "$ref": "./app-insights/parameters.json#/definitions/app-insights"
+                },
+                "appInsightsActionGroup": {
+                    "$ref": "./app-insights/parameters.json#/definitions/app-insights-action-group"
+                },
+                "appInsightsActionGroups": {
+                    "$ref": "./app-insights/parameters.json#/definitions/app-insights-action-groups"
+                },
+                "appInsightsActivityLogAlerts": {
+                    "$ref": "./app-insights/parameters.json#/definitions/app-insights-activity-log-alerts"
+                },
+                "appInsightsAlertRules": {
+                    "$ref": "./app-insights/parameters.json#/definitions/app-insights-alert-rules"
+                },
+                "sqlServerAccount": {
+                    "$ref": "./sql-server/parameters.json#/definitions/sql-server-account"
+                },
+                "sqlServerAccounts": {
+                    "$ref": "./sql-server/parameters.json#/definitions/sql-server-accounts"
+                },
+                "sqlServerAccountDatabase": {
+                    "$ref": "./sql-server/parameters.json#/definitions/sql-server-account-database"
+                },
+                "sqlServerAccountDatabases": {
+                    "$ref": "./sql-server/parameters.json#/definitions/sql-server-account-databases"
+                },
+                "publicIpAddress": {
+                    "$ref": "./public-ip/parameters.json#/definitions/public-ip-address"
+                },
+                "publicIpAddresses": {
+                    "$ref": "./public-ip/parameters.json#/definitions/public-ip-addresses"
+                },
+                "publicIpPrefix": {
+                    "$ref": "./public-ip/parameters.json#/definitions/public-ip-prefix"
+                },
+                "publicIpPrefixes": {
+                    "$ref": "./public-ip/parameters.json#/definitions/public-ip-prefixes"
+                },
+                "privateDnsZone": {
+                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zone"
+                },
+                "privateDnsZones": {
+                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zones"
+                },
+                "privateDnsZoneARecords": {
+                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zone-a-records"
+                },
+                "privateDnsZoneAaaaRecords": {
+                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zone-aaaa-records"
+                },
+                "privateDnsZoneCnameRecords": {
+                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zone-cname-records"
+                },
+                "privateDnsZoneMxRecord": {
+                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zone-mx-records"
+                },
+                "privateDnsZonePtrRecords": {
+                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zone-ptr-records"
+                },
+                "privateDnsZoneTxtRecords": {
+                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zone-txt-records"
+                },
+                "privateDnsZoneSrvRecords": {
+                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zone-srv-records"
+                },
+                "serviceBusNamespace": {
+                    "$ref": "./service-bus/parameters.json#/definitions/service-bus-namespace"
+                },
+                "serviceBusNamespaces": {
+                    "$ref": "./service-bus/parameters.json#/definitions/service-bus-namespaces"
+                },
+                "serviceBusNamespaceQueue": {
+                    "$ref": "./service-bus/parameters.json#/definitions/service-bus-namespace-queue"
+                },
+                "serviceBusNamespaceQueues": {
+                    "$ref": "./service-bus/parameters.json#/definitions/service-bus-namespace-queues"
+                },
+                "serviceBusNamespaceTopic": {
+                    "$ref": "./service-bus/parameters.json#/definitions/service-bus-namespace-topic"
+                },
+                "serviceBusNamespaceTopics": {
+                    "$ref": "./service-bus/parameters.json#/definitions/service-bus-namespace-topics"
+                },
+                "serviceBusNamespaceTopicSubscription": {
+                    "$ref": "./service-bus/parameters.json#/definitions/service-bus-namespace-topic-subscription"
+                },
+                "serviceBusNamespaceTopicSubscriptions": {
+                    "$ref": "./service-bus/parameters.json#/definitions/service-bus-namespace-topic-subscriptions"
+                },
+                 "notificationHubNamespace": {
+                    "$ref": "./notification-hub/parameters.json#/definitions/notification-hub-namespace"
+                },
+                "notificationHubNamespaces": {
+                    "$ref": "./notification-hub/parameters.json#/definitions/notification-hub-namespaces"
+                },
+                "notificationHubNamespaceHub": {
+                    "$ref": "./notification-hub/parameters.json#/definitions/notification-hub-namespace-hub"
+                },
+                "notificationHubNamespaceHubs": {
+                    "$ref": "./notification-hub/parameters.json#/definitions/notification-hub-namespace-hubs"
+                },
+                "keyVault": {
+                    "$ref": "./key-vault/parameters.json#/definitions/key-vault"
+                },
+                "keyVaults": {
+                    "$ref": "./key-vault/parameters.json#/definitions/key-vaults"
+                },
+                "networkSecurityGroup": {
+                    "$ref": "./network-security-group/parameters.json#/definitions/network-security-group"
+                },
+                "networkSecurityGroups": {
+                    "$ref": "./network-security-group/parameters.json#/definitions/network-security-groups"
+                },
+                "eventHubNamespace": {
+                    "$ref": "./event-hub/parameters.json#/definitions/event-hub-namespace"
+                },
+                "eventHubNamespaces": {
+                    "$ref": "./event-hub/parameters.json#/definitions/event-hub-namespaces"
+                },
+                "eventHubNamespaceHub": {
+                    "$ref": "./event-hub/parameters.json#/definitions/event-hub-namespace-hub"
+                },
+                "eventHubNamespaceHubs": {
+                    "$ref": "./event-hub/parameters.json#/definitions/event-hub-namespace-hubs"
+                },
+                "eventGridDomain": {
+                    "$ref": "./event-grid/parameters.json#/definitions/event-grid-domain"
+                },
+                "eventGridDomains": {
+                    "$ref": "./event-grid/parameters.json#/definitions/event-grid-domains"
+                },
+                "eventGridDomainTopic": {
+                    "$ref": "./event-grid/parameters.json#/definitions/event-grid-domain-topic"
+                },
+                "eventGridDomainTopics": {
+                    "$ref": "./event-grid/parameters.json#/definitions/event-grid-domain-topics"
+                },
+                "eventGridDomainTopicSubscription": {
+                    "$ref": "./event-grid/parameters.json#/definitions/event-grid-domain-topic-subscription"
+                },
+                "eventGridDomainTopicSubscriptions": {
+                    "$ref": "./event-grid/parameters.json#/definitions/event-grid-domain-topic-subscriptions"
+                },
+                "eventGridSystemTopic": {
+                    "$ref": "./event-grid/parameters.json#/definitions/event-grid-system-topic"
+                },
+                "eventGridSystemTopics": {
+                    "$ref": "./event-grid/parameters.json#/definitions/event-grid-system-topics"
+                },
+                "eventGridSystemTopicSubscription": {
+                    "$ref": "./event-grid/parameters.json#/definitions/event-grid-system-topic-subscription"
+                },
+                "eventGridSystemTopicSubscriptions": {
+                    "$ref": "./event-grid/parameters.json#/definitions/event-grid-system-topic-subscriptions"
+                },
+                "cognitiveSearchService": {
+                    "$ref": "./cognitive-search/parameters.json#/definitions/cognitive-search-service"
+                },
+                "cognitiveSearchServices": {
+                    "$ref": "./cognitive-search/parameters.json#/definitions/cognitive-search-services"
+                },
+                "apimGateway": {
+                    "$ref": "./apim/parameters.json#/definitions/apim-gateway"
+                },
+                "apimGateways": {
+                    "$ref": "./apim/parameters.json#/definitions/apim-gateways"
+                },
+                "apimGatewayCertificate": {
+                    "$ref": "./apim/parameters.json#/definitions/apim-gateway-certificate"
+                },
+                "apimGatewayCertificates": {
+                    "$ref": "./apim/parameters.json#/definitions/apim-gateway-certificates"
+                },
+                "apimGatewayBackend": {
+                    "$ref": "./apim/parameters.json#/definitions/apim-gateway-backend"
+                },
+                "apimGatewayBackends": {
+                    "$ref": "./apim/parameters.json#/definitions/apim-gateway-backends"
+                },
+                "apimGatewayLogger": {
+                    "$ref": "./apim/parameters.json#/definitions/apim-gateway-logger"
+                },
+                "apimGatewayLoggers": {
+                    "$ref": "./apim/parameters.json#/definitions/apim-gateway-loggers"
+                },
+                "apimGatewayApi": {
+                    "$ref": "./apim/parameters.json#/definitions/apim-gateway-api"
+                },
+                "apimGatewayApis": {
+                    "$ref": "./apim/parameters.json#/definitions/apim-gateway-apis"
+                },
+                "apimGatewayApiOperation": {
+                    "$ref": "./apim/parameters.json#/definitions/apim-gateway-api-operation"
+                },
+                "apimGatewayApiOperations": {
+                    "$ref": "./apim/parameters.json#/definitions/apim-gateway-api-operations"
+                },
+                "apimGatewayOpenIdConnectProvider": {
+                    "$ref": "./apim/parameters.json#/definitions/apim-gateway-openid-connect-provider"
+                },
+                "apimGatewayOpenIdConnectProviders": {
+                    "$ref": "./apim/parameters.json#/definitions/apim-gateway-openid-connect-providers"
+                },
+                "apimGatewayIdentityProvider": {
+                    "description": "Identities view lets you manage authentication methods for users of the developer portal. By default, API Management requires username and password authentication, but you can also configure online identity providers, like AAD or AAD B2C.",
+                    "$ref": "./apim/parameters.json#/definitions/apim-gateway-identity-provider"
+                },
+                "apimGatewayIdentityProviders": {
+                    "description": "Identities view lets you manage authentication methods for users of the developer portal. By default, API Management requires username and password authentication, but you can also configure online identity providers, like AAD or AAD B2C.",
+                    "$ref": "./apim/parameters.json#/definitions/apim-gateway-identity-providers"
+                },
+                "appServicePlan": {
+                    "$ref": "./app-service/parameters.json#/definitions/app-services-plan"
+                },
+                "appServicePlans": {
+                    "$ref": "./app-service/parameters.json#/definitions/app-services-plans"
+                },
+                "appService": {
+                    "$ref": "./app-service/parameters.json#/definitions/app-service"
+                },
+                "appServices": {
+                    "$ref": "./app-service/parameters.json#/definitions/app-services"
+                },
+                "appServiceSlot": {
+                    "$ref": "./app-service/parameters.json#/definitions/app-services-slot"
+                },
+                "appServiceSlots": {
+                    "$ref": "./app-service/parameters.json#/definitions/app-services-slots"
+                },
+                "appServiceSlotsConfigNames": {
+                    "$ref": "./app-service/parameters.json#/definitions/app-services-slots-config-names"
+                },
+                "appServiceEnvironment": {
+                    "$ref": "./app-service/parameters.json#/definitions/app-service-environment"
+                },
+                "appServiceEnvironments": {
+                    "$ref": "./app-service/parameters.json#/definitions/app-service-environments"
+                },
+                "dataFactory": {
+                    "$ref": "./data-factory/parameters.json#/definitions/data-factory"
+                },
+                "dataFactories": {
+                    "$ref": "./data-factory/parameters.json#/definitions/data-factories"
+                },
+                "mediaService": {
+                    "$ref": "./media-service/parameters.json#/definitions/media-service"
+                },
+                "mediaServices": {
+                    "$ref": "./media-service/parameters.json#/definitions/media-services"
+                },
+                "mapAccount": {
+                    "$ref": "./map-account/parameters.json#/definitions/map-account"
+                },
+                "mapAccounts": {
+                    "$ref": "./map-account/parameters.json#/definitions/map-accounts"
+                },
+                "iotHub": {
+                    "$ref": "./iot-hub/parameters.json#/definitions/iot-hub"
+                },
+                "iotHubs": {
+                    "$ref": "./iot-hub/parameters.json#/definitions/iot-hubs"
+                },
+                "dataShareAccount": {
+                    "$ref": "./data-share-account/parameters.json#/definitions/data-share-account"
+                },
+                "dataShareAccounts": {
+                    "$ref": "./data-share-account/parameters.json#/definitions/data-share-accounts"
+                },
+                "dataShare": {
+                    "$ref": "./data-share-account/parameters.json#/definitions/data-share-account-share"
+                },
+                "dataShares": {
+                    "$ref": "./data-share-account/parameters.json#/definitions/data-share-account-shares"
+                },
+                "dataShareDataset": {
+                    "$ref": "./data-share-account/parameters.json#/definitions/data-share-account-share-dataset"
+                },
+                "dataShareDatasets": {
+                    "$ref": "./data-share-account/parameters.json#/definitions/data-share-account-share-dataset"
+                },
+                "signalRService": {
+                    "$ref": "./signalr/parameters.json#/definitions/signalr-service"
+                },
+                "signalRServices": {
+                    "$ref": "./signalr/parameters.json#/definitions/signalr-services"
+                }
+            }
+        }
+    }
+}
