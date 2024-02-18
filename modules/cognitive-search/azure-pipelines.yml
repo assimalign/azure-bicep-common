@@ -8,6 +8,16 @@ trigger:
     include:
         - src/modules/az.cognitive.search
 
+parameters:
+- name: module
+  displayName: Modeul Name
+  type: string
+  values:
+  - windows-latest
+  - ubuntu-latest
+  - macOS-latest
+
+
 pool:
   vmImage: windows-latest
 
