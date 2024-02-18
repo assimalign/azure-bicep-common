@@ -61,7 +61,7 @@ resource notificationHubNamespace 'Microsoft.NotificationHubs/namespaces@2023-09
 }
 
 // 2. Deploy the Notification Namespace Hubs, if any
-module azNotificationNamespaceHubsDeployment 'notificationHubNamespaceHub.bicep' = [for hub in notificationHubNamespaceHubs: if (!empty(hub)) {
+module azNotificationNamespaceHubsDeployment 'notification-hub-namespace-hub.bicep' = [for hub in notificationHubNamespaceHubs: if (!empty(hub)) {
   name: !empty(notificationHubNamespaceHubs) ? replace(replace(hub.notificationHubName, '@environment', environment), '@region', region) : 'no-hubs-to-deploy'
   scope: resourceGroup()
   params: {

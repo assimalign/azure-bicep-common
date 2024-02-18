@@ -23,7 +23,7 @@ param serviceBusQueueSettings object = {}
 @description('A list of authorization policies to deploy with the service bus queue')
 param serviceBusQueuePolicies array = []
 
-resource serviceBusNamespaceTopic 'Microsoft.ServiceBus/namespaces/queues@2021-11-01' = {
+resource serviceBusNamespaceQueue 'Microsoft.ServiceBus/namespaces/queues@2021-11-01' = {
   name: replace(replace('${serviceBusName}/${serviceBusQueueName}', '@environment', environment), '@region', region)
   properties: {
     requiresSession: contains(serviceBusQueueSettings, 'enableSession') ? serviceBusQueueSettings.enableSession : false
@@ -31,8 +31,8 @@ resource serviceBusNamespaceTopic 'Microsoft.ServiceBus/namespaces/queues@2021-1
   }
 }
 
-module serviceBusNamespaceTopicAuthPolicy 'serviceBusNamespaceQueueAuthorization.bicep' = [for policy in serviceBusQueuePolicies: if (!empty(policy)) {
-  name: !empty(serviceBusQueuePolicies) ? toLower('sbn-queue-policy-${guid('${serviceBusNamespaceTopic.id}/${policy.serviceBusPolicyName}')}') : 'no-sbq-policy-to-deploy'
+module serviceBusNamespaceQueueAuthPolicy 'service-bus-namespace-queue-authorization.bicep' = [for policy in serviceBusQueuePolicies: if (!empty(policy)) {
+  name: !empty(serviceBusQueuePolicies) ? toLower('sbn-queue-policy-${guid('${serviceBusNamespaceQueue.id}/${policy.serviceBusPolicyName}')}') : 'no-sbq-policy-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -44,4 +44,4 @@ module serviceBusNamespaceTopicAuthPolicy 'serviceBusNamespaceQueueAuthorization
   }
 }]
 
-output serviceNamespaceTopic object = serviceBusNamespaceTopic
+output serviceNamespaceQueue object = serviceBusNamespaceQueue

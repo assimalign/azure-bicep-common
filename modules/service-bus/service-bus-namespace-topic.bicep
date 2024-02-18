@@ -35,7 +35,7 @@ resource serviecBusNamespaceTopic 'Microsoft.ServiceBus/namespaces/topics@2021-1
 }
 
 // 2. Deploy Service Bus Namespace Topic Authorization Policy
-module serviecBusNamespaceTopicAuthPolicy 'serviceBusNamespaceTopicAuthorization.bicep' = [for policy in serviceBusTopicPolicies: if (!empty(policy)) {
+module serviecBusNamespaceTopicAuthPolicy 'service-bus-namespace-topic-authorization.bicep' = [for policy in serviceBusTopicPolicies: if (!empty(policy)) {
   name: !empty(serviceBusTopicPolicies) ? toLower('sbn-topic-subs-${guid('${serviecBusNamespaceTopic.id}/${policy.serviceBusPolicyName}')}') : 'no-sbt-policies-to-deploy'
   scope: resourceGroup()
   params: {
@@ -49,7 +49,7 @@ module serviecBusNamespaceTopicAuthPolicy 'serviceBusNamespaceTopicAuthorization
 }]
 
 // 2. Deploye Service Bus Namespace Topic Subscriptions if applicable
-module serviecBusNamespaceTopicSubscription 'serviceBusNamespaceTopicSubscription.bicep' = [for subscription in serviceBusTopicSubscriptions: if (!empty(subscription)) {
+module serviecBusNamespaceTopicSubscription 'service-bus-namespace-topic-subscription.bicep' = [for subscription in serviceBusTopicSubscriptions: if (!empty(subscription)) {
   name: !empty(serviceBusTopicSubscriptions) ? toLower('sbn-topic-subs-${guid('${serviecBusNamespaceTopic.id}/${subscription.serviceBusTopicSubscriptionName}')}') : 'no-subscription-to-deploy'
   scope: resourceGroup()
   params: {

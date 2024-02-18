@@ -229,7 +229,7 @@ var ResourceGroup = resourceGroup(replace(replace(resourceGroupToScopeRoleAssign
 // }
 
 // 1. Check for Azure App Configuration Role Assignment
-module rbacAppConfig 'rbacAppConfiguration.bicep' = if (resourceTypeAssigningRole == 'Microsoft.AppConfiguration/ConfigurationStores') {
+module rbacAppConfig 'rbac-app-configuration.bicep' = if (resourceTypeAssigningRole == 'Microsoft.AppConfiguration/ConfigurationStores') {
   name: 'rbac-appc-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
@@ -243,7 +243,7 @@ module rbacAppConfig 'rbacAppConfiguration.bicep' = if (resourceTypeAssigningRol
 }
 
 // 2. Check for Azure Key Vault Role Assignments
-module rbacKeyVault 'rbacKeyVault.bicep' = if (resourceTypeAssigningRole == 'Microsoft.KeyVault/Vaults') {
+module rbacKeyVault 'rbac-key-vault.bicep' = if (resourceTypeAssigningRole == 'Microsoft.KeyVault/Vaults') {
   name: 'rbac-kv-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
@@ -257,7 +257,7 @@ module rbacKeyVault 'rbacKeyVault.bicep' = if (resourceTypeAssigningRole == 'Mic
 }
 
 // 3. Check for Azure Event Grid Role Assignment
-module rbacEventGrid 'rbacEventGrid.bicep' = if (resourceTypeAssigningRole == 'Microsoft.EventGrid/Domains') {
+module rbacEventGrid 'rbac-event-grid.bicep' = if (resourceTypeAssigningRole == 'Microsoft.EventGrid/Domains') {
   name: 'rbac-egd-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
@@ -271,7 +271,7 @@ module rbacEventGrid 'rbacEventGrid.bicep' = if (resourceTypeAssigningRole == 'M
 }
 
 // 4. Check for Azure Storage Account Role Assignment
-module rbacStorageAccount 'rbacStorageAccount.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Storage/StorageAccounts') {
+module rbacStorageAccount 'rbac-storage-account.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Storage/StorageAccounts') {
   name: 'rbac-stg-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
@@ -285,7 +285,7 @@ module rbacStorageAccount 'rbacStorageAccount.bicep' = if (resourceTypeAssigning
 }
 
 // 5. Check for Azure Storage Account Blob Services Role Assignment
-module rbacStorageAccountBlob 'rbacStorageAccountBlob.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Storage/StorageAccounts/BlobServices/Containers') {
+module rbacStorageAccountBlob 'rbac-storage-account-blob.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Storage/StorageAccounts/BlobServices/Containers') {
   name: 'rbac-stg-blob-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
@@ -299,7 +299,7 @@ module rbacStorageAccountBlob 'rbacStorageAccountBlob.bicep' = if (resourceTypeA
 }
 
 // 6. Check for Azure Storage Account File Share Services Role Assignment
-module rbacStorageAccountFileShare 'rbacStorageAccountFileShare.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Storage/StorageAccounts/FileServices/Shares') {
+module rbacStorageAccountFileShare 'rbac-storage-account-fileshare.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Storage/StorageAccounts/FileServices/Shares') {
   name: 'rbac-stg-fs-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
@@ -313,7 +313,7 @@ module rbacStorageAccountFileShare 'rbacStorageAccountFileShare.bicep' = if (res
 }
 
 // 7. Check for Azure Storage Account Queue Services Role Assignment
-module rbacStorageAccountQueue 'rbacStorageAccountQueue.bicep' = if (resourceTypeAssigningRole == '"Microsoft.Storage/StorageAccounts/QueueServices/Queues') {
+module rbacStorageAccountQueue 'rbac-storage-account-queue.bicep' = if (resourceTypeAssigningRole == '"Microsoft.Storage/StorageAccounts/QueueServices/Queues') {
   name: 'rbac-stg-queue-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
@@ -327,7 +327,7 @@ module rbacStorageAccountQueue 'rbacStorageAccountQueue.bicep' = if (resourceTyp
 }
 
 // 8. Check for Azure Storage Account Tables Services Role Assignment
-module rbacStorageAccountTable 'rbacStorageAccountTable.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Storage/StorageAccounts/TableServices/Table') {
+module rbacStorageAccountTable 'rbac-storage-account-table.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Storage/StorageAccounts/TableServices/Table') {
   name: 'rbac-stg-table-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
@@ -341,7 +341,7 @@ module rbacStorageAccountTable 'rbacStorageAccountTable.bicep' = if (resourceTyp
 }
 
 // 9. Check for Azure Service Bus Namespace Role Assignment
-module rbacServiceBusNamespace 'rbacServiceBusNamespace.bicep' = if (resourceTypeAssigningRole == 'Microsoft.ServiceBus/Namespaces') {
+module rbacServiceBusNamespace 'rbac-service-bus-namespace.bicep' = if (resourceTypeAssigningRole == 'Microsoft.ServiceBus/Namespaces') {
   name: 'rbac-sbn-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
@@ -355,7 +355,7 @@ module rbacServiceBusNamespace 'rbacServiceBusNamespace.bicep' = if (resourceTyp
 }
 
 // 10. Check for Azure Service Bus Namespace Queue Role Assignment
-module rbacServiceBusNamespaceQueue 'rbacServiceBusNamespaceQueue.bicep' = if (resourceTypeAssigningRole == 'Microsoft.ServiceBus/Namespaces/Queues') {
+module rbacServiceBusNamespaceQueue 'rbac-service-bus-namespace-queue.bicep' = if (resourceTypeAssigningRole == 'Microsoft.ServiceBus/Namespaces/Queues') {
   name: 'rbac-sbn-queue-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
@@ -369,7 +369,7 @@ module rbacServiceBusNamespaceQueue 'rbacServiceBusNamespaceQueue.bicep' = if (r
 }
 
 // 11. Check for Azure Service Bus Namespace Topic Role Assignment
-module rbacServiceBusNamespaceTopic 'rbacServiceBusNamespaceTopic.bicep' = if (resourceTypeAssigningRole == 'Microsoft.ServiceBus/Namespaces/Topics') {
+module rbacServiceBusNamespaceTopic 'rbac-service-bus-namespace-topic.bicep' = if (resourceTypeAssigningRole == 'Microsoft.ServiceBus/Namespaces/Topics') {
   name: 'rbac-sbn-topic-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
@@ -383,7 +383,7 @@ module rbacServiceBusNamespaceTopic 'rbacServiceBusNamespaceTopic.bicep' = if (r
 }
 
 // 12. Check for Azure Cosmos Role Assignment
-module rbacCosmos 'rbacCosmos.bicep' = if (resourceTypeAssigningRole == 'Microsoft.DocumentDB/DatabaseAccounts') {
+module rbacCosmos 'rbac-cosmos.bicep' = if (resourceTypeAssigningRole == 'Microsoft.DocumentDB/DatabaseAccounts') {
   name: 'rbac-cosmos-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
@@ -397,7 +397,7 @@ module rbacCosmos 'rbacCosmos.bicep' = if (resourceTypeAssigningRole == 'Microso
 }
 
 // 13. Check for Azure Sql Server Instance Role Assignment
-module rbacSqlServer 'rbacSqlServer.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Sql/Servers') {
+module rbacSqlServer 'rbac-sql-server.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Sql/Servers') {
   name: 'rbac-sqlserver-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
@@ -411,7 +411,7 @@ module rbacSqlServer 'rbacSqlServer.bicep' = if (resourceTypeAssigningRole == 'M
 }
 
 // 14. Check for Azure Sql Server Managed Instance Role Assignment
-module rbacSqlServerManaged 'rbacSqlServerManaged.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Sql/ManagedInstances') {
+module rbacSqlServerManaged 'rbac-sql-server-managed.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Sql/ManagedInstances') {
   name: 'rbac-sqlserver-mgd-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
@@ -425,7 +425,7 @@ module rbacSqlServerManaged 'rbacSqlServerManaged.bicep' = if (resourceTypeAssig
 }
 
 // 15. Check for Azure Media Services Role Assignment
-module rbacMediaServices 'rbacMediaServices.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Media/MediaServices') {
+module rbacMediaServices 'rbac-media-services.bicep' = if (resourceTypeAssigningRole == 'Microsoft.Media/MediaServices') {
   name: 'rbac-media-services-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
@@ -439,7 +439,7 @@ module rbacMediaServices 'rbacMediaServices.bicep' = if (resourceTypeAssigningRo
 }
 
 // 16. Check for Azure Media Services Role Assignment
-module rbacCognitiveServices 'rbacCognitiveServices.bicep' = if (resourceTypeAssigningRole == 'Microsoft.CognitiveServices/Accounts') {
+module rbacCognitiveServices 'rbac-cognitive-services.bicep' = if (resourceTypeAssigningRole == 'Microsoft.CognitiveServices/Accounts') {
   name: 'rbac-cognitive-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {

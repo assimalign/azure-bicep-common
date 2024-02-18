@@ -64,7 +64,7 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2021-11-01' = {
 }
 
 // 2. Deploy Servic Bus Queues if applicable
-module azServiceBusNamespaceQueuesDeployment 'serviceBusNamespaceQueue.bicep' = [for queue in serviceBusQueues: if (!empty(queue)) {
+module serviceBusNamespaceQueue 'service-bus-namespace-queue.bicep' = [for queue in serviceBusQueues: if (!empty(queue)) {
   name: !empty(serviceBusQueues) ? toLower('sbn-queue-${guid('${serviceBusNamespace.id}/${queue.serviceBusQueueName}')}') : 'no-sb-queues-to-deploy'
   scope: resourceGroup()
   params: {
@@ -78,7 +78,7 @@ module azServiceBusNamespaceQueuesDeployment 'serviceBusNamespaceQueue.bicep' = 
 }]
 
 // 3. Deploy Servic Bus Topics & Subscriptions if applicable
-module azServiceBusTopicsNamespaceDeployment 'serviceBusNamespaceTopic.bicep' = [for topic in serviceBusTopics: if (!empty(topic)) {
+module serviceBusNamespaceTopic 'service-bus-namespace-topic.bicep' = [for topic in serviceBusTopics: if (!empty(topic)) {
   name: !empty(serviceBusTopics) ? toLower('sbn-topic-${guid('${serviceBusNamespace.id}/${topic.serviceBusTopicName}')}') : 'no-sb-topic-to-deploy'
   scope: resourceGroup()
   params: {
@@ -91,6 +91,5 @@ module azServiceBusTopicsNamespaceDeployment 'serviceBusNamespaceTopic.bicep' = 
     serviceBusTopicSettings: contains(topic, 'serviceBusTopicSettings') ? topic.serviceBusTopicSettings : {}
   }
 }]
-
 
 output serviceBusNamespace object = serviceBusNamespace

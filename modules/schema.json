@@ -208,31 +208,31 @@
                     "$ref": "./public-ip/parameters.json#/definitions/public-ip-prefixes"
                 },
                 "privateDnsZone": {
-                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zone"
+                    "$ref": "./private-dns-zone/parameters.json#/definitions/private-dns-zone"
                 },
                 "privateDnsZones": {
-                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zones"
+                    "$ref": "./private-dns-zone/parameters.json#/definitions/private-dns-zones"
                 },
                 "privateDnsZoneARecords": {
-                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zone-a-records"
+                    "$ref": "./private-dns-zone/parameters.json#/definitions/private-dns-zone-a-records"
                 },
                 "privateDnsZoneAaaaRecords": {
-                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zone-aaaa-records"
+                    "$ref": "./private-dns-zone/parameters.json#/definitions/private-dns-zone-aaaa-records"
                 },
                 "privateDnsZoneCnameRecords": {
-                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zone-cname-records"
+                    "$ref": "./private-dns-zone/parameters.json#/definitions/private-dns-zone-cname-records"
                 },
                 "privateDnsZoneMxRecord": {
-                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zone-mx-records"
+                    "$ref": "./private-dns-zone/parameters.json#/definitions/private-dns-zone-mx-records"
                 },
                 "privateDnsZonePtrRecords": {
-                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zone-ptr-records"
+                    "$ref": "./private-dns-zone/parameters.json#/definitions/private-dns-zone-ptr-records"
                 },
                 "privateDnsZoneTxtRecords": {
-                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zone-txt-records"
+                    "$ref": "./private-dns-zone/parameters.json#/definitions/private-dns-zone-txt-records"
                 },
                 "privateDnsZoneSrvRecords": {
-                    "$ref": "./private-dns/parameters.json#/definitions/private-dns-zone-srv-records"
+                    "$ref": "./private-dns-zone/parameters.json#/definitions/private-dns-zone-srv-records"
                 },
                 "serviceBusNamespace": {
                     "$ref": "./service-bus/parameters.json#/definitions/service-bus-namespace"

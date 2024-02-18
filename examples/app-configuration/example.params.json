@@ -1,5 +1,5 @@
 {
-    "$schema": "https://aecschemastore.blob.core.windows.net/json/bicep/schema.json",
+    "$schema": "../../modules/schema.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "appConfiguration": {

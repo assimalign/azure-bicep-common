@@ -26,10 +26,6 @@ param staticSiteLocation string = 'eastus2'
 
 @description('The pricing tier for the static site')
 param staticSiteSku object = {
-  dev: 'Free'
-  qa: 'Free'
-  uat: 'Free'
-  prd: 'Free'
   default: 'Free'
 }
 

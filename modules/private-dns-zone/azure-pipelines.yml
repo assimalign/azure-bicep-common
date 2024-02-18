@@ -1,4 +1,3 @@
-
 trigger: 
   branches: 
     include:
@@ -6,8 +5,7 @@ trigger:
       - development
   paths: 
     include:
-        - src/modules/az.private.dns
-
+        - modules/private-dns-zone
 pool:
   vmImage: windows-latest
 
@@ -23,9 +21,11 @@ steps:
     preferredAzurePowerShellVersion: "10.3.0"
     pwsh: true
     ScriptType: "FilePath"
-    ScriptPath: "modules.arc.push.ps1"
+    ScriptPath: "deploy.ps1"
     ScriptArguments:
+      -storageAccountName $(azure-schema-stgact)
+      -storageAccountResourceGroup $(azure-schema-stgact-rg)
+      -storageAccountContainerName json
       -containerRegistryName $(azure-arc)
       -containerRegistryResourceGroup $(azure-arc-rg)
-      -module az.private.dns
-    
+      -moduleName private-dns-zone

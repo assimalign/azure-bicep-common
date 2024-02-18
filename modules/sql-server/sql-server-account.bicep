@@ -83,7 +83,7 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
 }
 
 // 2. Deploy Sql Server Database under instance
-module azSqlServerInstanceDatabaseDeployment 'sqlServerDatabase.bicep' = [for database in sqlServerAccountDatabases: if (!empty(database)) {
+module azSqlServerInstanceDatabaseDeployment 'sql-server-account-database.bicep' = [for database in sqlServerAccountDatabases: if (!empty(database)) {
   name: !empty(sqlServerAccountDatabases) ? toLower('az-sqlserver-db-${guid('${sqlServer.id}/${database.sqlServerAccountDatabaseName}')}') : 'no-sql-server/no-database-to-deploy'
   params: {
     region: region
@@ -98,7 +98,7 @@ module azSqlServerInstanceDatabaseDeployment 'sqlServerDatabase.bicep' = [for da
 }]
 
 // 4. Deploy Private Endpoint if applicable
-module azEventGridPrivateEndpointDeployment '../private-endpoint/privateEndpoint.bicep' = if (!empty(sqlServerAccountPrivateEndpoint)) {
+module azEventGridPrivateEndpointDeployment '../private-endpoint/private-endpoint.bicep' = if (!empty(sqlServerAccountPrivateEndpoint)) {
   name: !empty(sqlServerAccountPrivateEndpoint) ? toLower('az-sqls-priv-endpoint-${guid('${sqlServer.id}/${sqlServerAccountPrivateEndpoint.privateEndpointName}')}') : 'no-sql-private-endpoint-to-deploy'
   params: {
     region: region

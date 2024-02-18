@@ -23,7 +23,7 @@ param serviceBusQueuePolicyName string
 @description('The permissions to be set for the Azure Service Bus Queue Policy.')
 param serviceBusQueuePolicyPermissions array
 
-resource azServiceBusQueueAuthorizationRulesDeployment 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2021-11-01' = {
+resource serviceBusQueueAuthorizationRules 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2021-11-01' = {
   name: replace(replace('${serviceBusName}/${serviceBusQueueName}/${serviceBusQueuePolicyName}', '@environment', environment), '@region', region)
   properties: {
     rights: serviceBusQueuePolicyPermissions
