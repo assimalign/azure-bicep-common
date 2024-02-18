@@ -30,7 +30,7 @@ Get-ChildItem "./modules/$moduleName" -Recurse -Include '*.bicep' | ForEach-Obje
 
         $moduleFilePath = $_.FullName
         $moduleName = $_.BaseName
-        $modulePath = "br:$azureContainerRegistryUrl/modules/$moduleName" #+ ":" + $version
+        $modulePath = "br:$azureContainerRegistryUrl/modules/$moduleName" + ":" + "v1.0"
 
         Write-Host "Pushing $modulePath" -ForegroundColor Green
         Publish-AzBicepModule -FilePath $moduleFilePath -Target $modulePath -DefaultProfile $azureContext -Force

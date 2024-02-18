@@ -7,7 +7,6 @@ trigger:
   paths: 
     include:
         - modules/app-configuration
-
 pool:
   vmImage: windows-latest
 
