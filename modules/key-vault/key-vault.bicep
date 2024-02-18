@@ -107,7 +107,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     })
 }
 
-module azKeyVaultSecretDeployment 'keyVaultSecret.bicep' = [for secret in keyVaultSecrets: if (!empty(keyVaultSecrets)) {
+module azKeyVaultSecretDeployment 'key-vault-secret.bicep' = [for secret in keyVaultSecrets: if (!empty(keyVaultSecrets)) {
   name: !empty(keyVaultSecrets) ? toLower('kv-secret-${guid('${keyVault.id}/${secret.keyVaultSecretName}')}') : 'no-key-vault-secrets-to-deploy'
   scope: resourceGroup()
   params: {
@@ -121,7 +121,7 @@ module azKeyVaultSecretDeployment 'keyVaultSecret.bicep' = [for secret in keyVau
   }
 }]
 
-module azKeyVaultKeyDeployment 'keyVaultKey.bicep' = [for key in keyVaultKeys: if (!empty(keyVaultKeys)) {
+module azKeyVaultKeyDeployment 'key-vault-key.bicep' = [for key in keyVaultKeys: if (!empty(keyVaultKeys)) {
   name: !empty(keyVaultKeys) ? toLower('kv-key-${guid('${keyVault.id}/${key.name}')}') : 'no-key-vault-keys-to-deploy'
   scope: resourceGroup()
   params: {
@@ -135,7 +135,7 @@ module azKeyVaultKeyDeployment 'keyVaultKey.bicep' = [for key in keyVaultKeys: i
   }
 }]
 
-module keyVaultPrivateEp '../private-endpoint/privateEndpoint.bicep' = if (!empty(keyVaultPrivateEndpoint)) {
+module keyVaultPrivateEp '../private-endpoint/private-endpoint.bicep' = if (!empty(keyVaultPrivateEndpoint)) {
   name: !empty(keyVaultPrivateEndpoint) ? toLower('az-kv-priv-endpoint-${guid('${keyVault.id}/${keyVaultPrivateEndpoint.privateEndpointName}')}') : 'no-key-vault-private-endpoint-to-deploy'
   scope: resourceGroup()
   params: {

@@ -63,5 +63,3 @@ resource sqlServerDatabaseDeployment 'Microsoft.Sql/servers/databases@2021-11-01
 }
 
 output sqlServerDatabase object = sqlServerDatabaseDeployment
-
-// Publish-AzBicepModule -FilePath './src/modules/az.sql.server/v1.0/az.sql.server.database.bicep' -Target 'br:asalbicep.azurecr.io/modules/az.sql.server.database:v1.0'

@@ -598,7 +598,7 @@
                     "default": "default"
                 },
                 "storageAccountTableServicePrivateEndpoint": {
-                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
+                    "$ref": "../private-endpoint/parameters.json#/definitions/private-endpoint-embedded"
                 },
                 "storageAccountTableServiceTables": {
                     "type": "array",
@@ -808,7 +808,7 @@
                     "minProperties": 1
                 },
                 "storageAccountQueueServicePrivateEndpoint": {
-                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
+                    "$ref": "../private-endpoint/parameters.json#/definitions/private-endpoint-embedded"
                 }
             },
             "required": [
@@ -992,7 +992,7 @@
                     "minItems": 1
                 },
                 "storageAccountFileShareServicePrivateEndpoint": {
-                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
+                    "$ref": "../private-endpoint/parameters.json#/definitions/private-endpoint-embedded"
                 }
             },
             "required": [
@@ -1191,7 +1191,7 @@
                     "minItems": 1
                 },
                 "storageAccountBlobServicePrivateEndpoint": {
-                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
+                    "$ref": "../private-endpoint/parameters.json#/definitions/private-endpoint-embedded"
                 }
             },
             "required": [

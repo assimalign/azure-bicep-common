@@ -266,7 +266,7 @@
                     "minProperties": 1
                 },
                 "cosmosAccountPrivateEndpoint": {
-                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
+                    "$ref": "../private-endpoint/parameters.json#/definitions/private-endpoint-embedded"
                 },
                 "cosmosAccountVirtualNetworks": {
                     "type": "array",

@@ -46,7 +46,7 @@
                 "eventGridDomainMsiRoleAssignments": {
                     "type": "array",
                     "items": {
-                        "$ref": "../../az.rbac/v1.0/parameters.json#/definitions/roleAssignment"
+                        "$ref": "../rbac/parameters.json#/definitions/roleAssignment"
                     }
                 },
                 "eventGridDomainDisablePublicAccess": {
@@ -54,7 +54,7 @@
                     "default": false
                 },
                 "eventGridDomainPrivateEndpoint": {
-                    "$ref": "../../az.private.endpoint/v1.0/parameters.json#/definitions/private-endpoint-embedded"
+                    "$ref": "../private-endpoint/parameters.json#/definitions/private-endpoint-embedded"
                 },
                 "eventGridDomainTopics": {
                     "type": "array",
@@ -506,7 +506,7 @@
                 "eventGridSystemTopicMsiRoleAssignments": {
                     "type": "array",
                     "items": {
-                        "$ref": "../../az.rbac/v1.0/parameters.json#/definitions/roleAssignment"
+                        "$ref": "../rbac/parameters.json#/definitions/roleAssignment"
                     }
                 }
             },

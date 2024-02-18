@@ -29,7 +29,7 @@ param keyVaultSecretResourceGroupOfResource string
 // ************************************************************************** //
 //                 Service Bus Primary Connection String Update
 // ************************************************************************** //
-module azServiceBusKeyVaultSecretDeployment 'keyVaultSecretServiceBus.bicep' = if (keyVaultSecretResourceType == 'Microsoft.ServiceBus/Namespaces/AuthorizationRules') {
+module azServiceBusKeyVaultSecretDeployment 'key-vault-secret-service-bus-namespace.bicep' = if (keyVaultSecretResourceType == 'Microsoft.ServiceBus/Namespaces/AuthorizationRules') {
   name: 'kv-secret-sb-${guid('${keyVaultSecretName}/Microsoft.ServiceBus/namespaces/authorizationRules')}'
   scope: resourceGroup()
   params: {
@@ -45,7 +45,7 @@ module azServiceBusKeyVaultSecretDeployment 'keyVaultSecretServiceBus.bicep' = i
 // ************************************************************************** //
 //                 Storage Account Primary Connection String Update
 // ************************************************************************** //
-module azStorageAccountKeyVaultSecretDeployment 'keyVaultSecretStorage.bicep' = if (keyVaultSecretResourceType == 'Microsoft.Storage/StorageAccounts') {
+module azStorageAccountKeyVaultSecretDeployment 'key-vault-secret-storage-account.bicep' = if (keyVaultSecretResourceType == 'Microsoft.Storage/StorageAccounts') {
   name: 'kv-secret-stg-${guid('${keyVaultSecretName}/Microsoft.Storage/storageAccounts')}'
   scope: resourceGroup()
   params: {
@@ -61,7 +61,7 @@ module azStorageAccountKeyVaultSecretDeployment 'keyVaultSecretStorage.bicep' = 
 // ************************************************************************** //
 //              Document Db Primary Connection String & Key Update
 // ************************************************************************** //
-module azDocumentDbKeyVaultSecretDeployment 'keyVaultSecretCosmos.bicep' = if (keyVaultSecretResourceType == 'Microsoft.DocumentDB/DatabaseAccounts') {
+module azDocumentDbKeyVaultSecretDeployment 'key-vault-secret-cosmos.bicep' = if (keyVaultSecretResourceType == 'Microsoft.DocumentDB/DatabaseAccounts') {
   name: 'kv-secret-cosmos-${guid('${keyVaultSecretName}/Microsoft.DocumentDB/databaseAccounts')}'
   scope: resourceGroup()
   params: {
@@ -77,7 +77,7 @@ module azDocumentDbKeyVaultSecretDeployment 'keyVaultSecretCosmos.bicep' = if (k
 // ************************************************************************** //
 //                       Event Grid Domain Key Update
 // ************************************************************************** //
-module azEventGridKeyVaultSecretDeployment 'keyVaultSecretEventGrid.bicep' = if (keyVaultSecretResourceType == 'Microsoft.EventGrid/Domains') {
+module azEventGridKeyVaultSecretDeployment 'key-vault-secret-event-grid.bicep' = if (keyVaultSecretResourceType == 'Microsoft.EventGrid/Domains') {
   name: 'kv-secret-egd-${guid('${keyVaultSecretName}/Microsoft.EventGrid/domains')}'
   scope: resourceGroup()
   params: {
@@ -93,7 +93,7 @@ module azEventGridKeyVaultSecretDeployment 'keyVaultSecretEventGrid.bicep' = if 
 // ************************************************************************** //
 //                       Event Hub Namespace Key Update
 // ************************************************************************** //
-module azEventHubKeyVaultSecretDeployment 'keyVaultSecretEventHub.bicep' = if (keyVaultSecretResourceType == 'Microsoft.EventHub/Namespaces/AuthorizationRules') {
+module azEventHubKeyVaultSecretDeployment 'key-vault-secret-event-hub.bicep' = if (keyVaultSecretResourceType == 'Microsoft.EventHub/Namespaces/AuthorizationRules') {
   name: 'kv-secret-ehn-${guid('${keyVaultSecretName}/Microsoft.EventHub/namespaces/authorizationRules')}'
   scope: resourceGroup()
   params: {
@@ -109,7 +109,7 @@ module azEventHubKeyVaultSecretDeployment 'keyVaultSecretEventHub.bicep' = if (k
 // ************************************************************************** //
 //                       Notification Hub Key Update
 // ************************************************************************** //
-module azNotificationHubKeyVaultSecretDeployment 'keyVaultSecretNotificationHubNamespaceHub.bicep' = if (keyVaultSecretResourceType == 'Microsoft.NotificationHubs/Namespaces/NotificationHubs/AuthorizationRules') {
+module azNotificationHubKeyVaultSecretDeployment 'key-vault-secret-notification-hub-namespace-hub.bicep' = if (keyVaultSecretResourceType == 'Microsoft.NotificationHubs/Namespaces/NotificationHubs/AuthorizationRules') {
   name: 'kv-secret-nhnh-${guid('${keyVaultSecretName}/Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules')}'
   scope: resourceGroup()
   params: {
@@ -125,7 +125,7 @@ module azNotificationHubKeyVaultSecretDeployment 'keyVaultSecretNotificationHubN
 // ************************************************************************** //
 //                       Notificaiton Hub Namespace Key Update
 // ************************************************************************** //
-module azNotificationNamespaceKeyVaultSecretDeployment 'keyVaultSecretNotificationHubNamespace.bicep' = if (keyVaultSecretResourceType == 'Microsoft.NotificationHubs/Namespaces/AuthorizationRules') {
+module azNotificationNamespaceKeyVaultSecretDeployment 'key-vault-secret-notification-hub-namespace.bicep' = if (keyVaultSecretResourceType == 'Microsoft.NotificationHubs/Namespaces/AuthorizationRules') {
   name: 'kv-secret-nhn-${guid('${keyVaultSecretName}/Microsoft.NotificationHubs/namespaces/authorizationRules')}'
   scope: resourceGroup()
   params: {
@@ -142,7 +142,7 @@ module azNotificationNamespaceKeyVaultSecretDeployment 'keyVaultSecretNotificati
 // ************************************************************************** //
 //                       App Insights Instrument Key Update
 // ************************************************************************** //
-module azAppInsightsKeyVaultSecretDeployment 'keyVaultSecretAppInsights.bicep' = if (keyVaultSecretResourceType == 'Microsoft.Insights/Components') {
+module azAppInsightsKeyVaultSecretDeployment 'key-vault-secret-app-insights.bicep' = if (keyVaultSecretResourceType == 'Microsoft.Insights/Components') {
   name: 'kv-secret-appi-${guid('${keyVaultSecretName}/Microsoft.Insights/components')}'
   scope: resourceGroup()
   params: {
