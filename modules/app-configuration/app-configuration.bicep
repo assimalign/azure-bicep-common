@@ -79,7 +79,7 @@ module appConfigKeys 'app-configuration-key.bicep' = [for key in appConfiguratio
 }]
 
 // 2. Deploys a private endpoint, if applicable, for an instance of Azure App Configuration
-module appConfigPrivateEndpoint '../private-endpoint/privateEndpoint.bicep' = if (!empty(appConfigurationPrivateEndpoint)) {
+module appConfigPrivateEndpoint '../private-endpoint/private-endpoint.bicep' = if (!empty(appConfigurationPrivateEndpoint)) {
   name: !empty(appConfigurationPrivateEndpoint) ? toLower('appc-private-ep-${guid('${appConfig.id}/${appConfigurationPrivateEndpoint.privateEndpointName}')}') : 'no-app-cfg-pri-endp-to-deploy'
   scope: resourceGroup()
   params: {

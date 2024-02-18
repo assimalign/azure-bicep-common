@@ -6,6 +6,7 @@ trigger:
   paths: 
     include:
         - modules/cosmos
+        - modules/private-endpoint # dependency
 pool:
   vmImage: windows-latest
 

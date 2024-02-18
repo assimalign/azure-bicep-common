@@ -6,6 +6,7 @@ trigger:
   paths: 
     include:
         - modules/cognitive-search
+        - modules/private-endpoint # dependency
 pool:
   vmImage: windows-latest
 
@@ -28,5 +29,5 @@ steps:
       -storageAccountContainerName json
       -containerRegistryName $(azure-arc)
       -containerRegistryResourceGroup $(azure-arc-rg)
-      -moduleName acognitive-search
+      -moduleName cognitive-search
     
