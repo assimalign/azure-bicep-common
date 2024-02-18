@@ -76,25 +76,25 @@ var authSettingAudiences = [for audience in authSettingsAudienceValues: replace(
 
 // 1. Get the existing App Service Plan to attach to the 
 // Note: All web service (Function & Web Apps) have App Service Plans even if it is consumption Y1 Plans
-resource azAppServicePlanResource 'Microsoft.Web/serverfarms@2022-03-01' existing = {
+resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' existing = {
   name: replace(replace(appServiceSlotPlanName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(appServiceSlotPlanResourceGroup, '@environment', environment), '@region', region))
 }
 
 // 2. Get existing app storage account resource
-resource azAppServiceStorageResource 'Microsoft.Storage/storageAccounts@2021-09-01' existing = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
   name: replace(replace(appServiceSlotStorageAccountName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(appServiceSlotStorageAccountResourceGroup, '@environment', environment), '@region', region))
 }
 
 // 3. Get existing app insights 
-resource azAppServiceInsightsResource 'Microsoft.Insights/components@2020-02-02' existing = {
+resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: replace(replace(appServiceSlotInsightsName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(appServiceSlotInsightsResourceGroup, '@environment', environment), '@region', region))
 }
 
 // 4.1 Deploy Function App, if applicable
-resource azAppServiceSlotDeployment 'Microsoft.Web/sites/slots@2022-03-01' = {
+resource appServiceSlot 'Microsoft.Web/sites/slots@2023-01-01' = {
   name: replace(replace('${appServiceName}/${appServiceSlotName}', '@environment', environment), '@region', region)
   location: appServiceSlotLocation
   kind: appServiceSlotType
@@ -102,7 +102,7 @@ resource azAppServiceSlotDeployment 'Microsoft.Web/sites/slots@2022-03-01' = {
     type: appServiceSlotMsiEnabled == true ? 'SystemAssigned' : 'None'
   }
   properties: {
-    serverFarmId: azAppServicePlanResource.id
+    serverFarmId: appServicePlan.id
     httpsOnly: contains(appServiceSlotSiteConfigs, 'webSettings') && contains(appServiceSlotSiteConfigs.webSettings, 'httpsOnly') ? appServiceSlotSiteConfigs.webSettings.httpsOnly : false
     clientAffinityEnabled: false
     siteConfig: {
@@ -110,15 +110,15 @@ resource azAppServiceSlotDeployment 'Microsoft.Web/sites/slots@2022-03-01' = {
       appSettings: union([
           {
             name: 'AzureWebJobsStorage'
-            value: 'DefaultEndpointsProtocol=https;AccountName=${azAppServiceStorageResource.name};AccountKey=${listKeys('${azAppServiceStorageResource.id}', '${azAppServiceStorageResource.apiVersion}').keys[0].value};EndpointSuffix=core.windows.net'
+            value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${listKeys('${storageAccount.id}', '${storageAccount.apiVersion}').keys[0].value};EndpointSuffix=core.windows.net'
           }
           {
             name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-            value: azAppServiceInsightsResource.properties.InstrumentationKey
+            value: appInsights.properties.InstrumentationKey
           }
           {
             name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-            value: azAppServiceInsightsResource.properties.ConnectionString
+            value: appInsights.properties.ConnectionString
           }
         ], siteSettings)
     }
@@ -238,8 +238,8 @@ resource azAppServiceSlotDeployment 'Microsoft.Web/sites/slots@2022-03-01' = {
 }
 
 // 5. Configure Custom Function Settings (Will use this to disable functions in slots such as: Service Bus Listeners, Timers, etc.,)
-module azAppServiceFunctionSlotFunctionsDeployment 'appServiceSlotFunction.bicep' = [for function in appServiceSlotFunctions: if (!empty(appServiceSlotFunctions) && (appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux')) {
-  name: !empty(appServiceSlotFunctions) && (appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux') ? toLower('az-app-slot-func-${guid('${appServiceName}/${appServiceSlotName}/${function.name}')}') : 'no-func-app/no-function-app-slot-functions-to-deploy'
+module azAppServiceFunctionSlotFunctionsDeployment 'app-service-slot-function.bicep' = [for function in appServiceSlotFunctions: if (!empty(appServiceSlotFunctions) && (appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux')) {
+  name: !empty(appServiceSlotFunctions) && (appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux') ? toLower('app-slot-func-${guid('${appServiceName}/${appServiceSlotName}/${function.name}')}') : 'no-func-app/no-function-app-slot-functions-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -250,13 +250,13 @@ module azAppServiceFunctionSlotFunctionsDeployment 'appServiceSlotFunction.bicep
     appSlotFunctionIsDiabled: function.isEnabled
   }
   dependsOn: [
-    azAppServiceSlotDeployment
+    appServiceSlot
   ]
 }]
 
 // 7. Assignment RBAC Roles, if any, to App Service Slot Service Principal  
 module azAppServiceSlotFunctionRoleAssignment '../rbac/rbac.bicep' = [for appSlotRoleAssignment in appServiceSlotMsiRoleAssignments: if (appServiceSlotMsiEnabled == true && !empty(appServiceSlotMsiRoleAssignments)) {
-  name: 'az-app-service-slot-rbac-${guid('${appServiceName}-${appServiceSlotName}-${appSlotRoleAssignment.resourceRoleName}')}'
+  name: 'app-slot-rbac-${guid('${appServiceName}-${appServiceSlotName}-${appSlotRoleAssignment.resourceRoleName}')}'
   scope: resourceGroup(replace(replace(appSlotRoleAssignment.resourceGroupToScopeRoleAssignment, '@environment', environment), '@region', region))
   params: {
     region: region
@@ -266,9 +266,9 @@ module azAppServiceSlotFunctionRoleAssignment '../rbac/rbac.bicep' = [for appSlo
     resourceGroupToScopeRoleAssignment: appSlotRoleAssignment.resourceGroupToScopeRoleAssignment
     resourceRoleAssignmentScope: appSlotRoleAssignment.resourceRoleAssignmentScope
     resourceTypeAssigningRole: appSlotRoleAssignment.resourceTypeAssigningRole
-    resourcePrincipalIdReceivingRole: azAppServiceSlotDeployment.identity.principalId
+    resourcePrincipalIdReceivingRole: appServiceSlot.identity.principalId
   }
 }]
 
 // 8. Return Deployment Output
-output appServiceSlot object = azAppServiceSlotDeployment
+output appServiceSlot object = appServiceSlot

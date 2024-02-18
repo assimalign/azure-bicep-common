@@ -32,7 +32,7 @@ resource cosmosAccountGraphDatabase 'Microsoft.DocumentDB/databaseAccounts/greml
 }
 
 // 2. Deploye Document DB Database Containers
-module cosmosAccountGraphDatabaseContainer 'cosmosAccountGraphDatabaseContainer.bicep' = [for container in cosmosAccountDatabaseContainers: if(!empty(container)) {
+module cosmosAccountGraphDatabaseContainer 'cosmos-account-graph-database-container.bicep' = [for container in cosmosAccountDatabaseContainers: if(!empty(container)) {
   name: !empty(cosmosAccountDatabaseContainers) ? toLower('az-docdb-container-${guid('${cosmosAccountGraphDatabase.id}/${container.cosmosAccountDatabaseContainerName}')}') : 'no-dbdocument-containers-to-deploy'
   scope: resourceGroup()
   params: {

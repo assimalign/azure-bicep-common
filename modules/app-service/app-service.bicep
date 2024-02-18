@@ -78,25 +78,25 @@ var authSettingAudiences = [for audience in authSettingsAudienceValues: replace(
 
 // 1. Get the existing App Service Plan to attach to the 
 // Note: All web service (Function & Web Apps) have App Service Plans even if it is consumption Y1 Plans
-resource azAppServicePlanResource 'Microsoft.Web/serverfarms@2022-03-01' existing = {
+resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' existing = {
   name: replace(replace(appServicePlanName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(appServicePlanResourceGroup, '@environment', environment), '@region', region))
 }
 
 // 2. Get existing app storage account resource
-resource azAppServiceStorageResource 'Microsoft.Storage/storageAccounts@2021-09-01' existing = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
   name: replace(replace(appServiceStorageAccountName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(appServiceStorageAccountResourceGroup, '@environment', environment), '@region', region))
 }
 
 // 3. Get existing app insights 
-resource azAppServiceInsightsResource 'Microsoft.Insights/components@2020-02-02' existing = {
+resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: replace(replace(appServiceAppInsightsName, '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(appServiceAppInsightsResourceGroup, '@environment', environment), '@region', region))
 }
 
 // 4.1 Deploy Function App, if applicable
-resource azAppServiceDeployment 'Microsoft.Web/sites@2022-09-01' = {
+resource appService 'Microsoft.Web/sites@2023-01-01' = {
   name: replace(replace(appServiceName, '@environment', environment), '@region', region)
   location: appServiceLocation
   kind: appServiceType
@@ -106,7 +106,7 @@ resource azAppServiceDeployment 'Microsoft.Web/sites@2022-09-01' = {
   properties: {
     vnetRouteAllEnabled: contains(appServiceSiteConfigs, 'virtualNetworkSettings') && contains(appServiceSiteConfigs.virtualNetworkSettings, 'routeAllOutboundTraffic') ? appServiceSiteConfigs.virtualNetworkSettings.routeAllOutboundTraffic : false
     virtualNetworkSubnetId: contains(appServiceSiteConfigs, 'virtualNetworkSettings') ? replace(replace(resourceId(appServiceSiteConfigs.virtualNetworkSettings.virtualNetworkResourceGroup, 'Microsoft.Network/VirtualNetworks/subnets', appServiceSiteConfigs.virtualNetworkSettings.virtualNetworkName, appServiceSiteConfigs.virtualNetworkSettings.virtualNetworkSubnetName), '@environment', environment), '@region', region) : null
-    serverFarmId: azAppServicePlanResource.id
+    serverFarmId: appServicePlan.id
     clientAffinityEnabled: false
     httpsOnly: contains(appServiceSiteConfigs, 'webSettings') && contains(appServiceSiteConfigs.webSettings, 'httpsOnly') ? appServiceSiteConfigs.webSettings.httpsOnly : false
     // If there are slots to be deployed then let's have the slots override the site settings
@@ -114,15 +114,15 @@ resource azAppServiceDeployment 'Microsoft.Web/sites@2022-09-01' = {
       appSettings: union([
           {
             name: 'AzureWebJobsStorage'
-            value: 'DefaultEndpointsProtocol=https;AccountName=${azAppServiceStorageResource.name};AccountKey=${listKeys('${azAppServiceStorageResource.id}', '${azAppServiceStorageResource.apiVersion}').keys[0].value};EndpointSuffix=core.windows.net'
+            value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${listKeys('${storageAccount.id}', '${storageAccount.apiVersion}').keys[0].value};EndpointSuffix=core.windows.net'
           }
           {
             name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-            value: azAppServiceInsightsResource.properties.InstrumentationKey
+            value: appInsights.properties.InstrumentationKey
           }
           {
             name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-            value: azAppServiceInsightsResource.properties.ConnectionString
+            value: appInsights.properties.ConnectionString
           }
           {
             name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
@@ -252,8 +252,8 @@ resource azAppServiceDeployment 'Microsoft.Web/sites@2022-09-01' = {
 }
 
 // 7. Sets App Service Config Names only
-module azAppServiceSlotSpecificSettingsDeployment 'appServiceSlotConfigNames.bicep' = if (!empty(appServiceSlotsConfigNames)) {
-  name: 'az-app-slot-setting-${guid('${appServiceName}/slotConfigNames')}'
+module appServiceSlotConfigNames 'app-service-slot-config-names.bicep' = if (!empty(appServiceSlotsConfigNames)) {
+  name: 'app-slot-setting-${guid('${appServiceName}/slotConfigNames')}'
   scope: resourceGroup()
   params: {
     region: region
@@ -264,13 +264,13 @@ module azAppServiceSlotSpecificSettingsDeployment 'appServiceSlotConfigNames.bic
     appSlotAzureStorageConfigNames: appServiceSlotsConfigNames.storageAccountSettingNames
   }
   dependsOn: [
-    azAppServiceDeployment
+    appService
   ]
 }
 
 // 8. Deploy app slots
-module azAppServiceSlotDeployment 'appServiceSlot.bicep' = [for slot in appServiceSlots: if (!empty(appServiceSlots)) {
-  name: !empty(appServiceSlots) ? 'az-app-service-slot-${guid('${appServiceName}/${slot.appServiceSlotName}')}' : 'no-app-service-slots-to-deploy'
+module appServiceSlot 'app-service-slot.bicep' = [for slot in appServiceSlots: if (!empty(appServiceSlots)) {
+  name: !empty(appServiceSlots) ? 'app-slot-${guid('${appServiceName}/${slot.appServiceSlotName}')}' : 'no-app-service-slots-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
@@ -292,13 +292,13 @@ module azAppServiceSlotDeployment 'appServiceSlot.bicep' = [for slot in appServi
     appServiceSlotTags: appServiceTags
   }
   dependsOn: [
-    azAppServiceSlotSpecificSettingsDeployment
+    appServiceSlotConfigNames
   ]
 }]
 
 // 9.  Assignment RBAC Roles, if any, to App Service Slot Service Principal  
-module azAppServiceRoleAssignment '../rbac/rbac.bicep' = [for appRoleAssignment in appServiceMsiRoleAssignments: if (appServiceMsiEnabled == true && !empty(appServiceMsiRoleAssignments)) {
-  name: 'app-service-rbac-${guid('${appServiceName}-${appRoleAssignment.resourceRoleName}')}'
+module rbac '../rbac/rbac.bicep' = [for appRoleAssignment in appServiceMsiRoleAssignments: if (appServiceMsiEnabled == true && !empty(appServiceMsiRoleAssignments)) {
+  name: 'app-rbac-${guid('${appServiceName}-${appRoleAssignment.resourceRoleName}')}'
   scope: resourceGroup(replace(replace(appRoleAssignment.resourceGroupToScopeRoleAssignment, '@environment', environment), '@region', region))
   params: {
     region: region
@@ -308,9 +308,9 @@ module azAppServiceRoleAssignment '../rbac/rbac.bicep' = [for appRoleAssignment 
     resourceGroupToScopeRoleAssignment: appRoleAssignment.resourceGroupToScopeRoleAssignment
     resourceRoleAssignmentScope: appRoleAssignment.resourceRoleAssignmentScope
     resourceTypeAssigningRole: appRoleAssignment.resourceTypeAssigningRole
-    resourcePrincipalIdReceivingRole: azAppServiceDeployment.identity.principalId
+    resourcePrincipalIdReceivingRole: appService.identity.principalId
   }
 }]
 
 // 10. Return Deployment Output
-output appService object = azAppServiceDeployment
+output appService object = appService

@@ -110,7 +110,7 @@ resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2023-11-15' = {
 }
 
 // 2. Deploy Cosmos DB Document Database, if applicable
-module cosmosAccountDocumentDatabase 'cosmosAccountDocumentDatabase.bicep' = [for database in cosmosAccountDatabases: if (!empty(cosmosAccountDatabases) && cosmosAccountType == 'EnableDocument') {
+module cosmosAccountDocumentDatabase 'cosmos-account-document-database.bicep' = [for database in cosmosAccountDatabases: if (!empty(cosmosAccountDatabases) && cosmosAccountType == 'EnableDocument') {
   name: !empty(cosmosAccountDatabases) ? toLower('cdb-docdb-${guid('${cosmosAccount.id}/${database.cosmosAccountDatabaseName}')}') : 'no-cosmosdb-document-databases-to-deploy'
   params: {
     region: region
@@ -122,7 +122,7 @@ module cosmosAccountDocumentDatabase 'cosmosAccountDocumentDatabase.bicep' = [fo
 }]
 
 // 3. Deploy Cosmos DB Graph Database, if applicable
-module cosmosAccountGraphDatabase 'cosmosAccountGraphDatabase.bicep' = [for database in cosmosAccountDatabases: if (!empty(cosmosAccountDatabases) && cosmosAccountType == 'EnableGremlin') {
+module cosmosAccountGraphDatabase 'cosmos-account-graph-database.bicep' = [for database in cosmosAccountDatabases: if (!empty(cosmosAccountDatabases) && cosmosAccountType == 'EnableGremlin') {
   name: !empty(cosmosAccountDatabases) ? toLower('az-cosmosdb-graphdb-${guid('${cosmosAccount.id}/${database.cosmosAccountDatabaseName}')}') : 'no-cosmosdb-graph-databases-to-deploy'
   params: {
     region: region
@@ -134,7 +134,7 @@ module cosmosAccountGraphDatabase 'cosmosAccountGraphDatabase.bicep' = [for data
 }]
 
 // 4. Deploys a private endpoint, if applicable, for an instance of Azure Document DB Account
-module cosmosAccountPrivateEp '../private-endpoint/privateEndpoint.bicep' = if (!empty(cosmosAccountPrivateEndpoint)) {
+module cosmosAccountPrivateEp '../private-endpoint/private-endpoint.bicep' = if (!empty(cosmosAccountPrivateEndpoint)) {
   name: !empty(cosmosAccountPrivateEndpoint) ? toLower('cdb-private-ep-${guid('${cosmosAccount.id}/${cosmosAccountPrivateEndpoint.privateEndpointName}')}') : 'no-cosmosdb-priv-endp-to-deploy'
   params: {
     region: region

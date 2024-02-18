@@ -32,7 +32,7 @@ resource cosmosAccountDocumentDatabase 'Microsoft.DocumentDB/databaseAccounts/sq
 }
 
 // 2. Deploye Document DB Database Containers
-module cosmosAccountDocumentDatabaseContainer 'cosmosAccountDocumentDatabaseContainer.bicep' = [for container in cosmosAccountDatabaseContainers: if(!empty(container)) {
+module cosmosAccountDocumentDatabaseContainer 'cosmos-account-document-database-container.bicep' = [for container in cosmosAccountDatabaseContainers: if(!empty(container)) {
   name: !empty(cosmosAccountDatabaseContainers) ? toLower('az-docdb-container-${guid('${cosmosAccountDocumentDatabase.id}/${container.cosmosAccountDatabaseContainerName}')}') : 'no-dbdocument-containers-to-deploy'
   scope: resourceGroup()
   params: {

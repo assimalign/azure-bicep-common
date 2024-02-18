@@ -86,7 +86,7 @@ module cognitiveSearchRoleAssignment '../rbac/rbac.bicep' = [for appRoleAssignme
 }]
 
 // 2. Deploys a private endpoint, if applicable, for an instance of Azure Cognitive Search
-module azAppConfigurationPrivateEndpointDeployment '../private-endpoint/privateEndpoint.bicep' = if (!empty(cognitiveSearchPrivateEndpoint)) {
+module cognitiveSearchPrivateEp '../private-endpoint/private-endpoint.bicep' = if (!empty(cognitiveSearchPrivateEndpoint)) {
   name: !empty(cognitiveSearchPrivateEndpoint) ? toLower('srch-private-ep-${guid('${cognitiveSearch.id}/${cognitiveSearchPrivateEndpoint.privateEndpointName}')}') : 'no-app-cfg-pri-endp-to-deploy'
   scope: resourceGroup()
   params: {
