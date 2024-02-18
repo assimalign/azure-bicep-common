@@ -35,8 +35,8 @@ resource azDataShareAccountDeployment 'Microsoft.DataShare/accounts@2021-08-01' 
   })
 }
 
-module azDataShareAccountShareDeployment 'az.data.share.account.share.bicep' = [for (share, index) in dataShareAccountShares: if (!empty(dataShareAccountShares)) {
-  name: 'az-datashare-${guid('${azDataShareAccountDeployment.id}-${index}')}'
+module azDataShareAccountShareDeployment 'data-share-account-share.bicep' = [for (share, index) in dataShareAccountShares: if (!empty(dataShareAccountShares)) {
+  name: 'dsh-act-share-${guid('${azDataShareAccountDeployment.id}-${index}')}'
   params: {
     region: region
     environment: environment

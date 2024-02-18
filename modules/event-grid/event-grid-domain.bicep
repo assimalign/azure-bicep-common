@@ -53,8 +53,8 @@ resource azEventGridDomainDeployment 'Microsoft.EventGrid/domains@2022-06-15' = 
 }
 
 // 2. Deploy Event Grid Topic & Topic Subscriptions
-module azEventGridDomainTopicsDeployment 'eventGridDomainTopic.bicep' = [for (topic, index) in eventGridDomainTopics: if (!empty(topic)) {
-  name: !empty(eventGridDomainTopics) ? toLower('az-egd-topic-${guid('${azEventGridDomainDeployment.id}/${topic.eventGridDomainTopicName}')}') : 'no-egd-topics-to-deploy'
+module azEventGridDomainTopicsDeployment 'event-grid-domain-topic.bicep' = [for (topic, index) in eventGridDomainTopics: if (!empty(topic)) {
+  name: !empty(eventGridDomainTopics) ? toLower('egd-topic-${guid('${azEventGridDomainDeployment.id}/${topic.eventGridDomainTopicName}')}') : 'no-egd-topics-to-deploy'
   params: {
     region: region
     environment: environment
@@ -68,8 +68,8 @@ module azEventGridDomainTopicsDeployment 'eventGridDomainTopic.bicep' = [for (to
 }]
 
 // 4. Deploy Private Endpoint if applicable
-module azEventGridPrivateEndpointDeployment '../private-endpoint/privateEndpoint.bicep' = if (!empty(eventGridDomainPrivateEndpoint)) {
-  name: !empty(eventGridDomainPrivateEndpoint) ? toLower('az-egd-priv-endpoint-${guid('${azEventGridDomainDeployment.id}/${eventGridDomainPrivateEndpoint.privateEndpointName}')}') : 'no-egd-private-endpoint-to-deploy'
+module azEventGridPrivateEndpointDeployment '../private-endpoint/private-endpoint.bicep' = if (!empty(eventGridDomainPrivateEndpoint)) {
+  name: !empty(eventGridDomainPrivateEndpoint) ? toLower('egd-private-ep-${guid('${azEventGridDomainDeployment.id}/${eventGridDomainPrivateEndpoint.privateEndpointName}')}') : 'no-egd-private-endpoint-to-deploy'
   params: {
     region: region
     environment: environment

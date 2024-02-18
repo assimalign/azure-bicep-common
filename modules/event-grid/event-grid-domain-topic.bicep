@@ -26,8 +26,8 @@ resource azEventGridTopicDomainDeployment 'Microsoft.EventGrid/domains/topics@20
 }
 
 // 2. Deploy the Event Grid Domain Topic Subscriptions, if applicable
-module azEventGridDomainTopicSubscriptionsDeployment 'eventGridDomainTopicSubscription.bicep' = [for (subscription, index) in eventGridDomainTopicSubscriptions: if (!empty(subscription)) {
-  name: !empty(eventGridDomainTopicSubscriptions) ? toLower('az-egd-topic-sub-${guid('${azEventGridTopicDomainDeployment.id}/${subscription.eventGridDomainTopicSubscriptionName}')}') : 'no-egd-subscription-to-deploy'
+module azEventGridDomainTopicSubscriptionsDeployment 'event-grid-domain-topic-subscription.bicep' = [for (subscription, index) in eventGridDomainTopicSubscriptions: if (!empty(subscription)) {
+  name: !empty(eventGridDomainTopicSubscriptions) ? toLower('egd-topic-sub-${guid('${azEventGridTopicDomainDeployment.id}/${subscription.eventGridDomainTopicSubscriptionName}')}') : 'no-egd-subscription-to-deploy'
   scope: resourceGroup()
   params: {
     region: region

@@ -81,7 +81,7 @@ resource azEventGridSystemTopicDeployment 'Microsoft.EventGrid/systemTopics@2022
 }
 
 // 2. Deploy the Event Grid Domain Topic Subscriptions, if applicable
-module azEventGridSystemTopicSubscriptionsDeployment 'eventGridSystemTopicSubscription.bicep' = [for (subscription, index) in eventGridSystemTopicSubscriptions: if (!empty(subscription)) {
+module azEventGridSystemTopicSubscriptionsDeployment 'event-grid-system-topic-subscription.bicep' = [for (subscription, index) in eventGridSystemTopicSubscriptions: if (!empty(subscription)) {
   name: !empty(eventGridSystemTopicSubscriptions) ? toLower('az-egs-topic-sub-${guid('${azEventGridSystemTopicDeployment.id}/${subscription.eventGridSystemTopicSubscriptionName}')}') : 'no-egs-subscription-to-deploy'
   scope: resourceGroup()
   params: {

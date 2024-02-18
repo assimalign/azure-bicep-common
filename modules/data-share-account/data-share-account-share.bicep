@@ -42,8 +42,8 @@ resource azDataShareAccountShareDeployment 'Microsoft.DataShare/accounts/shares@
   }
 }
 
-module azDataShareDatasetDeployment 'az.data.share.account.share.dataset.bicep' = [for (dataset, index) in dataShareDatasets: if (!empty(dataShareDatasets)) {
-  name: 'az-datashare-${guid('${azDataShareAccountShareDeployment.id}-${index}')}'
+module azDataShareDatasetDeployment 'data-share-account-share-dataset.bicep' = [for (dataset, index) in dataShareDatasets: if (!empty(dataShareDatasets)) {
+  name: 'dsh-act-share-dst-${guid('${azDataShareAccountShareDeployment.id}-${index}')}'
   params: {
     region: region
     environment: environment

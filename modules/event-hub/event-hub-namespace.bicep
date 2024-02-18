@@ -50,28 +50,15 @@ resource azEventHubNamespaceDeployment 'Microsoft.EventHub/namespaces@2021-01-01
   identity: {
     type: eventHubNamespaceEnableMsi == true && !empty(eventHubNamespaceSku) ? 'SystemAssigned' : 'None'
   }
-  sku: any(environment == 'dev' && !empty(eventHubNamespaceSku) ? {
-    name: eventHubNamespaceSku.dev
-    tier: eventHubNamespaceSku.dev
-    capacity: eventHubNamespaceCapacity
-  } : any(environment == 'qa' && !empty(eventHubNamespaceSku) ? {
-    name: eventHubNamespaceSku.dev
-    tier: eventHubNamespaceSku.dev
-    capacity: eventHubNamespaceCapacity
-  } : any(environment == 'uat' && !empty(eventHubNamespaceSku) ? {
-    name: eventHubNamespaceSku.dev
-    tier: eventHubNamespaceSku.dev
-    capacity: eventHubNamespaceCapacity
-  } : any(environment == 'prd' && !empty(eventHubNamespaceSku) ? {
-    name: eventHubNamespaceSku.prd
-    tier: eventHubNamespaceSku.prd
+  sku: contains(eventHubNamespaceSku, environment) ? {
+    name: eventHubNamespaceSku[environment]
+    tier: eventHubNamespaceSku[environment]
     capacity: eventHubNamespaceCapacity
   } : {
     name: eventHubNamespaceSku.default
     tier: eventHubNamespaceSku.default
     capacity: 1
-  }))))
-
+  }
   resource azEventHubNamespaceAuthorizationRulesDeployment 'AuthorizationRules' = [for (policy, index) in eventHubNamespacePolicies: if (!empty(eventHubNamespacePolicies)) {
     name: !empty(eventHubNamespacePolicies) ? policy.policyName : 'no-policy-to-deploy'
     properties: {
@@ -79,15 +66,14 @@ resource azEventHubNamespaceDeployment 'Microsoft.EventHub/namespaces@2021-01-01
     }
   }]
   tags: union(eventHubNamespaceTags, {
-    region: empty(region) ? 'n/a' : region
-    environment: empty(environment) ? 'n/a' : environment
-  })
+      region: empty(region) ? 'n/a' : region
+      environment: empty(environment) ? 'n/a' : environment
+    })
 }
 
 // 2 Deploy individual Event Hubs under the Event Hub Namespace
-module azEventHubsDeployment 'eventHubNamespaceHub.bicep' = [for (hub, index) in eventHubNamespaceHubs: if (!empty(hub)) {
-  name: !empty(eventHubNamespaceHubs) ? toLower('az-ehn-hub-${guid('${azEventHubNamespaceDeployment.id}/${hub.eventHubNamespaceHubName}')}') : 'no-eh-to-deploy'
-  scope: resourceGroup()
+module azEventHubsDeployment 'event-hub-namespace-hub.bicep' = [for (hub, index) in eventHubNamespaceHubs: if (!empty(hub)) {
+  name: !empty(eventHubNamespaceHubs) ? toLower('ehn-hub-${guid('${azEventHubNamespaceDeployment.id}/${hub.eventHubNamespaceHubName}')}') : 'no-eh-to-deploy'
   params: {
     region: region
     environment: environment
