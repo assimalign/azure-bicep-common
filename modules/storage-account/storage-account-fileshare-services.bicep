@@ -55,7 +55,7 @@ resource storageAccountFileShareService 'Microsoft.Storage/storageAccounts/fileS
 }
 
 // 3. Deploy the File Share Service if applicable
-module storageAccountFileShares 'storageAccountFileshareServicesShares.bicep' = [for fileShare in storageAccountFileShareServiceFileShares: if (!empty(fileShare)) {
+module storageAccountFileShares 'storage-account-fileshare-services-share.bicep' = [for fileShare in storageAccountFileShareServiceFileShares: if (!empty(fileShare)) {
   name: !empty(storageAccountFileShareServiceFileShares) ? toLower('fs-share-${guid('${storageAccountFileShareService.id}/${fileShare.storageAccountFileShareName}')}') : 'no-fs-service-to-deploy'
   scope: resourceGroup()
   params: {
@@ -69,7 +69,7 @@ module storageAccountFileShares 'storageAccountFileshareServicesShares.bicep' = 
 }]
 
 // 4. Deploy Storage Account File Share Service Private Endpoint if applicable
-module storageFileShareServicePrivateEndpoint '../private-endpoint/privateEndpoint.bicep' = if (!empty(storageAccountFileShareServicePrivateEndpoint)) {
+module storageFileShareServicePrivateEndpoint '../private-endpoint/private-endpoint.bicep' = if (!empty(storageAccountFileShareServicePrivateEndpoint)) {
   name: !empty(storageAccountFileShareServicePrivateEndpoint) ? toLower('fs-share-priv-endpoint-${guid('${storageAccountFileShareService.id}/${storageAccountFileShareServicePrivateEndpoint.privateEndpointName}')}') : 'no-stg-fs-priv-endpoint'
   scope: resourceGroup()
   params: {

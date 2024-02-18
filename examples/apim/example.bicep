@@ -7,7 +7,7 @@ param apimGateway object
 module apim '../../modules/apim/apim.bicep' = {
   name: ''
   params: {
-    apimGatewayName: apimGateway.apimGatewayName
+    apimGatewayName: apimGateway!.apimGatewayName
     apimGatewayPublisher: apimGateway.apimGatewayPublisher
     apimGatewayPublisherEmail: apimGateway.apimGatewayPublisherEmail
     apimGatewaySku: apimGateway.apimGatewaySku

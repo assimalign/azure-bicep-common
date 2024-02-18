@@ -55,7 +55,7 @@ resource storageAccountQueueService 'Microsoft.Storage/storageAccounts/queueServ
 }
 
 // 3. Deploy any Queues Service queues if any
-module storageAccountQueues 'storageAccountQueueServicesQueues.bicep' = [for queue in storageAccountQueueServiceQueues: if (!empty(queue)) {
+module storageAccountQueues 'storage-account-queue-services-queue.bicep' = [for queue in storageAccountQueueServiceQueues: if (!empty(queue)) {
   name: !empty(storageAccountQueueServiceQueues) ? toLower('queues-${guid('${storageAccountQueueService.id}/${queue.storageAccountQueueName}')}') : 'no-queue-service-to-deploy'
   scope: resourceGroup()
   params: {
@@ -68,7 +68,7 @@ module storageAccountQueues 'storageAccountQueueServicesQueues.bicep' = [for que
 }]
 
 // 4. Deploy Storage Account Queue Service Private Endpoint if applicable
-module storageQueueServicePrivateEndpoint '../private-endpoint/privateEndpoint.bicep' = if (!empty(storageAccountQueueServicePrivateEndpoint)) {
+module storageQueueServicePrivateEndpoint '../private-endpoint/private-endpoint.bicep' = if (!empty(storageAccountQueueServicePrivateEndpoint)) {
   name: !empty(storageAccountQueueServicePrivateEndpoint) ? toLower('queue-priv-endpoint-${guid('${storageAccountQueueService.id}/${storageAccountQueueServicePrivateEndpoint.privateEndpointName}')}') : 'no-stg-queue-priv-endpoint'
   scope: resourceGroup()
   params: {

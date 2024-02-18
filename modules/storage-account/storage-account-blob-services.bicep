@@ -75,7 +75,7 @@ resource storageAccountBlobService 'Microsoft.Storage/storageAccounts/blobServic
 }
 
 // 3. Deploy any Blob Service Container if available
-module storageAccountBlobServiceContainer 'storageAccountBlobServicesContainer.bicep' = [for container in storageAccountBlobServiceContainers: if (!empty(container)) {
+module storageAccountBlobServiceContainer 'storage-account-blob-services-container.bicep' = [for container in storageAccountBlobServiceContainers: if (!empty(container)) {
   name: !empty(storageAccountBlobServiceContainers) ? toLower('blob-container-${guid('${storageAccountBlobService.id}/${container.storageAccountBlobContainerName}')}') : 'no-container-to-deploy'
   scope: resourceGroup()
   params: {
@@ -89,7 +89,7 @@ module storageAccountBlobServiceContainer 'storageAccountBlobServicesContainer.b
 }]
 
 // 4. Deploy Storage Account Blob Service Private Endpoint if applicable
-module storageBlobServicePrivateEndpoint '../private-endpoint/privateEndpoint.bicep' = if (!empty(storageAccountBlobServicePrivateEndpoint)) {
+module storageBlobServicePrivateEndpoint '../private-endpoint/private-endpoint.bicep' = if (!empty(storageAccountBlobServicePrivateEndpoint)) {
   name: !empty(storageAccountBlobServicePrivateEndpoint) ? toLower('blob-priv-endpoint-${guid('${storageAccountBlobService.id}/${storageAccountBlobServicePrivateEndpoint.privateEndpointName}')}') : 'no-stg-blob-priv-endpoint'
   scope: resourceGroup()
   params: {

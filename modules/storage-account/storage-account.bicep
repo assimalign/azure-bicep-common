@@ -128,7 +128,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
 }
 
 // 2. Deploy Azure Storage Blob Services
-module storageAccountBlobService 'storageAccountBlobServices.bicep' = if (!empty(storageAccountBlobServices) && (startsWith(storageAccountType, 'Storage') || startsWith(storageAccountType, 'Blob'))) {
+module storageAccountBlobService 'storage-account-blob-services.bicep' = if (!empty(storageAccountBlobServices) && (startsWith(storageAccountType, 'Storage') || startsWith(storageAccountType, 'Blob'))) {
   name: !empty(storageAccountBlobServices) ? toLower('blob-services-${guid('${storageAccount.id}/blob-service-deployment')}') : 'no-stg-blob-service-to-deploy'
   scope: resourceGroup()
   params: {
@@ -144,7 +144,7 @@ module storageAccountBlobService 'storageAccountBlobServices.bicep' = if (!empty
 }
 
 // 3. Deploy Azure File Share Services
-module storageAccountFileShareService 'storageAccountFileshareServices.bicep' = if (!empty(storageAccountFileShareServices) && (startsWith(storageAccountType, 'Storage') || startsWith(storageAccountType, 'FileStorage'))) {
+module storageAccountFileShareService 'storage-account-fileshare-services.bicep' = if (!empty(storageAccountFileShareServices) && (startsWith(storageAccountType, 'Storage') || startsWith(storageAccountType, 'FileStorage'))) {
   name: !empty(storageAccountFileShareServices) ? toLower('fileshare-services-${guid('${storageAccount.id}/file-share-service-deployment')}') : 'no-stg-fs-service-to-deploy'
   scope: resourceGroup()
   params: {
@@ -160,7 +160,7 @@ module storageAccountFileShareService 'storageAccountFileshareServices.bicep' = 
 }
 
 // 4. Deploy Azure Queue Services
-module storageAccountQueueService 'storageAccountQueueServices.bicep' = if (!empty(storageAccountQueueServices) && startsWith(storageAccountType, 'Storage')) {
+module storageAccountQueueService 'storage-account-queue-services.bicep' = if (!empty(storageAccountQueueServices) && startsWith(storageAccountType, 'Storage')) {
   name: !empty(storageAccountQueueServices) ? toLower('queue-services-${guid('${storageAccount.id}/queues-service-deployment')}') : 'no-stg-queues-service-to-deploy'
   scope: resourceGroup()
   params: {
@@ -176,7 +176,7 @@ module storageAccountQueueService 'storageAccountQueueServices.bicep' = if (!emp
 }
 
 // 5. Deploy Azure Queue Services
-module storageAccountTableService 'storageAccountTableServices.bicep' = if (!empty(storageAccountTableServices) && startsWith(storageAccountType, 'Storage')) {
+module storageAccountTableService 'storage-account-table-services.bicep' = if (!empty(storageAccountTableServices) && startsWith(storageAccountType, 'Storage')) {
   name: !empty(storageAccountTableServices) ? toLower('table-services-${guid('${storageAccount.id}/table-service-deployment')}') : 'no-stg-table-service-to-deploy'
   scope: resourceGroup()
   params: {

@@ -55,7 +55,7 @@ resource storageAccountTableService 'Microsoft.Storage/storageAccounts/tableServ
 }
 
 // 3. Deploy Storage Account Tables if applicable
-module storageAccountTableServiceTable 'storageAccountTableServicesTables.bicep' = [for table in storageAccountTableServiceTables: if (!empty(table)) {
+module storageAccountTableServiceTable 'storage-account-table-services-table.bicep' = [for table in storageAccountTableServiceTables: if (!empty(table)) {
   name: !empty(storageAccountTableServiceTables) ? toLower('table-${guid('${storageAccountTableService.id}/${table.storageAccountTableName}')}') : 'no-table-service-to-deploy'
   scope: resourceGroup()
   params: {
@@ -68,7 +68,7 @@ module storageAccountTableServiceTable 'storageAccountTableServicesTables.bicep'
 }]
 
 // 4. Deploy Storage Account Table Service Private Endpoint if applicable
-module storageTableServicePrivateEndpoint '../private-endpoint/privateEndpoint.bicep' = if (!empty(storageAccountTableServicePrivateEndpoint)) {
+module storageTableServicePrivateEndpoint '../private-endpoint/private-endpoint.bicep' = if (!empty(storageAccountTableServicePrivateEndpoint)) {
   name: !empty(storageAccountTableServicePrivateEndpoint) ? toLower('table-priv-endpoint-${guid('${storageAccountTableService.id}/${storageAccountTableServicePrivateEndpoint.privateEndpointName}')}') : 'no-stg-table-priv-endpoint'
   scope: resourceGroup()
   params: {

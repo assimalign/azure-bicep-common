@@ -1,17 +1,17 @@
-$root = 'https://dev.azure.com/'
+$prefix = '{pipeline prefix name}'
 $organization = '{org name}'
 $project = '{project name}'
 $pat = '{personal access token}'
+$root = 'https://dev.azure.com/'
+$connectionId = "1b8c1371-0faa-4808-b363-0c09f9aecbfb"
 $url = $root + $organization + '/' + $project + '/_apis/pipelines?api-version=7.1-preview.1'
 
 $bytes = [System.Text.Encoding]::UTF8.GetBytes($pat)
 $token = [System.Convert]::ToBase64String($bytes)
 
+Get-ChildItem '.\modules\*azure-pipelines.yml' -Recurse | ForEach-Object {
 
-Get-ChildItem '.\.azure\*.yml' | ForEach-Object {
-
-    $path = $_.Name
-    $name = 'aec-iac-bicep-' + $_.Name -replace 'az.', '' -replace '.yml', '' -replace '\.', '-'
+    $moduleName = ($_.DirectoryName -split '\\') | Select-Object -Last 1
     $response = Invoke-RestMethod `
         -Uri $url `
         -Method Post `
@@ -21,15 +21,15 @@ Get-ChildItem '.\.azure\*.yml' | ForEach-Object {
         } `
         -Body (@{
             name = $name
-            folder = "\aec-external-github"
+            folder = "\$prefix-external-github"
             configuration = @{
                 type = "yaml"
-                path = ".azure/$path"
+                path = "modules/$moduleName/azure-pipelines.yml"
                 repository = @{
                     fullName = "assimalign/azure-bicep-common"
                     type = "gitHub"
                     connection = @{
-                        id = "1b8c1371-0faa-4808-b363-0c09f9aecbfb"
+                        id = $connectionId
                     }
                 }
             }
