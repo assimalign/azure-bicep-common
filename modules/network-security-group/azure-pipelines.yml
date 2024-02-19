@@ -23,10 +23,10 @@ steps:
     ScriptType: "FilePath"
     ScriptPath: "deploy.ps1"
     ScriptArguments:
-      -storageAccountName $(azure-schema-stgact)
-      -storageAccountResourceGroup $(azure-schema-stgact-rg)
-      -storageAccountContainerName json
-      -containerRegistryName $(azure-arc)
-      -containerRegistryResourceGroup $(azure-arc-rg)
       -moduleName network-security-group
+      -storageAccountName $(storage-account)
+      -storageAccountContainerName $(storage-account-container)
+      -storageAccountResourceGroup $(storage-account-resource-group)
+      -containerRegistryName $(container-registry)
+      -containerRegistryResourceGroup $(container-registry-resource-group)
     

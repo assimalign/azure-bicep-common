@@ -23,7 +23,7 @@ steps:
     preferredAzurePowerShellVersion: "10.3.0"
     pwsh: true
     ScriptType: "FilePath"
-    ScriptPath: "modules.arc.push.ps1"
+    ScriptPath: "deploy.ps1"
     ScriptArguments:
       -moduleName local-network-gateway
       -storageAccountName $(storage-account)
