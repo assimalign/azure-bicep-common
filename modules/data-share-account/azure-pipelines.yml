@@ -10,23 +10,23 @@ pool:
   vmImage: windows-latest
 
 variables:
-  - group: bicep.release.variables
+  - group: bicep-module-variables
 
 steps:  
 - task: AzurePowerShell@5
   displayName: "Upcert Bicep Modules"
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   inputs:
-    azureSubscription: $(azure-devops-service-principal)
+    azureSubscription: $(service-principal)
     preferredAzurePowerShellVersion: "10.3.0"
     pwsh: true
     ScriptType: "FilePath"
     ScriptPath: "deploy.ps1"
     ScriptArguments:
-      -storageAccountName $(azure-schema-stgact)
-      -storageAccountResourceGroup $(azure-schema-stgact-rg)
-      -storageAccountContainerName json
-      -containerRegistryName $(azure-arc)
-      -containerRegistryResourceGroup $(azure-arc-rg)
       -moduleName data-share-account
+      -storageAccountName $(storage-account)
+      -storageAccountContainerName $(storage-account-conatiner)
+      -storageAccountResourceGroup $(storage-account-resource-group)
+      -containerRegistryName $(container-registry)
+      -containerRegistryResourceGroup $(container-registry-resource-group)
     
