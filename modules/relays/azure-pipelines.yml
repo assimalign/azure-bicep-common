@@ -27,7 +27,7 @@ steps:
     ScriptArguments:
       -moduleName relays
       -storageAccountName $(storage-account)
-      -storageAccountContainerName $(storage-account-conatiner)
+      -storageAccountContainerName $(storage-account-container)
       -storageAccountResourceGroup $(storage-account-resource-group)
       -containerRegistryName $(container-registry)
       -containerRegistryResourceGroup $(container-registry-resource-group)
