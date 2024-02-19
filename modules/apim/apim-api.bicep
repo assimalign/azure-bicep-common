@@ -78,7 +78,7 @@ resource apimApiPolicies 'Microsoft.ApiManagement/service/apis/policies@2022-08-
   }
 }
 
-module apimApiOperation 'apimApiOperation.bicep' = [for operation in apimGatewayApiOperations: if (!empty(apimGatewayApiOperations)) {
+module apimApiOperation 'apim-api-operation.bicep' = [for operation in apimGatewayApiOperations: if (!empty(apimGatewayApiOperations)) {
   name: 'apim-api-operation-${guid(replace(replace('${!empty(apimGatewayApiOperations) ? operation.apimGatewayApiOperationName : 'no-az-apim-operation'}', '', ''), '', ''))}'
   params: {
     region: region

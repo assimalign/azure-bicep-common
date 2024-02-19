@@ -20,7 +20,7 @@ param apimGatewayCertificateName string
 @description('Currently the module only supports certificate deployement via Key Vault. Key Vault id is required.')
 param apimGatewayCertificateKeyVaultReference string
 
-resource azApimGatewayCertificateDeployment 'Microsoft.ApiManagement/service/certificates@2021-12-01-preview' = {
+resource apimGatewayCertificate 'Microsoft.ApiManagement/service/certificates@2022-08-01' = {
   name: replace(replace('${apimGatewayName}/${apimGatewayCertificateName}', '@environment', environment), '@region', region)
   properties: {
     keyVault: {
@@ -29,4 +29,4 @@ resource azApimGatewayCertificateDeployment 'Microsoft.ApiManagement/service/cer
   }
 }
 
-output apimGatewayCertificate object = azApimGatewayCertificateDeployment
+output apimGatewayCertificate object = apimGatewayCertificate

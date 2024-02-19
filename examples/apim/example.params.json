@@ -1,5 +1,5 @@
 {
-    "$schema": "../../schemas/az/parameters.json",
+    "$schema": "../../modules/schema.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "apimGateway": {

@@ -11,6 +11,8 @@ The repository is meant to be a starting convention for any organization trying 
 - [Setup](#setup)
   - [Prerequisite](#prerequisite)
   - [Steps](#steps)
+- [Setup](#setup-1)
+  - [Prerequisites](#prerequisites)
 
 # Conventions
 
@@ -60,3 +62,20 @@ Below is a quick setup guid to get the repository imported and deployed into you
 4. Using the existing `azure-pipeline.yml` create a new build pipeline and run it
    - NOTE: The deployment can take up to an hour.
 
+
+
+
+
+
+# Setup
+
+## Prerequisites
+- Storage Account
+- Container Registry
+- DevOps Project
+- 
+
+1. Azure DevOps Service Connection
+2. Github Service Connection
+3. Create Storage Account
+4. Create Container Registry

@@ -36,7 +36,7 @@ Get-ChildItem "./modules/$moduleName" -Recurse -Include '*.bicep' | ForEach-Obje
         Publish-AzBicepModule -FilePath $moduleFilePath -Target $modulePath -DefaultProfile $azureContext -Force
 }
 
-
+# TODO - Need to Change this script to only update one schema at a time
 # Push/Update JSON Parameter Schemas
 $storageAccount = Get-AzStorageAccount `
     -ResourceGroupName $storageAccountResourceGroup `

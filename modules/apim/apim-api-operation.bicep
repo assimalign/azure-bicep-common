@@ -51,10 +51,10 @@ param apimGatewayApiOperationRequestHeaders array = []
 @description('')
 param apimGatewayApiOperationPolicy string = ''
 
-resource azApimApiOperationDeployment 'Microsoft.ApiManagement/service/apis/operations@2021-01-01-preview' = {
+resource azApimApiOperationDeployment 'Microsoft.ApiManagement/service/apis/operations@2022-08-01' = {
    name: replace(replace('${apimGatewayName}/${apimGatewayApiName}/${apimGatewayApiOperationName}', '@environment', environment), '@region', region)
    properties: {
-      policies: empty(apimGatewayApiOperationPolicy) ? json('null') : apimGatewayApiOperationPolicy
+      policies: empty(apimGatewayApiOperationPolicy) ? null : apimGatewayApiOperationPolicy
       displayName: apimGatewayApiOperationDisplayName
       urlTemplate: apimGatewayApiOperationUrlTemplate
       method: apimGatewayApiOperationMethod

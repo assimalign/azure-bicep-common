@@ -50,7 +50,7 @@ param apimGatewayLoggers array = []
 @description('The tags to attach to the resource when deployed')
 param apimGatewayTags object = {}
 
-// Create SKU Object
+// Set the resource SKU
 var apimSku = contains(apimGatewaySku, environment) ? {
   name: apimGatewaySku[environment].name
   capacity: apimGatewaySku[environment].capacity
@@ -119,7 +119,7 @@ module apimGatewayRbac '../rbac/rbac.bicep' = [for appRoleAssignment in apimGate
 }]
 
 // Deploy Certificates, if any
-module apimGatewayCertificate 'apimCertificate.bicep' = [for certificate in apimGatewayCertificates: if (!empty(apimGatewayCertificates)) {
+module apimGatewayCertificate 'apim-certificate.bicep' = [for certificate in apimGatewayCertificates: if (!empty(apimGatewayCertificates)) {
   name: !empty(apimGatewayCertificates) ? 'apim-cert-${guid('${apimGatewayName}/${certificate.apimGatewayCertificateName}')}' : 'no-apim-certs-to-deploy'
   scope: resourceGroup()
   params: {
@@ -135,7 +135,7 @@ module apimGatewayCertificate 'apimCertificate.bicep' = [for certificate in apim
 }]
 
 // Deploy Backends, if any
-module apimGatewayBackend 'apimBackend.bicep' = [for backend in apimGatewayBackends: if (!empty(apimGatewayBackends)) {
+module apimGatewayBackend 'apim-backend.bicep' = [for backend in apimGatewayBackends: if (!empty(apimGatewayBackends)) {
   name: !empty(apimGatewayBackends) ? 'apim-backend-${guid('${apimGatewayName}/${backend.apimGatewayBackendName}')}' : 'no-apim-backends-to-deploy'
   params: {
     region: region
@@ -155,7 +155,7 @@ module apimGatewayBackend 'apimBackend.bicep' = [for backend in apimGatewayBacke
 }]
 
 // Deploy Loggers, if any
-module apimGatewayLogger 'apimLogger.bicep' = [for logger in apimGatewayLoggers: if (!empty(apimGatewayLoggers)) {
+module apimGatewayLogger 'apim-logger.bicep' = [for logger in apimGatewayLoggers: if (!empty(apimGatewayLoggers)) {
   name: !empty(apimGatewayLoggers) ? 'apim-logger-${guid('${apimGatewayName}/${logger.apimGatewayLoggerResourceName}')}' : 'no-apim-loggers-to-deploy'
   params: {
     region: region
@@ -171,7 +171,7 @@ module apimGatewayLogger 'apimLogger.bicep' = [for logger in apimGatewayLoggers:
 }]
 
 // Deploy APIs, if any
-module apimGatewayApi 'apimApi.bicep' = [for api in apimGatewayApis: if (!empty(apimGatewayApis)) {
+module apimGatewayApi 'apim-api.bicep' = [for api in apimGatewayApis: if (!empty(apimGatewayApis)) {
   name: !empty(apimGatewayApis) ? 'apim-api-${guid('${apimGatewayName}/${api.apimGatewayApiName}')}' : 'no-apim-apis-to-deploy'
   params: {
     region: region
