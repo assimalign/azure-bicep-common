@@ -15,7 +15,7 @@ param region string = ''
 param resourceGroupName string
 
 @description('The location of the resource group')
-param resourceGroupLocation string
+param resourceGroupLocation string = deployment().location
 
 @description('Custom metadata information to attach to the deployment.')
 param resourceGroupTags object = {}

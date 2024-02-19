@@ -12,6 +12,7 @@ The repository is meant to be a starting convention for any organization trying 
   - [Prerequisite](#prerequisite)
   - [Steps](#steps)
 - [Setup](#setup-1)
+  - [Consideration](#consideration)
   - [Prerequisites](#prerequisites)
 
 # Conventions
@@ -38,6 +39,8 @@ Use tokens built into all modules to dynamically replace variables in JSON param
 
 # Setup
 Below is a quick setup guid to get the repository imported and deployed into your organization.
+
+
 
 
 ## Prerequisite
@@ -68,6 +71,10 @@ Below is a quick setup guid to get the repository imported and deployed into you
 
 
 # Setup
+
+## Consideration
+- RBAC
+  - Leverage Security Groups
 
 ## Prerequisites
 - Storage Account
