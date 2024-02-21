@@ -37,14 +37,14 @@ param notificationHubNamespaceTags object = {}
 
 // 1. Deploy the Notification Namespace
 resource notificationHubNamespace 'Microsoft.NotificationHubs/namespaces@2023-09-01' = {
-  name: replace(replace('${notificationHubNamespaceName}', '@environment', environment), '@region', region)
+  name: replace(replace(notificationHubNamespaceName, '@environment', environment), '@region', region)
   location: notificationHubNamespaceLocation
   sku: any(contains(notificationHubNamespaceSku, environment) ? {
     name: notificationHubNamespaceSku[environment]
   } : {
     name: notificationHubNamespaceSku.default
   })
-  properties: {}
+
   // 1.1 If applicable, deploy authorization rules
   resource azNotificationNamespaceAuthPolicyDeployment 'AuthorizationRules' = [for policy in notificationHubNamespacePolicies: if (!empty(policy)) {
     name: !empty(notificationHubNamespacePolicies) ? policy.notificationHubPolicyName : 'no-nh-polcies-to-deploy'
