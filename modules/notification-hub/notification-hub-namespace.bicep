@@ -38,9 +38,6 @@ param notificationHubNamespaceTags object = {}
 // 1. Deploy the Notification Namespace
 resource notificationHubNamespace 'Microsoft.NotificationHubs/namespaces@2023-09-01' = {
   name: replace(replace('${notificationHubNamespaceName}', '@environment', environment), '@region', region)
-  properties: {
-    namespaceType: 'NotificationHub'
-  }
   location: notificationHubNamespaceLocation
   sku: any(contains(notificationHubNamespaceSku, environment) ? {
     name: notificationHubNamespaceSku[environment]
