@@ -44,6 +44,7 @@ resource notificationHubNamespace 'Microsoft.NotificationHubs/namespaces@2023-09
   } : {
     name: notificationHubNamespaceSku.default
   })
+  properties: {}
   // 1.1 If applicable, deploy authorization rules
   resource azNotificationNamespaceAuthPolicyDeployment 'AuthorizationRules' = [for policy in notificationHubNamespacePolicies: if (!empty(policy)) {
     name: !empty(notificationHubNamespacePolicies) ? policy.notificationHubPolicyName : 'no-nh-polcies-to-deploy'
