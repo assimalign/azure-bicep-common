@@ -821,6 +821,7 @@
                     "properties": {
                         "dotnetVersion": {
                             "enum": [
+                                "v8.0",
                                 "v7.0",
                                 "v6.0",
                                 "v3.1"
