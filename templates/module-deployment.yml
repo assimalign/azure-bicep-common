@@ -50,9 +50,9 @@ stages:
                     ScriptType: "FilePath"
                     ScriptPath: "deploy.ps1"
                     ScriptArguments:
-                    -moduleName ${{ parameters.module }}
-                    -storageAccountName ${{ variables.storage-account }}
-                    -storageAccountContainerName ${{ variables.storage-account-container }}
-                    -storageAccountResourceGroup ${{ variables.storage-account-resource-group }}
-                    -containerRegistryName ${{ variables.container-registry }}
-                    -containerRegistryResourceGroup ${{ variables.container-registry-resource-group }}
+                      -moduleName ${{ parameters.module }}
+                      -storageAccountName ${{ variables.storage-account }}
+                      -storageAccountContainerName ${{ variables.storage-account-container }}
+                      -storageAccountResourceGroup ${{ variables.storage-account-resource-group }}
+                      -containerRegistryName ${{ variables.container-registry }}
+                      -containerRegistryResourceGroup ${{ variables.container-registry-resource-group }}
