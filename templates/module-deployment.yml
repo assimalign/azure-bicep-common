@@ -10,9 +10,8 @@ parameters:
 stages:
   - stage: ${{ parameters.environment }}
     displayName: Release - ${{ upper(parameters.environment) }}
-    ${{ if eq(parameters.environment, 'dev') }}:
-      variables:
-      - template: './module-deployment-dev-variables.yml'
+    variables:
+    - template: './module-deployment-dev-variables.yml'
     jobs:
       - deployment: release
         ${{ if eq(parameters.environment, 'dev') }}:
