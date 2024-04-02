@@ -39,7 +39,11 @@ stages:
         ${{ if eq(parameters.environment, 'uat') }}:
           environment: 'User Acceptance Testing'
         ${{ if eq(parameters.environment, 'prd') }}:
-          environment: 'Production'        
+          environment: 'Production'
+        variables: 
+        - group: bicep-dev-module-configs
+        - name: dev-service-principal
+          value: $[variables.service-principal]
         strategy:
           runOnce:
             deploy:
