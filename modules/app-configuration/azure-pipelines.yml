@@ -11,6 +11,9 @@ pool:
   vmImage: windows-latest
 
 variables:
+  - group: bicep-dev-module-configs
+  - name: dev-service-principal
+    value: $[service-principal]
   - name: environments
     value: dev,qa,prd
 
