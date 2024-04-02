@@ -13,16 +13,16 @@ stages:
     displayName: Release - ${{ upper(parameters.environment) }}
     ${{ if eq(parameters.environment, 'dev') }}:
       variables: 
-        - group: bicep-dev-module-configs
+      - group: bicep-dev-module-configs
     ${{ if eq(parameters.environment, 'qa') }}:
       variables: 
-        - group: bicep-qa-module-configs
+      - group: bicep-qa-module-configs
     ${{ if eq(parameters.environment, 'uat') }}:
       variables: 
-        - group: bicep-uat-module-configs
+      - group: bicep-uat-module-configs
     ${{ if eq(parameters.environment, 'prd') }}:
       variables: 
-        - group: bicep-prd-module-configs
+      - group: bicep-prd-module-configs
 
     jobs:
       - deployment: release
