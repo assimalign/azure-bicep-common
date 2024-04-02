@@ -9,7 +9,7 @@ parameters:
 
 variables:
   #- group: bicep-dev-module-configs
-- name: "dev-service-principal"
+- name: sp
   value: test
 
 stages:
