@@ -7,11 +7,6 @@ parameters:
     - prd
 - name: module
 
-variables:
-  #- group: bicep-dev-module-configs
-- name: sp
-  value: test
-
 stages:
   # - ${{ if eq(parameters.environment, 'dev')}}:
   #   - template: 'module-deployment-dev.yml'
@@ -45,6 +40,10 @@ stages:
           environment: 'User Acceptance Testing'
         ${{ if eq(parameters.environment, 'prd') }}:
           environment: 'Production'
+        variables: 
+        - group: bicep-dev-module-configs
+        - name: dev-service-principal
+          value: $[service-principal]
         strategy:
           runOnce:
             deploy:
