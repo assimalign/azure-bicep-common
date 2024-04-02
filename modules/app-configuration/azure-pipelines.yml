@@ -14,11 +14,10 @@ variables:
   - name: environments
     value: dev,qa,prd
 
-
-
 stages: 
   - ${{ each environment in split(variables.environments, ',')}}:
     - template: '../../templates/module-deployment.yml'
       parameters:
+        module: app-configuration
         environment: ${{ environment }}
     
