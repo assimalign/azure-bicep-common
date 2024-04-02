@@ -7,11 +7,12 @@ parameters:
       - prd
   - name: module
 
+variables:
+- group: bicep-${{ parameters.environment }}-module-configs
+
 stages:
   - stage: ${{ parameters.environment }}
     displayName: Release - ${{ upper(parameters.environment) }}
-    variables:
-    - template: './module-deployment-dev-variables.yml'
     jobs:
       - deployment: release
         ${{ if eq(parameters.environment, 'dev') }}:
