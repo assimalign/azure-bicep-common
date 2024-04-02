@@ -9,22 +9,22 @@ parameters:
 
 stages:
   - ${{ if eq(parameters.environment, 'dev')}}:
-    - template: './templates/module-deployment-dev.yml'
+    - template: 'module-deployment-dev.yml'
       parameters:
         module: ${{ parameters.module }}
   
   - ${{ if eq(parameters.environment, 'qa')}}:
-    - template: './templates/module-deployment-qa.yml'
+    - template: 'module-deployment-qa.yml'
       parameters:
         module: ${{ parameters.module }}
 
   - ${{ if eq(parameters.environment, 'uat')}}:
-    - template: './templates/module-deployment-qa.yml'
+    - template: 'module-deployment-qa.yml'
       parameters:
         module: ${{ parameters.module }}
 
   - ${{ if eq(parameters.environment, 'prd')}}:
-    - template: './templates/module-deployment-qa.yml'
+    - template: 'module-deployment-qa.yml'
       parameters:
         module: ${{ parameters.module }}
 
