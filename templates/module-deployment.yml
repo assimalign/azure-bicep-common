@@ -6,6 +6,7 @@ parameters:
       - uat
       - prd
   - name: module
+    
 
 stages:
   - stage: ${{ parameters.environment }}
@@ -51,8 +52,8 @@ stages:
                     ScriptPath: "deploy.ps1"
                     ScriptArguments:
                       -moduleName ${{ parameters.module }}
-                      -storageAccountName ${{ variables.storage-account }}
-                      -storageAccountContainerName ${{ variables.storage-account-container }}
-                      -storageAccountResourceGroup ${{ variables.storage-account-resource-group }}
-                      -containerRegistryName ${{ variables.container-registry }}
-                      -containerRegistryResourceGroup ${{ variables.container-registry-resource-group }}
+                      -storageAccountName $(storage-account)
+                      -storageAccountContainerName $(storage-account-container)
+                      -storageAccountResourceGroup $(storage-account-resource-group)
+                      -containerRegistryName $(container-registry)
+                      -containerRegistryResourceGroup $(container-registry-resource-group)
