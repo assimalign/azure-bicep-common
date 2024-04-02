@@ -2,7 +2,7 @@ parameters:
   - name: module
 
 variables:
-- group: bicep-dev-module-configs
+  - group: 'bicep-dev-module-configs'
 
 stages:
   - stage: dev

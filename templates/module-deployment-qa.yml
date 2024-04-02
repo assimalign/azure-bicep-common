@@ -2,7 +2,7 @@ parameters:
   - name: module
 
 variables:
-- group: bicep-qa-module-configs
+  - group: bicep-qa-module-configs
 
 stages:
   - stage: qa
