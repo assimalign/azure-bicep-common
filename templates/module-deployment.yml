@@ -6,13 +6,23 @@ parameters:
       - uat
       - prd
   - name: module
-  - name: variableGroup
 
 stages:
   - stage: ${{ parameters.environment }}
     displayName: Release - ${{ upper(parameters.environment) }}
-    variables:
-    - group: ${{ parameters.variableGroup }}
+    deployment: release
+    ${{ if eq(parameters.environment, 'dev') }}:
+      variables:
+      - template: module-deployment-dev-variables.yml
+    ${{ if eq(parameters.environment, 'qa') }}:
+      variables:
+      - group: bicep-qa-module-configs
+    ${{ if eq(parameters.environment, 'uat') }}:
+      variables:
+      - group: bicep-uat-module-configs
+    ${{ if eq(parameters.environment, 'prd') }}:
+      variables:
+      - group: bicep-prd-module-configs
     jobs:
       - deployment: release
         ${{ if eq(parameters.environment, 'dev') }}:

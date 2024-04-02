@@ -20,5 +20,4 @@ stages:
       parameters:
         module: app-configuration
         environment: ${{ environment }}
-        variableGroup: bicep-${{ environment }}-module-configs
     
