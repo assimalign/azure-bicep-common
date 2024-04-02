@@ -10,7 +10,7 @@ stages:
   - stage: ${{ parameters.environment }}
     displayName: Release - ${{ upper(parameters.environment) }}
     variables: 
-      - group: 'bicep-${{ parameters.environment }}-module-configs'
+      - group: 'bicep-${{parameters.environment}}-module-configs'
     jobs:
       - deployment: release
         ${{ if eq(parameters.environment, 'dev') }}:
