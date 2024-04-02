@@ -6,11 +6,12 @@ parameters:
       - uat
       - prd
   - name: module
-    
 
 stages:
   - stage: ${{ parameters.environment }}
     displayName: Release - ${{ upper(parameters.environment) }}
+    variables:
+    - group: bicep-dev-module-configs
     jobs:
       - deployment: release
         ${{ if eq(parameters.environment, 'dev') }}:
@@ -21,8 +22,6 @@ stages:
           environment: 'User Acceptance Testing'
         ${{ if eq(parameters.environment, 'prd') }}:
           environment: 'Production'
-        variables: 
-        - group: bicep-dev-module-configs
         strategy:
           runOnce:
             deploy:
@@ -34,7 +33,7 @@ stages:
                 displayName: "Upcert Bicep Modules"
                 condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
                 inputs:
-                    azureSubscription: ${{ variables.service-principal }}
+                    azureSubscription: ${{ variables['service-principal'] }}
                     preferredAzurePowerShellVersion: "10.3.0"
                     pwsh: true
                     ScriptType: "FilePath"
