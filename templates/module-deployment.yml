@@ -38,23 +38,28 @@ stages:
           runOnce:
             deploy:
               steps:
-              - checkout: self
-                displayName: Checkout
-              
-              - task: AzurePowerShell@5
-                displayName: "Upcert Bicep Modules"
-                condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-                
+              - task: Bash@3
                 inputs:
-                    azureSubscription: $(service-principal)
-                    preferredAzurePowerShellVersion: "10.3.0"
-                    pwsh: true
-                    ScriptType: "FilePath"
-                    ScriptPath: "deploy.ps1"
-                    ScriptArguments:
-                    -moduleName ${{ parameters.module }}
-                    -storageAccountName $(storage-account)
-                    -storageAccountContainerName $(storage-account-container)
-                    -storageAccountResourceGroup $(storage-account-resource-group)
-                    -containerRegistryName $(container-registry)
-                    -containerRegistryResourceGroup $(container-registry-resource-group)
+                  targetType: 'inline'
+                  script: |
+                    echo ${{ variables }}
+                
+              # - checkout: self
+              #   displayName: Checkout
+              
+              # - task: AzurePowerShell@5
+              #   displayName: "Upcert Bicep Modules"
+              #   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+              #   inputs:
+              #       azureSubscription: $(service-principal)
+              #       preferredAzurePowerShellVersion: "10.3.0"
+              #       pwsh: true
+              #       ScriptType: "FilePath"
+              #       ScriptPath: "deploy.ps1"
+              #       ScriptArguments:
+              #       -moduleName ${{ parameters.module }}
+              #       -storageAccountName $(storage-account)
+              #       -storageAccountContainerName $(storage-account-container)
+              #       -storageAccountResourceGroup $(storage-account-resource-group)
+              #       -containerRegistryName $(container-registry)
+              #       -containerRegistryResourceGroup $(container-registry-resource-group)
