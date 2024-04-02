@@ -43,7 +43,7 @@ stages:
         variables: 
         - group: bicep-dev-module-configs
         - name: dev-service-principal
-          value: $[variables.service-principal]
+          value: $[variables.service_principal]
         strategy:
           runOnce:
             deploy:
