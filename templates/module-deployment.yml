@@ -8,11 +8,9 @@ parameters:
   - name: module
 
 variables:
-  - group: bicep-dev-module-configs
+  #- group: bicep-dev-module-configs
   - name: dev-service-principal
-    value: $[variables.service-principal]
-
-
+    value: test
 
 stages:
   # - ${{ if eq(parameters.environment, 'dev')}}:
