@@ -13,13 +13,13 @@ stages:
       - group: 'bicep-${{ parameters.environment }}-module-configs'
     jobs:
       - deployment: release
-        ${{ if eq(parameters.deploymentEnvironment, 'dev') }}:
+        ${{ if eq(parameters.environment, 'dev') }}:
           environment: 'Development'
-        ${{ if eq(parameters.deploymentEnvironment, 'qa') }}:
+        ${{ if eq(parameters.environment, 'qa') }}:
           environment: 'Quality Assurance'
-        ${{ if eq(parameters.deploymentEnvironment, 'uat') }}:
+        ${{ if eq(parameters.environment, 'uat') }}:
           environment: 'User Acceptance Testing'
-        ${{ if eq(parameters.deploymentEnvironment, 'prd') }}:
+        ${{ if eq(parameters.environment, 'prd') }}:
           environment: 'Production'
         strategy:
           runOnce:
