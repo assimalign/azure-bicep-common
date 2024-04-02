@@ -6,7 +6,6 @@ parameters:
       - uat
       - prd
   - name: module
-    
 
 stages:
   - stage: ${{ parameters.environment }}
@@ -38,30 +37,22 @@ stages:
           runOnce:
             deploy:
               steps:
-              - task: Bash@3
-                inputs:
-                  targetType: 'inline'
-                  script: |
-                    echo "Printing all variables"
-                    echo "======================="
-                    env | sort
-                
-              # - checkout: self
-              #   displayName: Checkout
+              - checkout: self
+                displayName: Checkout
               
-              # - task: AzurePowerShell@5
-              #   displayName: "Upcert Bicep Modules"
-              #   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-              #   inputs:
-              #       azureSubscription: $(service-principal)
-              #       preferredAzurePowerShellVersion: "10.3.0"
-              #       pwsh: true
-              #       ScriptType: "FilePath"
-              #       ScriptPath: "deploy.ps1"
-              #       ScriptArguments:
-              #       -moduleName ${{ parameters.module }}
-              #       -storageAccountName $(storage-account)
-              #       -storageAccountContainerName $(storage-account-container)
-              #       -storageAccountResourceGroup $(storage-account-resource-group)
-              #       -containerRegistryName $(container-registry)
-              #       -containerRegistryResourceGroup $(container-registry-resource-group)
+              - task: AzurePowerShell@5
+                displayName: "Upcert Bicep Modules"
+                condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+                inputs:
+                    azureSubscription: $(service-principal)
+                    preferredAzurePowerShellVersion: "10.3.0"
+                    pwsh: true
+                    ScriptType: "FilePath"
+                    ScriptPath: "deploy.ps1"
+                    ScriptArguments:
+                    -moduleName ${{ parameters.module }}
+                    -storageAccountName ${{ variables.storage-account }}
+                    -storageAccountContainerName ${{ variables.storage-account-container }}
+                    -storageAccountResourceGroup ${{ variables.storage-account-resource-group }}
+                    -containerRegistryName ${{ variables.container-registry }}
+                    -containerRegistryResourceGroup ${{ variables.container-registry-resource-group }}
