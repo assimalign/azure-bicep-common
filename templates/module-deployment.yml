@@ -8,7 +8,7 @@ parameters:
   - name: module
 
 variables:
-- group: bicep-${{ parameters.environment }}-module-configs
+- group: bicep-$[parameters.environment]-module-configs
 
 stages:
   - stage: ${{ parameters.environment }}
