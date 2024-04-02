@@ -1,16 +1,16 @@
 parameters:
-  - name: environment
-    values:
-      - dev
-      - qa
-      - uat
-      - prd
-  - name: module
+- name: environment
+  values:
+    - dev
+    - qa
+    - uat
+    - prd
+- name: module
 
 variables:
   #- group: bicep-dev-module-configs
-  - name: dev-service-principal
-    value: test
+- name: "dev-service-principal"
+  value: test
 
 stages:
   # - ${{ if eq(parameters.environment, 'dev')}}:
