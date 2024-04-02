@@ -10,6 +10,8 @@ parameters:
 stages:
   - stage: ${{ parameters.environment }}
     displayName: Release - ${{ upper(parameters.environment) }}
+    variables:
+    - group: bicep-dev-module-configs
     jobs:
       - deployment: release
         ${{ if eq(parameters.environment, 'dev') }}:
@@ -39,7 +41,7 @@ stages:
                 displayName: "Upcert Bicep Modules"
                 condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
                 inputs:
-                    azureSubscription: Assimalign SA (DEV)
+                    azureSubscription: $(service-principal)
                     preferredAzurePowerShellVersion: "10.3.0"
                     pwsh: true
                     ScriptType: "FilePath"
