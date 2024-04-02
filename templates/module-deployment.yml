@@ -42,7 +42,9 @@ stages:
                 inputs:
                   targetType: 'inline'
                   script: |
-                    echo ${{ variables }}
+                    echo "Printing all variables"
+                    echo "======================="
+                    env | sort
                 
               # - checkout: self
               #   displayName: Checkout
