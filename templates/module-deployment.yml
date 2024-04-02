@@ -42,27 +42,17 @@ stages:
           environment: 'Production'
         variables: 
         - group: bicep-dev-module-configs
-        - name: dev-service-principal
-          value: $[variables.service_principal]
         strategy:
           runOnce:
             deploy:
               steps:
               - checkout: self
                 displayName: Checkout
-              
               - task: AzurePowerShell@5
                 displayName: "Upcert Bicep Modules"
                 condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
                 inputs:
-                  ${{ if eq(parameters.environment, 'dev') }}:
-                    azureSubscription: ${{ variables['dev-service-principal']}}
-                  ${{ if eq(parameters.environment, 'qa') }}:
-                    azureSubscription: ${{ variables['dev-service-principal']}}
-                  ${{ if eq(parameters.environment, 'uat') }}:
-                    azureSubscription: ${{ variables['dev-service-principal']}}
-                  ${{ if eq(parameters.environment, 'prd') }}:
-                    azureSubscription: ${{ variables['dev-service-principal']}}
+                  zureSubscription: $(service-principal)
                   preferredAzurePowerShellVersion: "10.3.0"
                   pwsh: true
                   ScriptType: "FilePath"
