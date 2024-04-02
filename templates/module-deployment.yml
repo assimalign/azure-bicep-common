@@ -6,12 +6,13 @@ parameters:
       - uat
       - prd
   - name: module
+  - name: variableGroup
 
 stages:
   - stage: ${{ parameters.environment }}
     displayName: Release - ${{ upper(parameters.environment) }}
     variables:
-    - group: bicep-${{ parameters.environment }}-module-configs
+    - group: ${{ parameters.variableGroup }}
     jobs:
       - deployment: release
         ${{ if eq(parameters.environment, 'dev') }}:

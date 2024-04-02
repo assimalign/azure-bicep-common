@@ -20,42 +20,5 @@ stages:
       parameters:
         module: app-configuration
         environment: ${{ environment }}
-  
-  - stage: ${{ parameters.environment }}
-    displayName: Release - ${{ upper(parameters.environment) }}
-    variables: 
-    - group: bicep-dev-module-configs
-    jobs:
-      - deployment: release
-        ${{ if eq(parameters.environment, 'dev') }}:
-          environment: 'Development'
-        ${{ if eq(parameters.environment, 'qa') }}:
-          environment: 'Quality Assurance'
-        ${{ if eq(parameters.environment, 'uat') }}:
-          environment: 'User Acceptance Testing'
-        ${{ if eq(parameters.environment, 'prd') }}:
-          environment: 'Production'
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-              - checkout: self
-                displayName: Checkout
-              
-              - task: AzurePowerShell@5
-                displayName: "Upcert Bicep Modules"
-                condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-                inputs:
-                    azureSubscription: ${{ variables.service-principal }}
-                    preferredAzurePowerShellVersion: "10.3.0"
-                    pwsh: true
-                    ScriptType: "FilePath"
-                    ScriptPath: "deploy.ps1"
-                    ScriptArguments:
-                      -moduleName ${{ parameters.module }}
-                      -storageAccountName $(storage-account)
-                      -storageAccountContainerName $(storage-account-container)
-                      -storageAccountResourceGroup $(storage-account-resource-group)
-                      -containerRegistryName $(container-registry)
-                      -containerRegistryResourceGroup $(container-registry-resource-group)
+        variableGroup: bicep-${{ environment }}-module-configs
     
