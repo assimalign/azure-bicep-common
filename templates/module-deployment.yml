@@ -22,7 +22,7 @@ stages:
         ${{ if eq(parameters.environment, 'prd') }}:
           environment: 'Production'
         variables: 
-        - group: bicep-${{ parameters.environment }}-module-configs
+        - group: bicep-dev-module-configs
         strategy:
           runOnce:
             deploy:
