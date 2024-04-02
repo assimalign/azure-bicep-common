@@ -14,7 +14,8 @@ variables:
   - name: environments
     value: dev,qa,prd
 
-    
+
+
 stages: 
   - ${{ each environment in split(variables.environments, ',')}}:
     - template: '../../templates/module-deployment.yml'
