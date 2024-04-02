@@ -12,7 +12,7 @@ pool:
 
 variables:
   - name: environments
-    value: dev, qa, prd
+    value: dev,qa,prd
 
 stages: 
   - ${{ each environment in split(variables.environments, ',')}}:
