@@ -23,7 +23,6 @@ $projectInfo = Invoke-RestMethod `
     } `
     -SkipCertificateCheck
 
-
 # POST - Create Variable Group
 Invoke-RestMethod `
     -Uri $variableGroupUrl `
@@ -33,7 +32,7 @@ Invoke-RestMethod `
         'Content-Type'  = 'application/json'
     } `
     -Body (@{
-        name                           = "bicep-module-variables"
+        name                           = "bicep-module-configs"
         description                    = ""
         type                           = "Vsts"
         variables                      = @{
