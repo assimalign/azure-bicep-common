@@ -33,9 +33,8 @@ stages:
               - task: AzurePowerShell@5
                 displayName: "Upcert Bicep Modules"
                 condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-
                 inputs:
-                    azureSubscription: $(service-principal)
+                    azureSubscription: ${{ variables.service-principal }}
                     preferredAzurePowerShellVersion: "10.3.0"
                     pwsh: true
                     ScriptType: "FilePath"
