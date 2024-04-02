@@ -10,28 +10,24 @@ parameters:
 stages:
   - stage: ${{ parameters.environment }}
     displayName: Release - ${{ upper(parameters.environment) }}
-    ${{ if eq(parameters.environment, 'dev') }}:
-      variables:
-      - template: module-deployment-dev-variables.yml
-    ${{ if eq(parameters.environment, 'qa') }}:
-      variables:
-      - group: bicep-qa-module-configs
-    ${{ if eq(parameters.environment, 'uat') }}:
-      variables:
-      - group: bicep-uat-module-configs
-    ${{ if eq(parameters.environment, 'prd') }}:
-      variables:
-      - group: bicep-prd-module-configs
     jobs:
       - deployment: release
         ${{ if eq(parameters.environment, 'dev') }}:
           environment: 'Development'
+          variables:
+            - group: bicep-dev-module-configs
         ${{ if eq(parameters.environment, 'qa') }}:
           environment: 'Quality Assurance'
+          variables:
+            - group: bicep-qa-module-configs
         ${{ if eq(parameters.environment, 'uat') }}:
           environment: 'User Acceptance Testing'
+          variables:
+            - group: bicep-uat-module-configs
         ${{ if eq(parameters.environment, 'prd') }}:
           environment: 'Production'
+          variables:
+            - group: bicep-prd-module-configs
         strategy:
           runOnce:
             deploy:
