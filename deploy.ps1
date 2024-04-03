@@ -45,8 +45,6 @@ $storageAccount = Get-AzStorageAccount `
     -ResourceGroupName $storageAccountResourceGroup `
     -Name $storageAccountName 
 
-Get-AzureStorageContainer -
-
 Get-ChildItem './modules' -Include '*.json' -Recurse | ForEach-Object {
     $index = $_.FullName.IndexOf('modules') + 'modules'.Length + 1
     $path = 'bicep' + '\' + $_.FullName.Substring($index , $_.FullName.Length - $index)
