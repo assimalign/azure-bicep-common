@@ -27,7 +27,7 @@ stages:
                 displayName: Checkout
               - task: AzurePowerShell@5
                 displayName: "Upcert Bicep Modules"
-                condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/development'))
+                condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/development')))
                 inputs:
                   azureSubscription: Assimalign SA (DEV)
                   preferredAzurePowerShellVersion: "10.3.0"
