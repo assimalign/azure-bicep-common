@@ -47,7 +47,7 @@ $storageAccount = Get-AzStorageAccount `
 # Get the Module Schema
 $schema = Get-Item "./modules/$moduleName/parameters.json"
 $index = $schema.FullName.IndexOf('modules') + 'modules'.Length + 1
-$path = 'bicep' + '\' + $schema.FullName.Substring($index , $_.FullName.Length - $index)
+$path = 'bicep' + '\' + $schema.FullName.Substring($index , $schema.FullName.Length - $index)
     
 Set-AzStorageBlobContent `
     -Container $storageAccountContainerName `
@@ -60,7 +60,7 @@ Set-AzStorageBlobContent `
 # Get the Root Schema
 $schema = Get-Item "./modules/schema.json"
 $index = $schema.FullName.IndexOf('modules') + 'modules'.Length + 1
-$path = 'bicep' + '\' + $schema.FullName.Substring($index , $_.FullName.Length - $index)
+$path = 'bicep' + '\' + $schema.FullName.Substring($index , $schema.FullName.Length - $index)
 
 Set-AzStorageBlobContent `
     -Container $storageAccountContainerName `

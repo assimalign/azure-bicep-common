@@ -18,40 +18,42 @@ $projectInfo = Invoke-RestMethod `
     -Uri $projectUrl `
     -Method Get `
     -Headers @{
-        'Authorization' = "Basic $token"
-        'Content-Type'  = 'application/json'
-    } `
+    'Authorization' = "Basic $token"
+    'Content-Type'  = 'application/json'
+} `
     -SkipCertificateCheck
 
+
+$environments = 'dev', 'qa', 'uat', 'prd' 
+
+$environments | ForEach-Object {
+
+}
 # POST - Create Variable Group
 Invoke-RestMethod `
     -Uri $variableGroupUrl `
     -Method Post `
     -Headers @{
-        'Authorization' = "Basic $token"
-        'Content-Type'  = 'application/json'
-    } `
+    'Authorization' = "Basic $token"
+    'Content-Type'  = 'application/json'
+} `
     -Body (@{
         name                           = "bicep-module-configs"
         description                    = ""
         type                           = "Vsts"
         variables                      = @{
-            'storage-account' = @{
+            'storage-account'                   = @{ value = '' }
+            'storage-account-container'         = @{value = '' }
+            "storage-account-resource-group"    = @{
                 value = ''
             }
-            'storage-account-container' = @{
-                value = ''
-            }
-            "storage-account-resource-group" = @{
-                value = ''
-            }
-            'container-registry' = @{
+            'container-registry'                = @{
                 value = ''
             }
             'container-registry-resource-group' = @{
                 value = ''
             }
-            'service-principal' = @{
+            'service-principal'                 = @{
                 value = ''
             }
         }
@@ -77,9 +79,9 @@ Get-ChildItem '.\modules\*azure-pipelines.yml' -Recurse | ForEach-Object {
         -Uri $pipelineUrl `
         -Method Post `
         -Headers @{
-            'Authorization' = "Basic $token"
-            'Content-Type'  = 'application/json'
-        } `
+        'Authorization' = "Basic $token"
+        'Content-Type'  = 'application/json'
+    } `
         -Body (@{
             name          = $name
             folder        = $moduleFolderName
