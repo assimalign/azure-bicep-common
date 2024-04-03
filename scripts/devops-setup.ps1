@@ -18,55 +18,48 @@ $projectInfo = Invoke-RestMethod `
     -Uri $projectUrl `
     -Method Get `
     -Headers @{
-        'Authorization' = "Basic $token"
-        'Content-Type'  = 'application/json'
-    } `
+    'Authorization' = "Basic $token"
+    'Content-Type'  = 'application/json'
+} `
     -SkipCertificateCheck
 
+
 # POST - Create Variable Group
-Invoke-RestMethod `
-    -Uri $variableGroupUrl `
-    -Method Post `
-    -Headers @{
+$environments = 'dev', 'qa', 'uat', 'prd' 
+$environments | ForEach-Object {
+    Invoke-RestMethod `
+        -Uri $variableGroupUrl `
+        -Method Post `
+        -Headers @{
         'Authorization' = "Basic $token"
         'Content-Type'  = 'application/json'
     } `
-    -Body (@{
-        name                           = "bicep-module-configs"
-        description                    = ""
-        type                           = "Vsts"
-        variables                      = @{
-            'storage-account' = @{
-                value = ''
+        -Body (@{
+            name                           = "bicep-$_-module-configs"
+            description                    = ""
+            type                           = "Vsts"
+            variables                      = @{
+                'storage-account'                   = @{ value = '' }
+                'storage-account-container'         = @{ value = '' }
+                "storage-account-resource-group"    = @{ value = '' }
+                'container-registry'                = @{ value = '' }
+                'container-registry-resource-group' = @{ value = '' }
+                'service-principal'                 = @{ value = '' }
             }
-            'storage-account-container' = @{
-                value = ''
-            }
-            "storage-account-resource-group" = @{
-                value = ''
-            }
-            'container-registry' = @{
-                value = ''
-            }
-            'container-registry-resource-group' = @{
-                value = ''
-            }
-            'service-principal' = @{
-                value = ''
-            }
-        }
-        variableGroupProjectReferences = @(
-            @{
-                name             = "bicep-module-variables"
-                description      = ""
-                projectReference = @{
-                    id   = $projectInfo.id
-                    name = $projectInfo.name
+            variableGroupProjectReferences = @(
+                @{
+                    name             = "bicep-module-variables"
+                    description      = ""
+                    projectReference = @{
+                        id   = $projectInfo.id
+                        name = $projectInfo.name
+                    }
                 }
-            }
-        )
-    } | ConvertTo-Json -Depth 10) `
-    -SkipCertificateCheck
+            )
+        } | ConvertTo-Json -Depth 10) `
+        -SkipCertificateCheck
+}
+
 
 # Create Pipelines
 Get-ChildItem '.\modules\*azure-pipelines.yml' -Recurse | ForEach-Object {
@@ -77,9 +70,9 @@ Get-ChildItem '.\modules\*azure-pipelines.yml' -Recurse | ForEach-Object {
         -Uri $pipelineUrl `
         -Method Post `
         -Headers @{
-            'Authorization' = "Basic $token"
-            'Content-Type'  = 'application/json'
-        } `
+        'Authorization' = "Basic $token"
+        'Content-Type'  = 'application/json'
+    } `
         -Body (@{
             name          = $name
             folder        = $moduleFolderName

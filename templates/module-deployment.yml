@@ -6,19 +6,29 @@ parameters:
   - qa
   - uat
   - prd
-- name: module
-- name: variable_group
+
+- name: subscription
   type: string
-  default: 'bicep-dev-module-configs'
+
+- name: module
+  type: string
 
 stages:
   - stage: ${{ parameters.environment }}
-    displayName: Release - ${{ parameters.environment }}
+    displayName: Release - ${{ upper(parameters.environment) }}
     jobs:
-      - deployment: release
+      - deployment: bicep_push
+        displayName: 'Bicep: Module Push - ${{ parameters.module }}'
         variables:
-        - group: ${{ parameters.variable_group }}
-        environment: 'Development'
+        - group: 'bicep-${{ parameters.environment }}-module-configs'
+        ${{ if eq(parameters.environment, 'dev')}}:
+          environment: 'Development'
+        ${{ if eq(parameters.environment, 'qa')}}:
+          environment: 'Quality Assurance'
+        ${{ if eq(parameters.environment, 'uat')}}:
+          environment: 'User Acceptance Testing'
+        ${{ if eq(parameters.environment, 'prd')}}:
+          environment: 'Production'
         strategy:
           runOnce:
             deploy:
@@ -27,10 +37,11 @@ stages:
                 displayName: Checkout
               - task: AzurePowerShell@5
                 displayName: "Upcert Bicep Modules"
-                condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+                # Either deploy when branch: = 'development' and environment: = 'dev' or 
+                condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), and(eq('${{ parameters.environment }}', 'dev'), eq(variables['Build.SourceBranch'], 'refs/heads/development'))))
                 inputs:
-                  azureSubscription: $(service-principal)
-                  preferredAzurePowerShellVersion: "10.3.0"
+                  azureSubscription: ${{ parameters.subscription }}
+                  azurePowerShellVersion: LatestVersion
                   pwsh: true
                   ScriptType: "FilePath"
                   ScriptPath: "deploy.ps1"

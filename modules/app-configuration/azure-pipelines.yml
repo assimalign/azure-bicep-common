@@ -11,19 +11,13 @@ pool:
   vmImage: windows-latest
 
 variables:
-  - group: bicep-dev-module-configs
+  - name: environments
+    value: dev,qa,prd
 
-
-steps:
-  - task: Bash@3
-    inputs:
-      script: 
-        echo $(service-principal)
-
-# stages: 
-#   - template: '../../templates/module-deployment.yml'
-#     parameters:
-#       environment: dev
-#       module: app-configuration
-#       variable_group: 'bicep-dev-module-configs'
-    
+stages:
+  - ${{ each environment in split(variables.environments, ',') }}:
+    - template: '../../templates/module-deployment.yml'
+      parameters:
+        module: app-configuration
+        environment: ${{ environment }}
+        subscription: Assimalign SA (${{ upper(environment) }})
