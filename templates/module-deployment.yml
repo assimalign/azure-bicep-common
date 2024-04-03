@@ -1,7 +1,7 @@
 parameters:
 - name: environment
   type: string
-  value:
+  values:
   - dev
   - qa
   - uat
