@@ -42,7 +42,8 @@ Get-ChildItem "./modules/$moduleName" -Recurse -Include '*.bicep' | ForEach-Obje
 # Push/Update JSON Parameter Schemas
 $storageAccount = Get-AzStorageAccount `
     -ResourceGroupName $storageAccountResourceGroup `
-    -Name $storageAccountName 
+    -Name $storageAccountName `
+    -ErrorAction SilentlyContinue
 
 # Get the Module Schema
 $schema = Get-Item "./modules/$moduleName/parameters.json"
@@ -55,7 +56,8 @@ Set-AzStorageBlobContent `
     -Blob $path `
     -File $schema.FullName `
     -Force `
-    -Verbose
+    -Verbose `
+    -ErrorAction SilentlyContinue
 
 # Get the Root Schema
 $schema = Get-Item "./modules/schema.json"
@@ -68,6 +70,7 @@ Set-AzStorageBlobContent `
     -Blob $path `
     -File $schema.FullName `
     -Force `
-    -Verbose
+    -Verbose `
+    -ErrorAction SilentlyContinue
 
 #endregion
