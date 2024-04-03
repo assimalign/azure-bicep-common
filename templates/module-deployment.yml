@@ -21,7 +21,14 @@ stages:
         displayName: 'Bicep: Module Push - ${{ parameters.module }}'
         variables:
         - group: 'bicep-${{ parameters.environment }}-module-configs'
-        environment: 'Development'
+        ${{ if eq(parameters.environment, 'dev')}}:
+          environment: 'Development'
+        ${{ if eq(parameters.environment, 'qa')}}:
+          environment: 'Quality Assurance'
+        ${{ if eq(parameters.environment, 'uat')}}:
+          environment: 'User Acceptance Testing'
+        ${{ if eq(parameters.environment, 'prd')}}:
+          environment: 'Production'
         strategy:
           runOnce:
             deploy:
