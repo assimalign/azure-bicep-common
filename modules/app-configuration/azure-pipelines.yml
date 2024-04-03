@@ -10,17 +10,8 @@ trigger:
 pool:
   vmImage: windows-latest
 
-# steps:
-#   - task: PowerShell@2
-#     inputs:
-#       pwsh: true
-#       targetType: inline
-#       script: 
-#         Write-Host $(service-principal)
-
-stages: 
+stages:
   - template: '../../templates/module-deployment.yml'
     parameters:
       environment: dev
       module: app-configuration
-      variable_group: 'bicep-dev-module-configs'
