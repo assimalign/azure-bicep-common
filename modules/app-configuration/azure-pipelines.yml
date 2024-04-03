@@ -11,9 +11,8 @@ pool:
   vmImage: windows-latest
 
 variables:
-  - group: bicep-module-configs
   - name: environments
-    value: $[variables.environments]
+    value: dev,qa,prd
 
 stages:
   - ${{ each environment in split(variables.environments, ',') }}:
