@@ -11,20 +11,14 @@ pool:
   vmImage: windows-latest
 
 variables:
-  - group: bicep-module-configs
+  - name: environments
+    value: dev,qa,prd
 
 stages:
-  - ${{ each environment in split(variables.environments, ',')}}:
+  - ${{ each environment in split(variables.environments, ',') }}:
     - template: '../../templates/module-deployment.yml'
       parameters:
         module: apim
         environment: ${{ environment }}
-        ${{ if eq(environment, 'dev') )}}:
-          subscription: ${{ variables['service-principal-dev'] }}
-        ${{ if eq(environment, 'qa') )}}:
-          subscription: ${{ variables['service-principal-qa'] }}
-        ${{ if eq(environment, 'uat') )}}:
-          subscription: ${{ variables['service-principal-uat'] }}
-        ${{ if eq(environment, 'prd') )}}:
-          subscription: ${{ variables['service-principal-prd'] }}
+        subscription: Assimalign SA (${{ upper(environment) }})
     

@@ -12,23 +12,14 @@ pool:
   vmImage: windows-latest
 
 variables:
-  - group: bicep-module-variables
+  - name: environments
+    value: dev,qa,prd
 
-steps:  
-- task: AzurePowerShell@5
-  displayName: "Upcert Bicep Modules"
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-  inputs:
-    azureSubscription: $(service-principal)
-    preferredAzurePowerShellVersion: "10.3.0"
-    pwsh: true
-    ScriptType: "FilePath"
-    ScriptPath: "modules.arc.push.ps1"
-    ScriptArguments:
-      -moduleName kubernetes
-      -storageAccountName $(storage-account)
-      -storageAccountContainerName $(storage-account-container)
-      -storageAccountResourceGroup $(storage-account-resource-group)
-      -containerRegistryName $(container-registry)
-      -containerRegistryResourceGroup $(container-registry-resource-group)
+stages:
+  - ${{ each environment in split(variables.environments, ',') }}:
+    - template: '../../templates/module-deployment.yml'
+      parameters:
+        module: kubernetes
+        environment: ${{ environment }}
+        subscription: Assimalign SA (${{ upper(environment) }})
     

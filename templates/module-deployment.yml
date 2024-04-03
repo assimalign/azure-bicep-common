@@ -30,7 +30,8 @@ stages:
                 displayName: Checkout
               - task: AzurePowerShell@5
                 displayName: "Upcert Bicep Modules"
-                condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/development')))
+                # Either deploy when branch: = 'development' and environment: = 'dev' or 
+                condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), and(eq(parameters.environment, dev), eq(variables['Build.SourceBranch'], 'refs/heads/development'))))
                 inputs:
                   azureSubscription: ${{ parameters.subscription }}
                   azurePowerShellVersion: LatestVersion
