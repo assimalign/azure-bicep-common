@@ -25,26 +25,20 @@ stages:
               steps:
               - checkout: self
                 displayName: Checkout
-              - task: PowerShell@2
+              - task: AzurePowerShell@5
+                displayName: "Upcert Bicep Modules"
+                condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
                 inputs:
+                  azureSubscription: Assimalign SA (DEV)
+                  preferredAzurePowerShellVersion: "10.3.0"
                   pwsh: true
-                  targetType: inline
-                  script: 
-                    Write-Host $(service-principal)
-              # - task: AzurePowerShell@5
-              #   displayName: "Upcert Bicep Modules"
-              #   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-              #   inputs:
-              #     azureSubscription: $(service-principal)
-              #     preferredAzurePowerShellVersion: "10.3.0"
-              #     pwsh: true
-              #     ScriptType: "FilePath"
-              #     ScriptPath: "deploy.ps1"
-              #     ScriptArguments:
-              #       -moduleName ${{ parameters.module }}
-              #       -storageAccountName $(storage-account)
-              #       -storageAccountContainerName $(storage-account-container)
-              #       -storageAccountResourceGroup $(storage-account-resource-group)
-              #       -containerRegistryName $(container-registry)
-              #       -containerRegistryResourceGroup $(container-registry-resource-group)
+                  ScriptType: "FilePath"
+                  ScriptPath: "deploy.ps1"
+                  ScriptArguments:
+                    -moduleName ${{ parameters.module }}
+                    -storageAccountName $(storage-account)
+                    -storageAccountContainerName $(storage-account-container)
+                    -storageAccountResourceGroup $(storage-account-resource-group)
+                    -containerRegistryName $(container-registry)
+                    -containerRegistryResourceGroup $(container-registry-resource-group)
 
