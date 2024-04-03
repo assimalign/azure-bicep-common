@@ -10,8 +10,14 @@ trigger:
 pool:
   vmImage: windows-latest
 
+variables:
+  - name: environments
+    value: dev,qa,prd
+
 stages:
-  - template: '../../templates/module-deployment.yml'
-    parameters:
-      environment: dev
-      module: app-configuration
+  - ${{ each environment in split(variables.environments, ',')}}:
+    - template: '../../templates/module-deployment.yml'
+      parameters:
+        module: app-configuration
+        environment: ${{ environment }}
+        subscription: 'Assimalign SA (${{ upper(environment) }})'

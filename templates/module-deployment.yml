@@ -6,14 +6,16 @@ parameters:
   - qa
   - uat
   - prd
+
+- name: subscription
+  type: string
+
 - name: module
-# - name: variable_group
-#   type: string
-#   default: 'bicep-dev-module-configs'
+  type: string
 
 stages:
   - stage: ${{ parameters.environment }}
-    displayName: Release - ${{ parameters.environment }}
+    displayName: Release - ${{ upper(parameters.environment) }}
     jobs:
       - deployment: bicep_push
         displayName: 'Bicep: Module Push - ${{ parameters.module }}'
@@ -30,7 +32,7 @@ stages:
                 displayName: "Upcert Bicep Modules"
                 condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/development')))
                 inputs:
-                  azureSubscription: Assimalign SA (DEV)
+                  azureSubscription: ${{ parameters.subscription }}
                   azurePowerShellVersion: LatestVersion
                   pwsh: true
                   ScriptType: "FilePath"
