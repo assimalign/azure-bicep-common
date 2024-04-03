@@ -13,12 +13,13 @@ pool:
 variables:
   - group: bicep-dev-module-configs
 
-
 steps:
-  - task: Bash@3
+  - task: PowerShell@2
     inputs:
+      pwsh: true
+      targetType: inline
       script: 
-        echo $(service-principal)
+        Write-Host $(service-principal)
 
 # stages: 
 #   - template: '../../templates/module-deployment.yml'
