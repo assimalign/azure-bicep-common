@@ -52,4 +52,5 @@ stages:
                     -storageAccountResourceGroup $(storage-account-resource-group)
                     -containerRegistryName $(container-registry)
                     -containerRegistryResourceGroup $(container-registry-resource-group)
+                    -skipSchemaUpdate $(skip-schema-update)
 

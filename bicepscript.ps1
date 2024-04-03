@@ -15,15 +15,17 @@ param (
     [string]$storageAccountResourceGroup,
     
     [Parameter(Mandatory = $true)]
-    [string]$storageAccountContainerName
+    [string]$storageAccountContainerName,
+
+    [Parameter(Mandatory = $false)]
+    [bool]$skipSchemaUpdate = $false
 )
 
 # Push Bicep Module to ACR
 $azureContext = Get-AzContext
 $azureContainerRegistry = Get-AzContainerRegistry `
     -Name $containerRegistryName `
-    -ResourceGroupName $containerRegistryResourceGroup `
-    -ErrorAction SilentlyContinue
+    -ResourceGroupName $containerRegistryResourceGroup
 $azureContainerRegistryUrl = $azureContainerRegistry.LoginServer
 
 #region 1. ACR Push
@@ -39,38 +41,38 @@ Get-ChildItem "./modules/$moduleName" -Recurse -Include '*.bicep' | ForEach-Obje
 
 
 #region 2. Schema Push
-# Push/Update JSON Parameter Schemas
-$storageAccount = Get-AzStorageAccount `
-    -ResourceGroupName $storageAccountResourceGroup `
-    -Name $storageAccountName `
-    -ErrorAction SilentlyContinue
+if ($skipSchemaUpdate -eq $false) {
+    # Push/Update JSON Parameter Schemas
+    $storageAccount = Get-AzStorageAccount `
+        -ResourceGroupName $storageAccountResourceGroup `
+        -Name $storageAccountName
 
-# Get the Module Schema
-$schema = Get-Item "./modules/$moduleName/parameters.json"
-$index = $schema.FullName.IndexOf('modules') + 'modules'.Length + 1
-$path = 'bicep' + '\' + $schema.FullName.Substring($index , $schema.FullName.Length - $index)
+    # Get the Module Schema
+    $schema = Get-Item "./modules/$moduleName/parameters.json"
+    $index = $schema.FullName.IndexOf('modules') + 'modules'.Length + 1
+    $path = 'bicep' + '\' + $schema.FullName.Substring($index , $schema.FullName.Length - $index)
     
-Set-AzStorageBlobContent `
-    -Container $storageAccountContainerName `
-    -Context $storageAccount.Context `
-    -Blob $path `
-    -File $schema.FullName `
-    -Force `
-    -Verbose `
-    -ErrorAction SilentlyContinue
+    Set-AzStorageBlobContent `
+        -Container $storageAccountContainerName `
+        -Context $storageAccount.Context `
+        -Blob $path `
+        -File $schema.FullName `
+        -Force `
+        -Verbose
 
-# Get the Root Schema
-$schema = Get-Item "./modules/schema.json"
-$index = $schema.FullName.IndexOf('modules') + 'modules'.Length + 1
-$path = 'bicep' + '\' + $schema.FullName.Substring($index , $schema.FullName.Length - $index)
+    # Get the Root Schema
+    $schema = Get-Item "./modules/schema.json"
+    $index = $schema.FullName.IndexOf('modules') + 'modules'.Length + 1
+    $path = 'bicep' + '\' + $schema.FullName.Substring($index , $schema.FullName.Length - $index)
 
-Set-AzStorageBlobContent `
-    -Container $storageAccountContainerName `
-    -Context $storageAccount.Context `
-    -Blob $path `
-    -File $schema.FullName `
-    -Force `
-    -Verbose `
-    -ErrorAction SilentlyContinue
+    Set-AzStorageBlobContent `
+        -Container $storageAccountContainerName `
+        -Context $storageAccount.Context `
+        -Blob $path `
+        -File $schema.FullName `
+        -Force `
+        -Verbose
+}
+
 
 #endregion
