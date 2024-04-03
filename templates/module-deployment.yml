@@ -19,7 +19,7 @@ stages:
                 displayName: "Upcert Bicep Modules"
                 condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
                 inputs:
-                  zureSubscription: $(service-principal)
+                  azureSubscription: $(service-principal)
                   preferredAzurePowerShellVersion: "10.3.0"
                   pwsh: true
                   ScriptType: "FilePath"
@@ -50,7 +50,7 @@ stages:
                 displayName: "Upcert Bicep Modules"
                 condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
                 inputs:
-                  zureSubscription: $(service-principal)
+                  azureSubscription: $(service-principal)
                   preferredAzurePowerShellVersion: "10.3.0"
                   pwsh: true
                   ScriptType: "FilePath"
@@ -79,7 +79,7 @@ stages:
                 displayName: "Upcert Bicep Modules"
                 condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
                 inputs:
-                  zureSubscription: $(service-principal)
+                  azureSubscription: $(service-principal)
                   preferredAzurePowerShellVersion: "10.3.0"
                   pwsh: true
                   ScriptType: "FilePath"
@@ -109,7 +109,7 @@ stages:
                 displayName: "Upcert Bicep Modules"
                 condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
                 inputs:
-                  zureSubscription: $(service-principal)
+                  azureSubscription: $(service-principal)
                   preferredAzurePowerShellVersion: "10.3.0"
                   pwsh: true
                   ScriptType: "FilePath"
