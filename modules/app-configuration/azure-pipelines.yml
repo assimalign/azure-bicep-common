@@ -11,11 +11,12 @@ pool:
   vmImage: windows-latest
 
 variables:
+  - group: bicep-module-configs
   - name: environments
-    value: dev,qa,prd
+    value: $[variables.environments]
 
 stages:
-  - ${{ each environment in split(environments, ',') }}:
+  - ${{ each environment in split(variables.environments, ',') }}:
     - template: '../../templates/module-deployment.yml'
       parameters:
         module: app-configuration
