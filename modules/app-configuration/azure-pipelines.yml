@@ -19,11 +19,3 @@ stages:
       parameters:
         module: apim
         environment: ${{ environment }}
-        ${{ if eq(environment, 'dev') )}}:
-          subscription: ${{ variables['service-principal-dev'] }}
-        ${{ if eq(environment, 'qa') )}}:
-          subscription: ${{ variables['service-principal-qa'] }}
-        ${{ if eq(environment, 'uat') )}}:
-          subscription: ${{ variables['service-principal-uat'] }}
-        ${{ if eq(environment, 'prd') )}}:
-          subscription: ${{ variables['service-principal-prd'] }}
