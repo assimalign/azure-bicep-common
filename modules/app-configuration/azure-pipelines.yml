@@ -24,4 +24,3 @@ stages:
       environment: dev
       module: app-configuration
       variable_group: 'bicep-dev-module-configs'
-    
