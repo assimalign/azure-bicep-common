@@ -44,7 +44,7 @@ stages:
                   azurePowerShellVersion: LatestVersion
                   pwsh: true
                   ScriptType: "FilePath"
-                  ScriptPath: "deploy.ps1"
+                  ScriptPath: "bicepscript.ps1"
                   ScriptArguments:
                     -moduleName ${{ parameters.module }}
                     -storageAccountName $(storage-account)
@@ -52,4 +52,5 @@ stages:
                     -storageAccountResourceGroup $(storage-account-resource-group)
                     -containerRegistryName $(container-registry)
                     -containerRegistryResourceGroup $(container-registry-resource-group)
+                    -skipSchemaUpdate $(skip-schema-update)
 
