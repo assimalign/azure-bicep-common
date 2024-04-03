@@ -15,7 +15,7 @@ stages:
   - stage: ${{ parameters.environment }}
     displayName: Release - ${{ parameters.environment }}
     jobs:
-      - deployment: bicep-push
+      - deployment: bicep_push
         displayName: 'Bicep: Module Push - ${{ parameters.module }}'
         variables:
         - group: 'bicep-${{ parameters.environment }}-module-configs'
