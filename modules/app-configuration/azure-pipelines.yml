@@ -14,6 +14,7 @@ pool:
 stages: 
   - template: '../../templates/module-deployment.yml'
     parameters:
+      environment: dev
       module: app-configuration
       variable_group: 'bicep-dev-module-configs'
     
