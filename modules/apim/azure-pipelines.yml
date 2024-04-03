@@ -11,23 +11,20 @@ pool:
   vmImage: windows-latest
 
 variables:
-  - group: bicep-module-variables
+  - group: bicep-module-configs
 
-steps:  
-- task: AzurePowerShell@5
-  displayName: "Upcert Bicep Modules"
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-  inputs:
-    azureSubscription: $(service-principal)
-    preferredAzurePowerShellVersion: "10.3.0"
-    pwsh: true
-    ScriptType: "FilePath"
-    ScriptPath: "deploy.ps1"
-    ScriptArguments:
-      -moduleName apim
-      -storageAccountName $(storage-account)
-      -storageAccountContainerName $(storage-account-container)
-      -storageAccountResourceGroup $(storage-account-resource-group)
-      -containerRegistryName $(container-registry)
-      -containerRegistryResourceGroup $(container-registry-resource-group)
+stages:
+  - ${{ each environment in split(variables.environments, ',')}}:
+    - template: '../../templates/module-deployment.yml'
+      parameters:
+        module: apim
+        environment: ${{ environment }}
+        ${{ if eq(environment, 'dev') )}}:
+          subscription: ${{ variables['service-principal-dev'] }}
+        ${{ if eq(environment, 'qa') )}}:
+          subscription: ${{ variables['service-principal-qa'] }}
+        ${{ if eq(environment, 'uat') )}}:
+          subscription: ${{ variables['service-principal-uat'] }}
+        ${{ if eq(environment, 'prd') )}}:
+          subscription: ${{ variables['service-principal-prd'] }}
     

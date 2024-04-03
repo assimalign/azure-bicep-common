@@ -26,21 +26,26 @@ $azureContainerRegistry = Get-AzContainerRegistry `
     -ErrorAction SilentlyContinue
 $azureContainerRegistryUrl = $azureContainerRegistry.LoginServer
 
+#region 1. ACR Push
 Get-ChildItem "./modules/$moduleName" -Recurse -Include '*.bicep' | ForEach-Object {
+    $moduleFilePath = $_.FullName
+    $moduleName = $_.BaseName
+    $modulePath = "br:$azureContainerRegistryUrl/modules/$moduleName" + ":" + "v1.0"
 
-        $moduleFilePath = $_.FullName
-        $moduleName = $_.BaseName
-        $modulePath = "br:$azureContainerRegistryUrl/modules/$moduleName" + ":" + "v1.0"
-
-        Write-Host "Pushing $modulePath" -ForegroundColor Green
-        Publish-AzBicepModule -FilePath $moduleFilePath -Target $modulePath -DefaultProfile $azureContext -Force
+    Write-Host "Pushing $modulePath" -ForegroundColor Green
+    Publish-AzBicepModule -FilePath $moduleFilePath -Target $modulePath -DefaultProfile $azureContext -Force
 }
+#endregion
 
+
+#region 2. Schema Push
 # TODO - Need to Change this script to only update one schema at a time
 # Push/Update JSON Parameter Schemas
 $storageAccount = Get-AzStorageAccount `
     -ResourceGroupName $storageAccountResourceGroup `
     -Name $storageAccountName 
+
+Get-AzureStorageContainer -
 
 Get-ChildItem './modules' -Include '*.json' -Recurse | ForEach-Object {
     $index = $_.FullName.IndexOf('modules') + 'modules'.Length + 1
@@ -54,3 +59,5 @@ Get-ChildItem './modules' -Include '*.json' -Recurse | ForEach-Object {
         -Force `
         -Verbose
 }
+
+#endregion
