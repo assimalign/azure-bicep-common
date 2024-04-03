@@ -10,8 +10,10 @@ trigger:
 pool:
   vmImage: windows-latest
 
+
 stages: 
   - template: '../../templates/module-deployment.yml'
     parameters:
       module: app-configuration
+      variable_group: 'bicep-dev-module-configs'
     

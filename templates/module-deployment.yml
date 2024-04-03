@@ -1,14 +1,24 @@
 parameters:
+- name: environment
+  type: string
+  value:
+  - dev
+  - qa
+  - uat
+  - prd
 - name: module
+- name: variable_group
+  type: string
+  default: 'bicep-dev-module-configs'
 
 stages:
-  - stage: dev
-    displayName: Release - DEV
+  - stage: ${{ parameters.enviroment }}
+    displayName: Release - ${{ parameters.enviroment }}
     jobs:
       - deployment: release
+        variables:
+        - group: ${{ parameters.variable_group }}
         environment: 'Development'
-        variables: 
-        - group: bicep-dev-module-configs
         strategy:
           runOnce:
             deploy:
@@ -32,94 +42,3 @@ stages:
                     -containerRegistryName $(container-registry)
                     -containerRegistryResourceGroup $(container-registry-resource-group)
 
-
-  - stage: qa
-    displayName: Release - QA
-    jobs:
-      - deployment: release
-        environment: 'Quality Assurance'
-        variables: 
-        - group: bicep-qa-module-configs
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-              - checkout: self
-                displayName: Checkout
-              - task: AzurePowerShell@5
-                displayName: "Upcert Bicep Modules"
-                condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-                inputs:
-                  azureSubscription: $(service-principal)
-                  preferredAzurePowerShellVersion: "10.3.0"
-                  pwsh: true
-                  ScriptType: "FilePath"
-                  ScriptPath: "deploy.ps1"
-                  ScriptArguments:
-                    -moduleName ${{ parameters.module }}
-                    -storageAccountName $(storage-account)
-                    -storageAccountContainerName $(storage-account-container)
-                    -storageAccountResourceGroup $(storage-account-resource-group)
-                    -containerRegistryName $(container-registry)
-                    -containerRegistryResourceGroup $(container-registry-resource-group)
-  - stage: uat
-    displayName: Release - UAT
-    jobs:
-      - deployment: release
-        environment: 'User Acceptance Testing'
-        variables: 
-        - group: bicep-qa-module-configs
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-              - checkout: self
-                displayName: Checkout
-              - task: AzurePowerShell@5
-                displayName: "Upcert Bicep Modules"
-                condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-                inputs:
-                  azureSubscription: $(service-principal)
-                  preferredAzurePowerShellVersion: "10.3.0"
-                  pwsh: true
-                  ScriptType: "FilePath"
-                  ScriptPath: "deploy.ps1"
-                  ScriptArguments:
-                    -moduleName ${{ parameters.module }}
-                    -storageAccountName $(storage-account)
-                    -storageAccountContainerName $(storage-account-container)
-                    -storageAccountResourceGroup $(storage-account-resource-group)
-                    -containerRegistryName $(container-registry)
-                    -containerRegistryResourceGroup $(container-registry-resource-group)
-
-  - stage: prd
-    displayName: Release - PRD
-    jobs:
-      - deployment: release
-        environment: 'Production'
-        variables: 
-        - group: bicep-prd-module-configs
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-              - checkout: self
-                displayName: Checkout
-              - task: AzurePowerShell@5
-                displayName: "Upcert Bicep Modules"
-                condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-                inputs:
-                  azureSubscription: $(service-principal)
-                  preferredAzurePowerShellVersion: "10.3.0"
-                  pwsh: true
-                  ScriptType: "FilePath"
-                  ScriptPath: "deploy.ps1"
-                  ScriptArguments:
-                    -moduleName ${{ parameters.module }}
-                    -storageAccountName $(storage-account)
-                    -storageAccountContainerName $(storage-account-container)
-                    -storageAccountResourceGroup $(storage-account-resource-group)
-                    -containerRegistryName $(container-registry)
-                    -containerRegistryResourceGroup $(container-registry-resource-group)
-
-    
