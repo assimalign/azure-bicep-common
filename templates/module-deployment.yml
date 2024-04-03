@@ -29,7 +29,7 @@ stages:
                 displayName: "Upcert Bicep Modules"
                 condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/development')))
                 inputs:
-                  azureSubscription: Assimalign SA (DEV)
+                  azureSubscription: $[variables.service-principal]
                   preferredAzurePowerShellVersion: "10.3.0"
                   pwsh: true
                   ScriptType: "FilePath"
