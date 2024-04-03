@@ -12,8 +12,8 @@ parameters:
   default: 'bicep-dev-module-configs'
 
 stages:
-  - stage: ${{ parameters.enviroment }}
-    displayName: Release - ${{ parameters.enviroment }}
+  - stage: ${{ parameters.environment }}
+    displayName: Release - ${{ parameters.environment }}
     jobs:
       - deployment: release
         variables:

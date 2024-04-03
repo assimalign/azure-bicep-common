@@ -10,7 +10,6 @@ trigger:
 pool:
   vmImage: windows-latest
 
-
 stages: 
   - template: '../../templates/module-deployment.yml'
     parameters:
