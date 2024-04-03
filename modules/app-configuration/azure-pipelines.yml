@@ -10,10 +10,20 @@ trigger:
 pool:
   vmImage: windows-latest
 
-stages: 
-  - template: '../../templates/module-deployment.yml'
-    parameters:
-      environment: dev
-      module: app-configuration
-      variable_group: 'bicep-dev-module-configs'
+variables:
+  - group: bicep-dev-module-configs
+
+
+steps:
+  - task: Bash@3
+    inputs:
+      script: 
+        echo $(service-principal)
+
+# stages: 
+#   - template: '../../templates/module-deployment.yml'
+#     parameters:
+#       environment: dev
+#       module: app-configuration
+#       variable_group: 'bicep-dev-module-configs'
     
