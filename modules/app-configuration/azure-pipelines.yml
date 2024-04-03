@@ -11,12 +11,15 @@ pool:
   vmImage: windows-latest
 
 variables:
+  - group: bicep-module-configs
+
   - name: environments
-    value: dev,qa,prd
+    value: $[variables.environments]
 
 stages:
-  - ${{ each environment in split(variables.environments, ',')}}:
+  - ${{ each environment in split(environments, ',') }}:
     - template: '../../templates/module-deployment.yml'
       parameters:
         module: apim
         environment: ${{ environment }}
+        subscription: Assimalign SA (DEV)

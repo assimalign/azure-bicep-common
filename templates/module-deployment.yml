@@ -7,8 +7,8 @@ parameters:
   - uat
   - prd
 
-# - name: subscription
-#   type: string
+- name: subscription
+  type: string
 
 - name: module
   type: string
@@ -32,7 +32,7 @@ stages:
                 displayName: "Upcert Bicep Modules"
                 condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/development')))
                 inputs:
-                  azureSubscription: $[variables.service-principal]
+                  azureSubscription: ${{ parameters.subscription }}
                   azurePowerShellVersion: LatestVersion
                   pwsh: true
                   ScriptType: "FilePath"
