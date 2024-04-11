@@ -145,7 +145,7 @@ resource appService 'Microsoft.Web/sites@2023-01-01' = {
   resource azAppServiceWebConfigs 'config' = if (contains(appServiceSiteConfigs, 'webSettings')) {
     name: 'web'
     properties: {
-      cors: contains(appServiceSiteConfigs.webSettings, 'cors') ? appServiceSiteConfigs.webSettings.cors : {}
+      cors: contains(appServiceSiteConfigs.webSettings, 'cors') ? contains(appServiceSiteConfigs.webSettings.cors, environment) ? appServiceSiteConfigs.webSettings.cors[environment] : appServiceSiteConfigs.webSettings.cors.default : {}
       ftpsState: contains(appServiceSiteConfigs.webSettings, 'ftpsState') ? appServiceSiteConfigs.webSettings.ftpsState : 'FtpsOnly'
       alwaysOn: contains(appServiceSiteConfigs.webSettings, 'alwaysOn') ? appServiceSiteConfigs.webSettings.alwaysOn : false
       phpVersion: contains(appServiceSiteConfigs.webSettings, 'phpVersion') ? appServiceSiteConfigs.webSettings.phpVersion : null

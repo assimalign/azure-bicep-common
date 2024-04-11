@@ -863,19 +863,42 @@
                             ]
                         },
                         "cors": {
-                            "type": "object",
-                            "properties": {
-                                "allowedOrigins": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "dev": {
+                                            "$ref": "#/definitions/app-service-site-cors-settings"
+                                        },
+                                        "qa": {
+                                            "$ref": "#/definitions/app-service-site-cors-settings"
+                                        },
+                                        "uat": {
+                                            "$ref": "#/definitions/app-service-site-cors-settings"
+                                        },
+                                        "prd": {
+                                            "$ref": "#/definitions/app-service-site-cors-settings"
+                                        }
                                     },
-                                    "minItems": 1
+                                    "required": [
+                                        "dev",
+                                        "qa",
+                                        "uat",
+                                        "prd"
+                                    ]
                                 },
-                                "supportCredentials": {
-                                    "type": "boolean"
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "default": {
+                                            "$ref": "#/definitions/app-service-site-cors-settings"
+                                        }
+                                    },
+                                    "required": [
+                                        "default"
+                                    ]
                                 }
-                            }
+                            ]
                         },
                         "apimGateway": {
                             "type": "object",
@@ -919,10 +942,10 @@
                                     "type": "object",
                                     "properties": {
                                         "default": {
-                                           "enum": [
-                                            "true",
-                                            "false"
-                                           ]
+                                            "enum": [
+                                                "true",
+                                                "false"
+                                            ]
                                         }
                                     }
                                 },
@@ -1014,6 +1037,23 @@
                     }
                 }
             }
+        },
+        "app-service-site-cors-settings": {
+            "type": "object",
+            "properties": {
+                "allowedOrigins": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "supportCredentials": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "allowedOrigins"
+            ]
         },
         "app-service-site-settings-params": {
             "minProperties": 1,

@@ -131,7 +131,7 @@ resource appServiceSlot 'Microsoft.Web/sites/slots@2023-01-01' = {
   resource azAppServiceLinkApim 'config' = if (contains(appServiceSlotSiteConfigs, 'webSettings')) {
     name: 'web'
     properties: {
-      cors: contains(appServiceSlotSiteConfigs.webSettings, 'cors') ? appServiceSlotSiteConfigs.webSettings.cors : {}
+      cors: contains(appServiceSlotSiteConfigs.webSettings, 'cors') ? contains(appServiceSlotSiteConfigs.webSettings.cors, environment) ? appServiceSlotSiteConfigs.webSettings.cors[environment] : appServiceSlotSiteConfigs.webSettings.cors.default : {}
       ftpsState: contains(appServiceSlotSiteConfigs.webSettings, 'ftpsState') ? appServiceSlotSiteConfigs.webSettings.ftpsState : 'FtpsOnly'
       alwaysOn: contains(appServiceSlotSiteConfigs.webSettings, 'alwaysOn') ? appServiceSlotSiteConfigs.webSettings.alwaysOn : false
       phpVersion: contains(appServiceSlotSiteConfigs.webSettings, 'phpVersion') ? appServiceSlotSiteConfigs.webSettings.phpVersion : null
