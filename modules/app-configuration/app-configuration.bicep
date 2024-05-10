@@ -65,8 +65,8 @@ resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' =
 }
 
 // 2. Deploy any Azure App Configuration Keys and values
-module appConfigKeys 'app-configuration-key.bicep' = [for key in appConfigurationKeys: if (!empty(appConfigurationKeys) && appConfigurationDisableLocalAuth == false) {
-  name: 'appc-key-${guid('${appConfig.id}/${key.appConfigurationKey}')}'
+module appConfigKeys 'app-configuration-key.bicep' = [for (key, index) in appConfigurationKeys: if (!empty(appConfigurationKeys) && appConfigurationDisableLocalAuth == false) {
+  name: 'appc-key-${padLeft(index, 3, '0')}-${guid('${appConfig.id}/${key.appConfigurationKey}')}'
   params: {
     region: region
     environment: environment

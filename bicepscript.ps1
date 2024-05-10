@@ -29,7 +29,7 @@ $azureContainerRegistry = Get-AzContainerRegistry `
 $azureContainerRegistryUrl = $azureContainerRegistry.LoginServer
 
 #region 1. ACR Push
-Get-ChildItem "./modules/$moduleName" -Recurse -Include '*.bicep' | ForEach-Object {
+Get-ChildItem "./modules/$moduleName/*" -Include '*.bicep' | ForEach-Object {
     $moduleFilePath = $_.FullName
     $name = $_.BaseName
     $modulePath = "br:$azureContainerRegistryUrl/modules/$name" + ":" + "v1.0"
