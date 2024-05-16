@@ -11,7 +11,7 @@ pool:
 
 variables:
   - name: environments
-    value: dev
+    value: dev,qa,prd
 
 stages:
   - ${{ each environment in split(variables.environments, ',') }}:
@@ -19,6 +19,6 @@ stages:
       parameters:
         module: public-ip
         environment: ${{ environment }}
-        subscription: DSB 1.0 Azure DevOps SA (${{ upper(environment) }})
+        subscription: Assimalign SA (${{ upper(environment) }})
     
     
