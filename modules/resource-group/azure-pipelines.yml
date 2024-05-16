@@ -5,7 +5,7 @@ trigger:
       - development
   paths: 
     include:
-        - modules/resource-group
+        - modules/resource-group/*
 pool:
   vmImage: windows-latest
 

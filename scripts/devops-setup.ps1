@@ -18,9 +18,9 @@ $projectInfo = Invoke-RestMethod `
     -Uri $projectUrl `
     -Method Get `
     -Headers @{
-    'Authorization' = "Basic $token"
-    'Content-Type'  = 'application/json'
-} `
+        'Authorization' = "Basic $token"
+        'Content-Type'  = 'application/json'
+    } `
     -SkipCertificateCheck
 
 
@@ -48,7 +48,7 @@ $environments | ForEach-Object {
             }
             variableGroupProjectReferences = @(
                 @{
-                    name             = "bicep-module-variables"
+                    name             = "bicep-$_-module-configs"
                     description      = ""
                     projectReference = @{
                         id   = $projectInfo.id
@@ -62,7 +62,7 @@ $environments | ForEach-Object {
 
 
 # Create Pipelines
-Get-ChildItem '.\modules\*azure-pipelines.yml' -Recurse | ForEach-Object {
+Get-ChildItem '.\modules\*azure-pipelines.yml' -Recurse -Depth 1 | ForEach-Object {
     $moduleName = ($_.DirectoryName -split '\\') | Select-Object -Last 1
     $moduleFolderName = [string]::Join('-', $prefix, 'external-github')
     $name = [string]::Join('-', $prefix, $moduleName)

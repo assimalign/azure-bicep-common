@@ -5,7 +5,7 @@ trigger:
       - development
   paths: 
     include:
-        - modules/static-site
+        - modules/static-site/*
 pool:
   vmImage: windows-latest
 

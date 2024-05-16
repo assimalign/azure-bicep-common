@@ -5,8 +5,8 @@ trigger:
       - development
   paths: 
     include:
-        - modules/sql-server
-        - modules/private-endpoint
+        - modules/sql-server/*
+        - modules/private-endpoint/*
 pool:
   vmImage: windows-latest
 

@@ -5,8 +5,8 @@ trigger:
       - development
   paths: 
     include:
-        - modules/key-vault
-        - modules/private-endpoint
+        - modules/key-vault/*
+        - modules/private-endpoint/*
 pool:
   vmImage: windows-latest
 

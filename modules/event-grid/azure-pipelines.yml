@@ -5,9 +5,9 @@ trigger:
       - development
   paths: 
     include:
-        - modules/event-grid
-        - modules/private-endpoint
-        - modules/rbac
+        - modules/event-grid/*
+        - modules/private-endpoint/*
+        - modules/rbac/*
 pool:
   vmImage: windows-latest
 

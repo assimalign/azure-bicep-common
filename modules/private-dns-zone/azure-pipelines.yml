@@ -5,7 +5,7 @@ trigger:
       - development
   paths: 
     include:
-        - modules/private-dns-zone
+        - modules/private-dns-zone/*
 pool:
   vmImage: windows-latest
 

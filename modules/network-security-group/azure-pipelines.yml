@@ -5,7 +5,7 @@ trigger:
       - development
   paths: 
     include:
-        - modules/network-security-group
+        - modules/network-security-group/*
 pool:
   vmImage: windows-latest
 

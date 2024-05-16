@@ -5,7 +5,7 @@ trigger:
       - development
   paths: 
     include:
-        - modules/service-bus
+        - modules/service-bus/*
 pool:
   vmImage: windows-latest
 

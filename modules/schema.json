@@ -419,12 +419,6 @@
                 "mediaServices": {
                     "$ref": "./media-service/parameters.json#/definitions/media-services"
                 },
-                "mapAccount": {
-                    "$ref": "./map-account/parameters.json#/definitions/map-account"
-                },
-                "mapAccounts": {
-                    "$ref": "./map-account/parameters.json#/definitions/map-accounts"
-                },
                 "iotHub": {
                     "$ref": "./iot-hub/parameters.json#/definitions/iot-hub"
                 },
@@ -448,12 +442,6 @@
                 },
                 "dataShareDatasets": {
                     "$ref": "./data-share-account/parameters.json#/definitions/data-share-account-share-dataset"
-                },
-                "signalRService": {
-                    "$ref": "./signalr/parameters.json#/definitions/signalr-service"
-                },
-                "signalRServices": {
-                    "$ref": "./signalr/parameters.json#/definitions/signalr-services"
                 }
             }
         }

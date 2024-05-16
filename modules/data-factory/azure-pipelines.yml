@@ -7,7 +7,7 @@ trigger:
     include:
         - modules/data-factory
 pool:
-  vmImage: windows-latest
+  vmImage: windows-latest/*
 
 variables:
   - name: environments

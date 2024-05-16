@@ -17,27 +17,26 @@ param mapAccountName string
 @description('The location the Map Account will be deployed to.')
 param mapAccountLocation string = resourceGroup().location
 
+// @description('')
+// param mapAccountSku object = {
+//    default: 
+// }
+
 @description('The tags to attach to the resource when deployed')
 param mapAccountTags object = {}
 
-resource azMapAccountDeployment 'Microsoft.Maps/accounts@2021-02-01' = {
+resource mapAccount 'Microsoft.Maps/accounts@2024-01-01-preview' = {
    name: replace(replace(mapAccountName, '@environment', environment), '@region', region)
    location: mapAccountLocation
    sku: {
       name: 'G2'
    }
-   properties: {}
+   kind: 'Gen2'
+   properties: {
+      disableLocalAuth: true
+   }
    tags: union(mapAccountTags, {
       region: empty(region) ? 'n/a' : region
       environment: empty(environment) ? 'n/a' : environment
    })
-
-   resource azMapAccountPrivateAtlas 'privateAtlases' = {
-      name: ''
-      plan: {}
-   }
-}
-
-resource azMapAccountDeployment1 'Microsoft.Maps/accounts/privateAtlases@2020-02-01-preview' = {
-   name: '/'
 }

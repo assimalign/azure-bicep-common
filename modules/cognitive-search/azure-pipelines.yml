@@ -5,9 +5,9 @@ trigger:
       - development
   paths: 
     include:
-        - modules/cognitive-search
-        - modules/private-endpoint # dependency
-        - modules/rbac # dependency
+        - modules/cognitive-search/*
+        - modules/private-endpoint/* # dependency
+        - modules/rbac/* # dependency
 pool:
   vmImage: windows-latest
 

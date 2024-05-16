@@ -5,7 +5,7 @@ trigger:
       - development
   paths: 
     include:
-        - modules/nat-gateway
+        - modules/nat-gateway/*
 pool:
   vmImage: windows-latest
 

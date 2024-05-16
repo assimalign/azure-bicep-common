@@ -5,8 +5,8 @@ trigger:
       - development
   paths: 
     include:
-        - modules/apim
-        - modules/rbac
+        - modules/apim/*
+        - modules/rbac/*
 pool:
   vmImage: windows-latest
 

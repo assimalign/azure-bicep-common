@@ -5,8 +5,8 @@ trigger:
       - development
   paths: 
     include:
-        - modules/storage-account
-        - modules/private-endpoint
+        - modules/storage-account/*
+        - modules/private-endpoint/*
 pool:
   vmImage: windows-latest
 

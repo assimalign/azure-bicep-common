@@ -5,7 +5,7 @@ trigger:
       - development
   paths: 
     include:
-        - modules/vpn
+        - modules/vpn/*
 
 pool:
   vmImage: windows-latest

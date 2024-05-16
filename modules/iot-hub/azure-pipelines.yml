@@ -5,7 +5,7 @@ trigger:
       - development
   paths: 
     include:
-        - modules/iot-hub
+        - modules/iot-hub/*
 pool:
   vmImage: windows-latest
 

@@ -5,8 +5,8 @@ trigger:
       - development
   paths: 
     include:
-        - modules/app-configuration
-        - modules/private-endpoint # dependency
+        - modules/app-configuration/*
+        - modules/private-endpoint/* # dependency
 pool:
   vmImage: windows-latest
 

@@ -5,7 +5,7 @@ trigger:
       - development
   paths: 
     include:
-        - modules/log-analytics-workspace
+        - modules/log-analytics-workspace/*
   
 pool:
   vmImage: windows-latest

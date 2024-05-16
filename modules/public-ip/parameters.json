@@ -82,6 +82,17 @@
                 "publicIpConfigs": {
                     "type": "object",
                     "properties": {
+                        "zones": {
+                            "type": "array",
+                            "items": {
+                                "enum": [
+                                    "1",
+                                    "2",
+                                    "3"
+                                ]
+                            },
+                            "minItems": 1
+                        },
                         "dnsNameLabel": {
                             "type": "string"
                         }

@@ -37,6 +37,7 @@ param publicIpTags object = {}
 resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2023-09-01' = {
   name: replace(replace(publicIpName, '@environment', environment), '@region', region)
   location: publicIpLocation
+  zones: contains(publicIpConfigs, 'zones') ? publicIpConfigs.zones : []
   properties: {
     publicIPAllocationMethod: publicIpAllocationMethod
     dnsSettings: !contains(publicIpConfigs, 'dnsNameLabel') ? null : {

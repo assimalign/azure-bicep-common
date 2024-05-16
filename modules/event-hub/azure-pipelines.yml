@@ -5,8 +5,8 @@ trigger:
       - development
   paths: 
     include:
-        - modules/event-hub
-        - modules/private-endpoint
+        - modules/event-hub/*
+        - modules/private-endpoint/*
 pool:
   vmImage: windows-latest
 

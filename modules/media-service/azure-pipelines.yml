@@ -5,7 +5,7 @@ trigger:
       - development
   paths: 
     include:
-        - modules/media-service
+        - modules/media-service/*
 pool:
   vmImage: windows-latest
 

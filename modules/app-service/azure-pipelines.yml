@@ -5,8 +5,8 @@ trigger:
       - development
   paths: 
     include:
-        - modules/app-service
-        - modules/rbac
+        - modules/app-service/*
+        - modules/rbac/*
 pool:
   vmImage: windows-latest
 

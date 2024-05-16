@@ -5,7 +5,7 @@ trigger:
       - development
   paths: 
     include:
-        - modules/data-share-account
+        - modules/data-share-account/*
 pool:
   vmImage: windows-latest
 
