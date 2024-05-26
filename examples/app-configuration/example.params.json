@@ -6,26 +6,19 @@
             "value": {
                 "appConfigurationName": "",
                 "appConfigurationSku": {
-                    "dev": "Free",
-                    "qa": "Standard",
-                    "uat": "Standard",
-                    "prd": "Standard"
+                    "dev": "Free"
                 },
+                "appConfigurationLocation": "eastus2",
                 "appConfigurationEnableMsi": false,
-                "appConfigurationDisablePublicAccess": false
+                "appConfigurationNetworkConfig": {
+                    "azureResourceAccess": "Enabled",
+                    "publicNetworkAccess": "Disabled"
+                }
             }
         },
-        "appService": {
+        "monitorPrivateLinkScope": {
             "value": {
-                "appServiceSiteConfigs": {
-                    "webSettings": {
-                        "cors": {
-                            "default": {
-                                "allowedOrigins": []
-                            }
-                        }
-                    }
-                }
+                "monitorPrivateLinkScopeName": ""
             }
         }
     }

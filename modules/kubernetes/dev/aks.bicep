@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -11,11 +15,20 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('The name of the AKS instance.')
+param aksName string
+
+@description('The deployment location of the AK instance.')
+param aksLocation string = resourceGroup().location
+
+
+func formatName(name string, environment string, region string) string => 
+  replace(replace(name, '@environment', environment), '@region', region)
 
 
 resource aksCluster 'Microsoft.ContainerService/managedClusters@2021-03-01' = {
-  name: 'name'
-  location: resourceGroup().location
+  name: formatName(aksName, environment, region)
+  location: aksLocation
   identity: {
     type: 'SystemAssigned'
   }
@@ -32,6 +45,7 @@ resource aksCluster 'Microsoft.ContainerService/managedClusters@2021-03-01' = {
         mode: 'System'
       }
     ]
+
     linuxProfile: {
       adminUsername: 'adminUserName'
       ssh: {

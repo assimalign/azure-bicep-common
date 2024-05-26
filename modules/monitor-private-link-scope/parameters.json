@@ -1,0 +1,98 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "monitor-private-link-scope": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/monitor-private-link-scoped-service-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "monitor-private-link-scopes": {
+            "type":"object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/monitor-private-link-scoped-service-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "monitor-private-link-scoped-service-parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "monitorPrivateLinkScopeName": {
+                    "type": "string"
+                },
+                "monitorPrivateLinkScopeResourceGroup": {
+                    "type": "string"
+                },
+                "monitorPrivateLinkScopeLocation": {
+                    "type": "string"
+                },
+                "monitorPrivateLinkScopeResources": {
+                    "type":"array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "resourceType": {
+                                "enum": [
+                                    "Microsoft.OperationalInsights/workspaces",
+                                    "Microsoft.Insights"
+                                ]
+                            },
+                            "resourceName": {
+                                "type": "string"
+                            },
+                            "resourceGroup": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "resourceType",
+                            "resourceName",
+                            "resourceGroup"
+                        ]
+                    }
+                },
+                "monitorPrivateLinkScopeConfig": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "queryAccessMode": {
+                            "enum": [
+                                "Open",
+                                "PrivateOnly"
+                            ]
+                        },
+                        "ingestionAccessMode": {
+                            "enum": [
+                                "Open",
+                                "PrivateOnly"
+                            ]
+                        }
+                    }
+                },
+                "monitorPrivateLinkScopePrivateEndpoint": {
+                    "$ref": "../private-endpoint/parameters.json#/definitions/private-endpoint-embedded"
+                }
+            },
+            "required": [
+                "monitorPrivateLinkScopeName"
+            ]
+        }
+    }
+}

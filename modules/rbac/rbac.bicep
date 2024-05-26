@@ -4,6 +4,10 @@
 
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'

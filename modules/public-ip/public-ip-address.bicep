@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -34,23 +38,32 @@ param publicIpConfigs object = {}
 param publicIpTags object = {}
 
 // 1. Deploy Public Ip Address
-resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2023-09-01' = {
+resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2023-11-01' = {
   name: replace(replace(publicIpName, '@environment', environment), '@region', region)
   location: publicIpLocation
-  zones: contains(publicIpConfigs, 'zones') ? publicIpConfigs.zones : []
+  zones: (contains(publicIpSku, environment) ? publicIpSku[environment].tier : publicIpSku.default.tier) == 'Regional' // Only regional can set zones
+    ? publicIpConfigs.?zones ?? []
+    : []
   properties: {
     publicIPAllocationMethod: publicIpAllocationMethod
-    dnsSettings: !contains(publicIpConfigs, 'dnsNameLabel') ? null : {
-      domainNameLabel: replace(replace(publicIpConfigs.dnsNameLabel, '@environment', environment), '@region', region)
-    }
+    dnsSettings: !contains(publicIpConfigs, 'dnsNameLabel')
+      ? null
+      : {
+          domainNameLabel: replace(
+            replace(publicIpConfigs.dnsNameLabel, '@environment', environment),
+            '@region',
+            region
+          )
+        }
   }
   sku: {
-    name: contains(publicIpSku, environment) ? publicIpSku[environment] : publicIpSku.default
+    name: contains(publicIpSku, environment) ? publicIpSku[environment].name : publicIpSku.default.name
+    tier: contains(publicIpSku, environment) ? publicIpSku[environment].tier : publicIpSku.default.tier
   }
   tags: union(publicIpTags, {
-      region: empty(region) ? 'n/a' : region
-      environment: empty(environment) ? 'n/a' : environment
-    })
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 output publicIpAddress object = publicIpAddress

@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -24,20 +28,11 @@ param privateDnsZoneTtl int = 3600
 param privateDnsZoneRecords array
 
 
-
-resource parent 'Microsoft.Network/dnsZones@2018-05-01' existing = {
-  name: replace(replace('${privateDnsZoneName}/${privateDnsZoneRecordName}', '@environment', environment) , '@region', region)
-}
-
-
 // 1.1 Set A Records if any in Private DNS Zone
-resource azPrivateDnsARecordsDeployment 'Microsoft.Network/dnsZones/A@2023-07-01-preview' = {
+resource azPrivateDnsARecordsDeployment 'Microsoft.Network/privateDnsZones/MX@2020-06-01' = {
   name: replace(replace('${privateDnsZoneName}/${privateDnsZoneRecordName}', '@environment', environment) , '@region', region)
-  parent: parent
-  
   properties: {
-    ARecords: [
-      
-    ]
+   ttl: privateDnsZoneTtl
+   mxRecords: privateDnsZoneRecords
   }
 }

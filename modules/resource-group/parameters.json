@@ -4,6 +4,7 @@
         "resource-group": {
             "type": "object",
             "description": "The Resource Group in which all resource will be deployed under.",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "$ref": "#/definitions/resource-group-parameters"
@@ -16,6 +17,7 @@
         "resource-groups": {
             "type": "object",
             "description": "The Resource Group in which all resource will be deployed under.",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -31,6 +33,7 @@
         },
         "resource-group-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "resourceGroupName": {
                     "type": "string"

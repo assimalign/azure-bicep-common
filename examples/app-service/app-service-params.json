@@ -1,0 +1,50 @@
+{
+    "$schema": "../../modules/schema.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appServicePlans": {
+            "value": [
+                {
+                    "appServicePlanName": "",
+                    "appServicePlanOs": "linux",
+                    "appServicePlanSku":{
+                        "default": {
+                            "capacity": 3,
+                            "name": "P1mv3"
+                        }
+                    }
+                }
+            ]
+        },
+        "appService": {
+            "value": {
+                "appServiceName": "",
+                "appServiceResourceGroup": "",
+                "appServicePlanName": "",
+                "appServicePlanResourceGroup": "",
+                "appServiceAppInsightsName": "",
+                "appServiceAppInsightsResourceGroup": "",
+                "appServiceLocation": "",
+                "appServiceType": "app,linux",
+                "appServiceStorageAccountName": "",
+                "appServiceStorageAccountResourceGroup": "",
+                "appServiceNetworkSettings": {
+                    "publicNetworkAccess": "Disabled",
+                    "virtualNetworkName": ""
+                },
+                "appServiceSlots": [
+                    {
+                        "appServiceSlotName": "",
+                        "appServiceSlotNetworkSettings": {
+                            "publicNetworkAccess": "Disabled"
+                        },
+                        "appServiceSlotPrivateEndpoint": {
+                            "privateEndpointVirtualNetworkName": ""
+                        },
+                        "functions": []
+                    }
+                ]
+            }
+        }
+    }
+}

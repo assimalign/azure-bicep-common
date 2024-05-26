@@ -60,7 +60,21 @@
                         },
                         {
                             "type": "object",
+                            "minProperties": 1,
+                            "additionalProperties": false,
                             "properties": {
+                                "demo": {
+                                    "$ref": "#/definitions/apim-sku"
+                                },
+                                "stg": {
+                                    "$ref": "#/definitions/apim-sku"
+                                },
+                                "sbx": {
+                                    "$ref": "#/definitions/apim-sku"
+                                },
+                                "test": {
+                                    "$ref": "#/definitions/apim-sku"
+                                },
                                 "dev": {
                                     "$ref": "#/definitions/apim-sku"
                                 },
@@ -73,13 +87,7 @@
                                 "prd": {
                                     "$ref": "#/definitions/apim-sku"
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         }
                     ]
                 },
@@ -363,7 +371,21 @@
                         },
                         {
                             "type": "object",
+                            "minProperties": 1,
+                            "additionalProperties": false,
                             "properties": {
+                                "demo": {
+                                    "type": "string"
+                                },
+                                "stg": {
+                                    "type": "string"
+                                },
+                                "sbx": {
+                                    "type": "string"
+                                },
+                                "test": {
+                                    "type": "string"
+                                },
                                 "dev": {
                                     "type": "string"
                                 },
@@ -376,13 +398,7 @@
                                 "prd": {
                                     "type": "string"
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         }
                     ]
                 },
@@ -497,6 +513,7 @@
                     "oneOf": [
                         {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "default": {
                                     "type": "string"
@@ -508,7 +525,21 @@
                         },
                         {
                             "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
                             "properties": {
+                                "demo": {
+                                    "type": "string"
+                                },
+                                "stg": {
+                                    "type": "string"
+                                },
+                                "sbx": {
+                                    "type": "string"
+                                },
+                                "test": {
+                                    "type": "string"
+                                },
                                 "dev": {
                                     "type": "string"
                                 },
@@ -521,13 +552,7 @@
                                 "prd": {
                                     "type": "string"
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         }
                     ]
                 },
@@ -1031,6 +1056,7 @@
                     "oneOf": [
                         {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "default": {
                                     "type": "string"
@@ -1042,7 +1068,21 @@
                         },
                         {
                             "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
                             "properties": {
+                                "demo": {
+                                    "type": "string"
+                                },
+                                "stg": {
+                                    "type": "string"
+                                },
+                                "sbx": {
+                                    "type": "string"
+                                },
+                                "test": {
+                                    "type": "string"
+                                },
                                 "dev": {
                                     "type": "string"
                                 },
@@ -1055,13 +1095,7 @@
                                 "prd": {
                                     "type": "string"
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         }
                     ]
                 },
@@ -1069,6 +1103,7 @@
                     "oneOf": [
                         {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "default": {
                                     "type": "string"
@@ -1080,7 +1115,21 @@
                         },
                         {
                             "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
                             "properties": {
+                                "demo": {
+                                    "type": "string"
+                                },
+                                "stg": {
+                                    "type": "string"
+                                },
+                                "sbx": {
+                                    "type": "string"
+                                },
+                                "test": {
+                                    "type": "string"
+                                },
                                 "dev": {
                                     "type": "string"
                                 },
@@ -1093,13 +1142,7 @@
                                 "prd": {
                                     "type": "string"
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         }
                     ]
                 },
@@ -1107,6 +1150,7 @@
                     "oneOf": [
                         {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "default": {
                                     "type": "object",
@@ -1134,7 +1178,85 @@
                         },
                         {
                             "type": "object",
+                            "additionalProperties": false,
+                            "minProperties":1,
                             "properties": {
+                                "demo": {
+                                    "type": "object",
+                                    "properties": {
+                                        "keyVaultName": {
+                                            "type": "string"
+                                        },
+                                        "keyVaultResourceGroup": {
+                                            "type": "string"
+                                        },
+                                        "keyVaultSecretName": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "keyVaultName",
+                                        "keyVaultSecretName",
+                                        "keyVaultResourceGroup"
+                                    ]
+                                },
+                                "stg": {
+                                    "type": "object",
+                                    "properties": {
+                                        "keyVaultName": {
+                                            "type": "string"
+                                        },
+                                        "keyVaultResourceGroup": {
+                                            "type": "string"
+                                        },
+                                        "keyVaultSecretName": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "keyVaultName",
+                                        "keyVaultSecretName",
+                                        "keyVaultResourceGroup"
+                                    ]
+                                },
+                                "sbx": {
+                                    "type": "object",
+                                    "properties": {
+                                        "keyVaultName": {
+                                            "type": "string"
+                                        },
+                                        "keyVaultResourceGroup": {
+                                            "type": "string"
+                                        },
+                                        "keyVaultSecretName": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "keyVaultName",
+                                        "keyVaultSecretName",
+                                        "keyVaultResourceGroup"
+                                    ]
+                                },
+                                "test": {
+                                    "type": "object",
+                                    "properties": {
+                                        "keyVaultName": {
+                                            "type": "string"
+                                        },
+                                        "keyVaultResourceGroup": {
+                                            "type": "string"
+                                        },
+                                        "keyVaultSecretName": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "keyVaultName",
+                                        "keyVaultSecretName",
+                                        "keyVaultResourceGroup"
+                                    ]
+                                },
                                 "dev": {
                                     "type": "object",
                                     "properties": {
@@ -1211,13 +1333,7 @@
                                         "keyVaultResourceGroup"
                                     ]
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         }
                     ]
                 }

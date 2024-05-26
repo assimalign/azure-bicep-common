@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -45,7 +49,7 @@ resource storageAccountBlobService 'Microsoft.Storage/storageAccounts/blobServic
   parent: storageAccount
   properties: {
     cors: {
-      corsRules: [for rule in storageAccountBlobServiceConfigs!.blobServiceCorsPolicy ?? []: {
+      corsRules: [for rule in storageAccountBlobServiceConfigs.?blobServiceCorsPolicy ?? []: {
         allowedMethods: rule.methods
         allowedOrigins: rule.origins
         exposedHeaders: []
@@ -58,19 +62,19 @@ resource storageAccountBlobService 'Microsoft.Storage/storageAccounts/blobServic
     containerDeleteRetentionPolicy: any(contains(storageAccountBlobServiceConfigs, 'blobServiceRetentionPolicy') ? {
       days: storageAccountBlobServiceConfigs.blobServiceRetentionPolicy.days
       enabled: true
-    } : json('null'))
+    } : null)
     changeFeed: any(contains(storageAccountBlobServiceConfigs, 'blobServiceRestorePolicy') ? {
       retentionInDays: storageAccountBlobServiceConfigs.blobServiceRestorePolicy.days
       enabled: true
-    } : json('null'))
+    } : null)
     restorePolicy: any(contains(storageAccountBlobServiceConfigs, 'blobServiceRestorePolicy') ? {
       days: storageAccountBlobServiceConfigs.blobServiceRestorePolicy.days
       enabled: true
-    } : json('null'))
+    } : null)
     deleteRetentionPolicy: any(contains(storageAccountBlobServiceConfigs, 'blobServiceRetentionPolicy') ? {
       days: storageAccountBlobServiceConfigs.blobServiceRetentionPolicy.days
       enabled: true
-    } : json('null'))
+    } : null)
   }
 }
 

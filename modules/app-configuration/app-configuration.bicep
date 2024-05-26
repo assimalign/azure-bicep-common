@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -19,6 +23,10 @@ param appConfigurationLocation string = resourceGroup().location
 
 @description('The pricing tier for Azure App Configurations: "Free" or "Standard". Default is "Free"')
 param appConfigurationSku object = {
+  demo: 'Free'
+  stg: 'Free'
+  sbx: 'Free'
+  test: 'Free'
   dev: 'Free'
   qa: 'Free'
   uat: 'Free'
@@ -35,8 +43,8 @@ param appConfigurationPrivateEndpoint object = {}
 @description('Enables Managed System Identity')
 param appConfigurationEnableMsi bool = false
 
-@description('Disables public network access to the resource')
-param appConfigurationDisablePublicAccess bool = true
+@description('The network configuration for the App Configuration resource.')
+param appConfigurationNetworkConfig object = {}
 
 @description('Disables local authentication to the app configuration.')
 param appConfigurationDisableLocalAuth bool = false
@@ -45,7 +53,7 @@ param appConfigurationDisableLocalAuth bool = false
 param appConfigurationTags object = {}
 
 // 1. Deploys a single instance of Azure App Configuration
-resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-09-01-preview' = {
   name: replace(replace(appConfigurationName, '@environment', environment), '@region', region)
   location: appConfigurationLocation
   sku: {
@@ -56,37 +64,51 @@ resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' =
   }
   properties: {
     disableLocalAuth: appConfigurationDisableLocalAuth
-    publicNetworkAccess: appConfigurationDisablePublicAccess == true ? 'Disabled' : 'Enabled'
+    publicNetworkAccess: contains(appConfigurationNetworkConfig, 'publicNetworkAccess')
+      ? appConfigurationNetworkConfig.publicNetworkAccess
+      : 'Enabled'
+    dataPlaneProxy: {
+      authenticationMode: appConfigurationDisableLocalAuth == true ? 'Pass-through' : 'Local'
+      privateLinkDelegation: contains(appConfigurationNetworkConfig, 'azureResourceAccess')
+      ? appConfigurationNetworkConfig.azureResourceAccess
+      : 'Disabled'
+    }
   }
   tags: union(appConfigurationTags, {
-      region: region
-      environment: environment
-    })
+    region: region
+    environment: environment
+  })
 }
 
 // 2. Deploy any Azure App Configuration Keys and values
-module appConfigKeys 'app-configuration-key.bicep' = [for (key, index) in appConfigurationKeys: if (!empty(appConfigurationKeys) && appConfigurationDisableLocalAuth == false) {
-  name: 'appc-key-${padLeft(index, 3, '0')}-${guid('${appConfig.id}/${key.appConfigurationKey}')}'
-  params: {
-    region: region
-    environment: environment
-    appConfigurationName: appConfigurationName
-    appConfigurationKey: key.appConfigurationKey
-    appConfigurationValue: key.appConfigurationValue
-    appConfigurationContentType: key.appConfigurationContentType ?? ''
-    appConfigurationLabels: contains(key, 'appConfigurationLabels') ? key.appConfigurationLabels : []
+module appConfigKeys 'app-configuration-key.bicep' = [
+  for (key, index) in appConfigurationKeys: if (!empty(appConfigurationKeys) && appConfigurationDisableLocalAuth == false) {
+    name: 'appc-key-${padLeft(index, 3, '0')}-${guid('${appConfig.id}/${key.appConfigurationKey}')}'
+    params: {
+      region: region
+      environment: environment
+      appConfigurationName: appConfigurationName
+      appConfigurationKey: key.appConfigurationKey
+      appConfigurationValue: key.appConfigurationValue
+      appConfigurationContentType: key.?appConfigurationContentType
+      appConfigurationLabels: key.?appConfigurationLabels
+    }
   }
-}]
+]
 
 // 2. Deploys a private endpoint, if applicable, for an instance of Azure App Configuration
 module appConfigPrivateEndpoint '../private-endpoint/private-endpoint.bicep' = if (!empty(appConfigurationPrivateEndpoint)) {
-  name: !empty(appConfigurationPrivateEndpoint) ? toLower('appc-private-ep-${guid('${appConfig.id}/${appConfigurationPrivateEndpoint.privateEndpointName}')}') : 'no-app-cfg-pri-endp-to-deploy'
+  name: !empty(appConfigurationPrivateEndpoint)
+    ? toLower('appc-private-ep-${guid('${appConfig.id}/${appConfigurationPrivateEndpoint.privateEndpointName}')}')
+    : 'no-app-cfg-pri-endp-to-deploy'
   scope: resourceGroup()
   params: {
     region: region
     environment: environment
     privateEndpointName: appConfigurationPrivateEndpoint.privateEndpointName
-    privateEndpointLocation: contains(appConfigurationPrivateEndpoint, 'privateEndpointLocation') ? appConfigurationPrivateEndpoint.privateEndpointLocation : appConfigurationLocation
+    privateEndpointLocation: contains(appConfigurationPrivateEndpoint, 'privateEndpointLocation')
+      ? appConfigurationPrivateEndpoint.privateEndpointLocation
+      : appConfigurationLocation
     privateEndpointDnsZoneName: appConfigurationPrivateEndpoint.privateEndpointDnsZoneName
     privateEndpointDnsZoneGroupName: 'privatelink-azconfig-io'
     privateEndpointDnsZoneResourceGroup: appConfigurationPrivateEndpoint.privateEndpointDnsZoneResourceGroup
@@ -94,7 +116,9 @@ module appConfigPrivateEndpoint '../private-endpoint/private-endpoint.bicep' = i
     privateEndpointVirtualNetworkSubnetName: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
     privateEndpointResourceIdLink: appConfig.id
-    privateEndpointTags: contains(appConfigurationPrivateEndpoint, 'privateEndpointTags') ? appConfigurationPrivateEndpoint.privateEndpointTags : {}
+    privateEndpointTags: contains(appConfigurationPrivateEndpoint, 'privateEndpointTags')
+      ? appConfigurationPrivateEndpoint.privateEndpointTags
+      : {}
     privateEndpointGroupIds: [
       'configurationStores'
     ]

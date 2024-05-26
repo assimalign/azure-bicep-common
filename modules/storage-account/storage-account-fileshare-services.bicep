@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -43,7 +47,7 @@ resource storageAccountFileShareService 'Microsoft.Storage/storageAccounts/fileS
   properties: {
     shareDeleteRetentionPolicy: !contains(storageAccountFileShareServiceConfigs, 'fileShareServiceRetentionPolicy') ? null : storageAccountFileShareServiceConfigs.fileShareServiceRetentionPolicy
     cors: {
-      corsRules: [for rule in storageAccountFileShareServiceConfigs!.fileShareServiceCorsPolicy ?? []: {
+      corsRules: [for rule in storageAccountFileShareServiceConfigs.?fileShareServiceCorsPolicy ?? []: {
         allowedMethods: rule.methods
         allowedOrigins: rule.origins
         exposedHeaders: []

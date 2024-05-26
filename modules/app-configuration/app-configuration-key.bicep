@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -26,11 +30,17 @@ param appConfigurationLabels array = []
 @description('The content type of the configuration value')
 param appConfigurationContentType string = ''
 
-func format(name string, env string, region string) string => replace(replace(name, '@environment', env), '@region', region)
+func format(name string, env string, region string) string =>
+  replace(replace(name, '@environment', env), '@region', region)
 
-var value = !empty(environment) && contains(appConfigurationValue, environment) ? appConfigurationValue[environment] : appConfigurationValue.default
+var value = !empty(environment) && contains(appConfigurationValue, environment)
+  ? appConfigurationValue[environment]
+  : appConfigurationValue.default
 
-resource appConfigKeyValues 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = if (empty(appConfigurationLabels) || contains(appConfigurationLabels, 'default')) {
+resource appConfigKeyValues 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = if (empty(appConfigurationLabels) || contains(
+  appConfigurationLabels,
+  'default'
+)) {
   name: format('${appConfigurationName}/${appConfigurationKey}', environment, region)
   properties: {
     value: format(value, environment, region)
@@ -39,10 +49,12 @@ resource appConfigKeyValues 'Microsoft.AppConfiguration/configurationStores/keyV
 }
 
 // Deploys the same configuration value with different labels
-resource appConfigKeyValuesWithLabels 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = [for label in appConfigurationLabels: if (label != 'default' && !empty(appConfigurationLabels)) {
-  name: format('${appConfigurationName}/${appConfigurationKey}$${label}', environment, region)
-  properties: {
-    value: format(value, environment, region)
-    contentType: empty(appConfigurationContentType) ? null : appConfigurationContentType
+resource appConfigKeyValuesWithLabels 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = [
+  for label in appConfigurationLabels: if (label != 'default' && !empty(appConfigurationLabels)) {
+    name: format('${appConfigurationName}/${appConfigurationKey}$${label}', environment, region)
+    properties: {
+      value: format(value, environment, region)
+      contentType: empty(appConfigurationContentType) ? null : appConfigurationContentType
+    }
   }
-}]
+]

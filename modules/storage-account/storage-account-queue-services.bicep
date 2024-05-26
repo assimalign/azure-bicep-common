@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -43,7 +47,7 @@ resource storageAccountQueueService 'Microsoft.Storage/storageAccounts/queueServ
   parent: storageAccount
   properties: {
     cors: {
-      corsRules: [for rule in storageAccountQueueServiceConfigs!.queueServiceCorsPolicy ?? []: {
+      corsRules: [for rule in storageAccountQueueServiceConfigs.?queueServiceCorsPolicy ?? []: {
         allowedMethods: rule.methods
         allowedOrigins: rule.origins
         exposedHeaders: []

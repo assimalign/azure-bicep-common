@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -38,10 +42,10 @@ resource azDataFactoryDeployment 'Microsoft.DataFactory/factories@2018-06-01' = 
   location: dataFactoryLocation
   identity: any(dataFactoryEnableMsi == true ? {
     type: 'SystemAssigned'
-  } : json('null'))
+  } : null)
   properties: {
     publicNetworkAccess: dataFactoryDefaultNetworkAccess == 'Allow' ? 'Enabled' : 'Disabled'
-    repoConfiguration: any(!empty(dataFactoryRepositorySettings) ? dataFactoryRepositorySettings : json('null'))
+    repoConfiguration: any(!empty(dataFactoryRepositorySettings) ? dataFactoryRepositorySettings : null)
   }
   tags: union(dataFactoryTags, {
     region: empty(region) ? 'n/a' : region

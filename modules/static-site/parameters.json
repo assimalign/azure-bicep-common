@@ -2,6 +2,8 @@
     "$schema": "http://json-schema.org/draft-07/schema",
     "definitions": {
         "static-site": {
+            "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "$ref": "#/definitions/static-site-parameters"
@@ -12,6 +14,8 @@
             ]
         },
         "static-sites": {
+            "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -27,6 +31,7 @@
         },
         "static-site-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "staticSiteName": {
                     "type": "string"
@@ -58,13 +63,10 @@
                     "oneOf": [
                         {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "default": {
-                                    "type": "string",
-                                    "enum": [
-                                        "Free",
-                                        "Standard"
-                                    ]
+                                    "$ref": "#/definitions/static-site-sku"
                                 }
                             },
                             "required": [
@@ -73,49 +75,37 @@
                         },
                         {
                             "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
                             "properties": {
+                                "demo": {
+                                     "$ref": "#/definitions/static-site-sku"
+                                },
+                                "stg": {
+                                     "$ref": "#/definitions/static-site-sku"
+                                },
+                                "sbx": {
+                                     "$ref": "#/definitions/static-site-sku"
+                                },
+                                "test": {
+                                     "$ref": "#/definitions/static-site-sku"
+                                },
                                 "dev": {
-                                    "type": "string",
-                                    "enum": [
-                                        "Free",
-                                        "Standard"
-                                    ]
+                                    "$ref": "#/definitions/static-site-sku"
                                 },
                                 "qa": {
-                                    "type": "string",
-                                    "enum": [
-                                        "Free",
-                                        "Standard"
-                                    ]
+                                    "$ref": "#/definitions/static-site-sku"
                                 },
                                 "uat": {
-                                    "type": "string",
-                                    "enum": [
-                                        "Free",
-                                        "Standard"
-                                    ]
+                                    "$ref": "#/definitions/static-site-sku"
                                 },
                                 "prd": {
-                                    "type": "string",
-                                    "enum": [
-                                        "Free",
-                                        "Standard"
-                                    ]
+                                    "$ref": "#/definitions/static-site-sku"
                                 },
                                 "default": {
-                                    "type": "string",
-                                    "enum": [
-                                        "Free",
-                                        "Standard"
-                                    ]
+                                    "$ref": "#/definitions/static-site-sku"
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         }
                     ]
                 },
@@ -131,6 +121,12 @@
             },
             "required": [
                 "staticSiteName"
+            ]
+        },
+        "static-site-sku": {
+            "enum": [
+                "Free",
+                "Standard"
             ]
         }
     }

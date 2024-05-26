@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -41,7 +45,7 @@ param cosmosAccountEnableMsi bool = false
 param cosmosAccountEnableMultiRegionWrites bool = false
 
 @description('Enables free compute up to certain amount. Only good for one resource per subscription.')
-param cosmosAccountEnableFreeTier bool = true
+param cosmosAccountEnableFreeTier bool = false
 
 @description('')
 param cosmosAccountPrivateEndpoint object = {}

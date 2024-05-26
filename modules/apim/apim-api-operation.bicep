@@ -1,10 +1,14 @@
 @allowed([
    ''
+   'demo'
+   'stg'
+   'sbx'
+   'test'
    'dev'
    'qa'
    'uat'
    'prd'
-])
+ ])
 @description('The environment in which the resource(s) will be deployed')
 param environment string = ''
 
@@ -63,7 +67,7 @@ resource azApimApiOperationDeployment 'Microsoft.ApiManagement/service/apis/oper
       request: any(!empty(apimGatewayApiOperationRequestQueryParameters) || !empty(apimGatewayApiOperationRequestHeaders) ? {
          headers: apimGatewayApiOperationRequestHeaders
          queryParameters: apimGatewayApiOperationRequestQueryParameters
-      } : json('null'))
+      } : null)
    }
 }
 

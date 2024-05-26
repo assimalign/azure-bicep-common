@@ -1,0 +1,25 @@
+{
+    "$schema": "../../modules/schema.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "publicIpAddress": {
+            "value": {
+                "publicIpName": "",
+                "publicIpConfigs": {
+                    "zones": [
+                        "1",
+                        "2",
+                        "3"
+                    ]
+                },
+                "publicIpAllocationMethod": "Static",
+                "publicIpSku": {
+                    "demo": {
+                        "name": "Standard",
+                        "tier": "Regional"
+                    }
+                }
+            }
+        }
+    }
+}

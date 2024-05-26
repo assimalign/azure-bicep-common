@@ -1,10 +1,14 @@
 @allowed([
    ''
+   'demo'
+   'stg'
+   'sbx'
+   'test'
    'dev'
    'qa'
    'uat'
    'prd'
-])
+ ])
 @description('The environment in which the resource(s) will be deployed')
 param environment string = ''
 
@@ -29,6 +33,8 @@ param appInsightsAlertRuleConditions array
 
 @description('The tags to attach to the resource when deployed.')
 param appInsightsAlertRuleTags object = {}
+
+
 resource appInsightsAllertRule 'Microsoft.Insights/activityLogAlerts@2020-10-01' = {
    name: replace(replace(appInsightsAlertRuleName, '@environment', environment), '@region', region)
    location: 'global'

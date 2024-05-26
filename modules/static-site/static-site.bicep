@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -32,7 +36,7 @@ param staticSiteSku object = {
 @description('')
 param staticSiteTags object = {}
 
-resource staticSite 'Microsoft.Web/staticSites@2023-01-01' = {
+resource staticSite 'Microsoft.Web/staticSites@2023-12-01' = {
   name: replace(replace(staticSiteName, '@environment', environment), '@region', region)
   location: staticSiteLocation
   sku: any(contains(staticSiteSku, environment) ? {

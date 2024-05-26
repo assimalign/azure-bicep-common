@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -24,10 +28,10 @@ param privateDnsZoneTtl int = 3600
 param privateDnsZoneRecords array
 
 
-resource azPrivateDnsARecordsDeployment 'Microsoft.Network/privateDnsZones/SRV@2020-06-01' = {
+resource azPrivateDnsARecordsDeployment 'Microsoft.Network/privateDnsZones/PTR@2020-06-01' = {
   name: replace(replace('${privateDnsZoneName}/${privateDnsZoneRecordName}', '@environment', environment) , '@region', region)
   properties: {
    ttl: privateDnsZoneTtl
-   srvRecords: privateDnsZoneRecords
+   ptrRecords: privateDnsZoneRecords
   }
 }

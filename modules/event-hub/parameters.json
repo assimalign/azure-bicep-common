@@ -3,6 +3,7 @@
     "definitions": {
         "event-hub-namespace": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "$ref": "#/definitions/event-hub-namespace-parameters"
@@ -14,6 +15,7 @@
         },
         "event-hub-namespaces": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -46,26 +48,50 @@
                     }
                 },
                 "eventHubNamespaceSku": {
-                    "type": "object",
-                    "properties": {
-                        "dev": {
-                            "$ref": "#/definitions/event-hub-namespace-sku"
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "default": {
+                                    "$ref": "#/definitions/event-hub-namespace-sku"
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
                         },
-                        "qa": {
-                            "$ref": "#/definitions/event-hub-namespace-sku"
-                        },
-                        "uat": {
-                            "$ref": "#/definitions/event-hub-namespace-sku"
-                        },
-                        "prd": {
-                            "$ref": "#/definitions/event-hub-namespace-sku"
-                        },
-                        "default": {
-                            "$ref": "#/definitions/event-hub-namespace-sku"
+                        {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
+                            "properties": {
+                                "demo": {
+                                    "$ref": "#/definitions/event-hub-namespace-sku"
+                                },
+                                "stg": {
+                                    "$ref": "#/definitions/event-hub-namespace-sku"
+                                },
+                                "sbx": {
+                                    "$ref": "#/definitions/event-hub-namespace-sku"
+                                },
+                                "test": {
+                                    "$ref": "#/definitions/event-hub-namespace-sku"
+                                },
+                                "dev": {
+                                    "$ref": "#/definitions/event-hub-namespace-sku"
+                                },
+                                "qa": {
+                                    "$ref": "#/definitions/event-hub-namespace-sku"
+                                },
+                                "uat": {
+                                    "$ref": "#/definitions/event-hub-namespace-sku"
+                                },
+                                "prd": {
+                                    "$ref": "#/definitions/event-hub-namespace-sku"
+                                }
+                            }
                         }
-                    },
-                    "required": [
-                        "default"
                     ]
                 },
                 "eventHubNamespacePolicies": {

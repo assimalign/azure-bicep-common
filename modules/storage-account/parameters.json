@@ -3,6 +3,7 @@
     "definitions": {
         "storage-account": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "$ref": "#/definitions/storage-account-parameters"
@@ -14,6 +15,7 @@
         },
         "storage-accounts": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -29,6 +31,7 @@
         },
         "storage-account-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "storageAccountName": {
                     "type": "string"
@@ -85,106 +88,10 @@
                     ]
                 },
                 "storageAccountTier": {
-                    "type": "object",
-                    "properties": {
-                        "dev": {
-                            "type": "string"
-                        },
-                        "qa": {
-                            "type": "string"
-                        },
-                        "uat": {
-                            "type": "string"
-                        },
-                        "prd": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
-                    ]
+                    "$ref": "#/definitions/storage-account-tier-parameters"
                 },
                 "storageAccountRedundancy": {
-                    "type": "object",
-                    "properties": {
-                        "dev": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "LRS"
-                                },
-                                {
-                                    "const": "GRS"
-                                },
-                                {
-                                    "const": "RAGRS"
-                                },
-                                {
-                                    "const": "ZRS"
-                                }
-                            ]
-                        },
-                        "qa": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "LRS"
-                                },
-                                {
-                                    "const": "GRS"
-                                },
-                                {
-                                    "const": "RAGRS"
-                                },
-                                {
-                                    "const": "ZRS"
-                                }
-                            ]
-                        },
-                        "uat": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "LRS"
-                                },
-                                {
-                                    "const": "GRS"
-                                },
-                                {
-                                    "const": "RAGRS"
-                                },
-                                {
-                                    "const": "ZRS"
-                                }
-                            ]
-                        },
-                        "prd": {
-                            "type": "string",
-                            "oneOf": [
-                                {
-                                    "const": "LRS"
-                                },
-                                {
-                                    "const": "GRS"
-                                },
-                                {
-                                    "const": "RAGRS"
-                                },
-                                {
-                                    "const": "ZRS"
-                                }
-                            ]
-                        }
-                    },
-                    "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
-                    ]
+                    "$ref": "#/definitions/storage-account-redundancy-parameters"   
                 },
                 "storageAccountVirtualNetworkDefaultAccess": {
                     "type": "string",
@@ -283,248 +190,6 @@
                     "minProperties": 1
                 }
             },
-            "if": {
-                "properties": {
-                    "storageAccountType": {
-                        "oneOf": [
-                            {
-                                "const": "Storage"
-                            },
-                            {
-                                "const": "StorageV2"
-                            }
-                        ]
-                    }
-                }
-            },
-            "then": {
-                "properties": {
-                    "storageAccountTier": {
-                        "type": "object",
-                        "properties": {
-                            "dev": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Standard"
-                                    },
-                                    {
-                                        "const": "Premium"
-                                    }
-                                ]
-                            },
-                            "qa": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Standard"
-                                    },
-                                    {
-                                        "const": "Premium"
-                                    }
-                                ]
-                            },
-                            "uat": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Standard"
-                                    },
-                                    {
-                                        "const": "Premium"
-                                    }
-                                ]
-                            },
-                            "prd": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Standard"
-                                    },
-                                    {
-                                        "const": "Premium"
-                                    }
-                                ]
-                            }
-                        },
-                        "required": [
-                            "dev",
-                            "qa",
-                            "uat",
-                            "prd"
-                        ]
-                    },
-                    "storageAccountRedundancy": {
-                        "type": "object",
-                        "properties": {
-                            "dev": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "LRS"
-                                    },
-                                    {
-                                        "const": "GRS"
-                                    },
-                                    {
-                                        "const": "RAGRS"
-                                    },
-                                    {
-                                        "const": "ZRS"
-                                    }
-                                ]
-                            },
-                            "qa": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "LRS"
-                                    },
-                                    {
-                                        "const": "GRS"
-                                    },
-                                    {
-                                        "const": "RAGRS"
-                                    },
-                                    {
-                                        "const": "ZRS"
-                                    }
-                                ]
-                            },
-                            "uat": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "LRS"
-                                    },
-                                    {
-                                        "const": "GRS"
-                                    },
-                                    {
-                                        "const": "RAGRS"
-                                    },
-                                    {
-                                        "const": "ZRS"
-                                    }
-                                ]
-                            },
-                            "prd": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "LRS"
-                                    },
-                                    {
-                                        "const": "GRS"
-                                    },
-                                    {
-                                        "const": "RAGRS"
-                                    },
-                                    {
-                                        "const": "ZRS"
-                                    }
-                                ]
-                            }
-                        },
-                        "required": [
-                            "dev",
-                            "qa",
-                            "uat",
-                            "prd"
-                        ]
-                    }
-                }
-            },
-            "else": {
-                "properties": {
-                    "storageAccountTier": {
-                        "type": "object",
-                        "properties": {
-                            "dev": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Premium"
-                                    }
-                                ]
-                            },
-                            "qa": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Premium"
-                                    }
-                                ]
-                            },
-                            "uat": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Premium"
-                                    }
-                                ]
-                            },
-                            "prd": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Premium"
-                                    }
-                                ]
-                            }
-                        },
-                        "required": [
-                            "dev",
-                            "qa",
-                            "uat",
-                            "prd"
-                        ]
-                    },
-                    "storageAccountRedundancy": {
-                        "type": "object",
-                        "properties": {
-                            "dev": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "LRS"
-                                    }
-                                ]
-                            },
-                            "qa": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "LRS"
-                                    }
-                                ]
-                            },
-                            "uat": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "LRS"
-                                    }
-                                ]
-                            },
-                            "prd": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "LRS"
-                                    }
-                                ]
-                            }
-                        },
-                        "required": [
-                            "dev",
-                            "qa",
-                            "uat",
-                            "prd"
-                        ]
-                    }
-                }
-            },
             "required": [
                 "storageAccountName",
                 "storageAccountType",
@@ -534,6 +199,7 @@
         },
         "storage-account-table-services": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -565,6 +231,7 @@
         },
         "storage-account-table-service": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "object",
@@ -592,6 +259,7 @@
         },
         "storage-account-table-service-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "storageAccountTableServiceName": {
                     "type": "string",
@@ -627,6 +295,7 @@
         },
         "storage-account-table-service-tables": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -666,6 +335,7 @@
         },
         "storage-account-table-service-table": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "object",
@@ -701,6 +371,7 @@
         },
         "storage-account-table-service-table-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "storageAccountTableName": {
                     "type": "string"
@@ -712,6 +383,7 @@
         },
         "storage-account-queue-services": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -749,6 +421,7 @@
         },
         "storage-account-queue-service": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "object",
@@ -782,6 +455,7 @@
         },
         "storage-account-queue-service-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "storageAccountQueueServiceName": {
                     "type": "string",
@@ -817,6 +491,7 @@
         },
         "storage-account-queue-service-queue": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "object",
@@ -852,6 +527,7 @@
         },
         "storage-account-queue-service-queues": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -891,6 +567,7 @@
         },
         "storage-account-queue-service-queue-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "storageAccountQueueName": {
                     "type": "string"
@@ -902,6 +579,7 @@
         },
         "storage-account-file-share-services": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -923,6 +601,7 @@
         },
         "storage-account-file-share-service": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "object",
@@ -953,6 +632,7 @@
         },
         "storage-account-file-share-service-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "storageAccountFileShareServiceName": {
                     "type": "string",
@@ -1001,6 +681,7 @@
         },
         "storage-account-file-share-service-shares": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -1015,6 +696,7 @@
         },
         "storage-account-file-share-service-share": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "object",
@@ -1050,6 +732,7 @@
         },
         "storage-account-file-share-service-share-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "storageAccountFileShareName": {
                     "type": "string"
@@ -1078,6 +761,8 @@
             ]
         },
         "storage-account-blob-services": {
+            "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -1108,6 +793,7 @@
         },
         "storage-account-blob-service": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "object",
@@ -1138,6 +824,7 @@
         },
         "storage-account-blob-service-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "storageAccountBlobServiceName": {
                     "type": "string",
@@ -1200,6 +887,7 @@
         },
         "storage-account-blob-service-containers": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -1294,6 +982,123 @@
             },
             "required": [
                 "storageAccountBlobContainerName"
+            ]
+        },
+        "storage-account-tier-parameters": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "minProperties": 1,
+                    "properties": {
+                        "demo": {
+                             "$ref": "#/definitions/storage-account-tier-types"
+                        },
+                        "stg": {
+                             "$ref": "#/definitions/storage-account-tier-types"
+                        },
+                        "sbx": {
+                             "$ref": "#/definitions/storage-account-tier-types"
+                        },
+                        "test": {
+                             "$ref": "#/definitions/storage-account-tier-types"
+                        },
+                        "dev": {
+                            "$ref": "#/definitions/storage-account-tier-types"
+                        },
+                        "qa": {
+                            "$ref": "#/definitions/storage-account-tier-types"
+                        },
+                        "uat": {
+                            "$ref": "#/definitions/storage-account-tier-types"
+                        },
+                        "prd": {
+                            "$ref": "#/definitions/storage-account-tier-types"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "default": {
+                            "$ref": "#/definitions/storage-account-tier-types"
+                        }
+                    },
+                    "required": [
+                        "default"
+                    ]
+                }
+            ]
+        },
+        "storage-account-tier-types": {
+            "enum": [
+                "Standard",
+                "Premium"
+            ]
+        },
+        "storage-account-redundancy-parameters": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "minProperties": 1,
+                    "properties": {
+                        "demo": {
+                            "$ref": "#/definitions/storage-account-redundancy-types"
+                        },
+                        "stg": {
+                            "$ref": "#/definitions/storage-account-redundancy-types"
+                        },
+                        "sbx": {
+                            "$ref": "#/definitions/storage-account-redundancy-types"
+                        },
+                        "test": {
+                            "$ref": "#/definitions/storage-account-redundancy-types"
+                        },
+                        "dev": {
+                            "$ref": "#/definitions/storage-account-redundancy-types"
+                        },
+                        "qa": {
+                            "$ref": "#/definitions/storage-account-redundancy-types"
+                        },
+                        "uat": {
+                            "$ref": "#/definitions/storage-account-redundancy-types"
+                        },
+                        "prd": {
+                            "$ref": "#/definitions/storage-account-redundancy-types"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "default": {
+                            "$ref": "#/definitions/storage-account-redundancy-types"
+                        }
+                    },
+                    "required": [
+                        "default"
+                    ]
+                }
+            ]
+        },
+        "storage-account-redundancy-types": {
+            "type": "string",
+            "oneOf": [
+                {
+                    "const": "LRS"
+                },
+                {
+                    "const": "GRS"
+                },
+                {
+                    "const": "RAGRS"
+                },
+                {
+                    "const": "ZRS"
+                }
             ]
         },
         "storage-account-cors-parameters": {

@@ -3,6 +3,7 @@
     "definitions": {
         "nat-gateway": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "$ref": "#/definitions/nat-gateway-parameters"
@@ -14,6 +15,7 @@
         },
         "nat-gateways":{
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",

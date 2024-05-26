@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -45,7 +49,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09
 
 // 2. Deploy the new instance of App insights under the requested log workspace
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: replace(replace('${appInsightsName}', '@environment', environment), '@region', region)
+  name: replace(replace(appInsightsName, '@environment', environment), '@region', region)
   location: appInsightsLocation
   kind: appInsightsKind
   properties: {

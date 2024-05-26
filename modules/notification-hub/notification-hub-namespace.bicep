@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -22,10 +26,6 @@ param notificationHubNamespaceHubs array = []
 
 @description('The pricing tier for the resource. Choose wisely')
 param notificationHubNamespaceSku object = {
-  dev: 'Free'
-  qa: 'Free'
-  uat: 'Free'
-  prd: 'Free'
   default: 'Free'
 }
 

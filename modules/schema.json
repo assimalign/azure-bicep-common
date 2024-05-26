@@ -442,6 +442,18 @@
                 },
                 "dataShareDatasets": {
                     "$ref": "./data-share-account/parameters.json#/definitions/data-share-account-share-dataset"
+                },
+                "dnsResolver": {
+                    "$ref": "./dns-resolver/parameters.json#/definitions/dns-resolver"
+                },
+                "dnsResolvers": {
+                    "$ref": "./dns-resolver/parameters.json#/definitions/dns-resolvers"
+                },
+                "monitorPrivateLinkScope": {
+                    "$ref": "./monitor-private-link-scope/parameters.json#/definitions/monitor-private-link-scope"
+                },
+                "monitorPrivateLinkScopes": {
+                    "$ref": "./monitor-private-link-scope/parameters.json#/definitions/monitor-private-link-scopes"
                 }
             }
         }

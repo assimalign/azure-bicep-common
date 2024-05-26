@@ -4,6 +4,7 @@
         "network-security-group": {
             "type": "object",
             "description": "A single Network Security Groups to be deployed.",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "$ref": "#/definitions/network-security-group-parameters"
@@ -16,6 +17,7 @@
         "network-security-groups": {
             "type": "object",
             "description": "An array of Network Security Groups to be deployed.",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",

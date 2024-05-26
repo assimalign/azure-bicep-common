@@ -73,6 +73,7 @@
                     "oneOf": [
                         {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "default": {
                                     "$ref": "#/definitions/key-vault-sku"
@@ -84,7 +85,21 @@
                         },
                         {
                             "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
                             "properties": {
+                                "demo": {
+                                    "$ref": "#/definitions/key-vault-sku"
+                                },
+                                "stg": {
+                                    "$ref": "#/definitions/key-vault-sku"
+                                },
+                                "sbx": {
+                                    "$ref": "#/definitions/key-vault-sku"
+                                },
+                                "test": {
+                                    "$ref": "#/definitions/key-vault-sku"
+                                },
                                 "dev": {
                                     "$ref": "#/definitions/key-vault-sku"
                                 },
@@ -97,13 +112,7 @@
                                 "prd": {
                                     "$ref": "#/definitions/key-vault-sku"
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         }
                     ]
                 },

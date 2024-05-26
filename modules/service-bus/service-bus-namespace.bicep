@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -37,11 +41,11 @@ param serviceBusTags object = {}
 
 // 1. Deploy Service Bus Namespace
 resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2021-11-01' = {
-  name: replace(replace('${serviceBusName}', '@environment', environment), '@region', region)
+  name: replace(replace(serviceBusName, '@environment', environment), '@region', region)
   location: serviceBusLocation
   identity: any(serviceBusEnableMsi ? {
     type: 'SystemAssigned'
-  } : json('null'))
+  } : null)
   sku: any(contains(serviceBusSku, environment) ? {
     name: serviceBusSku[environment]
     tier: serviceBusSku[environment]
@@ -72,8 +76,8 @@ module serviceBusNamespaceQueue 'service-bus-namespace-queue.bicep' = [for queue
     environment: environment
     serviceBusName: serviceBusName
     serviceBusQueueName: queue.serviceBusQueueName
-    serviceBusQueuePolicies: contains(queue, 'serviceBusQueuePolicies') ? queue.serviceBusQueuePolicies : []
-    serviceBusQueueSettings: contains(queue, 'serviceBusQueueSettings') ? queue.serviceBusQueueSettings : {}
+    serviceBusQueuePolicies: queue.?serviceBusQueuePolicies
+    serviceBusQueueSettings: queue.?serviceBusQueueSettings
   }
 }]
 
@@ -86,9 +90,9 @@ module serviceBusNamespaceTopic 'service-bus-namespace-topic.bicep' = [for topic
     environment: environment
     serviceBusName: serviceBusName
     serviceBusTopicName: topic.serviceBusTopicName
-    serviceBusTopicSubscriptions: contains(topic, 'serviceBusTopicSubscriptions') ? topic.serviceBusTopicSubscriptions : []
-    serviceBusTopicPolicies: contains(topic, 'serviceBusTopicPolicies') ? topic.serviceBusTopicPolicies : []
-    serviceBusTopicSettings: contains(topic, 'serviceBusTopicSettings') ? topic.serviceBusTopicSettings : {}
+    serviceBusTopicSubscriptions: topic.?serviceBusTopicSubscriptions
+    serviceBusTopicPolicies: topic.?serviceBusTopicPolicies
+    serviceBusTopicSettings: topic.?serviceBusTopicSettings
   }
 }]
 

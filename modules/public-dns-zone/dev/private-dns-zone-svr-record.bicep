@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -21,15 +25,13 @@ param privateDnsZoneRecordName string
 param privateDnsZoneTtl int = 3600
 
 @description('A list of records to add to the private DNS Zone')
-param privateDnsZoneRecord string
+param privateDnsZoneRecords array
 
 
-resource azPrivateDnsARecordsDeployment 'Microsoft.Network/privateDnsZones/CNAME@2020-06-01' = {
+resource azPrivateDnsARecordsDeployment 'Microsoft.Network/privateDnsZones/SRV@2020-06-01' = {
   name: replace(replace('${privateDnsZoneName}/${privateDnsZoneRecordName}', '@environment', environment) , '@region', region)
   properties: {
    ttl: privateDnsZoneTtl
-   cnameRecord: {
-     cname: privateDnsZoneRecord
-   }
+   srvRecords: privateDnsZoneRecords
   }
 }

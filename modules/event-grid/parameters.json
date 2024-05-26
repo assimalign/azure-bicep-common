@@ -3,6 +3,7 @@
     "definitions": {
         "event-grid-domain": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "$ref": "#/definitions/event-grid-domain-parameters"
@@ -14,6 +15,7 @@
         },
         "event-grid-domains": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",

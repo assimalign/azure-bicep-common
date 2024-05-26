@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -82,7 +86,7 @@ param storageAccountTags object = {}
 func format(name string, env string, region string) string => replace(replace(name, '@environment', env), '@region', region)
 
 // 1. Deploy Azure Storage Account
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-04-01' = {
   name: format(storageAccountName, environment, region)
   kind: storageAccountType
   location: storageAccountLocation
@@ -137,9 +141,9 @@ module storageAccountBlobService 'storage-account-blob-services.bicep' = if (!em
     storageAccountName: storageAccountName
     storageAccountLocation: storageAccountLocation
     storageAccountBlobServiceName: 'default'
-    storageAccountBlobServiceConfigs: contains(storageAccountBlobServices, 'storageAccountBlobServiceConfigs') ? storageAccountBlobServices.storageAccountBlobServiceConfigs : {}
-    storageAccountBlobServiceContainers: contains(storageAccountBlobServices, 'storageAccountBlobServiceContainers') ? storageAccountBlobServices.storageAccountBlobServiceContainers : []
-    storageAccountBlobServicePrivateEndpoint: contains(storageAccountBlobServices, 'storageAccountBlobServicePrivateEndpoint') ? storageAccountBlobServices.storageAccountBlobServicePrivateEndpoint : {}
+    storageAccountBlobServiceConfigs: storageAccountBlobServices.?storageAccountBlobServiceConfigs
+    storageAccountBlobServiceContainers: storageAccountBlobServices.?storageAccountBlobServiceContainers
+    storageAccountBlobServicePrivateEndpoint: storageAccountBlobServices.?storageAccountBlobServicePrivateEndpoint
   }
 }
 
@@ -153,9 +157,9 @@ module storageAccountFileShareService 'storage-account-fileshare-services.bicep'
     storageAccountName: storageAccountName
     storageAccountLocation: storageAccountLocation
     storageAccountFileShareServiceName: 'default'
-    storageAccountFileShareServiceFileShares: contains(storageAccountFileShareServices, 'storageAccountFileShareServiceShares') ? storageAccountFileShareServices.storageAccountFileShareServiceShares : []
-    storageAccountFileShareServiceConfigs: contains(storageAccountFileShareServices, 'storageAccountFileShareServiceConfigs') ? storageAccountFileShareServices.storageAccountFileShareServiceConfigs : {}
-    storageAccountFileShareServicePrivateEndpoint: contains(storageAccountFileShareServices, 'storageAccountFileShareServicePrivateEndpoint') ? storageAccountFileShareServices.storageAccountFileShareServicePrivateEndpoint : {}
+    storageAccountFileShareServiceFileShares: storageAccountFileShareServices.?storageAccountFileShareServiceShares
+    storageAccountFileShareServiceConfigs: storageAccountFileShareServices.?storageAccountFileShareServiceConfigs
+    storageAccountFileShareServicePrivateEndpoint: storageAccountFileShareServices.?storageAccountFileShareServicePrivateEndpoint
   }
 }
 
@@ -169,9 +173,9 @@ module storageAccountQueueService 'storage-account-queue-services.bicep' = if (!
     storageAccountName: storageAccountName
     storageAccountLocation: storageAccountLocation
     storageAccountQueueServiceName: 'default'
-    storageAccountQueueServiceQueues: contains(storageAccountQueueServices, 'storageAccountQueueServiceQueues') ? storageAccountQueueServices.storageAccountQueueServiceQueues : []
-    storageAccountQueueServiceConfigs: contains(storageAccountQueueServices, 'storageAccountQueueServiceConfigs') ? storageAccountQueueServices.storageAccountQueueServiceConfigs : {}
-    storageAccountQueueServicePrivateEndpoint: contains(storageAccountQueueServices, 'storageAccountQueueServicePrivateEndpoint') ? storageAccountQueueServices.storageAccountQueueServicePrivateEndpoint : {}
+    storageAccountQueueServiceQueues: storageAccountQueueServices.?storageAccountQueueServiceQueues
+    storageAccountQueueServiceConfigs: storageAccountQueueServices.?storageAccountQueueServiceConfigs
+    storageAccountQueueServicePrivateEndpoint: storageAccountQueueServices.?storageAccountQueueServicePrivateEndpoint
   }
 }
 
@@ -185,19 +189,10 @@ module storageAccountTableService 'storage-account-table-services.bicep' = if (!
     storageAccountName: storageAccountName
     storageAccountLocation: storageAccountLocation
     storageAccountTableServiceName: storageAccountTableServices.storageAccountTableServiceName
-    storageAccountTableServiceTables: storageAccountTableServices.storageAccountTableServiceTables
-    storageAccountTableServiceConfigs: contains(storageAccountTableServices, 'storageAccountTableServiceConfigs') ? storageAccountTableServices.storageAccountTableServiceConfigs : {}
-    storageAccountTableServicePrivateEndpoint: contains(storageAccountTableServices, 'storageAccountTableServicePrivateEndpoint') ? storageAccountTableServices.storageAccountTableServicePrivateEndpoint : {}
+    storageAccountTableServiceTables: storageAccountTableServices.?storageAccountTableServiceTables
+    storageAccountTableServiceConfigs: storageAccountTableServices.?storageAccountTableServiceConfigs
+    storageAccountTableServicePrivateEndpoint: storageAccountTableServices.?storageAccountTableServicePrivateEndpoint
   }
 }
 
-output storageAccount object = {
-  resourceId: storageAccount.id
-  name: storageAccount.name
-  location: storageAccount.location
-  properties: storageAccount.properties
-  sku: storageAccount.sku
-  tags: storageAccount.tags
-  kind: storageAccount.kind
-  apiVersion: storageAccount.apiVersion
-}
+output storageAccount object = storageAccount

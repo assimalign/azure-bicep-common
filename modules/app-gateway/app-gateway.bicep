@@ -1,3 +1,14 @@
+@allowed([
+  ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
+  'dev'
+  'qa'
+  'uat'
+  'prd'
+])
 @description('The environment in which the resource(s) will be deployed.')
 param environment string = ''
 
@@ -28,21 +39,22 @@ param appGatewayConfigs object = {}
 @description('The tags to attach to the resource when deployed')
 param appGatewayTags object = {}
 
-func format(name string, env string, region string) string => replace(replace(name, '@environment', env), '@region', region)
+func format(name string, env string, region string) string => 
+  replace(replace(name, '@environment', env), '@region', region)
 
 // 1. Get Virtual Network Subnet to reference for Ip Configurations
-resource virtualNetworkSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-06-01' existing = {
+resource virtualNetworkSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-01' existing = {
   name: format('${appGatewayFrontend.privateIp.privateIpVirtualNetwork}/${appGatewayFrontend.privateIp.privateIpSubnet}', environment, region)
   scope: resourceGroup(format(appGatewayFrontend.privateIp.privateIpResourceGroup, environment, region))
 }
 
 // 2. Get a Public IP address for the frontend of the gateway if applicable
-resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2023-06-01' existing = if (!empty(appGatewayFrontend.publicIp)) {
-  name: format(appGatewayFrontend.publicIp.publicIpName, environment, region)
-  scope: resourceGroup(format(appGatewayFrontend.publicIp.publicIpResourceGroup, environment, region))
+resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2023-11-01' existing = if (contains(appGatewayFrontend, 'frontendPublicIp')) {
+  name: format(appGatewayFrontend.frontendPublicIp.publicIpName, environment, region)
+  scope: resourceGroup(format(appGatewayFrontend.frontendPublicIp.publicIpResourceGroup, environment, region))
 }
 
-resource appGateway 'Microsoft.Network/applicationGateways@2023-06-01' = {
+resource appGateway 'Microsoft.Network/applicationGateways@2023-11-01' = {
   name: format(appGatewayName, environment, region)
   location: appGatewayLocation
   properties: {
@@ -102,7 +114,7 @@ resource appGateway 'Microsoft.Network/applicationGateways@2023-06-01' = {
       }
     ] : [])))
     frontendPorts: [for port in appGatewayFrontend.ports: {
-      name: port.name
+      name: port.frontendName
       properties: {
         port: port.frontendPort
       }

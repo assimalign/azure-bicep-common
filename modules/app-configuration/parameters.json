@@ -33,10 +33,7 @@
             "default": {
                 "appConfigurationName": "",
                 "appConfigurationSku": {
-                    "dev": "Free",
-                    "qa": "Standard",
-                    "uat": "Standard",
-                    "prd": "Standard"
+                    "default": "Free"
                 },
                 "appConfigurationEnableMsi": false,
                 "appConfigurationDisablePublicAccess": false
@@ -61,9 +58,24 @@
                 "appConfigurationDisableLocalAuth": {
                     "type": "boolean"
                 },
-                "appConfigurationDisablePublicAccess": {
-                    "type": "boolean",
-                    "default": false
+                "appConfigurationNetworkConfig": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "minProperties": 1,
+                    "properties": {
+                        "publicNetworkAccess": {
+                            "enum": [
+                                "Enabled",
+                                "Disabled"
+                            ]
+                        },
+                        "azureResourceAccess": {
+                            "enum": [
+                                "Enabled",
+                                "Disabled"
+                            ]
+                        }
+                    }
                 },
                 "appConfigurationKeys": {
                     "type": "array",
@@ -84,6 +96,7 @@
                     "oneOf": [
                         {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "default": {
                                     "$ref": "#/definitions/app-configuration-sku"
@@ -95,7 +108,21 @@
                         },
                         {
                             "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
                             "properties": {
+                                "demo": {
+                                    "$ref": "#/definitions/app-configuration-sku"
+                                },
+                                "stg": {
+                                    "$ref": "#/definitions/app-configuration-sku"
+                                },
+                                "sbx": {
+                                    "$ref": "#/definitions/app-configuration-sku"
+                                },
+                                "test": {
+                                    "$ref": "#/definitions/app-configuration-sku"
+                                },
                                 "dev": {
                                     "$ref": "#/definitions/app-configuration-sku"
                                 },
@@ -108,13 +135,7 @@
                                 "prd": {
                                     "$ref": "#/definitions/app-configuration-sku"
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         }
                     ]
                 },
@@ -177,6 +198,7 @@
                     "oneOf": [
                         {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "default": {
                                     "type": "string"
@@ -188,7 +210,21 @@
                         },
                         {
                             "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
                             "properties": {
+                                "demo": {
+                                    "type": "string"
+                                },
+                                "stg": {
+                                    "type": "string"
+                                },
+                                "sbx": {
+                                    "type": "string"
+                                },
+                                "test": {
+                                    "type": "string"
+                                },
                                 "dev": {
                                     "type": "string"
                                 },
@@ -201,13 +237,7 @@
                                 "prd": {
                                     "type": "string"
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         }
                     ]
                 },
@@ -224,31 +254,16 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "anyOf": [
-                                {
-                                    "const": "application/json"
-                                },
-                                {
-                                    "const": "application/xml"
-                                },
-                                {
-                                    "const": "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8"
-                                },
-                                {
-                                    "const": "text/css"
-                                },
-                                {
-                                    "const": "text/csv"
-                                },
-                                {
-                                    "const": "text/html"
-                                },
-                                {
-                                    "const": "text/plain"
-                                },
-                                {
-                                    "const": "text/xml"
-                                }
+                            "enum": [
+                                "null",
+                                "application/json",
+                                "application/xml",
+                                "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8",
+                                "text/css",
+                                "text/csv",
+                                "text/html",
+                                "text/plain",
+                                "text/xml"
                             ]
                         },
                         {

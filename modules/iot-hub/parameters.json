@@ -65,26 +65,50 @@
                     ]
                 },
                 "iotHubSku": {
-                    "type": "object",
-                    "properties": {
-                        "dev": {
-                            "$ref": "#/definitions/iot-hub-sku-parameters"
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "default": {
+                                    "$ref": "#/definitions/iot-hub-sku-parameters"
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
                         },
-                        "qa": {
-                            "$ref": "#/definitions/iot-hub-sku-parameters"
-                        },
-                        "uat": {
-                            "$ref": "#/definitions/iot-hub-sku-parameters"
-                        },
-                        "prd": {
-                            "$ref": "#/definitions/iot-hub-sku-parameters"
-                        },
-                        "default": {
-                            "$ref": "#/definitions/iot-hub-sku-parameters"
+                        {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
+                            "properties": {
+                                "demo": {
+                                    "$ref": "#/definitions/iot-hub-sku-parameters"
+                                },
+                                "stg": {
+                                    "$ref": "#/definitions/iot-hub-sku-parameters"
+                                },
+                                "sbx": {
+                                    "$ref": "#/definitions/iot-hub-sku-parameters"
+                                },
+                                "test": {
+                                    "$ref": "#/definitions/iot-hub-sku-parameters"
+                                },
+                                "dev": {
+                                    "$ref": "#/definitions/iot-hub-sku-parameters"
+                                },
+                                "qa": {
+                                    "$ref": "#/definitions/iot-hub-sku-parameters"
+                                },
+                                "uat": {
+                                    "$ref": "#/definitions/iot-hub-sku-parameters"
+                                },
+                                "prd": {
+                                    "$ref": "#/definitions/iot-hub-sku-parameters"
+                                }
+                            }
                         }
-                    },
-                    "required": [
-                        "default"
                     ]
                 },
                 "iotHubTags": {

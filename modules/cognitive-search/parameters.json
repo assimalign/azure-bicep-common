@@ -74,9 +74,9 @@
                     "oneOf": [
                         {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "default": {
-                                    "type": "string",
                                     "$ref": "#/definitions/cognitive-search-sku"
                                 }
                             },
@@ -86,35 +86,36 @@
                         },
                         {
                             "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
                             "properties": {
+                                "demo": {
+                                    "$ref": "#/definitions/cognitive-search-sku"
+                                },
+                                "stg": {
+                                    "$ref": "#/definitions/cognitive-search-sku"
+                                },
+                                "sbx": {
+                                    "$ref": "#/definitions/cognitive-search-sku"
+                                },
+                                "test": {
+                                    "$ref": "#/definitions/cognitive-search-sku"
+                                },
                                 "dev": {
-                                    "type": "string",
                                     "$ref": "#/definitions/cognitive-search-sku"
                                 },
                                 "qa": {
-                                    "type": "string",
                                     "$ref": "#/definitions/cognitive-search-sku"
                                 },
                                 "uat": {
-                                    "type": "string",
                                     "$ref": "#/definitions/cognitive-search-sku"
                                 },
                                 "prd": {
-                                    "type": "string",
                                     "$ref": "#/definitions/cognitive-search-sku"
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         }
-                    ],
-                    "default": {
-                        "dev": "free"
-                    }
+                    ]
                 },
                 "cognitiveSearchMsiEnabled":{
                     "type":"boolean"

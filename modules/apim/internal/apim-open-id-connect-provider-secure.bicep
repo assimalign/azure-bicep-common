@@ -8,7 +8,7 @@ param apimGatewayOpenIdConnectClientId string
 @secure()
 param apimGatewayOpenIdConnectClientSecret string
 
-resource azApimGatewayOpendIDConnectDeployment 'Microsoft.ApiManagement/service/openidConnectProviders@2022-08-01' = {
+resource apimOpenIdConnectProvider 'Microsoft.ApiManagement/service/openidConnectProviders@2022-08-01' = {
   name: apimGatewayOpenIdConnectPath
   properties: {
     clientId: apimGatewayOpenIdConnectClientId
@@ -18,4 +18,4 @@ resource azApimGatewayOpendIDConnectDeployment 'Microsoft.ApiManagement/service/
   }
 }
 
-output apimOpenIdConnect object = azApimGatewayOpendIDConnectDeployment
+output apimOpenIdConnectProvider object = apimOpenIdConnectProvider

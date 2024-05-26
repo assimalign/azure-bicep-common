@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -19,10 +23,6 @@ param logAnalyticsWorkspaceLocation string = resourceGroup().location
 
 @description('The pricing tier for the Workbook')
 param logAnalyticsWorkspaceSku object = {
-  dev: 'PerGB2018'
-  qa: 'PerGB2018'
-  uat: 'PerGB2018'
-  prd: 'PerGB2018'
   default: 'PerGB2018'
 }
 

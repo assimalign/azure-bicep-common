@@ -5,6 +5,15 @@ $pat = '{personal access token}'
 $connectionId = '{the github connection Id}'
 
 
+$version = 
+$routes = @{
+    project = 'https://dev.azure.com/{0}/_apis/projects/{1}'
+}
+
+
+
+
+
 
 $projectUrl = 'https://dev.azure.com/' + $organization + '/_apis/projects/' + $project + '?api-version=7.2-preview.1'
 $pipelineUrl = 'https://dev.azure.com/' + $organization + '/' + $project + '/_apis/pipelines?api-version=7.1-preview.1'
@@ -58,6 +67,13 @@ $environments | ForEach-Object {
             )
         } | ConvertTo-Json -Depth 10) `
         -SkipCertificateCheck
+}
+
+
+function Upcert-Pipeline {
+    param (
+
+    )
 }
 
 

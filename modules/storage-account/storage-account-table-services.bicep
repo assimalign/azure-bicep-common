@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -43,7 +47,7 @@ resource storageAccountTableService 'Microsoft.Storage/storageAccounts/tableServ
   parent: storageAccount
   properties: {
     cors: {
-      corsRules: [for rule in storageAccountTableServiceConfigs!.tableServiceCorsPolicy ?? []: {
+      corsRules: [for rule in storageAccountTableServiceConfigs.?tableServiceCorsPolicy ?? []: {
         allowedMethods: rule.methods
         allowedOrigins: rule.origins
         exposedHeaders: []

@@ -31,6 +31,7 @@
         },
         "app-service-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "appServiceName": {
                     "type": "string"
@@ -82,6 +83,35 @@
                 "appServiceAppInsightsResourceGroup": {
                     "type": "string"
                 },
+                "appServicePrivateEndpoint": {
+                    "$ref": "../private-endpoint/parameters.json#/definitions/private-endpoint-embedded"
+                },
+                "appServiceNetworkSettings": {
+                    "description": "Only use this settings when setting up",
+                    "properties": {
+                        "publicNetworkAccess": {
+                            "enum": [
+                                "Enabled",
+                                "Disabled"
+                            ]
+                        },
+                        "routeAllOutboundTraffic": {
+                            "type": "boolean"
+                        },
+                        "virtualNetworkName": {
+                            "type": "string"
+                        },
+                        "virtualNetworkSubnetName": {
+                            "type": "string"
+                        },
+                        "virtualNetworkResourceGroup": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "appServiceAuthSettings": {
+                    "$ref": "#/definitions/app-services-auth-settings"
+                },
                 "appServiceSiteConfigs": {
                     "$ref": "#/definitions/app-service-site-configs"
                 },
@@ -93,7 +123,33 @@
                             "appServiceSlotName": {
                                 "type": "string"
                             },
-                            "functions": {
+                            "appServiceSlotPrivateEndpoint": {
+                                "$ref": "../private-endpoint/parameters.json#/definitions/private-endpoint-embedded"
+                            },
+                            "appServiceSlotNetworkSettings": {
+                                "description": "Only use this settings when setting up",
+                                "properties": {
+                                    "publicNetworkAccess": {
+                                        "enum": [
+                                            "Enabled",
+                                            "Disabled"
+                                        ]
+                                    },
+                                    "routeAllOutboundTraffic": {
+                                        "type": "boolean"
+                                    },
+                                    "virtualNetworkName": {
+                                        "type": "string"
+                                    },
+                                    "virtualNetworkSubnetName": {
+                                        "type": "string"
+                                    },
+                                    "virtualNetworkResourceGroup": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "appServiceSlotFunctions": {
                                 "type": "array",
                                 "items": {
                                     "type": "object",
@@ -114,7 +170,7 @@
                         },
                         "required": [
                             "appServiceSlotName",
-                            "functions"
+                            "appServiceSlotFunctions"
                         ]
                     }
                 },
@@ -242,6 +298,50 @@
                 },
                 "appServiceSlotAppInsightsResourceGroup": {
                     "type": "string"
+                },
+                "appServiceSlotPrivateEndpoint": {
+                    "$ref": "../private-endpoint/parameters.json#/definitions/private-endpoint-embedded"
+                },
+                "appServiceSlotNetworkSettings": {
+                    "description": "Only use this settings when setting up",
+                    "properties": {
+                        "publicNetworkAccess": {
+                            "enum": [
+                                "Enabled",
+                                "Disabled"
+                            ]
+                        },
+                        "routeAllOutboundTraffic": {
+                            "type": "boolean"
+                        },
+                        "virtualNetworkName": {
+                            "type": "string"
+                        },
+                        "virtualNetworkSubnetName": {
+                            "type": "string"
+                        },
+                        "virtualNetworkResourceGroup": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "appServiceSlotFunctions": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "isEnabled": {
+                                "type": "boolean"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "isEnabled"
+                        ]
+                    }
                 },
                 "appServiceSlotSiteConfigs": {
                     "$ref": "#/definitions/app-service-site-configs"
@@ -393,92 +493,41 @@
                     "oneOf": [
                         {
                             "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
                             "properties": {
+                                "demo": {
+                                    "$ref": "#/definitions/app-service-plan-sku"
+                                },
+                                "stg": {
+                                    "$ref": "#/definitions/app-service-plan-sku"
+                                },
+                                "sbx": {
+                                    "$ref": "#/definitions/app-service-plan-sku"
+                                },
+                                "test": {
+                                    "$ref": "#/definitions/app-service-plan-sku"
+                                },
                                 "dev": {
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "$ref": "#/definitions/app-service-plan-sku"
-                                        },
-                                        "capacity": {
-                                            "type": "number"
-                                        }
-                                    },
-                                    "required": [
-                                        "name",
-                                        "capacity"
-                                    ]
+                                    "$ref": "#/definitions/app-service-plan-sku"
                                 },
                                 "qa": {
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "$ref": "#/definitions/app-service-plan-sku"
-                                        },
-                                        "capacity": {
-                                            "type": "number"
-                                        }
-                                    },
-                                    "required": [
-                                        "name",
-                                        "capacity"
-                                    ]
+                                    "$ref": "#/definitions/app-service-plan-sku"
                                 },
                                 "uat": {
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "$ref": "#/definitions/app-service-plan-sku"
-                                        },
-                                        "capacity": {
-                                            "type": "number"
-                                        }
-                                    },
-                                    "required": [
-                                        "name",
-                                        "capacity"
-                                    ]
+                                    "$ref": "#/definitions/app-service-plan-sku"
                                 },
                                 "prd": {
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "$ref": "#/definitions/app-service-plan-sku"
-                                        },
-                                        "capacity": {
-                                            "type": "number"
-                                        }
-                                    },
-                                    "required": [
-                                        "name",
-                                        "capacity"
-                                    ]
+                                     "$ref": "#/definitions/app-service-plan-sku"
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         },
                         {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "default": {
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "$ref": "#/definitions/app-service-plan-sku"
-                                        },
-                                        "capacity": {
-                                            "type": "number"
-                                        }
-                                    },
-                                    "required": [
-                                        "name",
-                                        "capacity"
-                                    ]
+                                    "$ref": "#/definitions/app-service-plan-sku"
                                 }
                             },
                             "required": [
@@ -583,7 +632,6 @@
                             "type": "string"
                         },
                         "internalLoadBalancingMode": {
-                            "type": "string",
                             "enum": [
                                 "Publishing",
                                 "Web",
@@ -796,20 +844,42 @@
             ]
         },
         "app-service-plan-sku": {
-            "type": "string",
-            "enum": [
-                "F1",
-                "D1",
-                "B1",
-                "S1",
-                "S2",
-                "S3",
-                "I1",
-                "I2",
-                "I3",
-                "I1V2",
-                "I2V2",
-                "I3V2"
+            "type": "object",
+            "properties": {
+                "name": {
+                    "enum": [
+                        "F1",
+                        "D1",
+                        "B1",
+                        "B2",
+                        "B3",
+                        "S1",
+                        "S2",
+                        "S3",
+                        "I1",
+                        "I2",
+                        "I3",
+                        "I1V2",
+                        "I2V2",
+                        "I3V2",
+                        "P0V3",
+                        "P1V3",
+                        "P1mv3",
+                        "P2V3",
+                        "P3V3",
+                        "P2mv3",
+                        "P3mv3",
+                        "P4mv3",
+                        "P5mv3"
+                    ]
+                },
+                "capacity": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "name",
+                "capacity"
             ]
         },
         "app-service-site-configs": {
@@ -997,9 +1067,6 @@
                         }
                     ]
                 },
-                "authSettings": {
-                    "$ref": "#/definitions/app-services-auth-settings"
-                },
                 "metaSettings": {
                     "type": "object",
                     "properties": {
@@ -1018,23 +1085,6 @@
                         }
                     },
                     "minProperties": 1
-                },
-                "virtualNetworkSettings": {
-                    "description": "Only use this settings when setting up",
-                    "properties": {
-                        "routeAllOutboundTraffic": {
-                            "type": "boolean"
-                        },
-                        "virtualNetworkName": {
-                            "type": "string"
-                        },
-                        "virtualNetworkSubnetName": {
-                            "type": "string"
-                        },
-                        "virtualNetworkResourceGroup": {
-                            "type": "string"
-                        }
-                    }
                 }
             }
         },

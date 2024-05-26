@@ -4,6 +4,7 @@
         "virtual-network": {
             "type": "object",
             "description": "An array of Virtual Networks to be deployed",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "$ref": "#/definitions/virtual-network-parameters"
@@ -16,6 +17,7 @@
         "virtual-networks": {
             "type": "object",
             "description": "An array of Virtual Networks to be deployed",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -31,6 +33,7 @@
         },
         "virtual-network-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "virtualNetworkName": {
                     "type": "string"
@@ -93,6 +96,7 @@
         "virtual-network-subnet": {
             "type": "object",
             "description": "An array of Virtual Networks to be deployed",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "allOf": [
@@ -113,6 +117,7 @@
         "virtual-network-subnets": {
             "type": "object",
             "description": "An array of Virtual Networks to be deployed",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -294,6 +299,7 @@
         "virtual-network-peering": {
             "type": "object",
             "description": "An array of Virtual Networks to Peer to each other within the same Resource Group.",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "$ref": "#/definitions/virtual-network-peering-parameters"
@@ -306,6 +312,7 @@
         "virtual-network-peerings": {
             "type": "object",
             "description": "An array of Virtual Networks to Peer to each other within the same Resource Group.",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -321,6 +328,7 @@
         },
         "virtual-network-peering-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "peeringLinkName": {
                     "type": "string"
@@ -352,6 +360,7 @@
             "oneOf": [
                 {
                     "type": "object",
+                    "additionalProperties": false,
                     "properties": {
                         "default": {
                             "type": "array",
@@ -367,8 +376,37 @@
                 },
                 {
                     "type": "object",
+                    "additionalProperties": false,
+                    "minProperties": 1,
                     "properties": {
-                       
+                        "demo": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ip-address"
+                            },
+                            "minItems": 1
+                        },
+                        "stg": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ip-address"
+                            },
+                            "minItems": 1
+                        },
+                        "sbx": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ip-address"
+                            },
+                            "minItems": 1
+                        },
+                        "test": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ip-address"
+                            },
+                            "minItems": 1
+                        },
                         "dev": {
                             "type": "array",
                             "items": {
@@ -397,13 +435,7 @@
                             },
                             "minItems": 1
                         }
-                    },
-                    "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
-                    ]
+                    }
                 }
             ]
         },
@@ -411,6 +443,7 @@
             "oneOf": [
                 {
                     "type": "object",
+                    "additionalProperties": false,
                     "properties": {
                         "default": {
                             "$ref": "#/definitions/ip-address"
@@ -422,7 +455,21 @@
                 },
                 {
                     "type": "object",
+                    "additionalProperties": false,
+                    "minProperties": 1,
                     "properties": {
+                        "demo": {
+                            "$ref": "#/definitions/ip-address"
+                        },
+                        "stg": {
+                            "$ref": "#/definitions/ip-address"
+                        },
+                        "sbx": {
+                            "$ref": "#/definitions/ip-address"
+                        },
+                        "test": {
+                            "$ref": "#/definitions/ip-address"
+                        },
                         "dev": {
                             "$ref": "#/definitions/ip-address"
                         },
@@ -435,13 +482,7 @@
                         "prd": {
                             "$ref": "#/definitions/ip-address"
                         }
-                    },
-                    "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
-                    ]
+                    }
                 }
             ]
         },

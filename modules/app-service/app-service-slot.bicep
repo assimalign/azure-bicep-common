@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -58,11 +62,23 @@ param appServiceSlotPlanName string
 @description('The resource group name in which the app service plan lives')
 param appServiceSlotPlanResourceGroup string = resourceGroup().name
 
+@description('The netowkr settings for the app service.')
+param appServiceSlotNetworkSettings object = {}
+
+@description('The private endpoint settings for the app service.')
+param appServiceSlotPrivateEndpoint object = {}
+
+@description('The authentication settings for the app serivce.')
+param appServiceSlotAuthSettings object = {}
+
 @description('The settings for the app service deployment')
 param appServiceSlotSiteConfigs object
 
 @description('Custom Attributes to attach to the app service deployment')
 param appServiceSlotTags object = {}
+
+func formatName(name string, environment string, region string) string =>
+  replace(replace(name, '@environment', environment), '@region', region)
 
 // Format Site Settings 
 var siteSettings = [for item in items(contains(appServiceSlotSiteConfigs, 'siteSettings') ? appServiceSlotSiteConfigs.siteSettings : {}): {
@@ -102,8 +118,23 @@ resource appServiceSlot 'Microsoft.Web/sites/slots@2023-01-01' = {
     type: appServiceSlotMsiEnabled == true ? 'SystemAssigned' : 'None'
   }
   properties: {
+    vnetRouteAllEnabled: appServiceSlotNetworkSettings.?routeAllOutboundTraffic ?? false
+    virtualNetworkSubnetId: !empty(appServiceSlotNetworkSettings)
+      ? formatName(
+          resourceId(
+            appServiceSlotNetworkSettings.virtualNetworkResourceGroup,
+            'Microsoft.Network/VirtualNetworks/subnets',
+            appServiceSlotNetworkSettings.virtualNetworkName,
+            appServiceSlotNetworkSettings.virtualNetworkSubnetName
+          ),
+          environment,
+          region
+        )
+      : null
     serverFarmId: appServicePlan.id
     httpsOnly: contains(appServiceSlotSiteConfigs, 'webSettings') && contains(appServiceSlotSiteConfigs.webSettings, 'httpsOnly') ? appServiceSlotSiteConfigs.webSettings.httpsOnly : false
+    // If there are slots to be deployed then let's have the slots override the site settings
+    publicNetworkAccess: appServiceSlotNetworkSettings.?publicNetworkAccess ?? 'Enabled'
     clientAffinityEnabled: false
     siteConfig: {
       alwaysOn: contains(appServiceSlotSiteConfigs, 'alwaysOn') ? appServiceSlotSiteConfigs.alwaysOn : false
@@ -128,7 +159,7 @@ resource appServiceSlot 'Microsoft.Web/sites/slots@2023-01-01' = {
       environment: empty(environment) ? 'n/a' : environment
     })
 
-  resource azAppServiceLinkApim 'config' = if (contains(appServiceSlotSiteConfigs, 'webSettings')) {
+  resource appServiceLinkApim 'config' = if (contains(appServiceSlotSiteConfigs, 'webSettings')) {
     name: 'web'
     properties: {
       cors: contains(appServiceSlotSiteConfigs.webSettings, 'cors') ? contains(appServiceSlotSiteConfigs.webSettings.cors, environment) ? appServiceSlotSiteConfigs.webSettings.cors[environment] : appServiceSlotSiteConfigs.webSettings.cors.default : {}
@@ -144,89 +175,105 @@ resource appServiceSlot 'Microsoft.Web/sites/slots@2023-01-01' = {
       } : {})
     }
   }
-  resource azAppServiceMetadataConfigs 'config' = if (contains(appServiceSlotSiteConfigs, 'metaSettings')) {
+  resource appServiceMetadataConfigs 'config' = if (contains(appServiceSlotSiteConfigs, 'metaSettings')) {
     name: 'metadata'
     properties: appServiceSlotSiteConfigs.metaSettings
   }
-  resource azAppServiceAuthSettings 'config' = if (contains(appServiceSlotSiteConfigs, 'authSettings')) {
+  resource appServiceSlotAuthConfigs 'config' = if (contains(appServiceSlotSiteConfigs, 'authSettings')) {
     name: 'authsettingsV2'
     properties: {
       globalValidation: {
         requireAuthentication: true
-        unauthenticatedClientAction: appServiceSlotSiteConfigs.authSettings.appAuthUnauthenticatedAction
+        unauthenticatedClientAction: appServiceSlotAuthSettings.appAuthUnauthenticatedAction
       }
       identityProviders: {
         // Azure Active Directory Provider
-        azureActiveDirectory: any(appServiceSlotSiteConfigs.authSettings.appAuthIdentityProvider == 'AzureAD' ? {
-          enabled: true
-          registration: contains(appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId, environment) ? {
-            clientId: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId[environment]
-            clientSecretSettingName: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
-            openIdIssuer: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderOpenIdIssuer[environment]
-          } : {
-            clientId: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId.default
-            clientSecretSettingName: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
-            openIdIssuer: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderOpenIdIssuer.default
-          }
-          validation: {
-            allowedAudiences: authSettingAudiences
-          }
-          isAutoProvisioned: false
-          login: {
-            tokenStore: {
+        azureActiveDirectory: any(appServiceSlotAuthSettings.appAuthIdentityProvider == 'AzureAD'
+          ? {
               enabled: true
+              registration: contains(appServiceSlotAuthSettings.appAuthIdentityProviderClientId, environment)
+                ? {
+                    clientId: appServiceSlotAuthSettings.appAuthIdentityProviderClientId[environment]
+                    clientSecretSettingName: appServiceSlotAuthSettings.appAuthIdentityProviderClientSecretName
+                    openIdIssuer: appServiceSlotAuthSettings.appAuthIdentityProviderOpenIdIssuer[environment]
+                  }
+                : {
+                    clientId: appServiceSlotAuthSettings.appAuthIdentityProviderClientId.default
+                    clientSecretSettingName: appServiceSlotAuthSettings.appAuthIdentityProviderClientSecretName
+                    openIdIssuer: appServiceSlotAuthSettings.appAuthIdentityProviderOpenIdIssuer.default
+                  }
+              validation: {
+                allowedAudiences: authSettingAudiences
+              }
+              isAutoProvisioned: false
+              login: {
+                tokenStore: {
+                  enabled: true
+                }
+              }
             }
-          }
-        } : json('null'))
+          : null)
 
         // Facebook Provider
-        facebook: any(appServiceSlotSiteConfigs.authSettings.appAuthIdentityProvider == 'Facebook' ? {
-          enabled: true
-          registration: contains(appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId, environment) ? {
-            appId: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId[environment]
-            appSecretSettingName: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
-          } : {
-            appId: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId.default
-            appSecretSettingName: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
-          }
-          graphApiVersion: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderGraphApiVersion
-          login: {
-            scopes: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderScopes
-          }
-        } : json('null'))
+        facebook: any(appServiceSlotAuthSettings.appAuthIdentityProvider == 'Facebook'
+          ? {
+              enabled: true
+              registration: contains(appServiceSlotAuthSettings.appAuthIdentityProviderClientId, environment)
+                ? {
+                    appId: appServiceSlotAuthSettings.appAuthIdentityProviderClientId[environment]
+                    appSecretSettingName: appServiceSlotAuthSettings.appAuthIdentityProviderClientSecretName
+                  }
+                : {
+                    appId: appServiceSlotAuthSettings.appAuthIdentityProviderClientId.default
+                    appSecretSettingName: appServiceSlotAuthSettings.appAuthIdentityProviderClientSecretName
+                  }
+              graphApiVersion: appServiceSlotAuthSettings.appAuthIdentityProviderGraphApiVersion
+              login: {
+                scopes: appServiceSlotAuthSettings.appAuthIdentityProviderScopes
+              }
+            }
+          : null)
 
         // Github Provider
-        gitHub: any(appServiceSlotSiteConfigs.authSettings.appAuthIdentityProvider == 'Github' ? {
-          enabled: true
-          registration: contains(appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId, environment) ? {
-            clientId: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId[environment]
-            clientSecretSettingName: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
-          } : {
-            clientId: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId.default
-            clientSecretSettingName: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
-          }
-          login: {
-            scopes: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderScopes
-          }
-        } : json('null'))
+        gitHub: any(appServiceSlotAuthSettings.appAuthIdentityProvider == 'Github'
+          ? {
+              enabled: true
+              registration: contains(appServiceSlotAuthSettings.appAuthIdentityProviderClientId, environment)
+                ? {
+                    clientId: appServiceSlotAuthSettings.appAuthIdentityProviderClientId[environment]
+                    clientSecretSettingName: appServiceSlotAuthSettings.appAuthIdentityProviderClientSecretName
+                  }
+                : {
+                    clientId: appServiceSlotAuthSettings.appAuthIdentityProviderClientId.default
+                    clientSecretSettingName: appServiceSlotAuthSettings.appAuthIdentityProviderClientSecretName
+                  }
+              login: {
+                scopes: appServiceSlotAuthSettings.appAuthIdentityProviderScopes
+              }
+            }
+          : null)
 
         // Google Provider
-        google: any(appServiceSlotSiteConfigs.authSettings.appAuthIdentityProvider == 'Google' ? {
-          enabled: true
-          registration: contains(appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId, environment) ? {
-            clientId: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId[environment]
-            clientSecretSettingName: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
-          } : {
-            clientId: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientId.default
-            clientSecretSettingName: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderClientSecretName
-          }
-          login: {
-            scopes: appServiceSlotSiteConfigs.authSettings.appAuthIdentityProviderScopes
-          }
-          validation: {
-            allowedAudiences: authSettingAudiences
-          }
-        } : json('null'))
+        google: any(appServiceSlotAuthSettings.appAuthIdentityProvider == 'Google'
+          ? {
+              enabled: true
+              registration: contains(appServiceSlotAuthSettings.appAuthIdentityProviderClientId, environment)
+                ? {
+                    clientId: appServiceSlotAuthSettings.appAuthIdentityProviderClientId[environment]
+                    clientSecretSettingName: appServiceSlotAuthSettings.appAuthIdentityProviderClientSecretName
+                  }
+                : {
+                    clientId: appServiceSlotAuthSettings.appAuthIdentityProviderClientId.default
+                    clientSecretSettingName: appServiceSlotAuthSettings.appAuthIdentityProviderClientSecretName
+                  }
+              login: {
+                scopes: appServiceSlotAuthSettings.appAuthIdentityProviderScopes
+              }
+              validation: {
+                allowedAudiences: authSettingAudiences
+              }
+            }
+          : null)
       }
       login: {
         tokenStore: {
@@ -238,7 +285,7 @@ resource appServiceSlot 'Microsoft.Web/sites/slots@2023-01-01' = {
 }
 
 // 5. Configure Custom Function Settings (Will use this to disable functions in slots such as: Service Bus Listeners, Timers, etc.,)
-module azAppServiceFunctionSlotFunctionsDeployment 'app-service-slot-function.bicep' = [for function in appServiceSlotFunctions: if (!empty(appServiceSlotFunctions) && (appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux')) {
+module appServiceFunctionSlotFunctionsDeployment 'app-service-slot-function.bicep' = [for function in appServiceSlotFunctions: if (!empty(appServiceSlotFunctions) && (appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux')) {
   name: !empty(appServiceSlotFunctions) && (appServiceSlotType == 'functionapp' || appServiceSlotType == 'functionapp,linux') ? toLower('app-slot-func-${guid('${appServiceName}/${appServiceSlotName}/${function.name}')}') : 'no-func-app/no-function-app-slot-functions-to-deploy'
   scope: resourceGroup()
   params: {
@@ -255,7 +302,7 @@ module azAppServiceFunctionSlotFunctionsDeployment 'app-service-slot-function.bi
 }]
 
 // 7. Assignment RBAC Roles, if any, to App Service Slot Service Principal  
-module azAppServiceSlotFunctionRoleAssignment '../rbac/rbac.bicep' = [for appSlotRoleAssignment in appServiceSlotMsiRoleAssignments: if (appServiceSlotMsiEnabled == true && !empty(appServiceSlotMsiRoleAssignments)) {
+module rbac '../rbac/rbac.bicep' = [for appSlotRoleAssignment in appServiceSlotMsiRoleAssignments: if (appServiceSlotMsiEnabled == true && !empty(appServiceSlotMsiRoleAssignments)) {
   name: 'app-slot-rbac-${guid('${appServiceName}-${appServiceSlotName}-${appSlotRoleAssignment.resourceRoleName}')}'
   scope: resourceGroup(replace(replace(appSlotRoleAssignment.resourceGroupToScopeRoleAssignment, '@environment', environment), '@region', region))
   params: {
@@ -269,6 +316,30 @@ module azAppServiceSlotFunctionRoleAssignment '../rbac/rbac.bicep' = [for appSlo
     resourcePrincipalIdReceivingRole: appServiceSlot.identity.principalId
   }
 }]
+
+module privateEndpoint '../private-endpoint/private-endpoint.bicep' = if (!empty(appServiceSlotPrivateEndpoint)) {
+  name: !empty(appServiceSlotPrivateEndpoint)
+    ? toLower('apps-private-ep-${guid('${appServiceSlot.id}/${appServiceSlotPrivateEndpoint.privateEndpointName}')}')
+    : 'no-app-sv-pri-endp-to-deploy'
+  scope: resourceGroup()
+  params: {
+    region: region
+    environment: environment
+    privateEndpointName: appServiceSlotPrivateEndpoint.privateEndpointName
+    privateEndpointLocation: appServiceSlotPrivateEndpoint.?privateEndpointLocation ?? appServiceSlotLocation
+    privateEndpointDnsZoneName: appServiceSlotPrivateEndpoint.privateEndpointDnsZoneName
+    privateEndpointDnsZoneGroupName: 'privatelink-azurewebsites-net'
+    privateEndpointDnsZoneResourceGroup: appServiceSlotPrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointVirtualNetworkName: appServiceSlotPrivateEndpoint.privateEndpointVirtualNetworkName
+    privateEndpointVirtualNetworkSubnetName: appServiceSlotPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
+    privateEndpointVirtualNetworkResourceGroup: appServiceSlotPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
+    privateEndpointResourceIdLink: appServiceSlot.id
+    privateEndpointTags: appServiceSlotPrivateEndpoint.?privateEndpointTags
+    privateEndpointGroupIds: [
+      'sites'
+    ]
+  }
+}
 
 // 8. Return Deployment Output
 output appServiceSlot object = appServiceSlot

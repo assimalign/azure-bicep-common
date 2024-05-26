@@ -3,6 +3,7 @@
     "definitions": {
         "vpn-gateway": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "$ref": "#/definitions/vpn-gateway-parameters"
@@ -13,6 +14,7 @@
             ]
         },
         "vpn-gateways": {
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -27,10 +29,17 @@
             ]
         },
         "vpn-gateway-parameters": {
+            "additionalProperties": false,
             "properties": {
                 "vpnGatewayName": {
                     "type": "string",
                     "description": "The name of the VPN Gateway"
+                },
+                "vpnGatewayResourceGroup": {
+                    "type": "string"
+                },
+                "vpnGatewayLocation": {
+                    "type": "string"
                 },
                 "vpnGatewayNetworkType": {
                     "type": "string",
@@ -43,11 +52,27 @@
                         }
                     ]
                 },
-                "vpnGatewayIpName": {
-                    "type": "string",
-                    "description": "The Name of the new Public IP Address that will be deployed for the VPN Gateway"
+                "vpnGatewayIpAddresses": {
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "ipAddressName": {
+                                "type": "string"
+                            },
+                            "ipAddressResourceGroup": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "ipAddressName",
+                            "ipAddressResourceGroup"
+                        ]
+                    }
                 },
-                "vpnGatewayVirtualNetwork": {
+                "vpnGatewayVirtualNetworkName": {
                     "type": "string",
                     "description": "The name of the virtual network the VPN will live under. DO NOT include Resource Prefix in name."
                 },
@@ -109,151 +134,125 @@
             "then": {
                 "properties": {
                     "vpnGatewaySku": {
-                        "type": "object",
-                        "properties": {
-                            "dev": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Basic"
-                                    },
-                                    {
-                                        "const": "VpnGw1"
-                                    },
-                                    {
-                                        "const": "VpnGw2"
-                                    },
-                                    {
-                                        "const": "VpnGw3"
-                                    },
-                                    {
-                                        "const": "VpnGw4"
-                                    },
-                                    {
-                                        "const": "VpnGw5"
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "default": {
+                                        "$ref": "#/definitions/vpn-gateway-route-based-sku"
                                     }
+                                },
+                                "required": [
+                                    "default"
                                 ]
                             },
-                            "qa": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Basic"
+                            {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "minProperties": 1,
+                                "properties": {
+                                    "demo": {
+                                        "$ref": "#/definitions/vpn-gateway-route-based-sku"
                                     },
-                                    {
-                                        "const": "VpnGw1"
+                                    "stg": {
+                                        "$ref": "#/definitions/vpn-gateway-route-based-sku"
                                     },
-                                    {
-                                        "const": "VpnGw2"
+                                    "sbx": {
+                                        "$ref": "#/definitions/vpn-gateway-route-based-sku"
                                     },
-                                    {
-                                        "const": "VpnGw3"
+                                    "test": {
+                                        "$ref": "#/definitions/vpn-gateway-route-based-sku"
                                     },
-                                    {
-                                        "const": "VpnGw4"
+                                    "dev": {
+                                        "$ref": "#/definitions/vpn-gateway-route-based-sku"
                                     },
-                                    {
-                                        "const": "VpnGw5"
+                                    "qa": {
+                                        "$ref": "#/definitions/vpn-gateway-route-based-sku"
+                                    },
+                                    "uat": {
+                                        "$ref": "#/definitions/vpn-gateway-route-based-sku"
+                                    },
+                                    "prd": {
+                                        "$ref": "#/definitions/vpn-gateway-route-based-sku"
                                     }
-                                ]
-                            },
-                            "uat": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Basic"
-                                    },
-                                    {
-                                        "const": "VpnGw1"
-                                    },
-                                    {
-                                        "const": "VpnGw2"
-                                    },
-                                    {
-                                        "const": "VpnGw3"
-                                    },
-                                    {
-                                        "const": "VpnGw4"
-                                    },
-                                    {
-                                        "const": "VpnGw5"
-                                    }
-                                ]
-                            },
-                            "prd": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Basic"
-                                    },
-                                    {
-                                        "const": "VpnGw1"
-                                    },
-                                    {
-                                        "const": "VpnGw2"
-                                    },
-                                    {
-                                        "const": "VpnGw3"
-                                    },
-                                    {
-                                        "const": "VpnGw4"
-                                    },
-                                    {
-                                        "const": "VpnGw5"
-                                    }
-                                ]
+                                }
                             }
-                        }
+                        ]
                     }
                 }
             },
             "else": {
                 "properties": {
                     "vpnGatewaySku": {
-                        "type": "object",
-                        "properties": {
-                            "dev": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Basic"
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "default": {
+                                        "$ref": "#/definitions/vpn-gateway-policy-based-sku"
                                     }
+                                },
+                                "required": [
+                                    "default"
                                 ]
                             },
-                            "qa": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Basic"
+                            {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "minProperties": 1,
+                                "properties": {
+                                    "demo": {
+                                         "$ref": "#/definitions/vpn-gateway-policy-based-sku"
+                                    },
+                                    "stg": {
+                                         "$ref": "#/definitions/vpn-gateway-policy-based-sku"
+                                    },
+                                    "sbx": {
+                                         "$ref": "#/definitions/vpn-gateway-policy-based-sku"
+                                    },
+                                    "test": {
+                                         "$ref": "#/definitions/vpn-gateway-policy-based-sku"
+                                    },
+                                    "dev": {
+                                        "$ref": "#/definitions/vpn-gateway-policy-based-sku"
+                                    },
+                                    "qa": {
+                                        "$ref": "#/definitions/vpn-gateway-policy-based-sku"
+                                    },
+                                    "uat": {
+                                        "$ref": "#/definitions/vpn-gateway-policy-based-sku"
+                                    },
+                                    "prd": {
+                                        "$ref": "#/definitions/vpn-gateway-policy-based-sku"
                                     }
-                                ]
-                            },
-                            "uat": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Basic"
-                                    }
-                                ]
-                            },
-                            "prd": {
-                                "type": "string",
-                                "oneOf": [
-                                    {
-                                        "const": "Basic"
-                                    }
-                                ]
+                                }
                             }
-                        }
+                        ]
                     }
                 }
             },
             "required": [
                 "vpnGatewayName",
-                "vpnGatewayIpName",
                 "vpnGatewaySku",
                 "vpnGatewayNetworkType",
-                "vpnGatewayVirtualNetwork"
+                "vpnGatewayVirtualNetworkName"
+            ]
+        },
+        "vpn-gateway-route-based-sku": {
+            "enum": [
+                "Basic",
+                "VpnGw1",
+                "VpnGw2",
+                "VpnGw3",
+                "VpnGw4",
+                "VpnGw5"
+            ]
+        },
+        "vpn-gateway-policy-based-sku": {
+            "enum": [
+                "Basic"
             ]
         }
     }

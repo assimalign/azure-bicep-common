@@ -1,0 +1,14 @@
+{
+    "$schema": "../../modules/schema.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appInsight": {
+            "value": {
+                "appInsightsName": "",
+                "appInsightsKind": "web",
+                "appInsightsAnalyticWorkspaceName": "",
+                "appInsightsAnalyticWorkspaceResourceGroup": ""
+            }
+        }
+    }
+}

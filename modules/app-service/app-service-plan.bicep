@@ -1,12 +1,16 @@
 @allowed([
-  'none'
+  ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
   'prd'
 ])
 @description('The environment in which the resource(s) will be deployed')
-param environment string = 'none'
+param environment string = ''
 
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
@@ -26,6 +30,10 @@ param appServicePlanOs string = 'windows'
 
 @description('Dev/Test Env: F1(Free), D1($9.49m), B1($54.75)')
 param appServicePlanSku object = {
+  demo: 'F1'
+  stg: 'F1'
+  sbx: 'F1'
+  test: 'F1'
   dev: 'F1'
   qa: 'F1'
   uat: 'F1'
@@ -39,34 +47,40 @@ param appServicePlanEnvironmentName string = ''
 @description('The resource group the ASE lives under')
 param appServicePlanEnvironmentResourceGroup string = resourceGroup().name
 
-@description('')
+@description('Custom Attributes to attach to the app service plan deployment')
 param appServicePlanTags object = {}
 
+func formatName(name string, environment string, region string) string =>
+  replace(replace(name, '@environment', environment), '@region', region)
 
 // 1. Get Existing ASE Environment if applicable
-resource appServiceEnvironment 'Microsoft.Web/hostingEnvironments@2023-01-01' existing = if (!empty(appServicePlanEnvironmentName)) {
-  name: replace(replace(appServicePlanEnvironmentName, '@environment', environment), '@region', region)
-  scope: resourceGroup(replace(replace(appServicePlanEnvironmentResourceGroup, '@environment', environment), '@region', region))
+resource appServiceEnvironment 'Microsoft.Web/hostingEnvironments@2023-12-01' existing = if (!empty(appServicePlanEnvironmentName)) {
+  name: formatName(appServicePlanEnvironmentName, environment, region)
+  scope: resourceGroup(formatName(appServicePlanEnvironmentResourceGroup, environment, region))
 }
 
 // 2. Creates an app service plan under an ASE if applicable
-resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' = {
-  name: replace(replace(appServicePlanName, '@environment', environment), '@region', region)
+resource appServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
+  name: formatName(appServicePlanName, environment, region)
   location: appServicePlanLocation
   properties: {
-    hostingEnvironmentProfile: any(!empty(appServicePlanEnvironmentName) ? {
-      id: appServiceEnvironment.id
-    } : null)
+    hostingEnvironmentProfile: !empty(appServicePlanEnvironmentName)
+      ? {
+          id: appServiceEnvironment.id
+        }
+      : null
   }
   kind: appServicePlanOs
-  sku: any(!empty(environment) && contains(appServicePlanSku, environment) ? {
-    name: appServicePlanSku[environment].name
-    capacity: appServicePlanSku[environment].capacity
-  } : {
-    name: appServicePlanSku.default.name
-    capacity: appServicePlanSku.default.capacity
-  })
-  tags:  union(appServicePlanTags, {
+  sku: contains(appServicePlanSku, environment)
+    ? {
+        name: appServicePlanSku[environment].name
+        capacity: appServicePlanSku[environment].capacity
+      }
+    : {
+        name: appServicePlanSku.default.name
+        capacity: appServicePlanSku.default.capacity
+      }
+  tags: union(appServicePlanTags, {
     region: empty(region) ? 'n/a' : region
     environment: empty(environment) ? 'n/a' : environment
   })

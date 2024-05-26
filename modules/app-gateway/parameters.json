@@ -31,8 +31,12 @@
         },
         "app-gateway-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "appGatewayName": {
+                    "type": "string"
+                },
+                "appGatewayResourceGroup": {
                     "type": "string"
                 },
                 "appGatewayLocation": {
@@ -42,6 +46,7 @@
                     "oneOf": [
                         {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "default": {
                                     "$ref": "#/definitions/app-gateway-sku"
@@ -53,7 +58,21 @@
                         },
                         {
                             "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
                             "properties": {
+                                "demo": {
+                                    "$ref": "#/definitions/app-gateway-sku"
+                                },
+                                "stg": {
+                                    "$ref": "#/definitions/app-gateway-sku"
+                                },
+                                "sbx": {
+                                    "$ref": "#/definitions/app-gateway-sku"
+                                },
+                                "test": {
+                                    "$ref": "#/definitions/app-gateway-sku"
+                                },
                                 "dev": {
                                     "$ref": "#/definitions/app-gateway-sku"
                                 },
@@ -65,43 +84,35 @@
                                 },
                                 "prd": {
                                     "$ref": "#/definitions/app-gateway-sku"
-                                },
-                                "default": {
-                                    "$ref": "#/definitions/app-gateway-sku"
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         }
                     ]
                 },
                 "appGatewayFrontend": {
                     "type": "object",
+                    "additionalProperties": false,
                     "properties": {
-                        "ports": {
+                        "frontendPorts": {
                             "type": "array",
                             "minItems": 1,
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    "name": {
+                                    "portName": {
                                         "type": "string"
                                     },
-                                    "frontendPort": {
+                                    "port": {
                                         "type": "number"
                                     }
                                 },
                                 "required": [
-                                    "name",
+                                    "frontendName",
                                     "frontendPort"
                                 ]
                             }
                         },
-                        "privateIp": {
+                        "frontendPrivateIp": {
                             "type": "object",
                             "properties": {
                                 "name": {
@@ -124,33 +135,26 @@
                                 "privateIpResourceGroup"
                             ]
                         },
-                        "publicIp": {
-                            "oneOf": [
-                                {
-                                    "type": "null"
+                        "frontendPublicIp": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
                                 },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "type": "string"
-                                        },
-                                        "publicIpName": {
-                                            "type": "string"
-                                        },
-                                        "publicIpResourceGroup": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "name",
-                                        "publicIpName",
-                                        "publicIpResourceGroup"
-                                    ]
+                                "ipName": {
+                                    "type": "string"
+                                },
+                                "ipResourceGroup": {
+                                    "type": "string"
                                 }
+                            },
+                            "required": [
+                                "name",
+                                "publicIpName",
+                                "publicIpResourceGroup"
                             ]
                         },
-                        "listeners": {
+                        "frontendListeners": {
                             "type": "array",
                             "minItems": 1,
                             "items": {
@@ -168,7 +172,7 @@
                                     },
                                     "frontendProtocol": {
                                         "type": "string",
-                                        "enum":[
+                                        "enum": [
                                             "Http",
                                             "Https"
                                         ]
@@ -184,9 +188,8 @@
                         }
                     },
                     "required": [
-                        "ports",
-                        "privateIp",
-                        "publicIp"
+                        "frontendPorts",
+                        "privateIp"
                     ]
                 },
                 "appGatewayBackend": {
@@ -197,7 +200,7 @@
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    "name": {
+                                    "backendName": {
                                         "type": "string"
                                     },
                                     "backendPort": {
@@ -211,7 +214,7 @@
                                     }
                                 },
                                 "required": [
-                                    "name",
+                                    "backendName",
                                     "backendPort",
                                     "backendProtocol",
                                     "backendRequestTimeout"
@@ -231,6 +234,7 @@
                                         "oneOf": [
                                             {
                                                 "type": "object",
+                                                "additionalProperties": false,
                                                 "properties": {
                                                     "default": {
                                                         "$ref": "#/definitions/app-gateway-receiver-address"
@@ -242,7 +246,21 @@
                                             },
                                             {
                                                 "type": "object",
+                                                "additionalProperties": false,
+                                                "minProperties": 1,
                                                 "properties": {
+                                                    "demo": {
+                                                        "$ref": "#/definitions/app-gateway-receiver-address"
+                                                    },
+                                                    "stg": {
+                                                        "$ref": "#/definitions/app-gateway-receiver-address"
+                                                    },
+                                                    "sbx": {
+                                                        "$ref": "#/definitions/app-gateway-receiver-address"
+                                                    },
+                                                    "test": {
+                                                        "$ref": "#/definitions/app-gateway-receiver-address"
+                                                    },
                                                     "dev": {
                                                         "$ref": "#/definitions/app-gateway-receiver-address"
                                                     },
@@ -255,14 +273,7 @@
                                                     "prd": {
                                                         "$ref": "#/definitions/app-gateway-receiver-address"
                                                     }
-      
-                                                },
-                                                "required": [
-                                                    "dev",
-                                                    "qa",
-                                                    "uat",
-                                                    "prd"
-                                                ]
+                                                }
                                             }
                                         ]
                                     }
@@ -362,14 +373,14 @@
             "properties": {
                 "tier": {
                     "type": "string",
-                    "enum":[
+                    "enum": [
                         "Standard",
                         "WAF"
                     ]
                 },
                 "size": {
                     "type": "string",
-                    "enum":[
+                    "enum": [
                         "Small",
                         "Medium",
                         "Large"

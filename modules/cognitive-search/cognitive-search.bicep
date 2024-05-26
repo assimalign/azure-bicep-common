@@ -1,5 +1,9 @@
 @allowed([
   ''
+  'demo'
+  'stg'
+  'sbx'
+  'test'
   'dev'
   'qa'
   'uat'
@@ -51,7 +55,7 @@ param cognitiveSearchTags object = {}
 var skuName = contains(cognitiveSearchSku, environment) ? cognitiveSearchSku[environment] : cognitiveSearchSku.default
 
 // 1. Deploy Cognitive Search
-resource cognitiveSearch 'Microsoft.Search/searchServices@2020-08-01' = {
+resource cognitiveSearch 'Microsoft.Search/searchServices@2023-11-01' = {
   name: replace(replace(cognitiveSearchName, '@environment', environment), '@region', region)
   location: cognitiveSearchLocation
   sku: {

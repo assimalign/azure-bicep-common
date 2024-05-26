@@ -3,6 +3,7 @@
     "definitions": {
         "sql-server-account": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "$ref": "#/definitions/sql-server-account-parameters"
@@ -14,6 +15,7 @@
         },
         "sql-server-accounts": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -29,6 +31,7 @@
         },
         "sql-server-account-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "sqlServerAccountName": {
                     "type": "string"
@@ -53,6 +56,7 @@
                     "oneOf": [
                         {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "default": {
                                     "$ref": "#/definitions/sql-server-account-administrators"
@@ -64,7 +68,21 @@
                         },
                         {
                             "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
                             "properties": {
+                                "demo": {
+                                    "$ref": "#/definitions/sql-server-account-administrators"
+                                },
+                                "stg": {
+                                    "$ref": "#/definitions/sql-server-account-administrators"
+                                },
+                                "sbx": {
+                                    "$ref": "#/definitions/sql-server-account-administrators"
+                                },
+                                "test": {
+                                    "$ref": "#/definitions/sql-server-account-administrators"
+                                },
                                 "dev": {
                                     "$ref": "#/definitions/sql-server-account-administrators"
                                 },
@@ -77,13 +95,7 @@
                                 "prd": {
                                     "$ref": "#/definitions/sql-server-account-administrators"
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         }
                     ]
                 },
@@ -266,6 +278,7 @@
                     "oneOf": [
                         {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "default": {
                                     "$ref": "#/definitions/sql-server-account-database-sku"
@@ -277,7 +290,21 @@
                         },
                         {
                             "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
                             "properties": {
+                                "demo": {
+                                    "$ref": "#/definitions/sql-server-account-database-sku"
+                                },
+                                "stg": {
+                                    "$ref": "#/definitions/sql-server-account-database-sku"
+                                },
+                                "sbx": {
+                                    "$ref": "#/definitions/sql-server-account-database-sku"
+                                },
+                                "test": {
+                                    "$ref": "#/definitions/sql-server-account-database-sku"
+                                },
                                 "dev": {
                                     "$ref": "#/definitions/sql-server-account-database-sku"
                                 },
@@ -290,13 +317,7 @@
                                 "prd": {
                                     "$ref": "#/definitions/sql-server-account-database-sku"
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         }
                     ]
                 },
