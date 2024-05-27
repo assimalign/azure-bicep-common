@@ -87,7 +87,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     enableRbacAuthorization: contains(keyVaultConfigs, 'keyVaultRbacEnabled') ? keyVaultConfigs.keyVaultRbacEnabled : false
     enableSoftDelete: contains(keyVaultConfigs, 'keyVaultSoftDeleteEnabled') ? keyVaultConfigs.keyVaultSoftDeleteEnabled : true
     softDeleteRetentionInDays: contains(keyVaultConfigs, 'keyVaultSoftDeleteRetention') ? keyVaultConfigs.keyVaultSoftDeleteRetention : 7
-    enablePurgeProtection: contains(keyVaultConfigs, 'keyVaultPurgeProtectionEnabled') ? keyVaultConfigs.keyVaultPurgeProtectionEnabled : json('null')
+    enablePurgeProtection: contains(keyVaultConfigs, 'keyVaultPurgeProtectionEnabled') ? keyVaultConfigs.keyVaultPurgeProtectionEnabled : null
     sku: any(contains(keyVaultSku, environment) ? {
       name: keyVaultSku[environment]
       family: 'A'
@@ -147,9 +147,13 @@ module keyVaultPrivateEp '../private-endpoint/private-endpoint.bicep' = if (!emp
     environment: environment
     privateEndpointName: keyVaultPrivateEndpoint.privateEndpointName
     privateEndpointLocation: contains(keyVaultPrivateEndpoint, 'privateEndpointLocation') ? keyVaultPrivateEndpoint.privateEndpointLocation : keyVaultLocation
-    privateEndpointDnsZoneName: keyVaultPrivateEndpoint.privateEndpointDnsZoneName
-    privateEndpointDnsZoneGroupName: 'privatelink-vaultcore-azure-net'
-    privateEndpointDnsZoneResourceGroup: keyVaultPrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointDnsZoneGroups: [
+      for zone in keyVaultPrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
+        privateDnsZoneName: zone.privateDnsZone
+        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
+        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
+      }
+    ]
     privateEndpointVirtualNetworkName: keyVaultPrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: keyVaultPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: keyVaultPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup

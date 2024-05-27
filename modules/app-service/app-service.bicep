@@ -424,9 +424,13 @@ module privateEndpoint '../private-endpoint/private-endpoint.bicep' = if (!empty
     environment: environment
     privateEndpointName: appServicePrivateEndpoint.privateEndpointName
     privateEndpointLocation: appServicePrivateEndpoint.?privateEndpointLocation ?? appServiceLocation
-    privateEndpointDnsZoneName: appServicePrivateEndpoint.privateEndpointDnsZoneName
-    privateEndpointDnsZoneGroupName: 'privatelink-azurewebsites-net'
-    privateEndpointDnsZoneResourceGroup: appServicePrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointDnsZoneGroups: [
+      for zone in appServicePrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
+        privateDnsZoneName: zone.privateDnsZone
+        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
+        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
+      }
+    ]
     privateEndpointVirtualNetworkName: appServicePrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: appServicePrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: appServicePrivateEndpoint.privateEndpointVirtualNetworkResourceGroup

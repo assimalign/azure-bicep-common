@@ -98,9 +98,13 @@ module cognitiveSearchPrivateEp '../private-endpoint/private-endpoint.bicep' = i
     environment: environment
     privateEndpointName: cognitiveSearchPrivateEndpoint.privateEndpointName
     privateEndpointLocation: contains(cognitiveSearchPrivateEndpoint, 'privateEndpointLocation') ? cognitiveSearchPrivateEndpoint.privateEndpointLocation : cognitiveSearchLocation
-    privateEndpointDnsZoneName: cognitiveSearchPrivateEndpoint.privateEndpointDnsZoneName
-    privateEndpointDnsZoneGroupName: 'privatelink-search-windows-net'
-    privateEndpointDnsZoneResourceGroup: cognitiveSearchPrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointDnsZoneGroups: [
+      for zone in cognitiveSearchPrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
+        privateDnsZoneName: zone.privateDnsZone
+        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
+        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
+      }
+    ]
     privateEndpointVirtualNetworkName: cognitiveSearchPrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: cognitiveSearchPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: cognitiveSearchPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup

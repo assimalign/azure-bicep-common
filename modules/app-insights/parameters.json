@@ -29,6 +29,7 @@
         },
         "app-insight-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "appInsightsName": {
                     "type": "string"
@@ -55,6 +56,25 @@
                 },
                 "appInsightsAnalyticWorkspaceResourceGroup": {
                     "type": "string"
+                },
+                "appInsightsConfig": {
+                    "type":"object",
+                    "additionalProperties": false,
+                    "minProperties": 1,
+                    "properties": {
+                        "publicNetworkAccessForIngestion":{
+                            "enum": [
+                                "Disabled",
+                                "Enabled"
+                            ]
+                        },
+                        "publicNetworkAccessForQuery":{
+                            "enum": [
+                                "Disabled",
+                                "Enabled"
+                            ]
+                        }
+                    }
                 },
                 "appInsightsTags": {
                     "type": "object",

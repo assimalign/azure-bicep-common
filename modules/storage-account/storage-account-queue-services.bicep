@@ -80,9 +80,13 @@ module storageQueueServicePrivateEndpoint '../private-endpoint/private-endpoint.
     environment: environment
     privateEndpointName: storageAccountQueueServicePrivateEndpoint.privateEndpointName
     privateEndpointLocation: contains(storageAccountQueueServicePrivateEndpoint, 'privateEndpointLocation') ? storageAccountQueueServicePrivateEndpoint.privateEndpointLocation : storageAccountLocation
-    privateEndpointDnsZoneName: storageAccountQueueServicePrivateEndpoint.privateEndpointDnsZoneName
-    privateEndpointDnsZoneGroupName: 'privatelink-queue-core-windows-net'
-    privateEndpointDnsZoneResourceGroup: storageAccountQueueServicePrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointDnsZoneGroups: [
+      for zone in storageAccountQueueServicePrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
+        privateDnsZoneName: zone.privateDnsZone
+        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
+        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
+      }
+    ]
     privateEndpointVirtualNetworkName: storageAccountQueueServicePrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: storageAccountQueueServicePrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: storageAccountQueueServicePrivateEndpoint.privateEndpointVirtualNetworkResourceGroup

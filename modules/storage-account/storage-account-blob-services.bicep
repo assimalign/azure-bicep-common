@@ -101,9 +101,13 @@ module storageBlobServicePrivateEndpoint '../private-endpoint/private-endpoint.b
     environment: environment
     privateEndpointName: storageAccountBlobServicePrivateEndpoint.privateEndpointName
     privateEndpointLocation: contains(storageAccountBlobServicePrivateEndpoint, 'privateEndpointLocation') ? storageAccountBlobServicePrivateEndpoint.privateEndpointLocation : storageAccountLocation
-    privateEndpointDnsZoneName: storageAccountBlobServicePrivateEndpoint.privateEndpointDnsZoneName
-    privateEndpointDnsZoneGroupName: 'privatelink-blob-core-windows-net'
-    privateEndpointDnsZoneResourceGroup: storageAccountBlobServicePrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointDnsZoneGroups: [
+      for zone in storageAccountBlobServicePrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
+        privateDnsZoneName: zone.privateDnsZone
+        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
+        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
+      }
+    ]
     privateEndpointVirtualNetworkName: storageAccountBlobServicePrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: storageAccountBlobServicePrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: storageAccountBlobServicePrivateEndpoint.privateEndpointVirtualNetworkResourceGroup

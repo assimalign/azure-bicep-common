@@ -118,6 +118,9 @@
                     },
                     "minItems": 1
                 },
+                "serviceBusPrivateEndpoint": {
+                    "$ref": "../private-endpoint/parameters.json#/definitions/private-endpoint-embedded"
+                },
                 "serviceBusTags": {
                     "type": "object",
                     "patternProperties": {

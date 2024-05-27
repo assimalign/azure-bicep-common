@@ -15,11 +15,6 @@
                     "publicNetworkAccess": "Disabled"
                 }
             }
-        },
-        "monitorPrivateLinkScope": {
-            "value": {
-                "monitorPrivateLinkScopeName": ""
-            }
         }
     }
 }

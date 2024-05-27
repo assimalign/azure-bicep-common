@@ -51,7 +51,7 @@
                             "resourceType": {
                                 "enum": [
                                     "Microsoft.OperationalInsights/workspaces",
-                                    "Microsoft.Insights"
+                                    "Microsoft.Insights/components"
                                 ]
                             },
                             "resourceName": {
@@ -88,6 +88,15 @@
                 },
                 "monitorPrivateLinkScopePrivateEndpoint": {
                     "$ref": "../private-endpoint/parameters.json#/definitions/private-endpoint-embedded"
+                },
+               "monitorPrivateLinkScopeTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
                 }
             },
             "required": [

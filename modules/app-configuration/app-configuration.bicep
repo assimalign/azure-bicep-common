@@ -70,8 +70,8 @@ resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-09-01-pr
     dataPlaneProxy: {
       authenticationMode: appConfigurationDisableLocalAuth == true ? 'Pass-through' : 'Local'
       privateLinkDelegation: contains(appConfigurationNetworkConfig, 'azureResourceAccess')
-      ? appConfigurationNetworkConfig.azureResourceAccess
-      : 'Disabled'
+        ? appConfigurationNetworkConfig.azureResourceAccess
+        : 'Disabled'
     }
   }
   tags: union(appConfigurationTags, {
@@ -109,9 +109,13 @@ module appConfigPrivateEndpoint '../private-endpoint/private-endpoint.bicep' = i
     privateEndpointLocation: contains(appConfigurationPrivateEndpoint, 'privateEndpointLocation')
       ? appConfigurationPrivateEndpoint.privateEndpointLocation
       : appConfigurationLocation
-    privateEndpointDnsZoneName: appConfigurationPrivateEndpoint.privateEndpointDnsZoneName
-    privateEndpointDnsZoneGroupName: 'privatelink-azconfig-io'
-    privateEndpointDnsZoneResourceGroup: appConfigurationPrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointDnsZoneGroups: [
+      for zone in appConfigurationPrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
+        privateDnsZoneName: zone.privateDnsZone
+        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
+        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
+      }
+    ]
     privateEndpointVirtualNetworkName: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup

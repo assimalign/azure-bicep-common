@@ -33,6 +33,9 @@ param monitorPrivateLinkScopeConfig object = {
   ingestionAccessMode: 'Open'
 }
 
+@description('The tags to attach to the resource when deployed')
+param monitorPrivateLinkScopeTags object = {}
+
 func formatId(name string, environment string, region string) string =>
   guid(replace(replace(name, '@environment', environment), '@region', region))
 
@@ -45,16 +48,22 @@ resource monitorPrivateLinkScope 'microsoft.insights/privateLinkScopes@2021-07-0
   properties: {
     accessModeSettings: monitorPrivateLinkScopeConfig
   }
-  resource scopeResources 'scopedResources' = [for resource in monitorPrivateLinkScopeResources: {
-    name: formatId(resource.resourceName, environment, region)
-    properties: {
-       linkedResourceId: resourceId(
-        resource.resourceGroup,
-        '',
-        resource.resourceName
-       )
+  resource scopeResources 'scopedResources' = [
+    for resource in monitorPrivateLinkScopeResources: {
+      name: formatId(resource.resourceName, environment, region)
+      properties: {
+        linkedResourceId: resourceId(
+          formatName(resource.resourceGroup, environment, region),
+          resource.resourceType,
+          formatName(resource.resourceName, environment, region)
+        )
+      }
     }
-  }]
+  ]
+  tags: union(monitorPrivateLinkScopeTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 module privateEndpoint '../private-endpoint/private-endpoint.bicep' = if (!empty(monitorPrivateLinkScopePrivateEndpoint)) {
@@ -67,9 +76,13 @@ module privateEndpoint '../private-endpoint/private-endpoint.bicep' = if (!empty
     environment: environment
     privateEndpointName: monitorPrivateLinkScopePrivateEndpoint.privateEndpointName
     privateEndpointLocation: monitorPrivateLinkScopePrivateEndpoint.?privateEndpointLocation ?? monitorPrivateLinkScopeLocation
-    privateEndpointDnsZoneName: monitorPrivateLinkScopePrivateEndpoint.privateEndpointDnsZoneName
-    privateEndpointDnsZoneGroupName: 'privatelink-monitor-azure-com'
-    privateEndpointDnsZoneResourceGroup: monitorPrivateLinkScopePrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointDnsZoneGroups: [
+      for zone in monitorPrivateLinkScopePrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
+        privateDnsZoneName: zone.privateDnsZone
+        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
+        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
+      }
+    ]
     privateEndpointVirtualNetworkName: monitorPrivateLinkScopePrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: monitorPrivateLinkScopePrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: monitorPrivateLinkScopePrivateEndpoint.privateEndpointVirtualNetworkResourceGroup

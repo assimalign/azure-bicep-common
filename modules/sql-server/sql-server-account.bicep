@@ -44,10 +44,30 @@ param sqlServerAccountMsiEnabled bool = false
 param sqlServerAccountVirtualNetworkRules array = []
 
 @description('')
+param sqlServerAccountFirewallRules array = []
+
+@description('')
 param sqlServerAccountPrivateEndpoint object = {}
 
 @description('')
 param sqlServerAccountTags object = {}
+
+var allowAzureResources = sqlServerAccountConfigs.?sqlServerAccountAllowAzureServices ?? 'Disabled'
+var allowPublicNetworkAccess = contains(sqlServerAccountConfigs, 'sqlServerAccountPublicAccessEnabled')
+  ? sqlServerAccountConfigs.sqlServerAccountPublicAccessEnabled
+  : 'Enabled'
+var firewallRules = allowAzureResources == 'Enabled' && allowPublicNetworkAccess == 'Enabled'
+  ? union(
+      [
+        {
+          ruleName: 'AllowAllWindowsAzureIps'
+          ruleStartIp: '0.0.0.0'
+          ruleEndIp: '0.0.0.0'
+        }
+      ],
+      sqlServerAccountFirewallRules
+    )
+  : sqlServerAccountFirewallRules
 
 // 1. Deploys a Sql Server Instance
 resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
@@ -58,65 +78,117 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
   }
   properties: {
     minimalTlsVersion: '1.2'
-    publicNetworkAccess: contains(sqlServerAccountConfigs, 'sqlServerAccountPublicAccessEnabled') ? sqlServerAccountConfigs.sqlServerAccountPublicAccessEnabled : 'Enabled'
-    restrictOutboundNetworkAccess: contains(sqlServerAccountConfigs, 'sqlServerAccountOutboundNetworkAccessEnabled') ? sqlServerAccountConfigs.sqlServerAccountOutboundNetworkAccessEnabled : 'Disabled'
+    publicNetworkAccess: contains(sqlServerAccountConfigs, 'sqlServerAccountPublicAccessEnabled')
+      ? sqlServerAccountConfigs.sqlServerAccountPublicAccessEnabled
+      : 'Enabled'
+    restrictOutboundNetworkAccess: contains(sqlServerAccountConfigs, 'sqlServerAccountOutboundNetworkAccessEnabled')
+      ? sqlServerAccountConfigs.sqlServerAccountOutboundNetworkAccessEnabled
+      : 'Disabled'
     administratorLogin: sqlServerAccountAdminUsername
     administratorLoginPassword: sqlServerAccountAdminPassword
   }
   tags: union(sqlServerAccountTags, {
-      region: empty(region) ? 'n/a' : region
-      environment: empty(environment) ? 'n/a' : environment
-    })
-  // Add SQL Server Virtual Netowrk Rules
-  resource networking 'virtualNetworkRules' = [for rule in sqlServerAccountVirtualNetworkRules: if (!empty(sqlServerAccountVirtualNetworkRules)) {
-    name: replace(replace(rule.virtualNetworkRuleName, '@environment', environment), '@region', region)
-    properties: {
-      virtualNetworkSubnetId: any(replace(replace(resourceId(rule.virtualNetworkResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', rule.virtualNetworkName, rule.virtualNetworkSubnetName), '@environment', environment), '@region', region))
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
+  resource firewall 'firewallRules' = [
+    for rule in firewallRules: {
+      name: rule.ruleName
+      properties: {
+        startIpAddress: rule.ruleStartIp
+        endIpAddress: rule.ruleEndIp
+      }
     }
-  }]
+  ]
+  // Add SQL Server Virtual Netowrk Rules
+  resource networking 'virtualNetworkRules' = [
+    for rule in sqlServerAccountVirtualNetworkRules: if (!empty(sqlServerAccountVirtualNetworkRules)) {
+      name: replace(replace(rule.virtualNetworkRuleName, '@environment', environment), '@region', region)
+      properties: {
+        virtualNetworkSubnetId: any(replace(
+          replace(
+            resourceId(
+              rule.virtualNetworkResourceGroup,
+              'Microsoft.Network/virtualNetworks/subnets',
+              rule.virtualNetworkName,
+              rule.virtualNetworkSubnetName
+            ),
+            '@environment',
+            environment
+          ),
+          '@region',
+          region
+        ))
+      }
+    }
+  ]
   // Add SQL Server Administrators Azure AD Group 
   resource administrators 'administrators' = if (!empty(sqlServerAccountAdministrators)) {
     name: 'ActiveDirectory'
     properties: {
       administratorType: 'ActiveDirectory'
-      sid: contains(sqlServerAccountAdministrators, environment) ? sqlServerAccountAdministrators[environment].azureAdObjectId : sqlServerAccountAdministrators.default.azureAdObjectId
-      login: contains(sqlServerAccountAdministrators, environment) ? sqlServerAccountAdministrators[environment].azureAdLoginName : sqlServerAccountAdministrators.default.azureAdLoginName
-      tenantId: contains(sqlServerAccountAdministrators, environment) ? sqlServerAccountAdministrators[environment].azureAdTenantId : sqlServerAccountAdministrators.default.azureAdTenantId
+      sid: contains(sqlServerAccountAdministrators, environment)
+        ? sqlServerAccountAdministrators[environment].azureAdObjectId
+        : sqlServerAccountAdministrators.default.azureAdObjectId
+      login: contains(sqlServerAccountAdministrators, environment)
+        ? sqlServerAccountAdministrators[environment].azureAdLoginName
+        : sqlServerAccountAdministrators.default.azureAdLoginName
+      tenantId: contains(sqlServerAccountAdministrators, environment)
+        ? sqlServerAccountAdministrators[environment].azureAdTenantId
+        : sqlServerAccountAdministrators.default.azureAdTenantId
     }
   }
 }
 
 // 2. Deploy Sql Server Database under instance
-module sqlServerDatabase 'sql-server-account-database.bicep' = [for database in sqlServerAccountDatabases: if (!empty(database)) {
-  name: !empty(sqlServerAccountDatabases) ? toLower('az-sqlserver-db-${guid('${sqlServer.id}/${database.sqlServerAccountDatabaseName}')}') : 'no-sql-server/no-database-to-deploy'
-  params: {
-    region: region
-    environment: environment
-    sqlServerAccountName: sqlServerAccountName
-    sqlServerAccountDatabaseLocation: sqlServerAccountLocation
-    sqlServerAccountDatabaseName: database.sqlServerAccountDatabaseName
-    sqlServerAccountDatabaseSku: database.sqlServerAccountDatabaseSku
-    sqlServerAccountDatabaseTags: contains(database, 'sqlServerAccountDatabaseTags') ? database.sqlServerAccountDatabaseTags : {}
-    sqlServerAccountDatabaseConfigs: contains(database, 'sqlServerAccountDatabaseConfigs') ? database.sqlServerAccountDatabaseConfigs : {}
+module sqlServerDatabase 'sql-server-account-database.bicep' = [
+  for database in sqlServerAccountDatabases: if (!empty(database)) {
+    name: !empty(sqlServerAccountDatabases)
+      ? toLower('az-sqlserver-db-${guid('${sqlServer.id}/${database.sqlServerAccountDatabaseName}')}')
+      : 'no-sql-server/no-database-to-deploy'
+    params: {
+      region: region
+      environment: environment
+      sqlServerAccountName: sqlServerAccountName
+      sqlServerAccountDatabaseLocation: sqlServerAccountLocation
+      sqlServerAccountDatabaseName: database.sqlServerAccountDatabaseName
+      sqlServerAccountDatabaseSku: database.sqlServerAccountDatabaseSku
+      sqlServerAccountDatabaseTags: contains(database, 'sqlServerAccountDatabaseTags')
+        ? database.sqlServerAccountDatabaseTags
+        : {}
+      sqlServerAccountDatabaseConfigs: contains(database, 'sqlServerAccountDatabaseConfigs')
+        ? database.sqlServerAccountDatabaseConfigs
+        : {}
+    }
   }
-}]
+]
 
 // 4. Deploy Private Endpoint if applicable
 module sqlServerPrivateEp '../private-endpoint/private-endpoint.bicep' = if (!empty(sqlServerAccountPrivateEndpoint)) {
-  name: !empty(sqlServerAccountPrivateEndpoint) ? toLower('az-sqls-priv-endpoint-${guid('${sqlServer.id}/${sqlServerAccountPrivateEndpoint.privateEndpointName}')}') : 'no-sql-private-endpoint-to-deploy'
+  name: !empty(sqlServerAccountPrivateEndpoint)
+    ? toLower('az-sqls-priv-endpoint-${guid('${sqlServer.id}/${sqlServerAccountPrivateEndpoint.privateEndpointName}')}')
+    : 'no-sql-private-endpoint-to-deploy'
   params: {
     region: region
     environment: environment
-    privateEndpointLocation: contains(sqlServerAccountPrivateEndpoint, 'privateEndpointLocation') ? sqlServerAccountPrivateEndpoint.privateEndpointLocation : sqlServerAccountLocation
+    privateEndpointLocation: contains(sqlServerAccountPrivateEndpoint, 'privateEndpointLocation')
+      ? sqlServerAccountPrivateEndpoint.privateEndpointLocation
+      : sqlServerAccountLocation
     privateEndpointName: sqlServerAccountPrivateEndpoint.privateEndpointName
-    privateEndpointDnsZoneGroupName: 'privatelink-database-windows-net'
-    privateEndpointDnsZoneName: sqlServerAccountPrivateEndpoint.privateEndpointDnsZoneName
-    privateEndpointDnsZoneResourceGroup: sqlServerAccountPrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointDnsZoneGroups: [
+      for zone in sqlServerAccountPrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
+        privateDnsZoneName: zone.privateDnsZone
+        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
+        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
+      }
+    ]
     privateEndpointVirtualNetworkName: sqlServerAccountPrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: sqlServerAccountPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: sqlServerAccountPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
     privateEndpointResourceIdLink: sqlServer.id
-    privateEndpointTags: contains(sqlServerAccountPrivateEndpoint, 'privateEndpointTags') ? sqlServerAccountPrivateEndpoint.privateEndpointTags : {}
+    privateEndpointTags: contains(sqlServerAccountPrivateEndpoint, 'privateEndpointTags')
+      ? sqlServerAccountPrivateEndpoint.privateEndpointTags
+      : {}
     privateEndpointGroupIds: [
       'sqlServer'
     ]

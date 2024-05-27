@@ -80,16 +80,20 @@ module storageTableServicePrivateEndpoint '../private-endpoint/private-endpoint.
     environment: environment
     privateEndpointName: storageAccountTableServicePrivateEndpoint.privateEndpointName
     privateEndpointLocation: contains(storageAccountTableServicePrivateEndpoint, 'privateEndpointLocation') ? storageAccountTableServicePrivateEndpoint.privateEndpointLocation : storageAccountLocation
-    privateEndpointDnsZoneName: storageAccountTableServicePrivateEndpoint.privateEndpointDnsZoneName
-    privateEndpointDnsZoneGroupName: 'privatelink-table-core-windows-net'
-    privateEndpointDnsZoneResourceGroup: storageAccountTableServicePrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointDnsZoneGroups: [
+      for zone in storageAccountTableServicePrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
+        privateDnsZoneName: zone.privateDnsZone
+        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
+        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
+      }
+    ]
     privateEndpointVirtualNetworkName: storageAccountTableServicePrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: storageAccountTableServicePrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: storageAccountTableServicePrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
     privateEndpointResourceIdLink: storageAccount.id
     privateEndpointTags: contains(storageAccountTableServicePrivateEndpoint, 'privateEndpointTags') ? storageAccountTableServicePrivateEndpoint.privateEndpointTags : {}
     privateEndpointGroupIds: [
-      'table'
+      'Table'
     ]
   }
 }

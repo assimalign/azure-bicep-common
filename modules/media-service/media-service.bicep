@@ -44,5 +44,8 @@ resource mediaServices 'Microsoft.Media/mediaservices@2021-06-01' = {
       }
     ]
   }
-  tags: mediaServiceTags
+  tags: union(mediaServiceTags, {
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+ })
 }

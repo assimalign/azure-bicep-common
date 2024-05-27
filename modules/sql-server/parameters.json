@@ -99,6 +99,29 @@
                         }
                     ]
                 },
+                "sqlServerAccountFirewallRules": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "ruleName": {
+                                "type": "string"
+                            },
+                            "ruleStartIp": {
+                                "type": "string"
+                            },
+                            "ruleEndIp": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "ruleName",
+                            "ruleStartIp",
+                            "ruleEndIp"
+                        ]
+                    },
+                    "minItems": 1
+                },
                 "sqlServerAccountVirtualNetworkRules": {
                     "type": "array",
                     "items": {
@@ -133,6 +156,13 @@
                     "type": "object",
                     "properties": {
                         "sqlServerAccountPublicAccessEnabled": {
+                            "type": "string",
+                            "enum": [
+                                "Enabled",
+                                "Disabled"
+                            ]
+                        },
+                        "sqlServerAccountAllowAzureServices": {
                             "type": "string",
                             "enum": [
                                 "Enabled",

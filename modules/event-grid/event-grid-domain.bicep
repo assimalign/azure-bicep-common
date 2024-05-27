@@ -79,9 +79,13 @@ module azEventGridPrivateEndpointDeployment '../private-endpoint/private-endpoin
     environment: environment
     privateEndpointLocation: contains(eventGridDomainPrivateEndpoint, 'privateEndpointLocation') ? eventGridDomainPrivateEndpoint.privateEndpointLocation : eventGridDomainLocation
     privateEndpointName: eventGridDomainPrivateEndpoint.privateEndpointName
-    privateEndpointDnsZoneGroupName: 'privatelink-eventgrid-azure-net'
-    privateEndpointDnsZoneName: eventGridDomainPrivateEndpoint.privateEndpointDnsZoneName
-    privateEndpointDnsZoneResourceGroup: eventGridDomainPrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointDnsZoneGroups: [
+      for zone in eventGridDomainPrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
+        privateDnsZoneName: zone.privateDnsZone
+        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
+        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
+      }
+    ]
     privateEndpointVirtualNetworkName: eventGridDomainPrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: eventGridDomainPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: eventGridDomainPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup

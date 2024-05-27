@@ -21,6 +21,84 @@ param privateEndpointName string
 @description('The location/region the Azure Private Enpoint will be deployed to.')
 param privateEndpointLocation string = resourceGroup().location
 
+@allowed([
+  'amlworkspace'
+  'account'
+  'Bot'
+  'Token'
+  'Sql'
+  'SqlOnDemand'
+  'Dev'
+  'Web'
+  'namespace'
+  'dataFactory'
+  'portal'
+  'cluster'
+  'tenant'
+  'databricks_ui_api'
+  'browser_authentication'
+  'batchAccount'
+  'nodeManagement'
+  'global'
+  'feed'
+  'connection'
+  'management'
+  'registry'
+  'sqlServer'
+  'managedInstance'
+  'MongoDB'
+  'Cassandra'
+  'Gremlin'
+  'Table'
+  'Analytical'
+  'coordinator'
+  'postgresqlServer'
+  'mysqlServer'
+  'mariadbServer'
+  'redisCache'
+  'redisEnterprise'
+  'hybridcompute'
+  'iotHub'
+  'iotDps'
+  'DeviceUpdate'
+  'iotApp'
+  'API'
+  'topic'
+  'domain'
+  'partnernamespace'
+  'gateway'
+  'healthcareworkspace'
+  'keydelivery'
+  'liveevent'
+  'streamingendpoint'
+  'Webhook'
+  'DSCAndHybridWorker'
+  'AzureBackup'
+  'AzureSiteRecovery'
+  'azuremonitor'
+  'Default'
+  'ResourceManagement'
+  'grafana'
+  'vault'
+  'managedhsm'
+  'configurationStores'
+  'standard'
+  'blob'
+  'blob_secondary'
+  'table_secondary'
+  'queue'
+  'queue_secondary'
+  'file'
+  'web_secondary'
+  'dfs'
+  'dfs_secondary'
+  'afs'
+  'disks'
+  'searchService'
+  'sites'
+  'signalr'
+  'staticSites'  
+])
 @description('The groups category for the private endpoint')
 param privateEndpointGroupIds array
 
@@ -36,30 +114,21 @@ param privateEndpointVirtualNetworkSubnetName string
 @description('The name of the Resource Group the Subnet belongs to')
 param privateEndpointVirtualNetworkResourceGroup string
 
-@description('The name of the private DNS Zone')
-param privateEndpointDnsZoneName string
-
-@description('The name of the resource group the private DNS zone belongs to.')
-param privateEndpointDnsZoneResourceGroup string
-
-@description('A descriptive group name to add to the private endpoint DNS configurations')
-param privateEndpointDnsZoneGroupName string
+@minLength(1)
+@description('')
+param privateEndpointDnsZoneGroups array
 
 @description('')
 param privateEndpointTags object = {}
+
+func formatName(name string, environment string, region string) string =>
+  replace(replace(name, '@environment', environment), '@region', region)
 
 // 1. Get Existing Subnet Resource within a virtual network
 resource virtualNetwork 'Microsoft.Network/virtualNetworks/subnets@2023-09-01' existing = {
   name: replace(replace('${privateEndpointVirtualNetworkName}/${privateEndpointVirtualNetworkSubnetName}', '@environment', environment), '@region', region)
   scope: resourceGroup(replace(replace(privateEndpointVirtualNetworkResourceGroup, '@environment', environment), '@region', region))
 }
-
-// 2. Get the Private DNS Zone to attach toe Private DNS Zone Group in the endpoint
-resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' existing = {
-  name: privateEndpointDnsZoneName
-  scope: resourceGroup(replace(replace(privateEndpointDnsZoneResourceGroup, '@environment', environment), '@region', region))
-}
-
 // 3. Deploy the private endpoint
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-09-01' = {
   name: replace(replace(privateEndpointName, '@environment', environment), '@region', region)
@@ -79,22 +148,24 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-09-01' = {
     }
   }
   dependsOn: [
-    privateDnsZone
     virtualNetwork
   ]
-  resource azPrivateEndpointPrivateDnsZoneGroupDeployment 'privateDnsZoneGroups' = {
-    name: privateDnsZone.name
+  resource dnsZoneGroups 'privateDnsZoneGroups' = [for zone in privateEndpointDnsZoneGroups: {
+    name: formatName(zone.privateDnsZoneName, environment, region)
     properties: {
-      privateDnsZoneConfigs: [
-        {
-          name: privateEndpointDnsZoneGroupName
+      privateDnsZoneConfigs: [for zone in privateEndpointDnsZoneGroups: {
+          name: zone.privateDnsZoneGroup
           properties: {
-            privateDnsZoneId: privateDnsZone.id
+            privateDnsZoneId: resourceId(
+              formatName(zone.privateDnsZoneName, environment, region),
+              'Microsoft.Network/privateDnsZones',
+              formatName(zone.privateDnsZoneResourceGroup, environment, region)
+            )
           }
         }
       ]
     }
-  }
+  }]
   tags: union(privateEndpointTags, {
       region: empty(region) ? 'n/a' : region
       environment: empty(environment) ? 'n/a' : environment

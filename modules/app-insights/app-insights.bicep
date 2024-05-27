@@ -38,6 +38,9 @@ param appInsightsAnalyticWorkspaceName string
 @description('The name of the resource group for the existing log analytics worspace.')
 param appInsightsAnalyticWorkspaceResourceGroup string = resourceGroup().name
 
+@description('')
+param appInsightsConfig object = {}
+
 @description('The tags to attach to the resource when deployed.')
 param appInsightsTags object = {}
 
@@ -55,6 +58,9 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   properties: {
     Application_Type: appInsightsKind == 'web' ? 'web' : 'other'
     WorkspaceResourceId: logAnalyticsWorkspace.id
+    publicNetworkAccessForIngestion: appInsightsConfig.?publicNetworkAccessForIngestion ?? 'Enabled'
+    publicNetworkAccessForQuery: appInsightsConfig.?publicNetworkAccessForQuery ?? 'Enabled'
+
   }
   tags: union(appInsightsTags, {
     region: empty(region) ? 'n/a' : region

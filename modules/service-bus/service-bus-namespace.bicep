@@ -37,6 +37,9 @@ param serviceBusEnableMsi bool = false
 param serviceBusPolicies array = []
 
 @description('')
+param serviceBusPrivateEndpoint object = {}
+
+@description('')
 param serviceBusTags object = {}
 
 // 1. Deploy Service Bus Namespace
@@ -95,5 +98,30 @@ module serviceBusNamespaceTopic 'service-bus-namespace-topic.bicep' = [for topic
     serviceBusTopicSettings: topic.?serviceBusTopicSettings
   }
 }]
+
+module privateEndpoint '../private-endpoint/private-endpoint.bicep' = if (!empty(serviceBusPrivateEndpoint)) {
+  name: !empty(serviceBusPrivateEndpoint) ? toLower('cdb-private-ep-${guid('${serviceBusNamespace.id}/${serviceBusPrivateEndpoint.privateEndpointName}')}') : 'no-cosmosdb-priv-endp-to-deploy'
+  params: {
+    region: region
+    environment: environment
+    privateEndpointName: serviceBusPrivateEndpoint.privateEndpointName
+    privateEndpointLocation: contains(serviceBusPrivateEndpoint, 'privateEndpointLocation') ? serviceBusPrivateEndpoint.privateEndpointLocation : serviceBusLocation
+    privateEndpointDnsZoneGroups: [
+      for zone in serviceBusPrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
+        privateDnsZoneName: zone.privateDnsZone
+        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
+        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
+      }
+    ]
+    privateEndpointVirtualNetworkName: serviceBusPrivateEndpoint.privateEndpointVirtualNetworkName
+    privateEndpointVirtualNetworkSubnetName: serviceBusPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
+    privateEndpointVirtualNetworkResourceGroup: serviceBusPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
+    privateEndpointResourceIdLink: serviceBusNamespace.id
+    privateEndpointTags: contains(serviceBusPrivateEndpoint, 'privateEndpointTags') ? serviceBusPrivateEndpoint.privateEndpointTags : {}
+    privateEndpointGroupIds: [
+      'namespace'
+    ]
+  }
+}
 
 output serviceBusNamespace object = serviceBusNamespace

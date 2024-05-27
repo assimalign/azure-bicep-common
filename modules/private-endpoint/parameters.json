@@ -28,59 +28,215 @@
             ]
         },
         "private-endpoint-parameters": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/private-endpoint-groups"
+            "type": "object",
+            "properties": {
+                "privateEndpointName": {
+                    "type": "string"
                 },
-                {
-                    "type": "object",
-                    "properties": {
-                        "privateEndpointName": {
-                            "type": "string"
-                        },
-                        "privateEndpointLocation": {
-                            "type": "string",
-                            "description": "The location/region to deploy the Azure Private Endpoint"
-                        },
-                        "privateEndpointDnsZoneName": {
-                            "type": "string",
-                            "description": "The name of the Private DNS Zone to link to the private endpoint for internal routing."
-                        },
-                        "privateEndpointDnsZoneResourceGroup": {
-                            "type": "string"
-                        },
-                        "privateEndpointVirtualNetworkName": {
-                            "type": "string"
-                        },
-                        "privateEndpointVirtualNetworkSubnetName": {
-                            "type": "string"
-                        },
-                        "privateEndpointVirtualNetworkResourceGroup": {
-                            "type": "string"
-                        },
-                        "privateEndpointResourceIdLink": {
-                            "type": "string",
-                            "description": "The Azure Resource ID to link to the Private Endpoint."
-                        },
-                        "privateEndpointTags": {
-                            "type": "object",
-                            "patternProperties": {
-                                "^[a-z]": {
-                                    "type": "string"
-                                }
+                "privateEndpointLocation": {
+                    "type": "string",
+                    "description": "The location/region to deploy the Azure Private Endpoint"
+                },
+                "privateEndpointGroupIds": {
+                    "enum": [
+                        "amlworkspace",
+                        "account",
+                        "Bot",
+                        "Token",
+                        "Sql",
+                        "SqlOnDemand",
+                        "Dev",
+                        "Web",
+                        "namespace",
+                        "dataFactory",
+                        "portal",
+                        "cluster",
+                        "tenant",
+                        "databricks_ui_api",
+                        "browser_authentication",
+                        "batchAccount",
+                        "nodeManagement",
+                        "global",
+                        "feed",
+                        "connection",
+                        "management",
+                        "registry",
+                        "sqlServer",
+                        "managedInstance",
+                        "MongoDB",
+                        "Cassandra",
+                        "Gremlin",
+                        "Table",
+                        "Analytical",
+                        "coordinator",
+                        "postgresqlServer",
+                        "mysqlServer",
+                        "mariadbServer",
+                        "redisCache",
+                        "redisEnterprise",
+                        "hybridcompute",
+                        "iotHub",
+                        "iotDps",
+                        "DeviceUpdate",
+                        "iotApp",
+                        "API",
+                        "topic",
+                        "domain",
+                        "partnernamespace",
+                        "gateway",
+                        "healthcareworkspace",
+                        "keydelivery",
+                        "liveevent",
+                        "streamingendpoint",
+                        "Webhook",
+                        "DSCAndHybridWorker",
+                        "AzureBackup",
+                        "AzureSiteRecovery",
+                        "azuremonitor",
+                        "Default",
+                        "ResourceManagement",
+                        "grafana",
+                        "vault",
+                        "managedhsm",
+                        "configurationStores",
+                        "standard",
+                        "blob",
+                        "blob_secondary",
+                        "table_secondary",
+                        "queue",
+                        "queue_secondary",
+                        "file",
+                        "web_secondary",
+                        "dfs",
+                        "dfs_secondary",
+                        "afs",
+                        "disks",
+                        "searchService",
+                        "sites",
+                        "signalr",
+                        "staticSites"
+                    ]
+                },
+                "privateEndpointDnsZoneGroupConfigs": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "privateDnsZone": {
+                                "enum": [
+                                    "privatelink.sql.azuresynapse.net",
+                                    "privatelink.dev.azuresynapse.net",
+                                    "privatelink.azuresynapse.net",
+                                    "privatelink.servicebus.windows.net",
+                                    "privatelink.datafactory.azure.net",
+                                    "privatelink.adf.azure.com",
+                                    "privatelink.azurehdinsight.net",
+                                    "privatelink.blob.core.windows.net",
+                                    "privatelink.queue.core.windows.net",
+                                    "privatelink.table.core.windows.net",
+                                    "privatelink.analysis.windows.net",
+                                    "privatelink.pbidedicated.windows.net",
+                                    "privatelink.tip1.powerquery.microsoft.com",
+                                    "privatelink.azuredatabricks.net",
+                                    "privatelink.api.azureml.ms",
+                                    "privatelink.cognitiveservices.azure.com",
+                                    "privatelink.directline.botframework.com",
+                                    "privatelink.token.botframework.com",
+                                    "privatelink-global.wvd.microsoft.com",
+                                    "privatelink.wvd.microsoft.com",
+                                    "privatelink.database.windows.net",
+                                    "privatelink.documents.azure.com",
+                                    "privatelink.mongo.cosmos.azure.com",
+                                    "privatelink.cassandra.cosmos.azure.com",
+                                    "privatelink.gremlin.cosmos.azure.com",
+                                    "privatelink.table.cosmos.azure.com",
+                                    "privatelink.analytics.cosmos.azure.com",
+                                    "privatelink.postgres.cosmos.azure.com",
+                                    "privatelink.postgres.database.azure.com",
+                                    "privatelink.mysql.database.azure.com",
+                                    "privatelink.mariadb.database.azure.com",
+                                    "privatelink.redis.cache.windows.net",
+                                    "privatelink.redisenterprise.cache.azure.net",
+                                    "privatelink.eventgrid.azure.net",
+                                    "privatelink.azure-api.net",
+                                    "privatelink.workspace.azurehealthcareapis.com",
+                                    "privatelink.fhir.azurehealthcareapis.com",
+                                    "privatelink.dicom.azurehealthcareapis.com",
+                                    "privatelink.azure-devices.net",
+                                    "privatelink.servicebus.windows.net1",
+                                    "privatelink.azure-devices-provisioning.net",
+                                    "privatelink.api.adu.microsoft.com",
+                                    "privatelink.azureiotcentral.com",
+                                    "privatelink.digitaltwins.azure.net",
+                                    "privatelink.media.azure.net",
+                                    "privatelink.azure-automation.net",
+                                    "privatelink.siterecovery.windowsazure.com",
+                                    "privatelink.monitor.azure.com",
+                                    "privatelink.oms.opinsights.azure.com",
+                                    "privatelink.ods.opinsights.azure.com",
+                                    "privatelink.agentsvc.azure-automation.net",
+                                    "privatelink.purview.azure.com",
+                                    "privatelink.purviewstudio.azure.com",
+                                    "privatelink.prod.migration.windowsazure.com",
+                                    "privatelink.azure.com",
+                                    "privatelink.grafana.azure.com",
+                                    "privatelink.file.core.windows.net",
+                                    "privatelink.web.core.windows.net",
+                                    "privatelink.dfs.core.windows.net",
+                                    "privatelink.afs.azure.net",
+                                    "privatelink.vaultcore.azure.net",
+                                    "privatelink.managedhsm.azure.net",
+                                    "privatelink.azconfig.io",
+                                    "privatelink.attest.azure.net",
+                                    "privatelink.search.windows.net",
+                                    "privatelink.azurewebsites.net",
+                                    "scm.privatelink.azurewebsites.net",
+                                    "privatelink.service.signalr.net",
+                                    "privatelink.azurestaticapps.net"
+                                ]
                             },
-                            "minProperties": 1
+                            "privateDnsZoneResourceGroup": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "privateDnsZone",
+                            "privateDnsZoneResourceGroup"
+                        ]
+                    }
+                },
+                "privateEndpointVirtualNetworkName": {
+                    "type": "string"
+                },
+                "privateEndpointVirtualNetworkSubnetName": {
+                    "type": "string"
+                },
+                "privateEndpointVirtualNetworkResourceGroup": {
+                    "type": "string"
+                },
+                "privateEndpointResourceIdLink": {
+                    "type": "string",
+                    "description": "The Azure Resource ID to link to the Private Endpoint."
+                },
+                "privateEndpointTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
                         }
                     },
-                    "required": [
-                        "privateEndpointName",
-                        "privateEndpointDnsZoneName",
-                        "privateEndpointDnsZoneGroupName",
-                        "privateEndpointVirtualNetworkName",
-                        "privateEndpointVirtualNetworkSubnetName",
-                        "privateEndpointVirtualNetworkResourceGroup"
-                    ]
+                    "minProperties": 1
                 }
+            },
+            "required": [
+                "privateEndpointName",
+                "privateEndpointResourceIdLink",
+                "privateEndpointGroupIds",
+                "privateEndpointDnsZoneGroupConfigs",
+                "privateEndpointVirtualNetworkName",
+                "privateEndpointVirtualNetworkSubnetName",
+                "privateEndpointVirtualNetworkResourceGroup"
             ]
         },
         "private-endpoint-embedded": {
@@ -94,12 +250,94 @@
                     "type": "string",
                     "description": "The location/region to deploy the Azure Private Endpoint"
                 },
-                "privateEndpointDnsZoneName": {
-                    "type": "string",
-                    "description": "The name of the Private DNS Zone to link to the private endpoint for internal routing."
-                },
-                "privateEndpointDnsZoneResourceGroup": {
-                    "type": "string"
+                "privateEndpointDnsZoneGroupConfigs": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "privateDnsZone": {
+                                "enum": [
+                                    "privatelink.sql.azuresynapse.net",
+                                    "privatelink.dev.azuresynapse.net",
+                                    "privatelink.azuresynapse.net",
+                                    "privatelink.servicebus.windows.net",
+                                    "privatelink.datafactory.azure.net",
+                                    "privatelink.adf.azure.com",
+                                    "privatelink.azurehdinsight.net",
+                                    "privatelink.blob.core.windows.net",
+                                    "privatelink.queue.core.windows.net",
+                                    "privatelink.table.core.windows.net",
+                                    "privatelink.analysis.windows.net",
+                                    "privatelink.pbidedicated.windows.net",
+                                    "privatelink.tip1.powerquery.microsoft.com",
+                                    "privatelink.azuredatabricks.net",
+                                    "privatelink.api.azureml.ms",
+                                    "privatelink.cognitiveservices.azure.com",
+                                    "privatelink.directline.botframework.com",
+                                    "privatelink.token.botframework.com",
+                                    "privatelink-global.wvd.microsoft.com",
+                                    "privatelink.wvd.microsoft.com",
+                                    "privatelink.database.windows.net",
+                                    "privatelink.documents.azure.com",
+                                    "privatelink.mongo.cosmos.azure.com",
+                                    "privatelink.cassandra.cosmos.azure.com",
+                                    "privatelink.gremlin.cosmos.azure.com",
+                                    "privatelink.table.cosmos.azure.com",
+                                    "privatelink.analytics.cosmos.azure.com",
+                                    "privatelink.postgres.cosmos.azure.com",
+                                    "privatelink.postgres.database.azure.com",
+                                    "privatelink.mysql.database.azure.com",
+                                    "privatelink.mariadb.database.azure.com",
+                                    "privatelink.redis.cache.windows.net",
+                                    "privatelink.redisenterprise.cache.azure.net",
+                                    "privatelink.eventgrid.azure.net",
+                                    "privatelink.azure-api.net",
+                                    "privatelink.workspace.azurehealthcareapis.com",
+                                    "privatelink.fhir.azurehealthcareapis.com",
+                                    "privatelink.dicom.azurehealthcareapis.com",
+                                    "privatelink.azure-devices.net",
+                                    "privatelink.servicebus.windows.net1",
+                                    "privatelink.azure-devices-provisioning.net",
+                                    "privatelink.api.adu.microsoft.com",
+                                    "privatelink.azureiotcentral.com",
+                                    "privatelink.digitaltwins.azure.net",
+                                    "privatelink.media.azure.net",
+                                    "privatelink.azure-automation.net",
+                                    "privatelink.siterecovery.windowsazure.com",
+                                    "privatelink.monitor.azure.com",
+                                    "privatelink.oms.opinsights.azure.com",
+                                    "privatelink.ods.opinsights.azure.com",
+                                    "privatelink.agentsvc.azure-automation.net",
+                                    "privatelink.purview.azure.com",
+                                    "privatelink.purviewstudio.azure.com",
+                                    "privatelink.prod.migration.windowsazure.com",
+                                    "privatelink.azure.com",
+                                    "privatelink.grafana.azure.com",
+                                    "privatelink.file.core.windows.net",
+                                    "privatelink.web.core.windows.net",
+                                    "privatelink.dfs.core.windows.net",
+                                    "privatelink.afs.azure.net",
+                                    "privatelink.vaultcore.azure.net",
+                                    "privatelink.managedhsm.azure.net",
+                                    "privatelink.azconfig.io",
+                                    "privatelink.attest.azure.net",
+                                    "privatelink.search.windows.net",
+                                    "privatelink.azurewebsites.net",
+                                    "scm.privatelink.azurewebsites.net",
+                                    "privatelink.service.signalr.net",
+                                    "privatelink.azurestaticapps.net"
+                                ]
+                            },
+                            "privateDnsZoneResourceGroup": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "privateDnsZone",
+                            "privateDnsZoneResourceGroup"
+                        ]
+                    }
                 },
                 "privateEndpointVirtualNetworkName": {
                     "type": "string"
@@ -122,134 +360,10 @@
             },
             "required": [
                 "privateEndpointName",
-                "privateEndpointDnsZoneName",
+                "privateEndpointDnsZoneGroupConfigs",
                 "privateEndpointVirtualNetworkName",
                 "privateEndpointVirtualNetworkSubnetName",
                 "privateEndpointVirtualNetworkResourceGroup"
-            ]
-        },
-        "private-endpoint-groups": {
-            "oneOf": [
-                {
-                    "type": "object",
-                    "properties": {
-                        "privateEndpointDnsZoneGroupName": {
-                            "const": "privatelink-azconfig-io"
-                        },
-                        "privateEndpointGroupIds": {
-                            "const": "configurationStores"
-                        }
-                    },
-                    "required": [
-                        "privateEndpointDnsZoneGroupName",
-                        "privateEndpointGroupIds"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "privateEndpointDnsZoneGroupName": {
-                            "const": "privatelink-documents-azure-com"
-                        },
-                        "privateEndpointGroupIds": {
-                            "const": "sql"
-                        }
-                    },
-                    "required": [
-                        "privateEndpointDnsZoneGroupName",
-                        "privateEndpointGroupIds"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "privateEndpointDnsZoneGroupName": {
-                            "const": "privatelink-eventgrid-azure-net"
-                        },
-                        "privateEndpointGroupIds": {
-                            "const": "domain"
-                        }
-                    },
-                    "required": [
-                        "privateEndpointDnsZoneGroupName",
-                        "privateEndpointGroupIds"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "privateEndpointDnsZoneGroupName": {
-                            "const": "privatelink-vaultcore-azure-net"
-                        },
-                        "privateEndpointGroupIds": {
-                            "const": "vault"
-                        }
-                    },
-                    "required": [
-                        "privateEndpointDnsZoneGroupName",
-                        "privateEndpointGroupIds"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "privateEndpointDnsZoneGroupName": {
-                            "const": "privatelink-blob-core-windows-net"
-                        },
-                        "privateEndpointGroupIds": {
-                            "const": "blob"
-                        }
-                    },
-                    "required": [
-                        "privateEndpointDnsZoneGroupName",
-                        "privateEndpointGroupIds"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "privateEndpointDnsZoneGroupName": {
-                            "const": "privatelink-file-core-windows-net"
-                        },
-                        "privateEndpointGroupIds": {
-                            "const": "file"
-                        }
-                    },
-                    "required": [
-                        "privateEndpointDnsZoneGroupName",
-                        "privateEndpointGroupIds"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "privateEndpointDnsZoneGroupName": {
-                            "const": "privatelink-queue-core-windows-net"
-                        },
-                        "privateEndpointGroupIds": {
-                            "const": "queue"
-                        }
-                    },
-                    "required": [
-                        "privateEndpointDnsZoneGroupName",
-                        "privateEndpointGroupIds"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "privateEndpointDnsZoneGroupName": {
-                            "const": "privatelink-table-core-windows-net"
-                        },
-                        "privateEndpointGroupIds": {
-                            "const": "table"
-                        }
-                    },
-                    "required": [
-                        "privateEndpointDnsZoneGroupName",
-                        "privateEndpointGroupIds"
-                    ]
-                }
             ]
         }
     }

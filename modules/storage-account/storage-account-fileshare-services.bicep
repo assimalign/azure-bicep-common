@@ -81,9 +81,13 @@ module storageFileShareServicePrivateEndpoint '../private-endpoint/private-endpo
     environment: environment
     privateEndpointName: storageAccountFileShareServicePrivateEndpoint.privateEndpointName
     privateEndpointLocation: contains(storageAccountFileShareServicePrivateEndpoint, 'privateEndpointLocation') ? storageAccountFileShareServicePrivateEndpoint.privateEndpointLocation : storageAccountLocation
-    privateEndpointDnsZoneName: storageAccountFileShareServicePrivateEndpoint.privateEndpointDnsZoneName
-    privateEndpointDnsZoneGroupName: 'privatelink-file-core-windows-net'
-    privateEndpointDnsZoneResourceGroup: storageAccountFileShareServicePrivateEndpoint.privateEndpointDnsZoneResourceGroup
+    privateEndpointDnsZoneGroups: [
+      for zone in storageAccountFileShareServicePrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
+        privateDnsZoneName: zone.privateDnsZone
+        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
+        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
+      }
+    ]
     privateEndpointVirtualNetworkName: storageAccountFileShareServicePrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: storageAccountFileShareServicePrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: storageAccountFileShareServicePrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
