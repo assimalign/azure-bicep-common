@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Service Bus to deploy the Topic to')
 param serviceBusName string
 
@@ -29,7 +32,7 @@ param serviceBusTopicPolicyPermissions array
 
 // 1.1 Add the authorization rules
 resource serviceBusTopicAuthorizationRules 'Microsoft.ServiceBus/namespaces/topics/authorizationRules@2021-11-01' = {
-  name: replace(replace('${serviceBusName}/${serviceBusTopicName}/${serviceBusTopicPolicyName}', '@environment', environment), '@region', region)
+  name: replace(replace(replace('${serviceBusName}/${serviceBusTopicName}/${serviceBusTopicPolicyName}', '@affix', affix), '@environment', environment), '@region', region)
   properties: {
     rights: serviceBusTopicPolicyPermissions
   }

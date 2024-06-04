@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Public IP Address')
 param publicIpName string
 
@@ -37,23 +40,20 @@ param publicIpConfigs object = {}
 @description('')
 param publicIpTags object = {}
 
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
+
 // 1. Deploy Public Ip Address
 resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2023-11-01' = {
-  name: replace(replace(publicIpName, '@environment', environment), '@region', region)
+  name: formatName(publicIpName, affix, environment, region)
   location: publicIpLocation
-  zones: (contains(publicIpSku, environment) ? publicIpSku[environment].tier : publicIpSku.default.tier) == 'Regional' // Only regional can set zones
-    ? publicIpConfigs.?zones ?? []
-    : []
+  zones: publicIpConfigs.?zones ?? []
   properties: {
     publicIPAllocationMethod: publicIpAllocationMethod
     dnsSettings: !contains(publicIpConfigs, 'dnsNameLabel')
       ? null
       : {
-          domainNameLabel: replace(
-            replace(publicIpConfigs.dnsNameLabel, '@environment', environment),
-            '@region',
-            region
-          )
+          domainNameLabel: formatName(publicIpConfigs.dnsNameLabel, affix, environment, region)
         }
   }
   sku: {

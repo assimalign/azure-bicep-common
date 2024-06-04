@@ -15,6 +15,9 @@ param environment string = ''
 @description('The location prefix or suffix for the resource name')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the ASE to deploy')
 param appServiceEnvironmentName string
 
@@ -35,24 +38,26 @@ param appServiceEnvironmentVirtualNetwork object
 @description('')
 param appServiceEnvironmentConfigs object = {}
 
-// 1. Get the virtual network to attach to the ASE
-resource virtualNetworkSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-09-01' existing = {
-  name: replace(replace('${appServiceEnvironmentVirtualNetwork.virtualNetworkName}/${appServiceEnvironmentVirtualNetwork.virtualNetworkSubnetName}', '@environment', environment), '@region', region)
-  scope: resourceGroup(replace(replace(appServiceEnvironmentVirtualNetwork.virtualNetworkResourceGroup, '@environment', environment), '@region', region))
-}
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
 
 // 2. Begin Deployment of App Service Environment
 resource appServiceEnvrionment 'Microsoft.Web/hostingEnvironments@2023-01-01' = {
-  name: replace(replace('${appServiceEnvironmentName}', '@environment', environment), '@region', region)
+  name: formatName(appServiceEnvironmentName, affix, environment, region)
   location: appServiceEnvironmentLocation
   kind: appServiceEnvironmentType
   properties: {
-    zoneRedundant: contains(appServiceEnvironmentConfigs, 'isZoneRedundant') ? appServiceEnvironmentConfigs.isZoneRedundant : false
-    dedicatedHostCount: contains(appServiceEnvironmentConfigs, 'dedicatedHostCount') ? appServiceEnvironmentConfigs.dedicatedHostCount : 0
+    zoneRedundant: appServiceEnvironmentConfigs.?isZoneRedundant
+    dedicatedHostCount: appServiceEnvironmentConfigs.?dedicatedHostCount
+    internalLoadBalancingMode: appServiceEnvironmentConfigs.?internalLoadBalancingMode
     virtualNetwork: {
-      id: virtualNetworkSubnet.id
+      id: resourceId(
+        formatName(appServiceEnvironmentVirtualNetwork.virtualNetworkResourceGroup, affix, environment, region),
+        'Microsoft.Network/virtualNetworks/subnets',
+        formatName(appServiceEnvironmentVirtualNetwork.virtualNetworkName, affix, environment, region),
+        formatName(appServiceEnvironmentVirtualNetwork.virtualNetworkSubnetName, affix, environment, region)
+      )
     }
-    internalLoadBalancingMode: contains(appServiceEnvironmentConfigs, 'internalLoadBalancingMode') ? appServiceEnvironmentConfigs.internalLoadBalancingMode : 'None'
   }
 }
 

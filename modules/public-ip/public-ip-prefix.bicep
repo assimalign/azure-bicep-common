@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('')
 param publicIpPrefixName string
 
@@ -36,7 +39,7 @@ param publicIpPrefixAddressVersion string = 'IPv4'
 param publicIpPrefixTags object = {}
 
 resource publicIpPrefix 'Microsoft.Network/publicIPPrefixes@2023-05-01' = {
-  name: replace(replace(publicIpPrefixName, '@environment', environment), '@region', region)
+  name: replace(replace(replace(publicIpPrefixName,'@affix', affix), '@environment', environment), '@region', region)
   sku: {
     name: 'Standard'
     tier: publicIpPrefixTier

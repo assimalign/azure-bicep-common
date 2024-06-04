@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Private DNS Zone')
 param privateDnsZoneName string
 
@@ -31,7 +34,7 @@ param privateDnsZoneRecords array
 
 // 1.1 Set A Records if any in Private DNS Zone
 resource azPrivateDnsARecordsDeployment 'Microsoft.Network/privateDnsZones/TXT@2020-06-01' = {
-  name: replace(replace('${privateDnsZoneName}/${privateDnsZoneRecordName}', '@environment', environment) , '@region', region)
+  name: replace(replace(replace('${privateDnsZoneName}/${privateDnsZoneRecordName}', '@affix', affix), '@environment', environment) , '@region', region)
   properties: {
    ttl: privateDnsZoneTtl
    txtRecords: privateDnsZoneRecords

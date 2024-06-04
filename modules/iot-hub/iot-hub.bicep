@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('')
 param iotHubName string
 
@@ -42,7 +45,7 @@ param iotHubTags object = {}
 
 
 resource azIotHubDeployment 'Microsoft.Devices/IotHubs@2023-06-30' = {
-  name: replace(replace(iotHubName, '@environment', environment), '@region', region)
+  name: replace(replace(replace(iotHubName, '@affix', affix), '@environment', environment), '@region', region)
   location: iotHubLocation
   sku: contains(iotHubSku, environment) ? {
     name: iotHubSku[environment].name

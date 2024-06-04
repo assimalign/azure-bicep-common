@@ -454,6 +454,24 @@
                 },
                 "monitorPrivateLinkScopes": {
                     "$ref": "./monitor-private-link-scope/parameters.json#/definitions/monitor-private-link-scopes"
+                },
+                // "virtualMachine": {
+                //     "$ref": "./virtual-machine/parameters.json#/definitions/virtual-machine"
+                // },
+                // "virtualMachines": {
+                //     "$ref": "./virtual-machine/parameters.json#/definitions/virtual-machines"
+                // },
+                "virtualMachineDisk": {
+                    "$ref": "./virtual-machine/parameters.json#/definitions/virtual-machine-disk"
+                },
+                "virtualMachineDisks": {
+                    "$ref": "./virtual-machine/parameters.json#/definitions/virtual-machine-disks"
+                },
+                "virtualMachineScaleSet": {
+                    "$ref": "./virtual-machine/parameters.json#/definitions/virtual-machine-scale-set"
+                },
+                "virtualMachineScaleSets": {
+                    "$ref": "./virtual-machine/parameters.json#/definitions/virtual-machine-scale-sets"
                 }
             }
         }

@@ -19,6 +19,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The role id to assign to the resource')
 param resourceRoleName string
 
@@ -41,7 +44,7 @@ param resourceToScopeRoleAssignment string = ''
 @description('The name of the resource to scope role assignment to')
 param resourceGroupToScopeRoleAssignment string
 
-var ResourceGroup = resourceGroup(replace(replace(resourceGroupToScopeRoleAssignment, '@environment', environment), '@region', region))
+var ResourceGroup = resourceGroup(replace(replace(replace(resourceGroupToScopeRoleAssignment,'@affix', affix), '@environment', environment), '@region', region))
 // var RoleDefinitionId = {
 //   AcrPush: '8311e382-0749-4cb8-b61a-304f252e45ec'
 //   APIManagementServiceContributor: '312a565d-c81f-4fd8-895a-4e21e48d571c'
@@ -237,6 +240,7 @@ module rbacAppConfig 'rbac-app-configuration.bicep' = if (resourceTypeAssigningR
   name: 'rbac-appc-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
+    affix: affix
     environment: environment
     region: region
     resourceRoleName: resourceRoleName
@@ -251,6 +255,7 @@ module rbacKeyVault 'rbac-key-vault.bicep' = if (resourceTypeAssigningRole == 'M
   name: 'rbac-kv-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
+    affix: affix
     environment: environment
     region: region
     resourceRoleName: resourceRoleName
@@ -265,6 +270,7 @@ module rbacEventGrid 'rbac-event-grid.bicep' = if (resourceTypeAssigningRole == 
   name: 'rbac-egd-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
+    affix: affix
     environment: environment
     region: region
     resourceRoleName: resourceRoleName
@@ -279,6 +285,7 @@ module rbacStorageAccount 'rbac-storage-account.bicep' = if (resourceTypeAssigni
   name: 'rbac-stg-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
+    affix: affix
     environment: environment
     region: region
     resourceRoleName: resourceRoleName
@@ -293,6 +300,7 @@ module rbacStorageAccountBlob 'rbac-storage-account-blob.bicep' = if (resourceTy
   name: 'rbac-stg-blob-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
+    affix: affix
     environment: environment
     region: region
     resourceRoleName: resourceRoleName
@@ -307,6 +315,7 @@ module rbacStorageAccountFileShare 'rbac-storage-account-fileshare.bicep' = if (
   name: 'rbac-stg-fs-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
+    affix: affix
     environment: environment
     region: region
     resourceRoleName: resourceRoleName
@@ -321,6 +330,7 @@ module rbacStorageAccountQueue 'rbac-storage-account-queue.bicep' = if (resource
   name: 'rbac-stg-queue-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
+    affix: affix
     environment: environment
     region: region
     resourceRoleName: resourceRoleName
@@ -335,6 +345,7 @@ module rbacStorageAccountTable 'rbac-storage-account-table.bicep' = if (resource
   name: 'rbac-stg-table-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
+    affix: affix
     environment: environment
     region: region
     resourceRoleName: resourceRoleName
@@ -349,6 +360,7 @@ module rbacServiceBusNamespace 'rbac-service-bus-namespace.bicep' = if (resource
   name: 'rbac-sbn-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
+    affix: affix
     environment: environment
     region: region
     resourceRoleName: resourceRoleName
@@ -363,6 +375,7 @@ module rbacServiceBusNamespaceQueue 'rbac-service-bus-namespace-queue.bicep' = i
   name: 'rbac-sbn-queue-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
+    affix: affix
     environment: environment
     region: region
     resourceRoleName: resourceRoleName
@@ -377,6 +390,7 @@ module rbacServiceBusNamespaceTopic 'rbac-service-bus-namespace-topic.bicep' = i
   name: 'rbac-sbn-topic-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
+    affix: affix
     environment: environment
     region: region
     resourceRoleName: resourceRoleName
@@ -391,6 +405,7 @@ module rbacCosmos 'rbac-cosmos.bicep' = if (resourceTypeAssigningRole == 'Micros
   name: 'rbac-cosmos-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
+    affix: affix
     environment: environment
     region: region
     resourceRoleName: resourceRoleName
@@ -405,6 +420,7 @@ module rbacSqlServer 'rbac-sql-server.bicep' = if (resourceTypeAssigningRole == 
   name: 'rbac-sqlserver-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
+    affix: affix
     environment: environment
     region: region
     resourceRoleName: resourceRoleName
@@ -419,6 +435,7 @@ module rbacSqlServerManaged 'rbac-sql-server-managed.bicep' = if (resourceTypeAs
   name: 'rbac-sqlserver-mgd-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
+    affix: affix
     environment: environment
     region: region
     resourceRoleName: resourceRoleName
@@ -433,6 +450,7 @@ module rbacMediaServices 'rbac-media-services.bicep' = if (resourceTypeAssigning
   name: 'rbac-media-services-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
+    affix: affix
     environment: environment
     region: region
     resourceRoleName: resourceRoleName
@@ -447,6 +465,7 @@ module rbacCognitiveServices 'rbac-cognitive-services.bicep' = if (resourceTypeA
   name: 'rbac-cognitive-${guid('${resourceRoleName}-${resourcePrincipalIdReceivingRole}')}'
   scope: ResourceGroup
   params: {
+    affix: affix
     environment: environment
     region: region
     resourceRoleName: resourceRoleName

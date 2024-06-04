@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Database Account for the storage table')
 param cosmosAccountName string
 
@@ -22,7 +25,7 @@ param cosmosAccountName string
 param cosmosAccountTableName string
 
 resource cosmosAccountTableDatabase 'Microsoft.DocumentDB/databaseAccounts/tables@2023-11-15' = {
-  name: replace(replace('${cosmosAccountName}/${cosmosAccountTableName}', '@environment', environment), '@region', region)
+  name: replace(replace(replace('${cosmosAccountName}/${cosmosAccountTableName}', '@affix', affix), '@environment', environment), '@region', region)
   properties: {
     resource: {
       id: cosmosAccountTableName

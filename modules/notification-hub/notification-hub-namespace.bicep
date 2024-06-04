@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Notification Namespace to deploy')
 param notificationHubNamespaceName string
 
@@ -35,9 +38,12 @@ param notificationHubNamespacePolicies array = []
 @description('')
 param notificationHubNamespaceTags object = {}
 
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
+
 // 1. Deploy the Notification Namespace
-resource notificationHubNamespace 'Microsoft.NotificationHubs/namespaces@2017-04-01' = {
-  name: replace(replace(notificationHubNamespaceName, '@environment', environment), '@region', region)
+resource notificationHubNamespace 'Microsoft.NotificationHubs/namespaces@2023-09-01' = {
+  name: formatName(notificationHubNamespaceName, affix, environment, region)
   location: notificationHubNamespaceLocation
   sku: any(contains(notificationHubNamespaceSku, environment) ? {
     name: notificationHubNamespaceSku[environment]
@@ -60,9 +66,10 @@ resource notificationHubNamespace 'Microsoft.NotificationHubs/namespaces@2017-04
 
 // 2. Deploy the Notification Namespace Hubs, if any
 module azNotificationNamespaceHubsDeployment 'notification-hub-namespace-hub.bicep' = [for hub in notificationHubNamespaceHubs: if (!empty(hub)) {
-  name: !empty(notificationHubNamespaceHubs) ? replace(replace(hub.notificationHubName, '@environment', environment), '@region', region) : 'no-hubs-to-deploy'
+  name: !empty(notificationHubNamespaceHubs) ? formatName(hub.notificationHubName, affix, environment, region) : 'no-hubs-to-deploy'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     notificationHubLocation: notificationHubNamespaceLocation

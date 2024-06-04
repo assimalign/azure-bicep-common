@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the sql server instance')
 param sqlServerAccountName string
 
@@ -46,7 +49,7 @@ var properties = any(contains(sqlServerAccountDatabaseSku, environment) ? {
 })
 
 resource sqlServerDatabaseDeployment 'Microsoft.Sql/servers/databases@2021-11-01' = {
-  name: replace(replace('${sqlServerAccountName}/${sqlServerAccountDatabaseName}', '@environment', environment), '@region', region)
+  name: replace(replace(replace('${sqlServerAccountName}/${sqlServerAccountDatabaseName}', '@affix', affix), '@environment', environment), '@region', region)
   location: sqlServerAccountDatabaseLocation
   properties: union({
       collation: contains(sqlServerAccountDatabaseConfigs, 'dbCollation') ? sqlServerAccountDatabaseConfigs.dbCollation : 'SQL_Latin1_General_CP1_CI_AS'

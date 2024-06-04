@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the storage account to deploy. Must only contain alphanumeric characters')
 param storageAccountName string
 
@@ -38,7 +41,7 @@ param storageAccountQueueServiceQueues array = []
 
 // 1. Get the existing Storage Account
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
-  name: replace(replace(storageAccountName, '@environment', environment), '@region', region)
+  name: replace(replace(replace(storageAccountName, '@affix', affix), '@environment', environment), '@region', region)
 }
 
 // 2. Deploy the Storage Account Queue Service
@@ -51,8 +54,8 @@ resource storageAccountQueueService 'Microsoft.Storage/storageAccounts/queueServ
         allowedMethods: rule.methods
         allowedOrigins: rule.origins
         exposedHeaders: []
-        allowedHeaders: contains(rule, 'headers') ? rule.headers : []
-        maxAgeInSeconds: contains(rule, 'maxAge') ? rule.maxAge : 0
+        allowedHeaders: rule.?headers ?? []
+        maxAgeInSeconds: rule.?maxAge ?? 0
       }]
     }
   }
@@ -63,6 +66,7 @@ module storageAccountQueues 'storage-account-queue-services-queue.bicep' = [for 
   name: !empty(storageAccountQueueServiceQueues) ? toLower('queues-${guid('${storageAccountQueueService.id}/${queue.storageAccountQueueName}')}') : 'no-queue-service-to-deploy'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     storageAccountName: storageAccountName
@@ -76,22 +80,17 @@ module storageQueueServicePrivateEndpoint '../private-endpoint/private-endpoint.
   name: !empty(storageAccountQueueServicePrivateEndpoint) ? toLower('queue-priv-endpoint-${guid('${storageAccountQueueService.id}/${storageAccountQueueServicePrivateEndpoint.privateEndpointName}')}') : 'no-stg-queue-priv-endpoint'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     privateEndpointName: storageAccountQueueServicePrivateEndpoint.privateEndpointName
-    privateEndpointLocation: contains(storageAccountQueueServicePrivateEndpoint, 'privateEndpointLocation') ? storageAccountQueueServicePrivateEndpoint.privateEndpointLocation : storageAccountLocation
-    privateEndpointDnsZoneGroups: [
-      for zone in storageAccountQueueServicePrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
-        privateDnsZoneName: zone.privateDnsZone
-        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
-        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
-      }
-    ]
+    privateEndpointLocation: storageAccountQueueServicePrivateEndpoint.?privateEndpointLocation ?? storageAccountLocation
+    privateEndpointDnsZoneGroupConfigs: storageAccountQueueServicePrivateEndpoint.privateEndpointDnsZoneGroupConfigs
     privateEndpointVirtualNetworkName: storageAccountQueueServicePrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: storageAccountQueueServicePrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: storageAccountQueueServicePrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
     privateEndpointResourceIdLink: storageAccount.id
-    privateEndpointTags: contains(storageAccountQueueServicePrivateEndpoint, 'privateEndpointTags') ? storageAccountQueueServicePrivateEndpoint.privateEndpointTags : {}
+    privateEndpointTags: storageAccountQueueServicePrivateEndpoint.?privateEndpointTags
     privateEndpointGroupIds: [
       'queue'
     ]

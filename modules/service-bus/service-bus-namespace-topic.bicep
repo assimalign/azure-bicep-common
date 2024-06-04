@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Service Bus to deploy the Topic to')
 param serviceBusName string
 
@@ -32,9 +35,9 @@ param serviceBusTopicPolicies array = []
 
 // 1. Deploy Service Bus Namespace Topic
 resource serviecBusNamespaceTopic 'Microsoft.ServiceBus/namespaces/topics@2021-11-01' = {
-  name: replace(replace('${serviceBusName}/${serviceBusTopicName}', '@environment', environment), '@region', region)
+  name: replace(replace(replace('${serviceBusName}/${serviceBusTopicName}', '@affix', affix), '@environment', environment), '@region', region)
   properties: {
-    maxSizeInMegabytes: contains(serviceBusTopicSettings, 'maxSize') ? serviceBusTopicSettings.maxSize : 1024
+    maxSizeInMegabytes: serviceBusTopicSettings.?maxSize ?? 1024
   }
 }
 
@@ -43,6 +46,7 @@ module serviecBusNamespaceTopicAuthPolicy 'service-bus-namespace-topic-authoriza
   name: !empty(serviceBusTopicPolicies) ? toLower('sbn-topic-subs-${guid('${serviecBusNamespaceTopic.id}/${policy.serviceBusPolicyName}')}') : 'no-sbt-policies-to-deploy'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     serviceBusName: serviceBusName
@@ -57,13 +61,14 @@ module serviecBusNamespaceTopicSubscription 'service-bus-namespace-topic-subscri
   name: !empty(serviceBusTopicSubscriptions) ? toLower('sbn-topic-subs-${guid('${serviecBusNamespaceTopic.id}/${subscription.serviceBusTopicSubscriptionName}')}') : 'no-subscription-to-deploy'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     serviceBusName: serviceBusName
     serviceBusTopicName: serviceBusTopicName
     serviceBusTopicSubscriptionName: subscription.serviceBusTopicSubscriptionName
-    serviceBusTopicSubscriptionSettings: contains(subscription, 'serviceBusTopicSubscriptionSettings') ? subscription.serviceBusTopicSubscriptionSettings : {}
-    serviceBusTopicSubscriptionCorrelationFilters: contains(subscription, 'serviceBusTopicSubscriptionCorrelationFilters') ? subscription.serviceBusTopicSubscriptionCorrelationFilters : []
+    serviceBusTopicSubscriptionSettings: subscription.?serviceBusTopicSubscriptionSettings 
+    serviceBusTopicSubscriptionCorrelationFilters: subscription.?serviceBusTopicSubscriptionCorrelationFilters
   }
 }]
 

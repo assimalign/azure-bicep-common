@@ -3,7 +3,7 @@
     "definitions": {
         "app-service": {
             "type": "object",
-            "description": "Deploy a single Azure App Service,",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "$ref": "#/definitions/app-service-parameters"
@@ -15,7 +15,7 @@
         },
         "app-services": {
             "type": "object",
-            "description": "Deploy multiple Azure App Service,",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -88,8 +88,9 @@
                 },
                 "appServiceNetworkSettings": {
                     "description": "Only use this settings when setting up",
+                    "additionalProperties": false,
                     "properties": {
-                        "publicNetworkAccess": {
+                        "allowPublicNetworkAccess": {
                             "enum": [
                                 "Enabled",
                                 "Disabled"
@@ -129,7 +130,7 @@
                             "appServiceSlotNetworkSettings": {
                                 "description": "Only use this settings when setting up",
                                 "properties": {
-                                    "publicNetworkAccess": {
+                                    "allowPublicNetworkAccess": {
                                         "enum": [
                                             "Enabled",
                                             "Disabled"

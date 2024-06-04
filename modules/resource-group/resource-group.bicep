@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the resource group.')
 param resourceGroupName string
 
@@ -27,7 +30,7 @@ param resourceGroupTags object = {}
 targetScope = 'subscription'
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2023-07-01' = {
-  name: replace(replace(resourceGroupName, '@environment', environment), '@region', region)
+  name: replace(replace(replace(resourceGroupName, '@affix', affix), '@environment', environment), '@region', region)
   location: resourceGroupLocation
   tags:  union(resourceGroupTags, {
     region: empty(region) ? 'n/a' : region

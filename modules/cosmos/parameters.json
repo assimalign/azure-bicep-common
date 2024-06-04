@@ -3,6 +3,7 @@
     "definitions": {
         "cosmos-account": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "oneOf": [
@@ -56,8 +57,8 @@
             ]
         },
         "cosmos-accounts": {
-            "$schema": "http://json-schema.org/draft-07/schema",
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -118,6 +119,7 @@
         },
         "cosmos-account-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "cosmosAccountName": {
                     "type": "string",
@@ -182,8 +184,8 @@
                                 "type": "number",
                                 "default": 0
                             },
-                            "isZoneRedundant":{
-                                "type":"boolean"
+                            "isZoneRedundant": {
+                                "type": "boolean"
                             }
                         },
                         "required": [
@@ -268,31 +270,49 @@
                 "cosmosAccountPrivateEndpoint": {
                     "$ref": "../private-endpoint/parameters.json#/definitions/private-endpoint-embedded"
                 },
-                "cosmosAccountVirtualNetworks": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "virtualNetworkName": {
-                                "type": "string"
-                            },
-                            "virtualNetworkSubnetName": {
-                                "type": "string"
-                            },
-                            "virtualNetworkResourceGroup": {
-                                "type": "string"
-                            },
-                            "VirtualNetworkMissingServiceEndpointIgnore": {
-                                "type": "boolean"
-                            }
+                "cosmosAccountNetworkSettings": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "minProperties": 1,
+                    "properties": {
+                        "allowPublicNetworkAccess": {
+                            "enum": [
+                                "Enabled",
+                                "Disabled",
+                                "SecuredByPerimeter"
+                            ]
                         },
-                        "required": [
-                            "virtualNetworkName",
-                            "virtualNetworkSubnetName",
-                            "virtualNetworkResourceGroup"
-                        ]
-                    },
-                    "minItems": 1
+                        "allowVirtualNetworkFiltering": {
+                            "type": "boolean"
+                        },
+                        "virtualNetworks": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "virtualNetwork": {
+                                        "type": "string"
+                                    },
+                                    "virtualNetworkSubnet": {
+                                        "type": "string"
+                                    },
+                                    "virtualNetworkResourceGroup": {
+                                        "type": "string"
+                                    },
+                                    "VirtualNetworkMissingServiceEndpointIgnore": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "required": [
+                                    "virtualNetwork",
+                                    "virtualNetworkSubnet",
+                                    "virtualNetworkResourceGroup"
+                                ]
+                            },
+                            "minItems": 1
+                        }
+                    }
                 },
                 "cosmosAccountBackupPolicy": {
                     "oneOf": [
@@ -353,12 +373,6 @@
                     "type": "object",
                     "properties": {
                         "disableLocalAuth": {
-                            "type": "boolean"
-                        },
-                        "disablePublicNetworkAccess": {
-                            "type": "boolean"
-                        },
-                        "enableVirtualNetworkFiltering": {
                             "type": "boolean"
                         }
                     },

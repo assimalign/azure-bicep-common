@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the app configuration')
 param appConfigurationName string
 
@@ -44,7 +47,7 @@ param appConfigurationPrivateEndpoint object = {}
 param appConfigurationEnableMsi bool = false
 
 @description('The network configuration for the App Configuration resource.')
-param appConfigurationNetworkConfig object = {}
+param appConfigurationNetworkSettings object = {}
 
 @description('Disables local authentication to the app configuration.')
 param appConfigurationDisableLocalAuth bool = false
@@ -52,9 +55,12 @@ param appConfigurationDisableLocalAuth bool = false
 @description('The tags to attach to the resource when deployed')
 param appConfigurationTags object = {}
 
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
+
 // 1. Deploys a single instance of Azure App Configuration
 resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-09-01-preview' = {
-  name: replace(replace(appConfigurationName, '@environment', environment), '@region', region)
+  name: formatName(appConfigurationName, affix, environment, region)
   location: appConfigurationLocation
   sku: {
     name: contains(appConfigurationSku, environment) ? appConfigurationSku[environment] : appConfigurationSku.default
@@ -64,14 +70,10 @@ resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-09-01-pr
   }
   properties: {
     disableLocalAuth: appConfigurationDisableLocalAuth
-    publicNetworkAccess: contains(appConfigurationNetworkConfig, 'publicNetworkAccess')
-      ? appConfigurationNetworkConfig.publicNetworkAccess
-      : 'Enabled'
+    publicNetworkAccess: appConfigurationNetworkSettings.?allowPublicNetworkAccess ?? 'Enabled'
     dataPlaneProxy: {
       authenticationMode: appConfigurationDisableLocalAuth == true ? 'Pass-through' : 'Local'
-      privateLinkDelegation: contains(appConfigurationNetworkConfig, 'azureResourceAccess')
-        ? appConfigurationNetworkConfig.azureResourceAccess
-        : 'Disabled'
+      privateLinkDelegation: appConfigurationNetworkSettings.?allowAzureResourceAccess ?? 'Disabled'
     }
   }
   tags: union(appConfigurationTags, {
@@ -85,6 +87,7 @@ module appConfigKeys 'app-configuration-key.bicep' = [
   for (key, index) in appConfigurationKeys: if (!empty(appConfigurationKeys) && appConfigurationDisableLocalAuth == false) {
     name: 'appc-key-${padLeft(index, 3, '0')}-${guid('${appConfig.id}/${key.appConfigurationKey}')}'
     params: {
+      affix: affix
       region: region
       environment: environment
       appConfigurationName: appConfigurationName
@@ -103,19 +106,14 @@ module appConfigPrivateEndpoint '../private-endpoint/private-endpoint.bicep' = i
     : 'no-app-cfg-pri-endp-to-deploy'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     privateEndpointName: appConfigurationPrivateEndpoint.privateEndpointName
     privateEndpointLocation: contains(appConfigurationPrivateEndpoint, 'privateEndpointLocation')
       ? appConfigurationPrivateEndpoint.privateEndpointLocation
       : appConfigurationLocation
-    privateEndpointDnsZoneGroups: [
-      for zone in appConfigurationPrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
-        privateDnsZoneName: zone.privateDnsZone
-        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
-        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
-      }
-    ]
+    privateEndpointDnsZoneGroupConfigs: appConfigurationPrivateEndpoint.privateEndpointDnsZoneGroupConfigs
     privateEndpointVirtualNetworkName: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: appConfigurationPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup

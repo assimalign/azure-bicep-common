@@ -11,6 +11,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Map Account to be deployed.')
 param mapAccountName string
 
@@ -26,7 +29,7 @@ param mapAccountLocation string = resourceGroup().location
 param mapAccountTags object = {}
 
 resource mapAccount 'Microsoft.Maps/accounts@2024-01-01-preview' = {
-   name: replace(replace(mapAccountName, '@environment', environment), '@region', region)
+   name: replace(replace(replace(mapAccountName,'@affix', affix), '@environment', environment), '@region', region)
    location: mapAccountLocation
    sku: {
       name: 'G2'

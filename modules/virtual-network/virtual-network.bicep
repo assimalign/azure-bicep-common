@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Virtual Network to be deployed')
 param virtualNetworkName string
 
@@ -33,14 +36,19 @@ param virtualNetworkConfigs object = {}
 @description('')
 param virtualNetworkTags object = {}
 
-func formatName(name string, environment string, region string) string =>
-  replace(replace(name, '@environment', environment), '@region', region)
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
 
 // 1. Deploy the Virtual Network
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
-  name: formatName(virtualNetworkName, environment, region)
+  name: formatName(virtualNetworkName, affix, environment, region)
   location: virtualNetworkLocation
   properties: {
+    dhcpOptions: contains(virtualNetworkConfigs, 'dnsServers')
+      ? {
+          dnsServers: virtualNetworkConfigs.dnsServers
+        }
+      : null
     addressSpace: {
       addressPrefixes: contains(virtualNetworkAddressSpaces, region)
         ? contains(virtualNetworkAddressSpaces[region], environment)
@@ -52,7 +60,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
     }
     subnets: [
       for subnet in virtualNetworkSubnets: {
-        name: formatName(subnet.virtualNetworkSubnetName, environment, region)
+        name: formatName(subnet.virtualNetworkSubnetName, affix, environment, region)
         properties: {
           addressPrefix: contains(subnet.virtualNetworkSubnetRange, region)
             ? contains(subnet.virtualNetworkSubnetRange[region], environment)
@@ -81,11 +89,12 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
                 id: resourceId(
                   formatName(
                     subnet.virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgResourceGroup,
+                    affix,
                     environment,
                     region
                   ),
                   'Microsoft.Network/networkSecurityGroups',
-                  formatName(subnet.virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgName, environment, region)
+                  formatName(subnet.virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgName, affix, environment, region)
                 )
               }
             : null)
@@ -97,11 +106,12 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
                 id: resourceId(
                   formatName(
                     subnet.virtualNetworkSubnetConfigs.subnetNatGateway.natGatewayResourceGroup,
+                    affix,
                     environment,
                     region
                   ),
                   'Microsoft.Network/natGateways',
-                  formatName(subnet.virtualNetworkSubnetConfigs.subnetNatGateway.natGatewayName, environment, region)
+                  formatName(subnet.virtualNetworkSubnetConfigs.subnetNatGateway.natGatewayName, affix, environment, region)
                 )
               }
             : null

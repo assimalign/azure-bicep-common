@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Azure Cognitive Search Service to be deployed.')
 param cognitiveSearchName string
 
@@ -52,11 +55,14 @@ param cognitiveSearchPrivateEndpoint object = {}
 @description('The tags to attach to the resource when deployed.')
 param cognitiveSearchTags object = {}
 
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
+
 var skuName = contains(cognitiveSearchSku, environment) ? cognitiveSearchSku[environment] : cognitiveSearchSku.default
 
 // 1. Deploy Cognitive Search
 resource cognitiveSearch 'Microsoft.Search/searchServices@2023-11-01' = {
-  name: replace(replace(cognitiveSearchName, '@environment', environment), '@region', region)
+  name: formatName(cognitiveSearchName, affix, environment, region)
   location: cognitiveSearchLocation
   sku: {
     name: skuName
@@ -76,8 +82,9 @@ resource cognitiveSearch 'Microsoft.Search/searchServices@2023-11-01' = {
 
 module cognitiveSearchRoleAssignment '../rbac/rbac.bicep' = [for appRoleAssignment in cognitiveSearchMsiRoleAssignments: if (cognitiveSearchMsiEnabled == true && !empty(cognitiveSearchMsiRoleAssignments)) {
   name: 'srch-rbac-${guid('${cognitiveSearchName}-${appRoleAssignment.resourceRoleName}')}'
-  scope: resourceGroup(replace(replace(appRoleAssignment.resourceGroupToScopeRoleAssignment, '@environment', environment), '@region', region))
+  scope: resourceGroup(formatName(appRoleAssignment.resourceGroupToScopeRoleAssignment, affix, environment, region))
   params: {
+    affix: affix
     region: region
     environment: environment
     resourceRoleName: appRoleAssignment.resourceRoleName
@@ -94,22 +101,17 @@ module cognitiveSearchPrivateEp '../private-endpoint/private-endpoint.bicep' = i
   name: !empty(cognitiveSearchPrivateEndpoint) ? toLower('srch-private-ep-${guid('${cognitiveSearch.id}/${cognitiveSearchPrivateEndpoint.privateEndpointName}')}') : 'no-app-cfg-pri-endp-to-deploy'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     privateEndpointName: cognitiveSearchPrivateEndpoint.privateEndpointName
-    privateEndpointLocation: contains(cognitiveSearchPrivateEndpoint, 'privateEndpointLocation') ? cognitiveSearchPrivateEndpoint.privateEndpointLocation : cognitiveSearchLocation
-    privateEndpointDnsZoneGroups: [
-      for zone in cognitiveSearchPrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
-        privateDnsZoneName: zone.privateDnsZone
-        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
-        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
-      }
-    ]
+    privateEndpointLocation: cognitiveSearchPrivateEndpoint.?privateEndpointLocation ?? cognitiveSearchLocation
+    privateEndpointDnsZoneGroupConfigs: cognitiveSearchPrivateEndpoint.privateEndpointDnsZoneGroupConfigs
     privateEndpointVirtualNetworkName: cognitiveSearchPrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: cognitiveSearchPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: cognitiveSearchPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
     privateEndpointResourceIdLink: cognitiveSearch.id
-    privateEndpointTags: contains(cognitiveSearchPrivateEndpoint, 'privateEndpointTags') ? cognitiveSearchPrivateEndpoint.privateEndpointTags : {}
+    privateEndpointTags: cognitiveSearchPrivateEndpoint.?privateEndpointTags
     privateEndpointGroupIds: [
       'searchService'
     ]

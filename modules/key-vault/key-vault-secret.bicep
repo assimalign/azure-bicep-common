@@ -15,28 +15,32 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of an existing key vault')
 param keyVaultName string
 
 @description('The name of the secret to add to the key vault')
 param keyVaultSecretName string
 
+@secure()
 @description('The name of the resource with sensitive information to upload into the key vault for secure access')
 param keyVaultSecretResourceName string
 
+@secure()
 @description('The resource type tells what azure resource keys need to be obtained')
 param keyVaultSecretResourceType string
 
+@secure()
 @description('The resource group name of the resource with sensitive information to upload into the key vault for secure access')
 param keyVaultSecretResourceGroupOfResource string
 
-// ************************************************************************** //
-//                 Service Bus Primary Connection String Update
-// ************************************************************************** //
 module azServiceBusKeyVaultSecretDeployment 'key-vault-secret-service-bus-namespace.bicep' = if (keyVaultSecretResourceType == 'Microsoft.ServiceBus/Namespaces/AuthorizationRules') {
   name: 'kv-secret-sb-${guid('${keyVaultSecretName}/Microsoft.ServiceBus/namespaces/authorizationRules')}'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     keyVaultName: keyVaultName
@@ -53,6 +57,7 @@ module azStorageAccountKeyVaultSecretDeployment 'key-vault-secret-storage-accoun
   name: 'kv-secret-stg-${guid('${keyVaultSecretName}/Microsoft.Storage/storageAccounts')}'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     keyVaultName: keyVaultName
@@ -69,6 +74,7 @@ module azDocumentDbKeyVaultSecretDeployment 'key-vault-secret-cosmos.bicep' = if
   name: 'kv-secret-cosmos-${guid('${keyVaultSecretName}/Microsoft.DocumentDB/databaseAccounts')}'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     keyVaultName: keyVaultName
@@ -85,6 +91,7 @@ module azEventGridKeyVaultSecretDeployment 'key-vault-secret-event-grid.bicep' =
   name: 'kv-secret-egd-${guid('${keyVaultSecretName}/Microsoft.EventGrid/domains')}'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     keyVaultName: keyVaultName
@@ -101,6 +108,7 @@ module azEventHubKeyVaultSecretDeployment 'key-vault-secret-event-hub.bicep' = i
   name: 'kv-secret-ehn-${guid('${keyVaultSecretName}/Microsoft.EventHub/namespaces/authorizationRules')}'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     keyVaultName: keyVaultName
@@ -117,6 +125,7 @@ module azNotificationHubKeyVaultSecretDeployment 'key-vault-secret-notification-
   name: 'kv-secret-nhnh-${guid('${keyVaultSecretName}/Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules')}'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     keyVaultName: keyVaultName
@@ -133,6 +142,7 @@ module azNotificationNamespaceKeyVaultSecretDeployment 'key-vault-secret-notific
   name: 'kv-secret-nhn-${guid('${keyVaultSecretName}/Microsoft.NotificationHubs/namespaces/authorizationRules')}'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     keyVaultName: keyVaultName
@@ -150,6 +160,7 @@ module azAppInsightsKeyVaultSecretDeployment 'key-vault-secret-app-insights.bice
   name: 'kv-secret-appi-${guid('${keyVaultSecretName}/Microsoft.Insights/components')}'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     keyVaultName: keyVaultName

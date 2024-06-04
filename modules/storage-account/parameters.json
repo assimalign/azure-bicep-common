@@ -91,82 +91,118 @@
                     "$ref": "#/definitions/storage-account-tier-parameters"
                 },
                 "storageAccountRedundancy": {
-                    "$ref": "#/definitions/storage-account-redundancy-parameters"   
+                    "$ref": "#/definitions/storage-account-redundancy-parameters"
                 },
-                "storageAccountVirtualNetworkDefaultAccess": {
-                    "type": "string",
-                    "default": "Allow",
-                    "enum": [
-                        "Allow",
-                        "Deny"
-                    ]
-                },
-                "storageAccountVirtualNetworks": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "allowAccess": {
-                                "type": "boolean",
-                                "default": true
-                            },
-                            "virtualNetwork": {
-                                "type": "string"
-                            },
-                            "virtualNetworkSubnet": {
-                                "type": "string"
-                            },
-                            "virtualNetworkResourceGroup": {
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "allowAccess",
-                            "virtualNetwork",
-                            "virtualNetworkSubnet",
-                            "virtualNetworkResourceGroup"
-                        ]
-                    }
-                },
-                "storageAccountVirtualNetworkBypass": {
-                    "type": "string",
-                    "default": "AzureServices",
+                "storageAccountNetworkSettings": {
                     "oneOf": [
                         {
-                            "const": "AzureServices"
-                        },
-                        {
-                            "const": "Logging"
-                        },
-                        {
-                            "const": "Metrics"
-                        },
-                        {
-                            "const": "None"
-                        }
-                    ]
-                },
-                "storageAccountResourceAccess": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "resourceName": {
-                                "type": "string"
-                            },
-                            "resourceType": {
-                                "type": "string"
-                            },
-                            "resourceGroup": {
-                                "type": "string"
+                            "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
+                            "properties": {
+                                "allowPublicNetworkAccess": {
+                                    "const": "Disabled"
+                                }
                             }
                         },
-                        "required": [
-                            "resourceName",
-                            "resourceType",
-                            "resourceGroup"
-                        ]
-                    }
+                        {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
+                            "properties": {
+                                "virtualNetworkDefaultAccess": {
+                                    "const": "Deny"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
+                            "properties": {
+                                "virtualNetworks": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "allowAccess": {
+                                                "type": "boolean",
+                                                "default": true
+                                            },
+                                            "virtualNetwork": {
+                                                "type": "string"
+                                            },
+                                            "virtualNetworkSubnet": {
+                                                "type": "string"
+                                            },
+                                            "virtualNetworkResourceGroup": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "allowAccess",
+                                            "virtualNetwork",
+                                            "virtualNetworkSubnet",
+                                            "virtualNetworkResourceGroup"
+                                        ]
+                                    }
+                                },
+                                "virtualNetworkBypass": {
+                                    "type": "string",
+                                    "default": "AzureServices",
+                                    "enum": [
+                                        "AzureServices",
+                                        "Logging",
+                                        "Metrics",
+                                        "None"
+                                    ]
+                                },
+                                "resourceAccess": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "resourceName": {
+                                                "type": "string"
+                                            },
+                                            "resourceType": {
+                                                "type": "string"
+                                            },
+                                            "resourceGroup": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "resourceName",
+                                            "resourceType",
+                                            "resourceGroup"
+                                        ]
+                                    }
+                                },
+                                "ipRules": {
+                                    "type": "array",
+                                    "minItems": 1,
+                                    "items": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "properties": {
+                                            "ipRule": {
+                                                "enum": [
+                                                    "Allow"
+                                                ]
+                                            },
+                                            "ipAddress": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "ipAddress"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    ]
                 },
                 "storageAccountBlobServices": {
                     "$ref": "#/definitions/storage-account-blob-service-parameters"
@@ -992,16 +1028,16 @@
                     "minProperties": 1,
                     "properties": {
                         "demo": {
-                             "$ref": "#/definitions/storage-account-tier-types"
+                            "$ref": "#/definitions/storage-account-tier-types"
                         },
                         "stg": {
-                             "$ref": "#/definitions/storage-account-tier-types"
+                            "$ref": "#/definitions/storage-account-tier-types"
                         },
                         "sbx": {
-                             "$ref": "#/definitions/storage-account-tier-types"
+                            "$ref": "#/definitions/storage-account-tier-types"
                         },
                         "test": {
-                             "$ref": "#/definitions/storage-account-tier-types"
+                            "$ref": "#/definitions/storage-account-tier-types"
                         },
                         "dev": {
                             "$ref": "#/definitions/storage-account-tier-types"

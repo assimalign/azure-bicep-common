@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('')
 param networkSecurityGroupName string
 
@@ -29,6 +32,9 @@ param networkSecurityGroupInboundRules array = []
 
 @description('')
 param networkSecurityGroupTags object = {}
+
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
 
 var inboundRules = [for rule in networkSecurityGroupInboundRules: {
   name: rule.name
@@ -68,7 +74,7 @@ var securityRules = union(
 )
 
 resource azNsgDeployment 'Microsoft.Network/networkSecurityGroups@2023-09-01' = if (empty(securityRules)) {
-  name: empty(securityRules) ? replace(replace(networkSecurityGroupName, '@environment', environment), '@region', region) : 'no-nsg'
+  name: empty(securityRules) ? formatName(networkSecurityGroupName, affix, environment, region) : 'no-nsg'
   location: networkSecurityGroupLocation
   tags: union(networkSecurityGroupTags, {
       region: region
@@ -77,7 +83,7 @@ resource azNsgDeployment 'Microsoft.Network/networkSecurityGroups@2023-09-01' = 
 }
 
 resource nsg 'Microsoft.Network/networkSecurityGroups@2023-09-01' = if (!empty(securityRules)) {
-  name: !empty(securityRules) ? replace(replace(networkSecurityGroupName, '@environment', environment), '@region', region) : 'no-nsg'
+  name: !empty(securityRules) ? formatName(networkSecurityGroupName, affix, environment, region) : 'no-nsg'
   location: networkSecurityGroupLocation
   properties: {
     securityRules: securityRules

@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Azure Data Share Service to be deployed.')
 param dataShareName string
 
@@ -40,45 +43,48 @@ param dataShareDatasetType string
 
 var subscriptionId = az.subscription().subscriptionId
 
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
+
 var properties = any(dataShareDatasetType == 'AdlsGen1File' ? {
-  resourceGroup: replace(replace(dataShareDatasetConfigs.datasetResourceGroup, '@environment', environment), '@region', region)
+  resourceGroup: formatName(dataShareDatasetConfigs.datasetResourceGroup, affix, environment, region)
   subscriptionId: contains(dataShareDatasetConfigs, 'datasetSubscriptionId') ? replace(dataShareDatasetConfigs.datasetResourceGroup, '@subscription', subscriptionId) : subscriptionId
-  fileName: replace(replace(dataShareDatasetConfigs.datasetFileName, '@environment', environment), '@region', region)
-  folderPath: replace(replace(dataShareDatasetConfigs.datasetFolderPath, '@environment', environment), '@region', region)
-  accountName: replace(replace(dataShareDatasetConfigs.datasetAccountName, '@environment', environment), '@region', region)
+  fileName: formatName(dataShareDatasetConfigs.datasetFileName, affix, environment, region)
+  folderPath: formatName(dataShareDatasetConfigs.datasetFolderPath, affix, environment, region)
+  accountName: formatName(dataShareDatasetConfigs.datasetAccountName, affix, environment, region)
 } : any(dataShareDatasetType == 'AdlsGen1Folder' ? {
-  resourceGroup: replace(replace(dataShareDatasetConfigs.datasetResourceGroup, '@environment', environment), '@region', region)
+  resourceGroup: formatName(dataShareDatasetConfigs.datasetResourceGroup, affix, environment, region)
   subscriptionId: contains(dataShareDatasetConfigs, 'datasetSubscriptionId') ? replace(dataShareDatasetConfigs.datasetResourceGroup, '@subscription', subscriptionId) : subscriptionId
-  folderPath: replace(replace(dataShareDatasetConfigs.datasetFolderPath, '@environment', environment), '@region', region)
-  accountName: replace(replace(dataShareDatasetConfigs.datasetAccountName, '@environment', environment), '@region', region)
+  folderPath: formatName(dataShareDatasetConfigs.datasetFolderPath, affix, environment, region)
+  accountName: formatName(dataShareDatasetConfigs.datasetAccountName, affix, environment, region)
 } : any(dataShareDatasetType == 'AdlsGen2File' ? {
-  resourceGroup: replace(replace(dataShareDatasetConfigs.datasetResourceGroup, '@environment', environment), '@region', region)
+  resourceGroup: formatName(dataShareDatasetConfigs.datasetResourceGroup, affix, environment, region)
   subscriptionId: contains(dataShareDatasetConfigs, 'datasetSubscriptionId') ? replace(dataShareDatasetConfigs.datasetResourceGroup, '@subscription', subscriptionId) : subscriptionId
-  filePath: replace(replace(dataShareDatasetConfigs.datasetFilePath, '@environment', environment), '@region', region)
-  fileSystem: replace(replace(dataShareDatasetConfigs.datasetFileSystem, '@environment', environment), '@region', region)
-  storageAccountName: replace(replace(dataShareDatasetConfigs.datasetAccountName, '@environment', environment), '@region', region)
+  filePath: formatName(dataShareDatasetConfigs.datasetFilePath, affix, environment, region)
+  fileSystem: formatName(dataShareDatasetConfigs.datasetFileSystem, affix, environment, region)
+  storageAccountName: formatName(dataShareDatasetConfigs.datasetAccountName, affix, environment, region)
 } : any(dataShareDatasetType == 'AdlsGen2Folder' ? {
-  resourceGroup: replace(replace(dataShareDatasetConfigs.datasetResourceGroup, '@environment', environment), '@region', region)
+  resourceGroup: formatName(dataShareDatasetConfigs.datasetResourceGroup, affix, environment, region)
   subscriptionId: contains(dataShareDatasetConfigs, 'datasetSubscriptionId') ? replace(dataShareDatasetConfigs.datasetResourceGroup, '@subscription', subscriptionId) : subscriptionId
-  filePath: replace(replace(dataShareDatasetConfigs.datasetFilePath, '@environment', environment), '@region', region)
-  fileSystem: replace(replace(dataShareDatasetConfigs.datasetFileSystem, '@environment', environment), '@region', region)
-  folderPath: replace(replace(dataShareDatasetConfigs.datasetFolderPath, '@environment', environment), '@region', region)
-  storageAccountName: replace(replace(dataShareDatasetConfigs.datasetAccountName, '@environment', environment), '@region', region)
+  filePath: formatName(dataShareDatasetConfigs.datasetFilePath, affix, environment, region)
+  fileSystem: formatName(dataShareDatasetConfigs.datasetFileSystem, affix, environment, region)
+  folderPath: formatName(dataShareDatasetConfigs.datasetFolderPath, affix, environment, region)
+  storageAccountName: formatName(dataShareDatasetConfigs.datasetAccountName, affix, environment, region)
 } : any(dataShareDatasetType == 'Blob' ? {
-  resourceGroup: replace(replace(dataShareDatasetConfigs.datasetResourceGroup, '@environment', environment), '@region', region)
-  filePath: replace(replace(dataShareDatasetConfigs.datasetBlobPath, '@environment', environment), '@region', region)
+  resourceGroup: formatName(dataShareDatasetConfigs.datasetResourceGroup, affix, environment, region)
+  filePath: formatName(dataShareDatasetConfigs.datasetBlobPath, affix, environment, region)
   subscriptionId: contains(dataShareDatasetConfigs, 'datasetSubscriptionId') ? replace(dataShareDatasetConfigs.datasetResourceGroup, '@subscription', subscriptionId) : subscriptionId
-  storageAccountName: replace(replace(dataShareDatasetConfigs.datasetAccountName, '@environment', environment), '@region', region)
-  containerName: replace(replace(dataShareDatasetConfigs.datasetContainerName, '@environment', environment), '@region', region)
+  storageAccountName: formatName(dataShareDatasetConfigs.datasetAccountName, affix, environment, region)
+  containerName: formatName(dataShareDatasetConfigs.datasetContainerName, affix, environment, region)
 } : any(dataShareDatasetType == 'Container' ? {
-  resourceGroup: replace(replace(dataShareDatasetConfigs.datasetResourceGroup, '@environment', environment), '@region', region)
+  resourceGroup: formatName(dataShareDatasetConfigs.datasetResourceGroup, affix, environment, region)
   subscriptionId: contains(dataShareDatasetConfigs, 'datasetSubscriptionId') ? replace(dataShareDatasetConfigs.datasetResourceGroup, '@subscription', subscriptionId) : subscriptionId
-  storageAccountName: replace(replace(dataShareDatasetConfigs.datasetAccountName, '@environment', environment), '@region', region)
-  containerName: replace(replace(dataShareDatasetConfigs.datasetContainerName, '@environment', environment), '@region', region)
+  storageAccountName: formatName(dataShareDatasetConfigs.datasetAccountName, affix, environment, region)
+  containerName: formatName(dataShareDatasetConfigs.datasetContainerName, affix, environment, region)
 } : {}))))))
 
 resource azDataShareAccountDataSetDeployment 'Microsoft.DataShare/accounts/shares/dataSets@2021-08-01' = {
-  name: replace(replace('${dataShareAccountName}/${dataShareName}/${dataShareDatasetName}', '@environment', environment), '@region', region)
+  name: formatName('${dataShareAccountName}/${dataShareName}/${dataShareDatasetName}', affix, environment, region)
   kind: dataShareDatasetType
   properties: properties
 }

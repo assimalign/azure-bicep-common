@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the app service plan to deploy')
 param appServicePlanName string
 
@@ -50,23 +53,20 @@ param appServicePlanEnvironmentResourceGroup string = resourceGroup().name
 @description('Custom Attributes to attach to the app service plan deployment')
 param appServicePlanTags object = {}
 
-func formatName(name string, environment string, region string) string =>
-  replace(replace(name, '@environment', environment), '@region', region)
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
 
-// 1. Get Existing ASE Environment if applicable
-resource appServiceEnvironment 'Microsoft.Web/hostingEnvironments@2023-12-01' existing = if (!empty(appServicePlanEnvironmentName)) {
-  name: formatName(appServicePlanEnvironmentName, environment, region)
-  scope: resourceGroup(formatName(appServicePlanEnvironmentResourceGroup, environment, region))
-}
-
-// 2. Creates an app service plan under an ASE if applicable
 resource appServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
-  name: formatName(appServicePlanName, environment, region)
+  name: formatName(appServicePlanName, affix, environment, region)
   location: appServicePlanLocation
   properties: {
     hostingEnvironmentProfile: !empty(appServicePlanEnvironmentName)
       ? {
-          id: appServiceEnvironment.id
+          id: resourceId(
+            formatName(appServicePlanEnvironmentResourceGroup, affix, environment, region),
+            'Microsoft.Web/hostingEnvironments',
+            formatName(appServicePlanEnvironmentName, affix, environment, region)
+          )
         }
       : null
   }

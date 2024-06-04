@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the peering virtual network link')
 param peeringLinkName string
 
@@ -33,21 +36,24 @@ param remoteVirtualNetwork string
 @description('The name of the resource group the remote virtual network lives in')
 param remoteVirtualNetworkResourceGroup string = resourceGroup().name
 
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
+
 // 1. Get the existing Remote Virtual Network
 resource azRemoteVirtualNetworkResource 'Microsoft.Network/virtualNetworks@2021-02-01' existing = {
-  name: replace(replace(remoteVirtualNetwork, '@environment', environment), '@region', region)
-  scope: resourceGroup(replace(replace(remoteVirtualNetworkResourceGroup, '@environment', environment), '@region', region))
+  name: formatName(remoteVirtualNetwork, affix, environment, region)
+  scope: resourceGroup(formatName(remoteVirtualNetworkResourceGroup, affix, environment, region))
 }
 
 // 2. Get the Peering Virtual Network
 resource azPeeringVirtualNetworkResource 'Microsoft.Network/virtualNetworks@2021-02-01' existing = {
-  name: replace(replace(peeringVirtualNetwork, '@environment', environment), '@region', region)
-  scope: resourceGroup(replace(replace(peeringVirtualNetworkResourceGroup, '@environment', environment), '@region', region))
+  name: formatName(peeringVirtualNetwork, affix, environment, region)
+  scope: resourceGroup(formatName(peeringVirtualNetworkResourceGroup, affix, environment, region))
 }
 
 // 3. Add the Remote Virtual Network to the peering 
 resource azRemoteVirtualNetworkPeeringDeployment 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-02-01' = {
-  name: replace(replace('${azRemoteVirtualNetworkResource.name}/${remoteLinkName}', '@environment', environment), '@region', region)
+  name: formatName('${azRemoteVirtualNetworkResource.name}/${remoteLinkName}', affix, environment, region)
   properties: {
     peeringState: 'Connected'
     remoteVirtualNetwork: {
@@ -57,7 +63,7 @@ resource azRemoteVirtualNetworkPeeringDeployment 'Microsoft.Network/virtualNetwo
 }
 
 resource azVirtualNetworkPeeringDeployment 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-02-01' = {
-  name: replace(replace('${azPeeringVirtualNetworkResource.name}/${peeringLinkName}', '@environment', environment), '@region', region)
+  name: formatName('${azPeeringVirtualNetworkResource.name}/${peeringLinkName}', affix, environment, region)
   properties: {
     peeringState: 'Connected'
     remoteVirtualNetwork: {

@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the static site')
 param staticSiteName string
 
@@ -37,7 +40,7 @@ param staticSiteSku object = {
 param staticSiteTags object = {}
 
 resource staticSite 'Microsoft.Web/staticSites@2023-12-01' = {
-  name: replace(replace(staticSiteName, '@environment', environment), '@region', region)
+  name: replace(replace(replace(staticSiteName, '@affix', affix), '@environment', environment), '@region', region)
   location: staticSiteLocation
   sku: any(contains(staticSiteSku, environment) ? {
     name: staticSiteSku[environment]

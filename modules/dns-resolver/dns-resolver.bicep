@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the DNS Resolver.')
 param dnsResolverName string
 
@@ -36,47 +39,30 @@ param dnsResolverOutboundEndpoints array = []
 @description('The tags to attach to the resource when deployed')
 param dnsResolverTags object = {}
 
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
+
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' existing = {
-  name: replace(replace(dnsResolverVirtualNetworkName, '@environment', environment), '@region', region)
-  scope: resourceGroup(replace(
-    replace(dnsResolverVirtualNetworkResourceGroup, '@environment', environment),
-    '@region',
-    region
-  ))
+  name: formatName(dnsResolverVirtualNetworkName, affix, environment, region)
+  scope: resourceGroup(formatName(dnsResolverVirtualNetworkResourceGroup, affix, environment, region))
 }
 
 resource inboundSubnets 'Microsoft.Network/virtualNetworks/subnets@2023-11-01' existing = [
   for endpoint in dnsResolverInboundEndpoints: {
-    name: replace(
-      replace('${dnsResolverVirtualNetworkName}/${endpoint.endpointSubnetName}', '@environment', environment),
-      '@region',
-      region
-    )
-    scope: resourceGroup(replace(
-      replace(dnsResolverVirtualNetworkResourceGroup, '@environment', environment),
-      '@region',
-      region
-    ))
+    name: formatName('${dnsResolverVirtualNetworkName}/${endpoint.endpointSubnetName}', affix, environment, region)
+    scope: resourceGroup(formatName(dnsResolverVirtualNetworkResourceGroup, affix, environment, region))
   }
 ]
 
 resource outboundSubnets 'Microsoft.Network/virtualNetworks/subnets@2023-11-01' existing = [
   for endpoint in dnsResolverOutboundEndpoints: {
-    name: replace(
-      replace('${dnsResolverVirtualNetworkName}/${endpoint.endpointSubnetName}', '@environment', environment),
-      '@region',
-      region
-    )
-    scope: resourceGroup(replace(
-      replace(dnsResolverVirtualNetworkResourceGroup, '@environment', environment),
-      '@region',
-      region
-    ))
+    name: formatName('${dnsResolverVirtualNetworkName}/${endpoint.endpointSubnetName}', affix, environment, region)
+    scope: resourceGroup(formatName(dnsResolverVirtualNetworkResourceGroup, affix, environment, region))
   }
 ]
 
 resource dnsr 'Microsoft.Network/dnsResolvers@2022-07-01' = {
-  name: replace(replace(dnsResolverName, '@environment', environment), '@region', region)
+  name: formatName(dnsResolverName, affix, environment, region)
   location: dnsResolverLocation
   properties: {
     virtualNetwork: {
@@ -89,7 +75,7 @@ resource dnsr 'Microsoft.Network/dnsResolvers@2022-07-01' = {
   })
   resource inboundEndpoints 'inboundEndpoints' = [
     for (endpoint, index) in dnsResolverInboundEndpoints: {
-      name: replace(replace(endpoint.endpointName, '@environment', environment), '@region', region)
+      name: formatName(endpoint.endpointName, affix, environment, region)
       location: dnsResolverLocation
       properties: {
         ipConfigurations: [
@@ -106,7 +92,7 @@ resource dnsr 'Microsoft.Network/dnsResolvers@2022-07-01' = {
   ]
   resource outboundEndpoints 'outboundEndpoints' = [
     for (endpoint, index) in dnsResolverOutboundEndpoints: {
-      name: replace(replace(endpoint.endpointName, '@environment', environment), '@region', region)
+      name: formatName(endpoint.endpointName, affix, environment, region)
       location: dnsResolverLocation
       properties: {
         subnet: {

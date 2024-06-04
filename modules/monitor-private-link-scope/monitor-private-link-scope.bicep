@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('')
 param monitorPrivateLinkScopeName string
 
@@ -36,26 +39,26 @@ param monitorPrivateLinkScopeConfig object = {
 @description('The tags to attach to the resource when deployed')
 param monitorPrivateLinkScopeTags object = {}
 
-func formatId(name string, environment string, region string) string =>
-  guid(replace(replace(name, '@environment', environment), '@region', region))
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
 
-func formatName(name string, environment string, region string) string =>
-  replace(replace(name, '@environment', environment), '@region', region)
+func formatId(name string, affix string, environment string, region string) string =>
+  guid(formatName(name, affix, environment, region))
 
 resource monitorPrivateLinkScope 'microsoft.insights/privateLinkScopes@2021-07-01-preview' = {
-  name: formatName(monitorPrivateLinkScopeName, environment, region)
+  name: formatName(monitorPrivateLinkScopeName, affix, environment, region)
   location: monitorPrivateLinkScopeLocation
   properties: {
     accessModeSettings: monitorPrivateLinkScopeConfig
   }
   resource scopeResources 'scopedResources' = [
     for resource in monitorPrivateLinkScopeResources: {
-      name: formatId(resource.resourceName, environment, region)
+      name: formatId(resource.resourceName, affix, environment, region)
       properties: {
         linkedResourceId: resourceId(
-          formatName(resource.resourceGroup, environment, region),
+          formatName(resource.resourceGroup, affix, environment, region),
           resource.resourceType,
-          formatName(resource.resourceName, environment, region)
+          formatName(resource.resourceName, affix, environment, region)
         )
       }
     }
@@ -72,17 +75,12 @@ module privateEndpoint '../private-endpoint/private-endpoint.bicep' = if (!empty
     : 'no-app-sv-pri-endp-to-deploy'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     privateEndpointName: monitorPrivateLinkScopePrivateEndpoint.privateEndpointName
     privateEndpointLocation: monitorPrivateLinkScopePrivateEndpoint.?privateEndpointLocation ?? monitorPrivateLinkScopeLocation
-    privateEndpointDnsZoneGroups: [
-      for zone in monitorPrivateLinkScopePrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
-        privateDnsZoneName: zone.privateDnsZone
-        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
-        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
-      }
-    ]
+    privateEndpointDnsZoneGroupConfigs: monitorPrivateLinkScopePrivateEndpoint.privateEndpointDnsZoneGroupConfigs
     privateEndpointVirtualNetworkName: monitorPrivateLinkScopePrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: monitorPrivateLinkScopePrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: monitorPrivateLinkScopePrivateEndpoint.privateEndpointVirtualNetworkResourceGroup

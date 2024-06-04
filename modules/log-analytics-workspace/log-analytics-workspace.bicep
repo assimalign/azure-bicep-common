@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Analytic Log Workbook')
 param logAnalyticsWorkspaceName string
 
@@ -33,29 +36,26 @@ param logAnalyticsWorkspaceRetention int = 30
 param logAnalyticsWorkspaceDailyQuota int = -1
 
 @description('Enables or Disables public network access for data injestion')
-param logAnalyticsWorkspacePublicNetworkAccessForIngestion string = 'Enabled'
-
-@description('Enables or Disables public network access to query log analytics')
-param logAnalyticsWorkspacePublicNetworkAccessForQuery string = 'Enabled'
+param logAnalyticsWorkspaceNetworkSettings object = {}
 
 @description('Tags to attach with the workspace deployment')
 param logAnalyticsWorkspaceTags object = {}
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
-  name: replace(replace(logAnalyticsWorkspaceName, '@environment', environment), '@region', region)
+  name: replace(replace(replace(logAnalyticsWorkspaceName, '@affix', affix), '@environment', environment), '@region', region)
   location: logAnalyticsWorkspaceLocation
   properties: {
-    publicNetworkAccessForIngestion: logAnalyticsWorkspacePublicNetworkAccessForIngestion
-    publicNetworkAccessForQuery: logAnalyticsWorkspacePublicNetworkAccessForQuery
+    publicNetworkAccessForIngestion: logAnalyticsWorkspaceNetworkSettings.?publicNetworkAccessForIngestion ?? 'Enabled'
+    publicNetworkAccessForQuery: logAnalyticsWorkspaceNetworkSettings.?publicNetworkAccessForQuery ?? 'Enabled'
     workspaceCapping: {
       dailyQuotaGb: logAnalyticsWorkspaceDailyQuota
     }
     retentionInDays: logAnalyticsWorkspaceRetention
-    sku: any(contains(logAnalyticsWorkspaceSku, environment) ? {
+    sku: contains(logAnalyticsWorkspaceSku, environment) ? {
       name: logAnalyticsWorkspaceSku[environment]
     } : {
       name: logAnalyticsWorkspaceSku.default
-    })
+    }
   }
   tags: union(logAnalyticsWorkspaceTags, {
       region: empty(region) ? 'n/a' : region

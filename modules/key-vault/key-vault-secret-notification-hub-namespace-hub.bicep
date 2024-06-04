@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of an existing key vault')
 param keyVaultName string
 
@@ -27,26 +30,29 @@ param resourceName string
 @description('The resource group name of the resource with sensitive information to upload into the key vault for secure access')
 param resourceGroupName string
 
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
+
 // 1. Get an existing Notification Hub Authorization Rule resource
-resource azNotificationHubExistingResource 'Microsoft.NotificationHubs/namespaces/notificationHubs/AuthorizationRules@2017-04-01' existing = {
-  name: replace(replace('${resourceName}', '@environment', environment), '@region', region)
-  scope: resourceGroup(replace(replace('${resourceGroupName}', '@environment', environment), '@region', region))
+resource nhn 'Microsoft.NotificationHubs/namespaces/notificationHubs/AuthorizationRules@2017-04-01' existing = {
+  name: formatName(resourceName, affix, environment, region)
+  scope: resourceGroup(formatName(resourceGroupName,  affix, environment, region))
 }
 
 // 2. Create or Update Key Vault with Notification Hub Connection String & Primary Key
-resource azKeyVaultExistingResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: replace(replace(keyVaultName, '@environment', environment), '@region', region)
+resource nhnKeyVaultSecret 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: formatName(keyVaultName, affix, environment, region)
   resource azNotificationHubAuthPolicyConnectionStringSecret 'secrets' = {
     name: '${keyVaultSecretName}-connection-string'
     properties: {
-      value: listKeys(azNotificationHubExistingResource.id, azNotificationHubExistingResource.apiVersion).primaryConnectionString
+      value: nhn.listKeys().primaryConnectionString
     }
   }
 
-  resource azNotificationHubAuthPolicyPrimaryKeySecret 'secrets' = {
+  resource nhnPrimaryKeySecret 'secrets' = {
     name: '${keyVaultSecretName}-primary-key'
     properties: {
-      value: listKeys(azNotificationHubExistingResource.id, azNotificationHubExistingResource.apiVersion).primaryKey
+      value: nhn.listKeys().primaryKey
     }
   }
 }

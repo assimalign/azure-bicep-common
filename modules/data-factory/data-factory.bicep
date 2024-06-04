@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the azure Data Factory to be deployed.')
 param dataFactoryName string
 
@@ -38,7 +41,7 @@ param dataFactoryRepositorySettings object = {}
 param dataFactoryTags object = {}
 
 resource azDataFactoryDeployment 'Microsoft.DataFactory/factories@2018-06-01' = {
-  name: replace(replace(dataFactoryName, '@environment', environment), '@region', region)
+  name: replace(replace(replace(dataFactoryName, '@affix', affix), '@environment', environment), '@region', region)
   location: dataFactoryLocation
   identity: any(dataFactoryEnableMsi == true ? {
     type: 'SystemAssigned'

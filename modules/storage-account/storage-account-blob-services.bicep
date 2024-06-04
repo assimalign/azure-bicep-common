@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the storage account to deploy. Must only contain alphanumeric characters')
 param storageAccountName string
 
@@ -36,11 +39,12 @@ param storageAccountBlobServiceContainers array = []
 @description('')
 param storageAccountBlobServiceConfigs object = {}
 
-func format(name string, env string, region string) string => replace(replace(name, '@environment', env), '@region', region)
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
 
 // 1. Get the existing Storage Account
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
-  name: format(storageAccountName, environment, region)
+  name: formatName(storageAccountName, affix, environment, region)
 }
 
 // 2. Deploy the Blob Service resource
@@ -83,6 +87,7 @@ module storageAccountBlobServiceContainer 'storage-account-blob-services-contain
   name: !empty(storageAccountBlobServiceContainers) ? toLower('blob-container-${guid('${storageAccountBlobService.id}/${container.storageAccountBlobContainerName}')}') : 'no-container-to-deploy'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     storageAccountName: storageAccountName
@@ -97,22 +102,17 @@ module storageBlobServicePrivateEndpoint '../private-endpoint/private-endpoint.b
   name: !empty(storageAccountBlobServicePrivateEndpoint) ? toLower('blob-priv-endpoint-${guid('${storageAccountBlobService.id}/${storageAccountBlobServicePrivateEndpoint.privateEndpointName}')}') : 'no-stg-blob-priv-endpoint'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     privateEndpointName: storageAccountBlobServicePrivateEndpoint.privateEndpointName
-    privateEndpointLocation: contains(storageAccountBlobServicePrivateEndpoint, 'privateEndpointLocation') ? storageAccountBlobServicePrivateEndpoint.privateEndpointLocation : storageAccountLocation
-    privateEndpointDnsZoneGroups: [
-      for zone in storageAccountBlobServicePrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
-        privateDnsZoneName: zone.privateDnsZone
-        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
-        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
-      }
-    ]
+    privateEndpointLocation: storageAccountBlobServicePrivateEndpoint.?privateEndpointLocation ?? storageAccountLocation
+    privateEndpointDnsZoneGroupConfigs: storageAccountBlobServicePrivateEndpoint.privateEndpointDnsZoneGroupConfigs
     privateEndpointVirtualNetworkName: storageAccountBlobServicePrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: storageAccountBlobServicePrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: storageAccountBlobServicePrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
     privateEndpointResourceIdLink: storageAccount.id
-    privateEndpointTags: contains(storageAccountBlobServicePrivateEndpoint, 'privateEndpointTags') ? storageAccountBlobServicePrivateEndpoint.privateEndpointTags : {}
+    privateEndpointTags: storageAccountBlobServicePrivateEndpoint.?privateEndpointTags 
     privateEndpointGroupIds: [
       'blob'
     ]

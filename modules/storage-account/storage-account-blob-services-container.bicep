@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the storage account to deploy. Must only contain alphanumeric characters')
 param storageAccountName string
 
@@ -33,7 +36,7 @@ param storageAccountBlobContainerName string
 param storageAccountBlobContainerPublicAccess string = 'None'
 
 resource storageAccountBlobServiceContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
-  name: replace(replace('${storageAccountName}/${storageAccountBlobServiceName}/${storageAccountBlobContainerName}', '@environment', environment), '@region', region)
+  name: replace(replace(replace('${storageAccountName}/${storageAccountBlobServiceName}/${storageAccountBlobContainerName}', '@affix', affix), '@environment', environment), '@region', region)
   properties: {
     publicAccess: storageAccountBlobContainerPublicAccess
   }

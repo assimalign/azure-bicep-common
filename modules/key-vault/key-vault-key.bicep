@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of an existing key vault')
 param keyVaultName string
 
@@ -38,7 +41,7 @@ param keyVaultKeyTags object = {}
 
 
 resource keyVaultKey 'Microsoft.KeyVault/vaults/keys@2023-07-01' = {
-  name: replace(replace('${keyVaultName}/${keyVaultKeyName}', '@environment', environment), '@region', region)
+  name: replace(replace(replace('${keyVaultName}/${keyVaultKeyName}', '@affix', affix), '@environment', environment), '@region', region)
   properties: {
     curveName: keyVaultKeyCurveName
     keySize: keyVaultKeySize

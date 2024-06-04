@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the app configuration')
 param appConfigurationName string
 
@@ -30,8 +33,8 @@ param appConfigurationLabels array = []
 @description('The content type of the configuration value')
 param appConfigurationContentType string = ''
 
-func format(name string, env string, region string) string =>
-  replace(replace(name, '@environment', env), '@region', region)
+func formatName(name string, prefix string, environment string, region string) string =>
+  replace(replace(replace(name, '@prefix', prefix), '@environment', environment), '@region', region)
 
 var value = !empty(environment) && contains(appConfigurationValue, environment)
   ? appConfigurationValue[environment]
@@ -41,9 +44,9 @@ resource appConfigKeyValues 'Microsoft.AppConfiguration/configurationStores/keyV
   appConfigurationLabels,
   'default'
 )) {
-  name: format('${appConfigurationName}/${appConfigurationKey}', environment, region)
+  name: formatName('${appConfigurationName}/${appConfigurationKey}', affix, environment, region)
   properties: {
-    value: format(value, environment, region)
+    value: formatName(value, affix, environment, region)
     contentType: empty(appConfigurationContentType) ? null : appConfigurationContentType
   }
 }
@@ -51,9 +54,9 @@ resource appConfigKeyValues 'Microsoft.AppConfiguration/configurationStores/keyV
 // Deploys the same configuration value with different labels
 resource appConfigKeyValuesWithLabels 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = [
   for label in appConfigurationLabels: if (label != 'default' && !empty(appConfigurationLabels)) {
-    name: format('${appConfigurationName}/${appConfigurationKey}$${label}', environment, region)
+    name: formatName('${appConfigurationName}/${appConfigurationKey}$${label}', affix, environment, region)
     properties: {
-      value: format(value, environment, region)
+      value: formatName(value, affix, environment, region)
       contentType: empty(appConfigurationContentType) ? null : appConfigurationContentType
     }
   }

@@ -31,6 +31,7 @@
         },
         "log-analytic-workspace-parameters": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "logAnalyticsWorkspaceName": {
                     "type": "string"
@@ -99,22 +100,24 @@
                         }
                     ]
                 },
-                "logAnalyticsWorkspacePublicNetworkAccessForIngestion": {
-                    "type": "string",
-                    "default": "Enabled",
-                    "enum":[
-                        "Enabled",
-                        "Disabled"
-                    ]
-                },
-                "logAnalyticsWorkspacePublicNetworkAccessForQuery": {
-                    "type": "string",
-                    "default": "Enabled",
-                    "enum":[
-                        "Enabled",
-                        "Disabled"
-                    ]
-      
+                "logAnalyticsWorkspaceNetworkSettings": {
+                    "type":"object",
+                    "additionalProperties": false,
+                    "minProperties": 1,
+                    "properties": {
+                        "publicNetworkAccessForIngestion":{
+                            "enum": [
+                                "Disabled",
+                                "Enabled"
+                            ]
+                        },
+                        "publicNetworkAccessForQuery":{
+                            "enum": [
+                                "Disabled",
+                                "Enabled"
+                            ]
+                        }
+                    }
                 },
                 "logAnalyticsWorkspaceTags": {
                     "type": "object",

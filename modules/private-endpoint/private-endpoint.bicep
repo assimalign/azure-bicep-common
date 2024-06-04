@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the private endpoint to be deployed')
 param privateEndpointName string
 
@@ -97,7 +100,7 @@ param privateEndpointLocation string = resourceGroup().location
   'searchService'
   'sites'
   'signalr'
-  'staticSites'  
+  'staticSites'
 ])
 @description('The groups category for the private endpoint')
 param privateEndpointGroupIds array
@@ -114,31 +117,40 @@ param privateEndpointVirtualNetworkSubnetName string
 @description('The name of the Resource Group the Subnet belongs to')
 param privateEndpointVirtualNetworkResourceGroup string
 
-@minLength(1)
 @description('')
-param privateEndpointDnsZoneGroups array
+param privateEndpointDnsZoneGroupConfigs object
 
 @description('')
 param privateEndpointTags object = {}
 
-func formatName(name string, environment string, region string) string =>
-  replace(replace(name, '@environment', environment), '@region', region)
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
 
 // 1. Get Existing Subnet Resource within a virtual network
 resource virtualNetwork 'Microsoft.Network/virtualNetworks/subnets@2023-09-01' existing = {
-  name: replace(replace('${privateEndpointVirtualNetworkName}/${privateEndpointVirtualNetworkSubnetName}', '@environment', environment), '@region', region)
-  scope: resourceGroup(replace(replace(privateEndpointVirtualNetworkResourceGroup, '@environment', environment), '@region', region))
+  name: formatName(
+    '${privateEndpointVirtualNetworkName}/${privateEndpointVirtualNetworkSubnetName}',
+    affix,
+    environment,
+    region
+  )
+  scope: resourceGroup(formatName(privateEndpointVirtualNetworkResourceGroup, affix, environment, region))
 }
+
 // 3. Deploy the private endpoint
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-09-01' = {
-  name: replace(replace(privateEndpointName, '@environment', environment), '@region', region)
+  name: formatName(privateEndpointName, affix, environment, region)
   location: privateEndpointLocation
   properties: {
     privateLinkServiceConnections: [
       {
-        name: replace(replace(privateEndpointName, '@environment', environment), '@region', region)
+        name: formatName(privateEndpointName, affix, environment, region)
         properties: {
-          privateLinkServiceId: any(replace(replace(replace(privateEndpointResourceIdLink, '@environment', environment), '@region', region), '@subscription', subscription().subscriptionId))
+          privateLinkServiceId: any(replace(
+            formatName(privateEndpointResourceIdLink, affix, environment, region),
+            '@subscription',
+            subscription().subscriptionId
+          ))
           groupIds: privateEndpointGroupIds
         }
       }
@@ -147,29 +159,28 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-09-01' = {
       id: virtualNetwork.id
     }
   }
-  dependsOn: [
-    virtualNetwork
-  ]
-  resource dnsZoneGroups 'privateDnsZoneGroups' = [for zone in privateEndpointDnsZoneGroups: {
-    name: formatName(zone.privateDnsZoneName, environment, region)
+  resource dnsZoneGroups 'privateDnsZoneGroups' = {
+    name: formatName(privateEndpointDnsZoneGroupConfigs.privateDnsZoneGroupName, affix, environment, region)
     properties: {
-      privateDnsZoneConfigs: [for zone in privateEndpointDnsZoneGroups: {
-          name: zone.privateDnsZoneGroup
+      privateDnsZoneConfigs: [
+        for zone in privateEndpointDnsZoneGroupConfigs.privateDnsZones: {
+          name: replace(zone.privateDnsZone, '.', '-')
           properties: {
             privateDnsZoneId: resourceId(
-              formatName(zone.privateDnsZoneName, environment, region),
+              formatName(zone.privateDnsZoneResourceGroup, affix, environment, region),
               'Microsoft.Network/privateDnsZones',
-              formatName(zone.privateDnsZoneResourceGroup, environment, region)
+              formatName(zone.privateDnsZone, affix, environment, region)
             )
           }
         }
       ]
     }
-  }]
+  }
+
   tags: union(privateEndpointTags, {
-      region: empty(region) ? 'n/a' : region
-      environment: empty(environment) ? 'n/a' : environment
-    })
+    region: empty(region) ? 'n/a' : region
+    environment: empty(environment) ? 'n/a' : environment
+  })
 }
 
 // 4. Return Deployment ouput

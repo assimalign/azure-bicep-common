@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the resource role to assign to the service principal')
 param resourceRoleName string
 
@@ -53,7 +56,7 @@ var RoleDefinitionId = {
 
 // 1. If applicable, get existing storage account resource to scope role assignment
 resource azStorageAccountExistingResource 'Microsoft.Storage/storageAccounts@2021-04-01' existing = if (resourceRoleAssignmentScope == 'Resource') {
-  name: replace(replace(resourceToScopeRoleAssignment, '@environment', environment), '@region', region)
+  name: replace(replace(replace(resourceToScopeRoleAssignment, '@affix', affix), '@environment', environment), '@region', region)
 }
 
 // 2. Assign Resource Role Scoped to the resource

@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the APIM Gateway the certificate will be deployed to.')
 param apimGatewayName string
 
@@ -32,25 +35,28 @@ param apimGatewayLoggerResourceName string
 @description('')
 param apimGatewayLoggerResourceGroup string
 
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
+
 // 1. Get existing Azure APIM resource
-resource azApimGatewayExistingResource 'Microsoft.ApiManagement/service@2021-01-01-preview' existing = {
-  name: replace(replace(apimGatewayName, '@environment', environment), '@region', region)
+resource apimService 'Microsoft.ApiManagement/service@2021-01-01-preview' existing = {
+  name: formatName(apimGatewayName, affix, environment, region)
 }
 
 // 2. Get existing app insights 
-resource azApimGatewayAppInsightsResource 'Microsoft.Insights/components@2020-02-02' existing = if (apimGatewayLoggerType == 'ApplicationInsights') {
-  name: replace(replace(apimGatewayLoggerResourceName, '@environment', environment), '@region', region)
-  scope: resourceGroup(replace(replace(apimGatewayLoggerResourceGroup, '@environment', environment), '@region', region))
+resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = if (apimGatewayLoggerType == 'ApplicationInsights') {
+  name: formatName(apimGatewayLoggerResourceName, affix, environment, region)
+  scope: resourceGroup(formatName(apimGatewayLoggerResourceGroup, affix, environment, region))
 }
 
 // 3. If applicable, set a named value for the function app
-resource azApimGatewayAppInsightsNamedValueDeployment 'Microsoft.ApiManagement/service/namedValues@2021-01-01-preview' = if (apimGatewayLoggerType == 'ApplicationInsights') {
-  name: '${replace(replace(azApimGatewayAppInsightsResource.name, '@environment', environment), '@region', region)}-logger-credentials'
-  parent: azApimGatewayExistingResource
+resource apimServiceNamedValues 'Microsoft.ApiManagement/service/namedValues@2021-01-01-preview' = if (apimGatewayLoggerType == 'ApplicationInsights') {
+  name: '${formatName(appInsights.name, affix, environment, region)}-logger-credentials'
+  parent: apimService
   properties: {
     secret: true
-    displayName: '${azApimGatewayAppInsightsResource.name}-logger-credentials'
-    value: azApimGatewayAppInsightsResource.properties.InstrumentationKey
+    displayName: '${appInsights.name}-logger-credentials'
+    value: appInsights.properties.InstrumentationKey
     tags: [
       'instrumentation-key'
       'app-insights'
@@ -60,14 +66,14 @@ resource azApimGatewayAppInsightsNamedValueDeployment 'Microsoft.ApiManagement/s
 }
 
 // 4. Add App insights logger to APIM
-resource azApimGatewayAppInsightsLogger 'Microsoft.ApiManagement/service/loggers@2021-12-01-preview' = if (apimGatewayLoggerType == 'ApplicationInsights') {
-  name: replace(replace('${apimGatewayName}/${apimGatewayLoggerResourceName}', '@environment', environment), '@region', region)
+resource apimServiceLoggers 'Microsoft.ApiManagement/service/loggers@2021-12-01-preview' = if (apimGatewayLoggerType == 'ApplicationInsights') {
+  name: formatName('${apimGatewayName}/${apimGatewayLoggerResourceName}', affix, environment, region)
   properties: {
     loggerType: 'applicationInsights'
     credentials: {
-      instrumentationKey: '{{${azApimGatewayAppInsightsResource.name}-logger-credentials}}'
+      instrumentationKey: '{{${appInsights.name}-logger-credentials}}'
     }
-    resourceId: azApimGatewayAppInsightsResource.id
+    resourceId: appInsights.id
   }
 }
 
@@ -90,4 +96,4 @@ resource azApimGatewayAppInsightsLogger 'Microsoft.ApiManagement/service/loggers
 //}
 
 
-output apimGatewayLogger object = azApimGatewayAppInsightsLogger
+output apimGatewayLogger object = apimServiceLoggers

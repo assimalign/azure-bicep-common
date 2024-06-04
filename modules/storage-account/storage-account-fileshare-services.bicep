@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the storage account to deploy. Must only contain alphanumeric characters')
 param storageAccountName string
 
@@ -37,7 +40,7 @@ param storageAccountFileShareServiceFileShares array = []
 
 // 1. Get the existing Storage Account
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
-  name: replace(replace(storageAccountName, '@environment', environment), '@region', region)
+  name: replace(replace(replace(storageAccountName, '@affix', affix), '@environment', environment), '@region', region)
 }
 
 // 2. Deploy the Storage Account File Share Service
@@ -51,8 +54,8 @@ resource storageAccountFileShareService 'Microsoft.Storage/storageAccounts/fileS
         allowedMethods: rule.methods
         allowedOrigins: rule.origins
         exposedHeaders: []
-        allowedHeaders: contains(rule, 'headers') ? rule.headers : []
-        maxAgeInSeconds: contains(rule, 'maxAge') ? rule.maxAge : 0
+        allowedHeaders: rule.?headers ?? []
+        maxAgeInSeconds: rule.?maxAge ?? 0
       }]
     }
   }
@@ -63,6 +66,7 @@ module storageAccountFileShares 'storage-account-fileshare-services-share.bicep'
   name: !empty(storageAccountFileShareServiceFileShares) ? toLower('fs-share-${guid('${storageAccountFileShareService.id}/${fileShare.storageAccountFileShareName}')}') : 'no-fs-service-to-deploy'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     storageAccountName: storageAccountName
@@ -77,22 +81,17 @@ module storageFileShareServicePrivateEndpoint '../private-endpoint/private-endpo
   name: !empty(storageAccountFileShareServicePrivateEndpoint) ? toLower('fs-share-priv-endpoint-${guid('${storageAccountFileShareService.id}/${storageAccountFileShareServicePrivateEndpoint.privateEndpointName}')}') : 'no-stg-fs-priv-endpoint'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     privateEndpointName: storageAccountFileShareServicePrivateEndpoint.privateEndpointName
-    privateEndpointLocation: contains(storageAccountFileShareServicePrivateEndpoint, 'privateEndpointLocation') ? storageAccountFileShareServicePrivateEndpoint.privateEndpointLocation : storageAccountLocation
-    privateEndpointDnsZoneGroups: [
-      for zone in storageAccountFileShareServicePrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
-        privateDnsZoneName: zone.privateDnsZone
-        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
-        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
-      }
-    ]
+    privateEndpointLocation:  storageAccountFileShareServicePrivateEndpoint.?privateEndpointLocation ?? storageAccountLocation
+    privateEndpointDnsZoneGroupConfigs: storageAccountFileShareServicePrivateEndpoint.privateEndpointDnsZoneGroupConfigs
     privateEndpointVirtualNetworkName: storageAccountFileShareServicePrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: storageAccountFileShareServicePrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: storageAccountFileShareServicePrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
     privateEndpointResourceIdLink: storageAccount.id
-    privateEndpointTags: contains(storageAccountFileShareServicePrivateEndpoint, 'privateEndpointTags') ? storageAccountFileShareServicePrivateEndpoint.privateEndpointTags : {}
+    privateEndpointTags:  storageAccountFileShareServicePrivateEndpoint.?privateEndpointTags
     privateEndpointGroupIds: [
       'file'
     ]

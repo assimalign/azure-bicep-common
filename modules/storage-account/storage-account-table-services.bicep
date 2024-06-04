@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the storage account to deploy. Must only contain alphanumeric characters')
 param storageAccountName string
 
@@ -38,7 +41,7 @@ param storageAccountTableServicePrivateEndpoint object = {}
 
 // 1. Get the existing Storage Account
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
-  name: replace(replace(storageAccountName, '@environment', environment), '@region', region)
+  name: replace(replace(replace(storageAccountName, '@affix', affix), '@environment', environment), '@region', region)
 }
 
 // 2. Deploy the Storage Account Table Service
@@ -51,8 +54,8 @@ resource storageAccountTableService 'Microsoft.Storage/storageAccounts/tableServ
         allowedMethods: rule.methods
         allowedOrigins: rule.origins
         exposedHeaders: []
-        allowedHeaders: contains(rule, 'headers') ? rule.headers : []
-        maxAgeInSeconds: contains(rule, 'maxAge') ? rule.maxAge : 0
+        allowedHeaders: rule.?headers ?? []
+        maxAgeInSeconds: rule.?maxAge ?? 0
       }]
     }
   }
@@ -63,6 +66,7 @@ module storageAccountTableServiceTable 'storage-account-table-services-table.bic
   name: !empty(storageAccountTableServiceTables) ? toLower('table-${guid('${storageAccountTableService.id}/${table.storageAccountTableName}')}') : 'no-table-service-to-deploy'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     storageAccountName: storageAccountName
@@ -76,22 +80,17 @@ module storageTableServicePrivateEndpoint '../private-endpoint/private-endpoint.
   name: !empty(storageAccountTableServicePrivateEndpoint) ? toLower('table-priv-endpoint-${guid('${storageAccountTableService.id}/${storageAccountTableServicePrivateEndpoint.privateEndpointName}')}') : 'no-stg-table-priv-endpoint'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     privateEndpointName: storageAccountTableServicePrivateEndpoint.privateEndpointName
-    privateEndpointLocation: contains(storageAccountTableServicePrivateEndpoint, 'privateEndpointLocation') ? storageAccountTableServicePrivateEndpoint.privateEndpointLocation : storageAccountLocation
-    privateEndpointDnsZoneGroups: [
-      for zone in storageAccountTableServicePrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
-        privateDnsZoneName: zone.privateDnsZone
-        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
-        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
-      }
-    ]
+    privateEndpointLocation:storageAccountTableServicePrivateEndpoint.?privateEndpointLocation ?? storageAccountLocation
+    privateEndpointDnsZoneGroupConfigs: storageAccountTableServicePrivateEndpoint.privateEndpointDnsZoneGroupConfigs
     privateEndpointVirtualNetworkName: storageAccountTableServicePrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: storageAccountTableServicePrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: storageAccountTableServicePrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
     privateEndpointResourceIdLink: storageAccount.id
-    privateEndpointTags: contains(storageAccountTableServicePrivateEndpoint, 'privateEndpointTags') ? storageAccountTableServicePrivateEndpoint.privateEndpointTags : {}
+    privateEndpointTags:  storageAccountTableServicePrivateEndpoint.?privateEndpointTag
     privateEndpointGroupIds: [
       'Table'
     ]

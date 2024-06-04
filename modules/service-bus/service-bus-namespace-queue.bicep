@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Service Bus to deploy the Topic to')
 param serviceBusName string
 
@@ -28,10 +31,10 @@ param serviceBusQueueSettings object = {}
 param serviceBusQueuePolicies array = []
 
 resource serviceBusNamespaceQueue 'Microsoft.ServiceBus/namespaces/queues@2021-11-01' = {
-  name: replace(replace('${serviceBusName}/${serviceBusQueueName}', '@environment', environment), '@region', region)
+  name: replace(replace(replace('${serviceBusName}/${serviceBusQueueName}', '@affix', affix), '@environment', environment), '@region', region)
   properties: {
-    requiresSession: contains(serviceBusQueueSettings, 'enableSession') ? serviceBusQueueSettings.enableSession : false
-    maxSizeInMegabytes: contains(serviceBusQueueSettings, 'maxSize') ? serviceBusQueueSettings.maxSize : 1024
+    requiresSession: serviceBusQueueSettings.?enableSession ?? false
+    maxSizeInMegabytes: serviceBusQueueSettings.?maxSize ?? 1024
   }
 }
 
@@ -39,6 +42,7 @@ module serviceBusNamespaceQueueAuthPolicy 'service-bus-namespace-queue-authoriza
   name: !empty(serviceBusQueuePolicies) ? toLower('sbn-queue-policy-${guid('${serviceBusNamespaceQueue.id}/${policy.serviceBusPolicyName}')}') : 'no-sbq-policy-to-deploy'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     serviceBusName: serviceBusName

@@ -10,6 +10,7 @@ targetScope = 'subscription'
 module azResourceGroupDeploy '../../src/modules/az.resource.group/v1.0/az.resource.group.bicep' = {
   name: 'test-az-resource-group-deployment'
   params: {
+    affix: affix
     region: location
     environment: environment
     resourceGroupLocation: resourceGroup.resourceGroupLocation
@@ -21,6 +22,7 @@ module azCosmosAccountDeploy '../../src/modules/az.cosmosdb.account/v1.0/az.cosm
   name: 'test-az-cosmos-account-deploy'
   scope: az.resourceGroup(replace(replace(cosmosAccount.cosmosAccountResourceGroup, '@environment', environment), '@region', location))
   params: {
+    affix: affix
     region: location
     environment: environment
     cosmosDbAccountName: cosmosAccount.cosmosAccountName

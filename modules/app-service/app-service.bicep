@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The Function App Name to be deployed')
 param appServiceName string
 
@@ -77,50 +80,54 @@ param appServiceSiteConfigs object = {}
 @description('Custom Attributes to attach to the app service deployment')
 param appServiceTags object = {}
 
-func formatName(name string, environment string, region string) string =>
-  replace(replace(name, '@environment', environment), '@region', region)
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
 
 // Format Site Settings 
 var siteSettings = [
   for item in items(contains(appServiceSiteConfigs, 'siteSettings') ? appServiceSiteConfigs.siteSettings : {}): {
-    name: formatName(item.key, environment, region)
+    name: formatName(item.key, affix, environment, region)
     value: formatName(
-      sys.contains(item.value, environment) ? item.value[environment] : item.value.default,
+      contains(item.value, environment) ? item.value[environment] : item.value.default,
+      affix,
       environment,
       region
     )
   }
 ]
 
+// Formt auth settings if any
 var authSettingsAudienceValues = contains(appServiceSiteConfigs, 'authSettings')
   ? contains(appServiceSiteConfigs.authSettings.appAuthIdentityProviderAudiences, environment)
       ? appServiceSiteConfigs.authSettings.appAuthIdentityProviderAudiences[environment]
       : appServiceSiteConfigs.authSettings.appAuthIdentityProviderAudiences.default
   : []
-var authSettingAudiences = [for audience in authSettingsAudienceValues: formatName(audience, environment, region)]
+var authSettingAudiences = [
+  for audience in authSettingsAudienceValues: formatName(audience, affix, environment, region)
+]
 
 // 1. Get the existing App Service Plan to attach to the 
 // Note: All web service (Function & Web Apps) have App Service Plans even if it is consumption Y1 Plans
 resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' existing = {
-  name: formatName(appServicePlanName, environment, region)
-  scope: resourceGroup(formatName(appServicePlanResourceGroup, environment, region))
+  name: formatName(appServicePlanName, affix, environment, region)
+  scope: resourceGroup(formatName(appServicePlanResourceGroup, affix, environment, region))
 }
 
 // 2. Get existing app storage account resource
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
-  name: formatName(appServiceStorageAccountName, environment, region)
-  scope: resourceGroup(formatName(appServiceStorageAccountResourceGroup, environment, region))
+  name: formatName(appServiceStorageAccountName, affix, environment, region)
+  scope: resourceGroup(formatName(appServiceStorageAccountResourceGroup, affix, environment, region))
 }
 
 // 3. Get existing app insights 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
-  name: formatName(appServiceAppInsightsName, environment, region)
-  scope: resourceGroup(formatName(appServiceAppInsightsResourceGroup, environment, region))
+  name: formatName(appServiceAppInsightsName, affix, environment, region)
+  scope: resourceGroup(formatName(appServiceAppInsightsResourceGroup, affix, environment, region))
 }
 
 // 4.1 Deploy Function App, if applicable
 resource appService 'Microsoft.Web/sites@2023-01-01' = {
-  name: formatName(appServiceName, environment, region)
+  name: formatName(appServiceName, affix, environment, region)
   location: appServiceLocation
   kind: appServiceType
   identity: {
@@ -129,15 +136,11 @@ resource appService 'Microsoft.Web/sites@2023-01-01' = {
   properties: {
     vnetRouteAllEnabled: appServiceNetworkSettings.?routeAllOutboundTraffic ?? false
     virtualNetworkSubnetId: !empty(appServiceNetworkSettings)
-      ? formatName(
-          resourceId(
-            appServiceNetworkSettings.virtualNetworkResourceGroup,
-            'Microsoft.Network/VirtualNetworks/subnets',
-            appServiceNetworkSettings.virtualNetworkName,
-            appServiceNetworkSettings.virtualNetworkSubnetName
-          ),
-          environment,
-          region
+      ? resourceId(
+          formatName(appServiceNetworkSettings.virtualNetworkResourceGroup, affix, environment, region),
+          'Microsoft.Network/VirtualNetworks/subnets',
+          formatName(appServiceNetworkSettings.virtualNetworkName, affix, environment, region),
+          formatName(appServiceNetworkSettings.virtualNetworkSubnetName, affix, environment, region)
         )
       : null
     serverFarmId: appServicePlan.id
@@ -149,7 +152,7 @@ resource appService 'Microsoft.Web/sites@2023-01-01' = {
       ? appServiceSiteConfigs.webSettings.httpsOnly
       : false
     // If there are slots to be deployed then let's have the slots override the site settings
-    publicNetworkAccess: appServiceNetworkSettings.?publicNetworkAccess ?? 'Enabled'
+    publicNetworkAccess: appServiceNetworkSettings.?allowPublicNetworkAccess ?? 'Enabled'
     siteConfig: any(empty(appServiceSlots)
       ? {
           appSettings: union(
@@ -217,19 +220,16 @@ resource appService 'Microsoft.Web/sites@2023-01-01' = {
         : null
       apiManagementConfig: any(contains(appServiceSiteConfigs.webSettings, 'apimGateway')
         ? {
-            id: replace(
-              replace(
-                resourceId(
-                  appServiceSiteConfigs.webSettings.apimGateway.apimGatewayResourceGroup,
-                  'Microsoft.ApiManagement/service/apis',
-                  appServiceSiteConfigs.webSettings.apimGateway.apimGatewayName,
-                  appServiceSiteConfigs.webSettings.apimGateway.apimGatewayApiName
-                ),
-                '@environment',
-                environment
+            id: resourceId(
+              formatName(
+                appServiceSiteConfigs.webSettings.apimGateway.apimGatewayResourceGroup,
+                affix,
+                environment,
+                region
               ),
-              '@region',
-              region
+              'Microsoft.ApiManagement/service/apis',
+              formatName(appServiceSiteConfigs.webSettings.apimGateway.apimGatewayName, affix, environment, region),
+              formatName(appServiceSiteConfigs.webSettings.apimGateway.apimGatewayApiName, affix, environment, region)
             )
           }
         : {})
@@ -349,6 +349,7 @@ module appServiceSlotConfigNames 'app-service-slot-config-names.bicep' = if (!em
   name: 'app-slot-setting-${guid('${appServiceName}/slotConfigNames')}'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     appName: appServiceName
@@ -369,6 +370,7 @@ module appServiceSlot 'app-service-slot.bicep' = [
       : 'no-app-service-slots-to-deploy'
     scope: resourceGroup()
     params: {
+      affix: affix
       region: region
       environment: environment
       appServiceName: appServiceName
@@ -400,8 +402,9 @@ module appServiceSlot 'app-service-slot.bicep' = [
 module rbac '../rbac/rbac.bicep' = [
   for appRoleAssignment in appServiceMsiRoleAssignments: if (appServiceMsiEnabled == true && !empty(appServiceMsiRoleAssignments)) {
     name: 'app-rbac-${guid('${appServiceName}-${appRoleAssignment.resourceRoleName}')}'
-    scope: resourceGroup(formatName(appRoleAssignment.resourceGroupToScopeRoleAssignment,environment, region))
+    scope: resourceGroup(formatName(appRoleAssignment.resourceGroupToScopeRoleAssignment, affix, environment, region))
     params: {
+      affix: affix
       region: region
       environment: environment
       resourceRoleName: appRoleAssignment.resourceRoleName
@@ -420,17 +423,12 @@ module privateEndpoint '../private-endpoint/private-endpoint.bicep' = if (!empty
     : 'no-app-sv-pri-endp-to-deploy'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     privateEndpointName: appServicePrivateEndpoint.privateEndpointName
     privateEndpointLocation: appServicePrivateEndpoint.?privateEndpointLocation ?? appServiceLocation
-    privateEndpointDnsZoneGroups: [
-      for zone in appServicePrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
-        privateDnsZoneName: zone.privateDnsZone
-        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
-        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
-      }
-    ]
+    privateEndpointDnsZoneGroupConfigs: appServicePrivateEndpoint.privateEndpointDnsZoneGroupConfigs
     privateEndpointVirtualNetworkName: appServicePrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: appServicePrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: appServicePrivateEndpoint.privateEndpointVirtualNetworkResourceGroup

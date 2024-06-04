@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the storage account to deploy. Must only contain alphanumeric characters')
 param storageAccountName string
 
@@ -34,7 +37,7 @@ param storageAccountFileShareServiceShareName string
 param storageAccountFileShareServiceShareAccessTier string
 
 resource storageAccountFileShareServiceFileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2022-05-01' = {
-  name: replace(replace('${storageAccountName}/${storageAccountFileShareServiceName}/${storageAccountFileShareServiceShareName}', '@environment', environment), '@region', region)
+  name: replace(replace(replace('${storageAccountName}/${storageAccountFileShareServiceName}/${storageAccountFileShareServiceShareName}', '@affix', affix), '@environment', environment), '@region', region)
   properties: {
     accessTier: storageAccountFileShareServiceShareAccessTier
   }

@@ -1,0 +1,51 @@
+{
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachineScaleSet": {
+            "value": {
+                "virtualMachineScaleSetName": "@affix-net-@environment-est-us2-vmss-01",
+                "virtualMachineScaleSetResourceGroup": "@affix-net-@environment-est-us2-rg-01",
+                "virtualMachineScaleSetPrefixName": "@affixvm",
+                "virtualMachineScaleSetEnableMsi": true,
+                "virtualMachineScaleSetLocation": "eastus2",
+                "virtualMachineScaleSetSku": {
+                    "default": {
+                        "name": "Standard_D2s_v3",
+                        "capacity": 1
+                    }
+                },
+                "virtualMachineScaleSetImage": {
+                    "publisher": "MicrosoftWindowsServer",
+                    "offer": "WindowsServer",
+                    "sku": "2022-datacenter-azure-edition",
+                    "version": "latest"
+                },
+                "virtualMachineScaleSetDiskConfig": {
+                    "diskSize": 128,
+                    "diskSku": {
+                        "default": "StandardSSD_LRS"
+                    }
+                },
+                "virtualMachineScaleSetUsername": "@vm-username",
+                "virtualMachineScaleSetPassword": "@vm-password",
+                "virtualMachineScaleSetConfig": {
+                    "orchestrationMode": "Uniform"
+                },
+                "virtualMachineScaleSetNetworkConfig": {
+                    "networkInterfaces": [
+                        {
+                            "networkInterfaceName": "@affix-net-@environment-est-us2-vmss-01.nic",
+                            "networkInterfaceIpConfig": {
+                                "ipConfigName": "@affix-net-@environment-est-us2-vmss-ipc-01",
+                                "ipConfigPublicIpName": "@affix-net-@environment-est-us2-pip-06",
+                                "ipConfigVirtualNetwork": "@affix-net-@environment-est-us2-vnet-01",
+                                "ipConfigVirtualNetworkSubnet": "snet-virtual-machines",
+                                "ipConfigVirtualNetworkResourceGroup": "@affix-net-@environment-est-us2-rg-01"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

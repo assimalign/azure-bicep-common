@@ -42,19 +42,11 @@
                 "mediaServiceDisablePublicAccess": {
                     "type": "boolean"
                 },
-                "mediaServiceStorageAccount": {
-                    "type": "object",
-                    "properties": {
-                        "mediaServiceStorageAccountName": {
-                            "type": "string"
-                        },
-                        "mediaServiceStorageAccountResourceGroup": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "mediaServiceStorageAccountName"
-                    ]
+                "mediaServiceStorageAccountName": {
+                    "type": "string"
+                },
+                "mediaServiceStorageAccountResourceGroup": {
+                    "type": "string"
                 },
                 "mediaServiceTags": {
                     "type": "object",
@@ -67,7 +59,8 @@
                 }
             },
             "required": [
-                "mediaServiceName"
+                "mediaServiceName",
+                "mediaServiceStorageAccountName"
             ]
         }
     }

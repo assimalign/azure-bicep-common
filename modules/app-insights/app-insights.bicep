@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the application insights to deploy.')
 param appInsightsName string
 
@@ -39,28 +42,30 @@ param appInsightsAnalyticWorkspaceName string
 param appInsightsAnalyticWorkspaceResourceGroup string = resourceGroup().name
 
 @description('')
-param appInsightsConfig object = {}
+param appInsightsNetworkSettings object = {}
 
 @description('The tags to attach to the resource when deployed.')
 param appInsightsTags object = {}
 
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
+
 // 1. Get the existing log workspace to attach the insights component to
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
-  name: replace(replace(appInsightsAnalyticWorkspaceName, '@environment', environment), '@region', region)
-  scope: resourceGroup(replace(replace(appInsightsAnalyticWorkspaceResourceGroup, '@environment', environment), '@region', region))
+  name: formatName(appInsightsAnalyticWorkspaceName, affix, environment, region)
+  scope: resourceGroup(formatName(appInsightsAnalyticWorkspaceResourceGroup, affix, environment, region))
 }
 
 // 2. Deploy the new instance of App insights under the requested log workspace
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: replace(replace(appInsightsName, '@environment', environment), '@region', region)
+  name: formatName(appInsightsName, affix, environment, region)
   location: appInsightsLocation
   kind: appInsightsKind
   properties: {
     Application_Type: appInsightsKind == 'web' ? 'web' : 'other'
     WorkspaceResourceId: logAnalyticsWorkspace.id
-    publicNetworkAccessForIngestion: appInsightsConfig.?publicNetworkAccessForIngestion ?? 'Enabled'
-    publicNetworkAccessForQuery: appInsightsConfig.?publicNetworkAccessForQuery ?? 'Enabled'
-
+    publicNetworkAccessForIngestion: appInsightsNetworkSettings.?publicNetworkAccessForIngestion ?? 'Enabled'
+    publicNetworkAccessForQuery: appInsightsNetworkSettings.?publicNetworkAccessForQuery ?? 'Enabled'
   }
   tags: union(appInsightsTags, {
     region: empty(region) ? 'n/a' : region

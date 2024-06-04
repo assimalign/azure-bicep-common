@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Event Hub Namespace')
 param eventHubNamespaceName string
 
@@ -32,7 +35,7 @@ param eventHubNamespaceHubMessageRetention int = 1
 param eventHubNamespaceHubPolicies array = []
 
 resource azEventHubDeployment 'Microsoft.EventHub/namespaces/eventhubs@2017-04-01' = {
-  name: replace(replace('${eventHubNamespaceName}/${eventHubNamespaceHubName}', '@environment', environment), '@region', region)
+  name: replace(replace(replace('${eventHubNamespaceName}/${eventHubNamespaceHubName}', '@affix', affix), '@environment', environment), '@region', region)
   properties: {
     partitionCount: eventHubNamespaceHubPartitionCount
     messageRetentionInDays: eventHubNamespaceHubMessageRetention

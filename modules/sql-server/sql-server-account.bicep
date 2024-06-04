@@ -15,14 +15,14 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Sql Server Instance')
 param sqlServerAccountName string
 
 @description('')
 param sqlServerAccountLocation string = resourceGroup().location
-
-@description('')
-param sqlServerAccountConfigs object = {}
 
 @description('')
 param sqlServerAccountAdministrators object = {}
@@ -37,14 +37,14 @@ param sqlServerAccountAdminUsername string
 @description('(Required) The admin password for the sql server instance')
 param sqlServerAccountAdminPassword string
 
+@description('')
+param sqlServerAccountNetworkSettings object = {}
+
 @description('A flag to indeicate whether Managed System identity should be turned on')
 param sqlServerAccountMsiEnabled bool = false
 
 @description('')
-param sqlServerAccountVirtualNetworkRules array = []
-
-@description('')
-param sqlServerAccountFirewallRules array = []
+param sqlServerAccountMsiRoleAssignments array = []
 
 @description('')
 param sqlServerAccountPrivateEndpoint object = {}
@@ -52,10 +52,11 @@ param sqlServerAccountPrivateEndpoint object = {}
 @description('')
 param sqlServerAccountTags object = {}
 
-var allowAzureResources = sqlServerAccountConfigs.?sqlServerAccountAllowAzureServices ?? 'Disabled'
-var allowPublicNetworkAccess = contains(sqlServerAccountConfigs, 'sqlServerAccountPublicAccessEnabled')
-  ? sqlServerAccountConfigs.sqlServerAccountPublicAccessEnabled
-  : 'Enabled'
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
+
+var allowAzureResources = sqlServerAccountNetworkSettings.?allowAzureServices ?? 'Disabled'
+var allowPublicNetworkAccess = sqlServerAccountNetworkSettings.?allowPublicNetworkAccess ?? 'Enabled'
 var firewallRules = allowAzureResources == 'Enabled' && allowPublicNetworkAccess == 'Enabled'
   ? union(
       [
@@ -65,25 +66,21 @@ var firewallRules = allowAzureResources == 'Enabled' && allowPublicNetworkAccess
           ruleEndIp: '0.0.0.0'
         }
       ],
-      sqlServerAccountFirewallRules
+      sqlServerAccountNetworkSettings.?firewallRules ?? []
     )
-  : sqlServerAccountFirewallRules
+  : sqlServerAccountNetworkSettings.?firewallRules ?? []
 
 // 1. Deploys a Sql Server Instance
 resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
-  name: replace(replace(sqlServerAccountName, '@environment', environment), '@region', region)
+  name: formatName(sqlServerAccountName, affix, environment, region)
   location: sqlServerAccountLocation
   identity: {
     type: sqlServerAccountMsiEnabled == true ? 'SystemAssigned' : 'None'
   }
   properties: {
     minimalTlsVersion: '1.2'
-    publicNetworkAccess: contains(sqlServerAccountConfigs, 'sqlServerAccountPublicAccessEnabled')
-      ? sqlServerAccountConfigs.sqlServerAccountPublicAccessEnabled
-      : 'Enabled'
-    restrictOutboundNetworkAccess: contains(sqlServerAccountConfigs, 'sqlServerAccountOutboundNetworkAccessEnabled')
-      ? sqlServerAccountConfigs.sqlServerAccountOutboundNetworkAccessEnabled
-      : 'Disabled'
+    publicNetworkAccess: allowPublicNetworkAccess
+    restrictOutboundNetworkAccess: sqlServerAccountNetworkSettings.?allowOutboundNetworkAccess ?? 'Disabled'
     administratorLogin: sqlServerAccountAdminUsername
     administratorLoginPassword: sqlServerAccountAdminPassword
   }
@@ -102,23 +99,15 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
   ]
   // Add SQL Server Virtual Netowrk Rules
   resource networking 'virtualNetworkRules' = [
-    for rule in sqlServerAccountVirtualNetworkRules: if (!empty(sqlServerAccountVirtualNetworkRules)) {
-      name: replace(replace(rule.virtualNetworkRuleName, '@environment', environment), '@region', region)
+    for rule in sqlServerAccountNetworkSettings.?virtualNetworkRules ?? []: {
+      name: formatName(rule.virtualNetworkRuleName, affix, environment, region)
       properties: {
-        virtualNetworkSubnetId: any(replace(
-          replace(
-            resourceId(
-              rule.virtualNetworkResourceGroup,
-              'Microsoft.Network/virtualNetworks/subnets',
-              rule.virtualNetworkName,
-              rule.virtualNetworkSubnetName
-            ),
-            '@environment',
-            environment
-          ),
-          '@region',
-          region
-        ))
+        virtualNetworkSubnetId: resourceId(
+          formatName(rule.virtualNetworkResourceGroup, affix, environment, region),
+          'Microsoft.Network/virtualNetworks/subnets',
+          formatName(rule.virtualNetworkName, affix, environment, region),
+          formatName(rule.virtualNetworkSubnetName, affix, environment, region)
+        )
       }
     }
   ]
@@ -147,48 +136,53 @@ module sqlServerDatabase 'sql-server-account-database.bicep' = [
       ? toLower('az-sqlserver-db-${guid('${sqlServer.id}/${database.sqlServerAccountDatabaseName}')}')
       : 'no-sql-server/no-database-to-deploy'
     params: {
+      affix: affix
       region: region
       environment: environment
       sqlServerAccountName: sqlServerAccountName
       sqlServerAccountDatabaseLocation: sqlServerAccountLocation
       sqlServerAccountDatabaseName: database.sqlServerAccountDatabaseName
       sqlServerAccountDatabaseSku: database.sqlServerAccountDatabaseSku
-      sqlServerAccountDatabaseTags: contains(database, 'sqlServerAccountDatabaseTags')
-        ? database.sqlServerAccountDatabaseTags
-        : {}
-      sqlServerAccountDatabaseConfigs: contains(database, 'sqlServerAccountDatabaseConfigs')
-        ? database.sqlServerAccountDatabaseConfigs
-        : {}
+      sqlServerAccountDatabaseTags: database.?sqlServerAccountDatabaseTags
+      sqlServerAccountDatabaseConfigs: database.?sqlServerAccountDatabaseConfigs
     }
   }
 ]
 
+module rbac '../rbac/rbac.bicep' = [
+  for sqlRoleAssignment in sqlServerAccountMsiRoleAssignments: if (sqlServerAccountMsiEnabled == true && !empty(sqlServerAccountMsiRoleAssignments)) {
+    name: 'app-rbac-${guid('${sqlServer.name}-${sqlRoleAssignment.resourceRoleName}')}'
+    scope: resourceGroup(formatName(sqlRoleAssignment.resourceGroupToScopeRoleAssignment, affix,environment, region))
+    params: {
+      affix: affix
+      region: region
+      environment: environment
+      resourceRoleName: sqlRoleAssignment.resourceRoleName
+      resourceToScopeRoleAssignment: sqlRoleAssignment.resourceToScopeRoleAssignment
+      resourceGroupToScopeRoleAssignment: sqlRoleAssignment.resourceGroupToScopeRoleAssignment
+      resourceRoleAssignmentScope: sqlRoleAssignment.resourceRoleAssignmentScope
+      resourceTypeAssigningRole: sqlRoleAssignment.resourceTypeAssigningRole
+      resourcePrincipalIdReceivingRole: sqlServer.identity.principalId
+    }
+  }
+]
 // 4. Deploy Private Endpoint if applicable
 module sqlServerPrivateEp '../private-endpoint/private-endpoint.bicep' = if (!empty(sqlServerAccountPrivateEndpoint)) {
   name: !empty(sqlServerAccountPrivateEndpoint)
     ? toLower('az-sqls-priv-endpoint-${guid('${sqlServer.id}/${sqlServerAccountPrivateEndpoint.privateEndpointName}')}')
     : 'no-sql-private-endpoint-to-deploy'
   params: {
+    affix: affix
     region: region
     environment: environment
-    privateEndpointLocation: contains(sqlServerAccountPrivateEndpoint, 'privateEndpointLocation')
-      ? sqlServerAccountPrivateEndpoint.privateEndpointLocation
-      : sqlServerAccountLocation
+    privateEndpointLocation: sqlServerAccountPrivateEndpoint.?privateEndpointLocation ?? sqlServerAccountLocation
     privateEndpointName: sqlServerAccountPrivateEndpoint.privateEndpointName
-    privateEndpointDnsZoneGroups: [
-      for zone in sqlServerAccountPrivateEndpoint.privateEndpointDnsZoneGroupConfigs: {
-        privateDnsZoneName: zone.privateDnsZone
-        privateDnsZoneGroup: replace(zone.privateDnsZone, '.', '-')
-        privateDnsZoneResourceGroup: zone.privateDnsZoneResourceGroup
-      }
-    ]
+    privateEndpointDnsZoneGroupConfigs: sqlServerAccountPrivateEndpoint.privateEndpointDnsZoneGroupConfigs
     privateEndpointVirtualNetworkName: sqlServerAccountPrivateEndpoint.privateEndpointVirtualNetworkName
     privateEndpointVirtualNetworkSubnetName: sqlServerAccountPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: sqlServerAccountPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
     privateEndpointResourceIdLink: sqlServer.id
-    privateEndpointTags: contains(sqlServerAccountPrivateEndpoint, 'privateEndpointTags')
-      ? sqlServerAccountPrivateEndpoint.privateEndpointTags
-      : {}
+    privateEndpointTags: sqlServerAccountPrivateEndpoint.privateEndpointTags
     privateEndpointGroupIds: [
       'sqlServer'
     ]

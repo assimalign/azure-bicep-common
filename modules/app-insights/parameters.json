@@ -3,6 +3,7 @@
     "definitions": {
         "app-insight": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "$ref": "#/definitions/app-insight-parameters"
@@ -14,6 +15,7 @@
         },
         "app-insights": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "value": {
                     "type": "array",
@@ -57,7 +59,7 @@
                 "appInsightsAnalyticWorkspaceResourceGroup": {
                     "type": "string"
                 },
-                "appInsightsConfig": {
+                "appInsightsNetworkSettings": {
                     "type":"object",
                     "additionalProperties": false,
                     "minProperties": 1,

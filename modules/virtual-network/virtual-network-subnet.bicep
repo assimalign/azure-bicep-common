@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Virtual Network to be deployed')
 param virtualNetworkName string
 
@@ -27,23 +30,24 @@ param virtualNetworkSubnetRange object
 @description('')
 param virtualNetworkSubnetConfigs object = {}
 
-func formatName(name string, environment string, region string) string =>
-  replace(replace(name, '@environment', environment), '@region', region)
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
 
 resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2023-11-01' existing = if (contains(
   virtualNetworkSubnetConfigs,
   'subnetNetworkSecurityGroup'
 )) {
-  name: formatName(virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgName, environment, region)
+  name: formatName(virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgName, affix, environment, region)
   scope: resourceGroup(formatName(
     virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgResourceGroup,
+    affix,
     environment,
     region
   ))
 }
 
 resource virtualNetworkSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-01' = {
-  name: formatName('${virtualNetworkName}/${virtualNetworkSubnetName}', environment, region)
+  name: formatName('${virtualNetworkName}/${virtualNetworkSubnetName}', affix, environment, region)
   properties: {
     addressPrefix: contains(virtualNetworkSubnetRange, environment)
       ? virtualNetworkSubnetRange[environment]
@@ -62,9 +66,9 @@ resource virtualNetworkSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11
     natGateway: contains(virtualNetworkSubnetConfigs, 'subnetNatGateway')
       ? {
           id: resourceId(
-            formatName(virtualNetworkSubnetConfigs.subnetNatGateway.natGatewayResourceGroup, environment, region),
+            formatName(virtualNetworkSubnetConfigs.subnetNatGateway.natGatewayResourceGroup, affix, environment, region),
             'Microsoft.Network/natGateways',
-            formatName(virtualNetworkSubnetConfigs.subnetNatGateway.natGatewayName, environment, region)
+            formatName(virtualNetworkSubnetConfigs.subnetNatGateway.natGatewayName, affix, environment, region)
           )
         }
       : null

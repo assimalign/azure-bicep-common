@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Private DNS Zone')
 param privateDnsZoneName string
 
@@ -47,7 +50,7 @@ param privtaeDnsZoneTags object = {}
 
 // 1. Deploy Private DNS Zone scoped to the current Resource Group
 resource azPrivateDnsDeployment 'Microsoft.Network/privateDnsZones@2020-06-01' = {
-  name: replace(replace(privateDnsZoneName, '@environment', environment), '@region', region)
+  name: replace(replace(replace(privateDnsZoneName, '@affix', affix), '@environment', environment), '@region', region)
   location: 'global'
   tags: union(privtaeDnsZoneTags, {
     region: empty(region) ? 'n/a' : region
@@ -60,6 +63,7 @@ module azPrivateDnsARecordsDeployment 'private-dns-zone-a-record.bicep' = [for r
   name: !empty(privateDnsZoneARecords) ? 'az-dns-private-a-${guid('${azPrivateDnsDeployment.name}/${record.name}')}' : '${azPrivateDnsDeployment.name}-record-a-0'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     privateDnsZoneName: privateDnsZoneName
@@ -74,6 +78,7 @@ module azPrivateDnsAaaaRecordsDeployment 'private-dns-zone-aaaa-record.bicep' = 
   name: !empty(privateDnsZoneAaaaRecords) ? 'az-dns-private-aaaa-${guid('${azPrivateDnsDeployment.name}/${record.name}')}' : '${azPrivateDnsDeployment.name}-record-aaaa-0'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     privateDnsZoneName: privateDnsZoneName
@@ -88,6 +93,7 @@ module azPrivateDnsMxRecordsDeployment 'private-dns-zone-mx-record.bicep' = [for
   name: !empty(privateDnsZoneMxRecords) ? 'az-dns-private-mx-${guid('${azPrivateDnsDeployment.name}/${record.name}')}' : '${azPrivateDnsDeployment.name}-record-mx-0'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     privateDnsZoneName: privateDnsZoneName
@@ -102,6 +108,7 @@ module azPrivateDnsTxtRecordsDeployment 'private-dns-zone-txt-record.bicep' = [f
   name: !empty(privateDnsZoneTxtRecords) ? 'az-dns-private-txt-${guid('${azPrivateDnsDeployment.name}/${record.name}')}' : '${azPrivateDnsDeployment.name}-record-txt'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     privateDnsZoneName: privateDnsZoneName
@@ -116,6 +123,7 @@ module azPrivateDnsCnameRecordsDeployment 'private-dns-zone-cname-record.bicep' 
   name: !empty(privateDnsZoneCnameRecords) ? 'az-dns-private-cname-${guid('${azPrivateDnsDeployment.name}/${record.name}')}' : '${azPrivateDnsDeployment.name}-record-cname'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     privateDnsZoneName: privateDnsZoneName
@@ -130,6 +138,7 @@ module azPrivateDnsPtrRecordsDeployment 'private-dns-zone-ptr-record.bicep' = [f
   name: !empty(privateDnsZonePtrRecords) ? 'az-dns-private-ptr-${guid('${azPrivateDnsDeployment.name}/${record.name}')}' : '${azPrivateDnsDeployment.name}-record-ptr'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     privateDnsZoneName: privateDnsZoneName
@@ -144,6 +153,7 @@ module azPrivateDnsSrvRecordsDeployment 'private-dns-zone-svr-record.bicep' = [f
   name: !empty(privateDnsZoneSrvRecords) ? 'az-dns-private-srv-${guid('${azPrivateDnsDeployment.name}/${record.name}')}' : '${azPrivateDnsDeployment.name}-record-srv'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     privateDnsZoneName: privateDnsZoneName
@@ -158,6 +168,7 @@ module azPrivateDnsVirtualLinksDeployment 'private-dns-zone-link.bicep' = [for l
   name: !empty(privateDnsZoneNetworkLinks) ? toLower('az-virtual-network-link-${guid('${azPrivateDnsDeployment.name}/${link.virtualLinkName}')}') : 'no-virtual-network-link-to-deploy'
   scope: resourceGroup()
   params: {
+    affix: affix
     region: region
     environment: environment
     privateDnsName: azPrivateDnsDeployment.name

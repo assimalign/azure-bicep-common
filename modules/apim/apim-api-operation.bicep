@@ -15,6 +15,9 @@ param environment string = ''
 @description('The location prefix or suffix for the resource name')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the API Management resource')
 param apimGatewayName string
 
@@ -55,8 +58,11 @@ param apimGatewayApiOperationRequestHeaders array = []
 @description('')
 param apimGatewayApiOperationPolicy string = ''
 
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
+
 resource azApimApiOperationDeployment 'Microsoft.ApiManagement/service/apis/operations@2022-08-01' = {
-   name: replace(replace('${apimGatewayName}/${apimGatewayApiName}/${apimGatewayApiOperationName}', '@environment', environment), '@region', region)
+   name: formatName('${apimGatewayName}/${apimGatewayApiName}/${apimGatewayApiOperationName}', affix, environment, region)
    properties: {
       policies: empty(apimGatewayApiOperationPolicy) ? null : apimGatewayApiOperationPolicy
       displayName: apimGatewayApiOperationDisplayName

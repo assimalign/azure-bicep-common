@@ -69,12 +69,21 @@
                 },
                 "virtualNetworkConfigs": {
                     "type": "object",
+                    "additionalProperties": false,
+                    "minProperties": 1,
                     "properties": {
                         "enableDdosProtection": {
                             "type": "boolean"
                         },
                         "enableVmProtection": {
                             "type": "boolean"
+                        },
+                        "dnsServers": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "type": "string"
+                            }
                         }
                     }
                 },

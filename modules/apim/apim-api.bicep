@@ -15,6 +15,9 @@ param environment string = ''
 @description('The location prefix or suffix for the resource name')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the API Management resource')
 param apimGatewayName string
 
@@ -47,29 +50,41 @@ param apimGatewayApiOperations array = []
 @description('')
 param apimGatewayApiAuthenticationConfigs object = {}
 
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
+
 resource apimApi 'Microsoft.ApiManagement/service/apis@2022-08-01' = {
-  name: replace(replace('${apimGatewayName}/${apimGatewayApiName}', '@environment', environment), '@region', region)
+  name: formatName('${apimGatewayName}/${apimGatewayApiName}', affix, environment, region)
   properties: {
-    path: replace(replace(contains(apimGatewayApiPath, environment) ? apimGatewayApiPath[environment] : apimGatewayApiPath.default, '@environment', environment), '@region', region)
+    path: formatName(
+      contains(apimGatewayApiPath, environment) ? apimGatewayApiPath[environment] : apimGatewayApiPath.default,
+      affix,
+      environment,
+      region
+    )
     protocols: apimGatewayApiProtocols
     isCurrent: true
     subscriptionRequired: apimGatewayApiSubscriptionRequired
     apiType: apimGatewayApiType
     description: apimGatewayApiDescription
-    displayName: replace(replace(apimGatewayApiName, '@environment', environment), '@region', region)
-    authenticationSettings: empty(apimGatewayApiAuthenticationConfigs) ? null : apimGatewayApiAuthenticationConfigs.authenticationType == 'OpenIDConnect' ? {
-      openid: {
-        bearerTokenSendingMethods: [
-          apimGatewayApiAuthenticationConfigs.authenticationOpenIDConnectionSendingMethod
-        ]
-        openidProviderId: apimGatewayApiAuthenticationConfigs.authenticationOpenIDConnectionReferenceName
-      }
-    } : {
-      oAuth2: {
-        authorizationServerId: apimGatewayApiAuthenticationConfigs.authenticationOAthReferenceName
-        scope: apimGatewayApiAuthenticationConfigs.authenticationOAuthScope
-      }
-    }
+    displayName: formatName(apimGatewayApiName, affix, environment, region)
+    authenticationSettings: empty(apimGatewayApiAuthenticationConfigs)
+      ? null
+      : apimGatewayApiAuthenticationConfigs.authenticationType == 'OpenIDConnect'
+          ? {
+              openid: {
+                bearerTokenSendingMethods: [
+                  apimGatewayApiAuthenticationConfigs.authenticationOpenIDConnectionSendingMethod
+                ]
+                openidProviderId: apimGatewayApiAuthenticationConfigs.authenticationOpenIDConnectionReferenceName
+              }
+            }
+          : {
+              oAuth2: {
+                authorizationServerId: apimGatewayApiAuthenticationConfigs.authenticationOAthReferenceName
+                scope: apimGatewayApiAuthenticationConfigs.authenticationOAuthScope
+              }
+            }
   }
 }
 
@@ -77,32 +92,35 @@ resource apimApiPolicies 'Microsoft.ApiManagement/service/apis/policies@2022-08-
   name: 'policy'
   parent: apimApi
   properties: {
-    value: replace(replace(apimGatewayApiPolicy, '@environment', environment), '@region', region)
+    value: formatName(apimGatewayApiPolicy, affix, environment, region)
     format: 'xml'
   }
 }
 
-module apimApiOperation 'apim-api-operation.bicep' = [for operation in apimGatewayApiOperations: if (!empty(apimGatewayApiOperations)) {
-  name: 'apim-api-operation-${guid(replace(replace('${!empty(apimGatewayApiOperations) ? operation.apimGatewayApiOperationName : 'no-az-apim-operation'}', '', ''), '', ''))}'
-  params: {
-    region: region
-    environment: environment
-    apimGatewayName: apimGatewayName
-    apimGatewayApiName: apimGatewayApiName
-    apimGatewayApiOperationName: operation.apimGatewayApiOperationName
-    apimGatewayApiOperationDisplayName: operation.apimGatewayApiOperationDisplayName
-    apimGatewayApiOperationMethod: operation.apimGatewayApiOperationMethod
-    apimGatewayApiOperationUrlTemplate: operation.apimApiOperationUrlTemplate
-    apimGatewayApiOperationDescription: contains(operation, 'apimGatewayApiOperationDescription') ? operation.apimGatewayApiOperationDescription : ''
-    apimGatewayApiOperationUrlTemplateParameters: contains(operation, 'apimGatewayApiOperationUrlTemplateParameters') ? operation.apimGatewayApiOperationUrlTemplateParameters : []
-    apimGatewayApiOperationRequestHeaders: contains(operation, 'apimGatewayApiOperationRequestHeaders') ? operation.apimGatewayApiOperationRequestHeaders : []
-    apimGatewayApiOperationRequestQueryParameters: contains(operation, 'apimGatewayApiOperationRequestQueryParameters') ? operation.apimGatewayApiOperationRequestQueryParameters : []
-    apimGatewayApiOperationPolicy: contains(operation, 'apimGatewayApiOperationPolicy') ? operation.apimGatewayApiOperationPolicy : ''
+module apimApiOperation 'apim-api-operation.bicep' = [
+  for operation in apimGatewayApiOperations: if (!empty(apimGatewayApiOperations)) {
+    name: 'apim-api-operation-${guid(replace(replace('${!empty(apimGatewayApiOperations) ? operation.apimGatewayApiOperationName : 'no-az-apim-operation'}', '', ''), '', ''))}'
+    params: {
+      affix: affix
+      region: region
+      environment: environment
+      apimGatewayName: apimGatewayName
+      apimGatewayApiName: apimGatewayApiName
+      apimGatewayApiOperationName: operation.apimGatewayApiOperationName
+      apimGatewayApiOperationDisplayName: operation.apimGatewayApiOperationDisplayName
+      apimGatewayApiOperationMethod: operation.apimGatewayApiOperationMethod
+      apimGatewayApiOperationUrlTemplate: operation.apimApiOperationUrlTemplate
+      apimGatewayApiOperationDescription: operation.?apimGatewayApiOperationDescription
+      apimGatewayApiOperationUrlTemplateParameters: operation.?apimGatewayApiOperationUrlTemplateParameters
+      apimGatewayApiOperationRequestHeaders: operation.?apimGatewayApiOperationRequestHeaders
+      apimGatewayApiOperationRequestQueryParameters: operation.?apimGatewayApiOperationRequestQueryParameters
+      apimGatewayApiOperationPolicy: operation.?apimGatewayApiOperationPolicy
+    }
+    dependsOn: [
+      apimApiPolicies
+      apimApi
+    ]
   }
-  dependsOn: [
-    apimApiPolicies
-    apimApi
-  ]
-}]
+]
 
 output apimGatewayApi object = apimApi

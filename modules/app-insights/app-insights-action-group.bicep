@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('A descriptive name for the Action Group.')
 param appInsightsActionGroupName string
 
@@ -33,9 +36,12 @@ param appInsightsActionGroupReceivers object
 @description('The tags to attach to the resource when deployed.')
 param appInsightsActionGroupTags object = {}
 
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
+
 // Deploys an Alert Action Group
 resource appInsightsActionGroup 'Microsoft.Insights/actionGroups@2022-04-01' = {
-  name: replace(replace(appInsightsActionGroupName, '@environment', environment), '@region', region)
+  name: formatName(appInsightsActionGroupName, affix, environment, region)
   location: appInsightsActionGroupLocation
   properties: union({
     groupShortName: appInsightsActionGroupShortName

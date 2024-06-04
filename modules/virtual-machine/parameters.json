@@ -1,0 +1,520 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "virtual-machine": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/virtual-machine-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "virtual-machines": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/virtual-machine-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "virtual-machine-parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "virtualMachineTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            }
+        },
+        "virtual-machine-disk": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/virtual-machine-disk-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "virtual-machine-disks": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/virtual-machine-disk-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "virtual-machine-disk-parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "diskName": {
+                    "type": "string"
+                },
+                "diskResourceGroup": {
+                    "type": "string"
+                },
+                "diskLocation": {
+                    "type": "string"
+                },
+                "diskSku": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
+                            "properties": {
+                                "demo": {
+                                    "$ref": "#/definitions/virtual-machine-disk-sku"
+                                },
+                                "stg": {
+                                    "$ref": "#/definitions/virtual-machine-disk-sku"
+                                },
+                                "sbx": {
+                                    "$ref": "#/definitions/virtual-machine-disk-sku"
+                                },
+                                "test": {
+                                    "$ref": "#/definitions/virtual-machine-disk-sku"
+                                },
+                                "dev": {
+                                    "$ref": "#/definitions/virtual-machine-disk-sku"
+                                },
+                                "qa": {
+                                    "$ref": "#/definitions/virtual-machine-disk-sku"
+                                },
+                                "uat": {
+                                    "$ref": "#/definitions/virtual-machine-disk-sku"
+                                },
+                                "prd": {
+                                    "$ref": "#/definitions/virtual-machine-disk-sku"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "default": {
+                                    "$ref": "#/definitions/virtual-machine-disk-sku"
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
+                        }
+                    ]
+                },
+                "diskConfig": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "minProperties": 1,
+                    "properties": {
+                        "size": {
+                            "enum": [
+                                4,
+                                8,
+                                16,
+                                32,
+                                64,
+                                128,
+                                256,
+                                512,
+                                1024,
+                                2048,
+                                4096,
+                                8192,
+                                1638
+                            ]
+                        }
+                    }
+                },
+                "diskTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "diskName"
+            ]
+        },
+        "virtual-machine-scale-set": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/virtual-machine-scale-set-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "virtual-machine-scale-sets": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/virtual-machine-scale-set-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "virtual-machine-scale-set-parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "virtualMachineScaleSetName": {
+                    "type": "string"
+                },
+                "virtualMachineScaleSetPrefixName": {
+                    "type": "string"
+                },
+                "virtualMachineScaleSetResourceGroup": {
+                    "type": "string"
+                },
+                "virtualMachineScaleSetLocation": {
+                    "type": "string"
+                },
+                "virtualMachineScaleSetEnableMsi": {
+                    "type": "boolean"
+                },
+                "virtualMachineScaleSetSku": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
+                            "properties": {
+                                "demo": {
+                                    "$ref": "#/definitions/virtual-machine-scale-set-sku"
+                                },
+                                "stg": {
+                                    "$ref": "#/definitions/virtual-machine-scale-set-sku"
+                                },
+                                "sbx": {
+                                    "$ref": "#/definitions/virtual-machine-scale-set-sku"
+                                },
+                                "test": {
+                                    "$ref": "#/definitions/virtual-machine-scale-set-sku"
+                                },
+                                "dev": {
+                                    "$ref": "#/definitions/virtual-machine-scale-set-sku"
+                                },
+                                "qa": {
+                                    "$ref": "#/definitions/virtual-machine-scale-set-sku"
+                                },
+                                "uat": {
+                                    "$ref": "#/definitions/virtual-machine-scale-set-sku"
+                                },
+                                "prd": {
+                                    "$ref": "#/definitions/virtual-machine-scale-set-sku"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "default": {
+                                    "$ref": "#/definitions/virtual-machine-scale-set-sku"
+                                }
+                            },
+                            "required": [
+                                "default"
+                            ]
+                        }
+                    ]
+                },
+                "virtualMachineScaleSetUsername": {
+                    "type": "string"
+                },
+                "virtualMachineScaleSetPassword": {
+                    "type": "string"
+                },
+                "virtualMachineScaleSetNetworkConfig": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "networkInterfaces": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "networkInterfaceName": {
+                                        "type": "string"
+                                    },
+                                    "networkInterfaceSecurityGroup": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "properties": {
+                                            "networkSecurityGroupName": {
+                                                "type": "string"
+                                            },
+                                            "networkSecurityGroupResourceGroup": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "networkSecurityGroupName",
+                                            "networkSecurityGroupResourceGroup"
+                                        ]
+                                    },
+                                    "networkInterfaceIpConfig": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "properties": {
+                                            "ipConfigPublicIpName": {
+                                                "type": "string"
+                                            },
+                                            "ipConfigName": {
+                                                "type": "string"
+                                            },
+                                            "ipConfigVirtualNetwork": {
+                                                "type": "string"
+                                            },
+                                            "ipConfigVirtualNetworkSubnet": {
+                                                "type": "string"
+                                            },
+                                            "ipConfigVirtualNetworkResourceGroup": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "ipConfigName",
+                                            "ipConfigPublicIpName",
+                                            "ipConfigVirtualNetwork",
+                                            "ipConfigVirtualNetworkSubnet",
+                                            "ipConfigVirtualNetworkResourceGroup"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "networkInterfaceName",
+                                    "networkInterfaceIpConfig"
+                                ]
+                            }
+                        }
+                    },
+                    "required": [
+                        "networkInterfaces"
+                    ]
+                },
+                "virtualMachineScaleSetDiskConfig": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "diskSize": {
+                            "enum": [
+                                4,
+                                8,
+                                16,
+                                32,
+                                64,
+                                128,
+                                256,
+                                512,
+                                1024
+                            ]
+                        },
+                        "diskSku": {
+                            "oneOf": [
+                                {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "minProperties": 1,
+                                    "properties": {
+                                        "demo": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        },
+                                        "stg": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        },
+                                        "sbx": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        },
+                                        "test": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        },
+                                        "dev": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        },
+                                        "qa": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        },
+                                        "uat": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        },
+                                        "prd": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "default": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        }
+                                    },
+                                    "required": [
+                                        "default"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "required": [
+                        "diskSku"
+                    ]
+                },
+                "virtualMachineScaleSetConfig": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "minProperties": 1,
+                    "properties": {
+                        "orchestrationMode": {
+                            "enum":[
+                                "Flexible",
+                                "Uniform"
+                            ]
+                        },
+                        "upgradePolicy": {
+                            "enum": [
+                                "Manual",
+                                "Automatic",
+                                "Rolling"
+                            ]
+                        },
+                        "scaleInPolicy": {
+                            "type":"object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "rules": {
+                                    "enum": [
+                                        "Default",
+                                        ""
+                                    ]
+                                },
+                                "forceDeletion": {
+                                    "type": "boolean"
+                                }
+                            },
+                            "required": [
+                                "rules",
+                                "forceDeletion"
+                            ]
+                        },
+                        "platformFaultDomainCount": {
+                            "type": "number"
+                        }
+                    }
+                },
+                "virtualMachineScaleSetImage": {
+                    "enum": [
+                        {
+                            "publisher": "MicrosoftWindowsServer",
+                            "offer": "WindowsServer",
+                            "sku": "2022-datacenter-azure-edition",
+                            "version": "latest"
+                        },
+                        {
+                            "publisher": "MicrosoftWindowsServer",
+                            "offer": "WindowsServer",
+                            "sku": "2019-datacenter-azure-edition",
+                            "version": "latest"
+                        }
+                    ]
+                },
+                "virtualMachineScaleSetTags": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "virtualMachineScaleSetName",
+                "virtualMachineScaleSetSku",
+                "virtualMachineScaleSetUsername",
+                "virtualMachineScaleSetPassword",
+                "virtualMachineScaleSetImage",
+                "virtualMachineScaleSetNetworkConfig",
+                "virtualMachineScaleSetDiskConfig"
+            ]
+        },
+        "virtual-machine-scale-set-sku": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "name": {
+                    "enum": [
+                        "Standard_D2s_v3"
+                    ]
+                },
+                "capacity": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "name",
+                "capacity"
+            ]
+        },
+        "virtual-machine-disk-sku": {
+            "enum": [
+                "Premium_LRS",
+                "Premium_ZRS",
+                "PremiumV2_LRS",
+                "Standard_LRS",
+                "StandardSSD_LRS",
+                "StandardSSD_ZRS",
+                "UltraSSD_LRS"
+            ]
+        }
+    }
+}

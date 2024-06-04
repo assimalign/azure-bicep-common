@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('')
 param appInsightsActivityLogAlertName string
 
@@ -34,16 +37,18 @@ param appInsightsActivityLogAlertConditions array
 @description('The tags to attach to the resource when deployed')
 param appInsightsActivityLogAlertTags object = {}
 
-func format(name string, env string, region string) string => replace(replace(name, '@environment', env), '@region', region)
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
+
 
 resource appInsightsActivityLogAlerts 'Microsoft.Insights/activityLogAlerts@2020-10-01' = {
-  name: format(appInsightsActivityLogAlertName, environment, region)
+  name: formatName(appInsightsActivityLogAlertName, affix, environment, region)
   properties: {
     enabled: appInsightsActivityLogAlertEnabled
     description: appInsightsActivityLogAlertDescription
     actions: {
       actionGroups: [for group in appInsightsActivityLogAlertActionGroups: {
-        actionGroupId: resourceId('Microsoft.Insights/actionGroups', format(group.name, environment, region))
+        actionGroupId: resourceId('Microsoft.Insights/actionGroups', formatName(group.name, affix, environment, region))
       }]
     }
     condition: {

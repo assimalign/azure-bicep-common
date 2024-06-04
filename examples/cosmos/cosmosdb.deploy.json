@@ -1,7 +1,7 @@
 {
     // How to reference schemas in storage account
     //"$schema": "https://{storage account when the schemas live}/json/bicep/az/v1.0/parameters.json"
-    "$schema": "../../src/schemas/az/v1.0/parameters.json",
+    "$schema": "../../modules/schema.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
 

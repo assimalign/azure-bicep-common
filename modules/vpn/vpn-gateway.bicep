@@ -15,6 +15,9 @@
  @description('The region prefix or suffix for the resource name, if applicable.')
  param region string = ''
  
+ @description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
  @description('The name of the VPN Gateway')
  param vpnGatewayName string
  
@@ -42,36 +45,32 @@
  @description('The VPN Client settings for connecting to the Virtual Network')
  param vpnGatewayClientSettings object = {}
  
- func format(name string, environment string, region string) string =>
-   replace(replace(name, '@environment', environment), '@region', region)
+ func formatName(name string, affix string, environment string, region string) string =>
+ replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
  
  // 1. Get Gateway Subnet within specified Virtual Network
  resource virtualNetworkSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-01' existing = {
-   name: replace(
-     replace('${vpnGatewayVirtualNetworkName}/GatewaySubnet', '@environment', environment),
-     '@region',
-     region
-   )
+   name: formatName('${vpnGatewayVirtualNetworkName}/GatewaySubnet', affix, environment, region)
  }
  
  // 2. Create Public IP Address fo VPN Gateway
  resource ipAddressOne 'Microsoft.Network/publicIPAddresses@2023-11-01' existing = {
-   name: format(vpnGatewayIpAddresses[0].ipAddressName, environment, region)
-   scope: resourceGroup(format(vpnGatewayIpAddresses[0].ipAddressResourceGroup, environment, region))
+   name: formatName(vpnGatewayIpAddresses[0].ipAddressName, affix, environment, region)
+   scope: resourceGroup(formatName(vpnGatewayIpAddresses[0].ipAddressResourceGroup, affix, environment, region))
  }
  
  resource ipAddressTwo 'Microsoft.Network/publicIPAddresses@2023-11-01' existing = {
-   name: format(vpnGatewayIpAddresses[1].ipAddressName, environment, region)
-   scope: resourceGroup(format(vpnGatewayIpAddresses[1].ipAddressResourceGroup, environment, region))
+   name: formatName(vpnGatewayIpAddresses[1].ipAddressName,affix, environment, region)
+   scope: resourceGroup(formatName(vpnGatewayIpAddresses[1].ipAddressResourceGroup, affix, environment, region))
  }
  
  resource ipAddressThree 'Microsoft.Network/publicIPAddresses@2023-11-01' existing = {
-    name: format(vpnGatewayIpAddresses[2].ipAddressName, environment, region)
-    scope: resourceGroup(format(vpnGatewayIpAddresses[2].ipAddressResourceGroup, environment, region))
+    name: formatName(vpnGatewayIpAddresses[2].ipAddressName,affix, environment, region)
+    scope: resourceGroup(formatName(vpnGatewayIpAddresses[2].ipAddressResourceGroup,affix, environment, region))
   }
  
  resource vpn 'Microsoft.Network/virtualNetworkGateways@2023-11-01' = {
-   name: replace(replace(vpnGatewayName, '@environment', environment), '@region', region)
+   name: formatName(vpnGatewayName, affix, environment, region)
    location: vpnGatewayLocation
    properties: {
      gatewayType: 'Vpn'

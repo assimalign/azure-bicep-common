@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Service Bus for the Topic Subscription')
 param serviceBusName string
 
@@ -31,12 +34,12 @@ param serviceBusTopicSubscriptionSettings object = {}
 param serviceBusTopicSubscriptionCorrelationFilters array = []
 
 resource serviceBusNamespaceTopicSubscription 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2021-11-01' = {
-  name: replace(replace('${serviceBusName}/${serviceBusTopicName}/${serviceBusTopicSubscriptionName}', '@environment', environment), '@region', region)
+  name: replace(replace(replace('${serviceBusName}/${serviceBusTopicName}/${serviceBusTopicSubscriptionName}', '@affix', affix), '@environment', environment), '@region', region)
   properties: {
-    requiresSession: contains(serviceBusTopicSubscriptionSettings, 'enableSession') ? serviceBusTopicSubscriptionSettings.enableSession : false
-    maxDeliveryCount: contains(serviceBusTopicSubscriptionSettings, 'maxDelivery') ? serviceBusTopicSubscriptionSettings.maxDelivery : 15
+    requiresSession: serviceBusTopicSubscriptionSettings.?enableSession ?? false
+    maxDeliveryCount: serviceBusTopicSubscriptionSettings.?maxDelivery ?? 15
   }
-  resource azServiceBusTopicSubscriptionFiltersDeployment 'rules' = [for correlationFilter in serviceBusTopicSubscriptionCorrelationFilters: if (!empty(serviceBusTopicSubscriptionCorrelationFilters)) {
+  resource azServiceBusTopicSubscriptionFiltersDeployment 'rules' = [for correlationFilter in serviceBusTopicSubscriptionCorrelationFilters ?? []: {
     name: correlationFilter.filterGroupName
     properties: {
       correlationFilter: correlationFilter.filters

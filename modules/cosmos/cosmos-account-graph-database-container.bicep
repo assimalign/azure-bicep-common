@@ -15,6 +15,9 @@ param environment string = ''
 @description('The region prefix or suffix for the resource name, if applicable.')
 param region string = ''
 
+@description('Add an affix (suffix/prefix) to a resource name.')
+param affix string = ''
+
 @description('The name of the Document Db Account name to deploy')
 param cosmosAccountName string
 
@@ -39,7 +42,7 @@ param cosmosAccountDatabaseContainerIndexingPolicy object = {}
 
 // 1. Deploy Document DB Container
 resource cosmosAccountGraphDatabaseContainer 'Microsoft.DocumentDB/databaseAccounts/gremlinDatabases/graphs@2023-11-15' = {
-  name: replace(replace('${cosmosAccountName}/${cosmosAccountDatabaseName}/${cosmosAccountDatabaseContainerName}', '@environment', environment), '@region', region)
+  name: replace(replace(replace('${cosmosAccountName}/${cosmosAccountDatabaseName}/${cosmosAccountDatabaseContainerName}', '@affix', affix), '@environment', environment), '@region', region)
   properties: {   
     resource: any(cosmosAccountDatabaseContainerTtl > 0 ? {
       defaultTtl: cosmosAccountDatabaseContainerTtl
