@@ -698,6 +698,7 @@
                     "oneOf": [
                         {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "default": {
                                     "type": "string"
@@ -709,7 +710,21 @@
                         },
                         {
                             "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
                             "properties": {
+                                "demo": {
+                                    "type":"string"
+                                },
+                                "stg": {
+                                    "type":"string"
+                                },
+                                "sbx": {
+                                    "type":"string"
+                                },
+                                "test": {
+                                    "type":"string"
+                                },
                                 "dev": {
                                     "type": "string"
                                 },
@@ -722,13 +737,7 @@
                                 "prd": {
                                     "type": "string"
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         }
                     ]
                 },
@@ -736,6 +745,7 @@
                     "oneOf": [
                         {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "default": {
                                     "type": "string"
@@ -747,7 +757,21 @@
                         },
                         {
                             "type": "object",
+                            "additionalProperties": false,
+                            "minProperties": 1,
                             "properties": {
+                                "demo": {
+                                    "type":"string"
+                                },
+                                "stg": {
+                                    "type":"string"
+                                },
+                                "sbx": {
+                                    "type":"string"
+                                },
+                                "test": {
+                                    "type":"string"
+                                },
                                 "dev": {
                                     "type": "string"
                                 },
@@ -760,13 +784,7 @@
                                 "prd": {
                                     "type": "string"
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         }
                     ]
                 },
@@ -780,6 +798,7 @@
                     "oneOf": [
                         {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                                 "default": {
                                     "type": "array",
@@ -794,7 +813,33 @@
                         },
                         {
                             "type": "object",
+                            "additionalProperties": false,
+                            "minProperties":1,
                             "properties": {
+                                "demo": {
+                                    "type":"array",
+                                    "items":{
+                                        "type":"string"
+                                    }
+                                },
+                                "stg": {
+                                    "type":"array",
+                                    "items":{
+                                        "type":"string"
+                                    }
+                                },
+                                "sbx": {
+                                    "type":"array",
+                                    "items":{
+                                        "type":"string"
+                                    }
+                                },
+                                "test": {
+                                    "type":"array",
+                                    "items":{
+                                        "type":"string"
+                                    }
+                                },
                                 "dev": {
                                     "type": "array",
                                     "items": {
@@ -819,13 +864,7 @@
                                         "type": "string"
                                     }
                                 }
-                            },
-                            "required": [
-                                "dev",
-                                "qa",
-                                "uat",
-                                "prd"
-                            ]
+                            }
                         }
                     ]
                 },
@@ -937,7 +976,21 @@
                             "oneOf": [
                                 {
                                     "type": "object",
+                                    "additionalProperties": false,
+                                    "minProperties":1,
                                     "properties": {
+                                        "demo": {
+                                            "$ref": "#/definitions/app-service-site-cors-settings"
+                                        },
+                                        "stg": {
+                                            "$ref": "#/definitions/app-service-site-cors-settings"
+                                        },
+                                        "sbx": {
+                                            "$ref": "#/definitions/app-service-site-cors-settings"
+                                        },
+                                        "test": {
+                                            "$ref": "#/definitions/app-service-site-cors-settings"
+                                        },
                                         "dev": {
                                             "$ref": "#/definitions/app-service-site-cors-settings"
                                         },
@@ -950,16 +1003,11 @@
                                         "prd": {
                                             "$ref": "#/definitions/app-service-site-cors-settings"
                                         }
-                                    },
-                                    "required": [
-                                        "dev",
-                                        "qa",
-                                        "uat",
-                                        "prd"
-                                    ]
+                                    }
                                 },
                                 {
                                     "type": "object",
+                                    "additionalProperties": false,
                                     "properties": {
                                         "default": {
                                             "$ref": "#/definitions/app-service-site-cors-settings"
@@ -1111,6 +1159,7 @@
             "oneOf": [
                 {
                     "type": "object",
+                    "additionalProperties": false,
                     "properties": {
                         "default": {
                             "type": "string"
@@ -1122,7 +1171,21 @@
                 },
                 {
                     "type": "object",
+                    "additionalProperties": false,
+                    "minProperties": 1,
                     "properties": {
+                        "demo": {
+                            "type":"string"
+                        },
+                        "stg": {
+                            "type":"string"
+                        },
+                        "sbx": {
+                            "type":"string"
+                        },
+                        "test": {
+                            "type":"string"
+                        },
                         "dev": {
                             "type": "string"
                         },
@@ -1135,13 +1198,7 @@
                         "prd": {
                             "type": "string"
                         }
-                    },
-                    "required": [
-                        "dev",
-                        "qa",
-                        "uat",
-                        "prd"
-                    ]
+                    }
                 }
             ]
         }
