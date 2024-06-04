@@ -182,7 +182,7 @@ module sqlServerPrivateEp '../private-endpoint/private-endpoint.bicep' = if (!em
     privateEndpointVirtualNetworkSubnetName: sqlServerAccountPrivateEndpoint.privateEndpointVirtualNetworkSubnetName
     privateEndpointVirtualNetworkResourceGroup: sqlServerAccountPrivateEndpoint.privateEndpointVirtualNetworkResourceGroup
     privateEndpointResourceIdLink: sqlServer.id
-    privateEndpointTags: sqlServerAccountPrivateEndpoint.privateEndpointTags
+    privateEndpointTags: sqlServerAccountPrivateEndpoint.?privateEndpointTags
     privateEndpointGroupIds: [
       'sqlServer'
     ]
