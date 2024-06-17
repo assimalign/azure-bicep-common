@@ -46,29 +46,59 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
   properties: {
     dhcpOptions: contains(virtualNetworkConfigs, 'dnsServers')
       ? {
-          dnsServers: virtualNetworkConfigs.dnsServers
+          dnsServers: contains(virtualNetworkConfigs.dnsServers, affix)
+          ? contains(virtualNetworkConfigs.dnsServers[affix], region)
+              ? contains(virtualNetworkConfigs.dnsServers[affix][region], environment)
+                  ? virtualNetworkConfigs.dnsServers[affix][region][environment]
+                  : virtualNetworkConfigs.dnsServers[affix][region].default
+              : contains(virtualNetworkConfigs.dnsServers[affix], environment)
+                  ? virtualNetworkConfigs.dnsServers[affix][environment]
+                  : virtualNetworkConfigs.dnsServers[affix].default
+          : contains(virtualNetworkConfigs.dnsServers, region)
+              ? contains(virtualNetworkConfigs.dnsServers[region], environment)
+                  ? virtualNetworkConfigs.dnsServers[region][environment]
+                  : virtualNetworkConfigs.dnsServers[region].default
+              : contains(virtualNetworkConfigs.dnsServers, environment)
+                  ? virtualNetworkConfigs.dnsServers[environment]
+                  : virtualNetworkConfigs.dnsServers.default
         }
       : null
     addressSpace: {
-      addressPrefixes: contains(virtualNetworkAddressSpaces, region)
-        ? contains(virtualNetworkAddressSpaces[region], environment)
-            ? virtualNetworkAddressSpaces[region][environment]
-            : virtualNetworkAddressSpaces[region].default
-        : contains(virtualNetworkAddressSpaces, environment)
-            ? virtualNetworkAddressSpaces[environment]
-            : virtualNetworkAddressSpaces.default
+      addressPrefixes: contains(virtualNetworkAddressSpaces, affix)
+        ? contains(virtualNetworkAddressSpaces[affix], region)
+            ? contains(virtualNetworkAddressSpaces[affix][region], environment)
+                ? virtualNetworkAddressSpaces[affix][region][environment]
+                : virtualNetworkAddressSpaces[affix][region].default
+            : contains(virtualNetworkAddressSpaces[affix], environment)
+                ? virtualNetworkAddressSpaces[affix][environment]
+                : virtualNetworkAddressSpaces[affix].default
+        : contains(virtualNetworkAddressSpaces, region)
+            ? contains(virtualNetworkAddressSpaces[region], environment)
+                ? virtualNetworkAddressSpaces[region][environment]
+                : virtualNetworkAddressSpaces[region].default
+            : contains(virtualNetworkAddressSpaces, environment)
+                ? virtualNetworkAddressSpaces[environment]
+                : virtualNetworkAddressSpaces.default
     }
     subnets: [
       for subnet in virtualNetworkSubnets: {
         name: formatName(subnet.virtualNetworkSubnetName, affix, environment, region)
         properties: {
-          addressPrefix: contains(subnet.virtualNetworkSubnetRange, region)
-            ? contains(subnet.virtualNetworkSubnetRange[region], environment)
-                ? subnet.virtualNetworkSubnetRange[region][environment]
-                : subnet.virtualNetworkSubnetRange[region].default
-            : contains(subnet.virtualNetworkSubnetRange, environment)
-                ? subnet.virtualNetworkSubnetRange[environment]
-                : subnet.virtualNetworkSubnetRange.default
+          addressPrefix: contains(subnet.virtualNetworkSubnetRange, affix)
+            ? contains(subnet.virtualNetworkSubnetRange[affix], region)
+                ? contains(subnet.virtualNetworkSubnetRange[affix][region], environment)
+                    ? subnet.virtualNetworkSubnetRange[affix][region][environment]
+                    : subnet.virtualNetworkSubnetRange[affix][region].default
+                : contains(subnet.virtualNetworkSubnetRange[affix], environment)
+                    ? subnet.virtualNetworkSubnetRange[affix][environment]
+                    : subnet.virtualNetworkSubnetRange[affix].default
+            : contains(subnet.virtualNetworkSubnetRange, region)
+                ? contains(subnet.virtualNetworkSubnetRange[region], environment)
+                    ? subnet.virtualNetworkSubnetRange[region][environment]
+                    : subnet.virtualNetworkSubnetRange[region].default
+                : contains(subnet.virtualNetworkSubnetRange, environment)
+                    ? subnet.virtualNetworkSubnetRange[environment]
+                    : subnet.virtualNetworkSubnetRange.default
           serviceEndpoints: contains(subnet, 'virtualNetworkSubnetConfigs') && contains(
               subnet.virtualNetworkSubnetConfigs,
               'subnetServiceEndpoints'
@@ -94,7 +124,12 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
                     region
                   ),
                   'Microsoft.Network/networkSecurityGroups',
-                  formatName(subnet.virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgName, affix, environment, region)
+                  formatName(
+                    subnet.virtualNetworkSubnetConfigs.subnetNetworkSecurityGroup.nsgName,
+                    affix,
+                    environment,
+                    region
+                  )
                 )
               }
             : null)
@@ -111,7 +146,12 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
                     region
                   ),
                   'Microsoft.Network/natGateways',
-                  formatName(subnet.virtualNetworkSubnetConfigs.subnetNatGateway.natGatewayName, affix, environment, region)
+                  formatName(
+                    subnet.virtualNetworkSubnetConfigs.subnetNatGateway.natGatewayName,
+                    affix,
+                    environment,
+                    region
+                  )
                 )
               }
             : null

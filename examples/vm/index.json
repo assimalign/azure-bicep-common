@@ -1,0 +1,42 @@
+{
+    "$schema": "../../modules/schema.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines": {
+            "value": [
+                {
+                    "virtualMachineName": "test-net-@environment-est-us2-vm-01",
+                    "virtualMachineResourceGroup": "test-net-@environment-est-us2-rg-01",
+                    "virtualMachineUsername":  "@vm-username",
+                    "virtualMachinePassword":  "@vm-password",
+                    "virtualMachineSize": "Standard_B2s",
+                    "virtualMachineImage": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2022-datacenter-azure-edition",
+                        "version": "latest"
+                    },
+                    "virtualMachineOsConfig": {
+                        "osName": "devops-agent-@environment"
+                    },
+                    "virtualMachineDiskConfig": {
+                        "diskSize": 128,
+                        "diskSku":{
+                            "default": "Premium_LRS"
+                        }
+                    },
+                    "virtualMachineNetworkConfig": {
+                        "publicIp": "test-net-@environment-est-us2-pip-04",
+                        "publicIpResourceGroup": "test-net-@environment-est-us2-rg-01",
+                        "virtualNetwork": "test-net-@environment-est-us2-vnet-01",
+                        "virtualNetworkSubnet": "VirtualMachineSubnet",
+                        "virtualNetworkResourceGroup": "test-net-@environment-est-us2-rg-01"
+                    },
+                    "virtualMachineTags": {
+                        "project": "test2.0"
+                    }
+                }
+            ]
+        }
+    }
+}

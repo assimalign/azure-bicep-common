@@ -38,6 +38,9 @@ param publicIpAllocationMethod string = 'Dynamic'
 param publicIpConfigs object = {}
 
 @description('')
+param publicIpDnsZoneAliasRecords array = []
+
+@description('')
 param publicIpTags object = {}
 
 func formatName(name string, affix string, environment string, region string) string =>
@@ -65,5 +68,21 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2023-11-01' = {
     environment: empty(environment) ? 'n/a' : environment
   })
 }
+
+module dnsZoneAliases '../public-dns-zone/public-dns-zone-a-record.bicep' = [for alias in publicIpDnsZoneAliasRecords: {
+  name: 'pip-dns-alias-${guid(formatName('${alias.publicDnsZoneName}/${alias.publicDnsZoneAliasRecordName}', affix, environment, region))}'
+  scope: resourceGroup(formatName(alias.publicDnsZoneResourceGroup, affix, environment, region)) 
+  params: {
+    affix: affix
+    region: region
+    environment: environment
+    publicDnsZoneName: alias.publicDnsZoneName
+    publicDnsZoneAliasRecordName: alias.publicDnsZoneAliasRecordName
+    publicDnsZoneAliasRecordValues: [
+      publicIpAddress.properties.ipAddress
+    ]
+    publicDnsZoneAliasRecordTtl: alias.?publicDnsZoneAliasRecordTtl
+  }
+}]
 
 output publicIpAddress object = publicIpAddress

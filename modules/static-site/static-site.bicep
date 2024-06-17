@@ -37,20 +37,39 @@ param staticSiteSku object = {
 }
 
 @description('')
+param staticSiteEnvironmentVariables object = {}
+
+@description('')
 param staticSiteTags object = {}
+
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
 
 resource staticSite 'Microsoft.Web/staticSites@2023-12-01' = {
   name: replace(replace(replace(staticSiteName, '@affix', affix), '@environment', environment), '@region', region)
   location: staticSiteLocation
-  sku: any(contains(staticSiteSku, environment) ? {
-    name: staticSiteSku[environment]
-    tier: staticSiteSku[environment]
-  } : {
-    name: staticSiteSku.default
-    tier: staticSiteSku.default
-  })
-  properties: {
-    
+  sku: any(contains(staticSiteSku, environment)
+    ? {
+        name: staticSiteSku[environment]
+        tier: staticSiteSku[environment]
+      }
+    : {
+        name: staticSiteSku.default
+        tier: staticSiteSku.default
+      })
+  properties: {}
+  resource staticSiteVariables 'config' = {
+    name: 'appsettings'
+    properties: mapValues(
+      staticSiteEnvironmentVariables,
+      variable =>
+        formatName(
+          contains(variable, environment) ? variable[environment] : variable.default,
+          affix,
+          environment,
+          region
+        )
+    )
   }
   tags: union(staticSiteTags, {
     region: empty(region) ? 'n/a' : region

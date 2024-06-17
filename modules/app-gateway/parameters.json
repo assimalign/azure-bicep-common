@@ -42,6 +42,30 @@
                 "appGatewayLocation": {
                     "type": "string"
                 },
+                "appGatewayZones": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "enum": [
+                            "1",
+                            "2",
+                            "3"
+                        ]
+                    }
+                },
+                "appGatewayConfig": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "minProperties": 1,
+                    "properties": {
+                        "enableHttp2": {
+                            "type": "boolean"
+                        },
+                        "autoScaleMaxCapacity": {
+                            "type": "number"
+                        }
+                    }
+                },
                 "appGatewaySku": {
                     "oneOf": [
                         {
@@ -89,242 +113,378 @@
                         }
                     ]
                 },
+                "appGatewayVirtualNetworkConfig": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "virtualNetwork": {
+                            "type": "string"
+                        },
+                        "virtualNetworkSubnet": {
+                            "type": "string"
+                        },
+                        "virtualNetworkResourceGroup": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "virtualNetwork",
+                        "virtualNetworkSubnet",
+                        "virtualNetworkResourceGroup"
+                    ]
+                },
+                "appGatewayCertificates": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "certificateName": {
+                                "type": "string"
+                            },
+                            "certificateContent": {
+                                "type": "string"
+                            },
+                            "certificatePassword": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "certificateName",
+                            "certificateContent",
+                            "certificatePassword"
+                        ]
+                    }
+                },
                 "appGatewayFrontend": {
                     "type": "object",
                     "additionalProperties": false,
                     "properties": {
+                        "frontendPrivateIp": {
+                            "type": "string"
+                        },
+                        "frontendPublicIp": {
+                            "type": "object",
+                            "properties": {
+                                "publicIpName": {
+                                    "type": "string"
+                                },
+                                "publicIpResourceGroup": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "publicIpName",
+                                "publicIpResourceGroup"
+                            ]
+                        },
                         "frontendPorts": {
                             "type": "array",
                             "minItems": 1,
                             "items": {
                                 "type": "object",
+                                "additionalProperties": false,
                                 "properties": {
                                     "portName": {
                                         "type": "string"
                                     },
-                                    "port": {
+                                    "portNumber": {
                                         "type": "number"
                                     }
                                 },
                                 "required": [
-                                    "frontendName",
-                                    "frontendPort"
+                                    "portName",
+                                    "portNumber"
                                 ]
                             }
-                        },
-                        "frontendPrivateIp": {
-                            "type": "object",
-                            "properties": {
-                                "name": {
-                                    "type": "string"
-                                },
-                                "privateIpSubnet": {
-                                    "type": "string"
-                                },
-                                "privateIpVirtualNetwork": {
-                                    "type": "string"
-                                },
-                                "privateIpResourceGroup": {
-                                    "type": "string"
-                                }
-                            },
-                            "required": [
-                                "name",
-                                "privateIpSubnet",
-                                "privateIpVirtualNetwork",
-                                "privateIpResourceGroup"
-                            ]
-                        },
-                        "frontendPublicIp": {
-                            "type": "object",
-                            "properties": {
-                                "name": {
-                                    "type": "string"
-                                },
-                                "ipName": {
-                                    "type": "string"
-                                },
-                                "ipResourceGroup": {
-                                    "type": "string"
-                                }
-                            },
-                            "required": [
-                                "name",
-                                "publicIpName",
-                                "publicIpResourceGroup"
-                            ]
                         },
                         "frontendListeners": {
                             "type": "array",
                             "minItems": 1,
                             "items": {
                                 "type": "object",
+                                "additionalProperties": false,
                                 "properties": {
-                                    "name": {
+                                    "listenerName": {
                                         "type": "string"
                                     },
-                                    "frontendIp": {
-                                        "type": "string",
-                                        "description": "The name of the frontend IP configuration within the 'publicIp' or 'privateIp' properties."
+                                    "listenerUse": {
+                                        "enum": [
+                                            "PrivateIP",
+                                            "PublicIP"
+                                        ]
                                     },
-                                    "frontendPort": {
-                                        "type": "string"
-                                    },
-                                    "frontendProtocol": {
-                                        "type": "string",
+                                    "listenerProtocol": {
                                         "enum": [
                                             "Http",
                                             "Https"
                                         ]
+                                    },
+                                    "listenerPortName": {
+                                        "type": "string"
+                                    },
+                                    "listenerHostName": {
+                                        "$ref": "#/definitions/app-gateway-listener-hostname"
+                                    },
+                                    "listenerHostNames": {
+                                        "type": "array",
+                                        "minItems": 1,
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "listenerCertificateName": {
+                                        "type": "string"
                                     }
                                 },
                                 "required": [
-                                    "name",
-                                    "frontendIp",
-                                    "frontendPort",
-                                    "frontendProtocol"
+                                    "listenerName",
+                                    "listenerUse",
+                                    "listenerProtocol",
+                                    "listenerPortName"
                                 ]
                             }
                         }
                     },
                     "required": [
-                        "frontendPorts",
-                        "privateIp"
+                        "frontendPublicIp",
+                        "frontendListeners"
                     ]
                 },
-                "appGatewayBackend": {
-                    "type": "object",
-                    "properties": {
-                        "ports": {
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "properties": {
-                                    "backendName": {
-                                        "type": "string"
-                                    },
-                                    "backendPort": {
-                                        "type": "number"
-                                    },
-                                    "backendProtocol": {
-                                        "type": "string"
-                                    },
-                                    "backendRequestTimeout": {
-                                        "type": "number"
-                                    }
-                                },
-                                "required": [
-                                    "backendName",
-                                    "backendPort",
-                                    "backendProtocol",
-                                    "backendRequestTimeout"
-                                ]
-                            }
-                        },
-                        "receivers": {
-                            "type": "array",
-                            "minItems": 1,
-                            "items": {
-                                "type": "object",
-                                "properties": {
-                                    "name": {
-                                        "type": "string"
-                                    },
-                                    "addresses": {
-                                        "oneOf": [
-                                            {
-                                                "type": "object",
-                                                "additionalProperties": false,
-                                                "properties": {
-                                                    "default": {
-                                                        "$ref": "#/definitions/app-gateway-receiver-address"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "default"
-                                                ]
-                                            },
-                                            {
-                                                "type": "object",
-                                                "additionalProperties": false,
-                                                "minProperties": 1,
-                                                "properties": {
-                                                    "demo": {
-                                                        "$ref": "#/definitions/app-gateway-receiver-address"
-                                                    },
-                                                    "stg": {
-                                                        "$ref": "#/definitions/app-gateway-receiver-address"
-                                                    },
-                                                    "sbx": {
-                                                        "$ref": "#/definitions/app-gateway-receiver-address"
-                                                    },
-                                                    "test": {
-                                                        "$ref": "#/definitions/app-gateway-receiver-address"
-                                                    },
-                                                    "dev": {
-                                                        "$ref": "#/definitions/app-gateway-receiver-address"
-                                                    },
-                                                    "qa": {
-                                                        "$ref": "#/definitions/app-gateway-receiver-address"
-                                                    },
-                                                    "uat": {
-                                                        "$ref": "#/definitions/app-gateway-receiver-address"
-                                                    },
-                                                    "prd": {
-                                                        "$ref": "#/definitions/app-gateway-receiver-address"
-                                                    }
-                                                }
-                                            }
-                                        ]
-                                    }
-                                },
-                                "required": [
-                                    "name",
-                                    "addresses"
-                                ]
-                            }
-                        }
-                    },
-                    "required": [
-                        "ports",
-                        "receivers"
-                    ]
-                },
-                "appGatewayRouting": {
+                "appGatewayBackendSettings": {
                     "type": "array",
+                    "minItems": 1,
                     "items": {
                         "type": "object",
-                        "minItems": 1,
                         "properties": {
-                            "name": {
+                            "settingsName": {
                                 "type": "string"
                             },
-                            "routeType": {
+                            "settingsPort": {
+                                "type": "number"
+                            },
+                            "settingsProtocol": {
+                                "enum": [
+                                    "Http",
+                                    "Https"
+                                ]
+                            },
+                            "settingsOverridePath": {
                                 "type": "string"
                             },
-                            "routeFromHttpListener": {
+                            "settingsUseHostNameFromBackendAddress": {
+                                "type": "boolean"
+                            },
+                            "settingsHostName": {
                                 "type": "string"
                             },
-                            "routeToBackendPool": {
-                                "type": "string"
-                            },
-                            "routeToBackendPort": {
-                                "type": "string"
+                            "settingsProbe": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "probePath": {
+                                        "type": "string"
+                                    },
+                                    "probeProtocol": {
+                                        "enum": [
+                                            "Http",
+                                            "Https"
+                                        ]
+                                    },
+                                    "probeInterval": {
+                                        "type": "number"
+                                    },
+                                    "probeRetryCount": {
+                                        "type": "number"
+                                    }
+                                },
+                                "required": [
+                                    "probePath",
+                                    "probeProtocol"
+                                ]
                             }
                         },
                         "required": [
-                            "name",
-                            "routeType",
-                            "routeFromHttpListener",
-                            "routeToBackendPool",
-                            "routeToBackendPort"
+                            "settingsName",
+                            "settingsPort",
+                            "settingsProtocol"
+                        ]
+                    }
+                },
+                "appGatewayBackendPools": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "poolName": {
+                                        "type": "string"
+                                    },
+                                    "poolTargets": {
+                                        "type": "array",
+                                        "minItems": 1,
+                                        "items": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "object",
+                                                    "additionalProperties": false,
+                                                    "properties": {
+                                                        "fqdn": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "fqdn"
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "additionalProperties": false,
+                                                    "properties": {
+                                                        "ipAddress": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "ipAddress"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "poolName",
+                                    "poolTargets"
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "poolName": {
+                                        "type": "string"
+                                    },
+                                    "appServiceName": {
+                                        "type": "string"
+                                    },
+                                    "appServiceResourceGroup": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "poolName",
+                                    "appServiceName",
+                                    "appServiceResourceGroup"
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "poolName": {
+                                        "type": "string"
+                                    },
+                                    "staticSiteName": {
+                                        "type": "string"
+                                    },
+                                    "staticSiteResourceGroup": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "poolName",
+                                    "staticSiteName",
+                                    "staticSiteResourceGroup"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "appGatewayRoutingRules": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "minItems": 1,
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "routingRuleName": {
+                                        "type": "string"
+                                    },
+                                    "routingRuleFrontendListenerName": {
+                                        "type": "string"
+                                    },
+                                    "routingRuleBackendPoolName": {
+                                        "type": "string"
+                                    },
+                                    "routingRuleBackendSettingsName": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "routingRuleName",
+                                    "routingRuleFrontendListenerName",
+                                    "routingRuleBackendPoolName",
+                                    "routingRuleBackendSettingsName"
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "routingRuleName": {
+                                        "type": "string"
+                                    },
+                                    "routingRuleFrontendListenerName": {
+                                        "type": "string"
+                                    },
+                                    "routingRuleUriPathMaps": {
+                                        "type": "array",
+                                        "minItems": 1,
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "routingRuleUriPaths": {
+                                                    "type": "array",
+                                                    "minItems": 1,
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "routingRuleBackendPoolName": {
+                                                    "type": "string"
+                                                },
+                                                "routingRuleBackendSettingsName": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "routingRuleUriPaths",
+                                                "routingRuleBackendPoolName",
+                                                "routingRuleBackendSettingsName"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "routingRuleName",
+                                    "routingRuleFrontendListenerName",
+                                    "routingRuleUriPathMaps"
+                                ]
+                            }
                         ]
                     }
                 },
                 "appGatewayTags": {
                     "type": "object",
                     "patternProperties": {
-                        "^[a-z]": {
+                        "^[a-zA-Z0-9]+([-_][a-zA-Z0-9]+)*$": {
                             "type": "string"
                         }
                     },
@@ -334,9 +494,12 @@
             "required": [
                 "appGatewayName",
                 "appGatewaySku",
+                "appGatewayZones",
                 "appGatewayFrontend",
-                "appGatewayBackend",
-                "appGatewayRouting"
+                "appGatewayBackendSettings",
+                "appGatewayBackendPools",
+                "appGatewayRoutingRules",
+                "appGatewayVirtualNetworkConfig"
             ]
         },
         "app-gateway-receiver-address": {
@@ -374,26 +537,147 @@
                 "tier": {
                     "type": "string",
                     "enum": [
-                        "Standard",
-                        "WAF"
+                        "Standard_v2",
+                        "WAF_V2"
                     ]
                 },
-                "size": {
-                    "type": "string",
-                    "enum": [
-                        "Small",
-                        "Medium",
-                        "Large"
-                    ],
-                    "capacity": {
-                        "type": "number"
-                    }
+                "capacity": {
+                    "type": "number"
                 }
             },
             "required": [
                 "tier",
-                "size",
                 "capacity"
+            ]
+        },
+        "app-gateway-listener-hostname": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "default": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "default"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "minProperties": 1,
+                    "properties": {
+                        "demo": {
+                            "type": "string"
+                        },
+                        "stg": {
+                            "type": "string"
+                        },
+                        "sbx": {
+                            "type": "string"
+                        },
+                        "test": {
+                            "type": "string"
+                        },
+                        "dev": {
+                            "type": "string"
+                        },
+                        "qa": {
+                            "type": "string"
+                        },
+                        "uat": {
+                            "type": "string"
+                        },
+                        "prd": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "app-gateway-listener-hostnames": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "default": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": [
+                        "default"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "minProperties": 1,
+                    "properties": {
+                        "demo": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "stg": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "sbx": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "test": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "dev": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "qa": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "uat": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "prd": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
             ]
         }
     }

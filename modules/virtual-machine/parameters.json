@@ -33,16 +33,169 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
+                "virtualMachineName": {
+                    "type": "string"
+                },
+                "virtualMachineResourceGroup": {
+                    "type": "string"
+                },
+                "virtualMachineLocation": {
+                    "type": "string"
+                },
+                "virtualMachineZone": {
+                    "type":"string",
+                    "enum":["1", "2", "3"]
+                },
+                "virtualMachineSize": {
+                    "$ref": "#/definitions/virtual-machine-sizes"
+                },
+                "virtualMachineUsername": {
+                    "type": "string"
+                },
+                "virtualMachinePassword": {
+                    "type": "string"
+                },
+                "virtualMachineImage": {
+                    "$ref": "#/definitions/virtual-machine-images"
+                },
+                "virtualMachineOsConfig": {
+                    "type":"object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "osName": {
+                            "type": "string"
+                        },
+                        "osPatchMode": {
+                            "enum":[
+                                "AutomaticByOS",
+                                "AutomaticByPlatform",
+                                "Manual"
+                            ]
+                        },
+                        "osRebootSettings": {
+                            "enum":[
+                                "Always",
+                                "Never",
+                                "IfRequired"
+                            ]
+                        }
+                    }
+                },
+                "virtualMachineNetworkConfig": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "publicIp": {
+                            "type": "string"
+                        },
+                        "publicIpResourceGroup": {
+                            "type": "string"
+                        },
+                        "virtualNetwork": {
+                            "type": "string"
+                        },
+                        "virtualNetworkSubnet": {
+                            "type": "string"
+                        },
+                        "virtualNetworkResourceGroup": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "publicIp",
+                        "publicIpResourceGroup",
+                        "virtualNetwork",
+                        "virtualNetworkSubnet",
+                        "virtualNetworkResourceGroup"
+                    ]
+                },
+                "virtualMachineDiskConfig": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "diskSize": {
+                            "enum": [
+                                4,
+                                8,
+                                16,
+                                32,
+                                64,
+                                128,
+                                256,
+                                512,
+                                1024
+                            ]
+                        },
+                        "diskSku": {
+                            "oneOf": [
+                                {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "minProperties": 1,
+                                    "properties": {
+                                        "demo": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        },
+                                        "stg": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        },
+                                        "sbx": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        },
+                                        "test": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        },
+                                        "dev": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        },
+                                        "qa": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        },
+                                        "uat": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        },
+                                        "prd": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "default": {
+                                            "$ref": "#/definitions/virtual-machine-disk-sku"
+                                        }
+                                    },
+                                    "required": [
+                                        "default"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "required": [
+                        "diskSku"
+                    ]
+                },
                 "virtualMachineTags": {
                     "type": "object",
                     "patternProperties": {
-                        "^[a-z]": {
+                        "^[a-zA-Z0-9]+([-_][a-zA-Z0-9]+)*$": {
                             "type": "string"
                         }
                     },
                     "minProperties": 1
                 }
-            }
+            },
+            "required": [
+                "virtualMachineName",
+                "virtualMachineUsername",
+                "virtualMachinePassword",
+                "virtualMachineNetworkConfig",
+                "virtualMachineImage",
+                "virtualMachineSize"
+            ]
         },
         "virtual-machine-disk": {
             "type": "object",
@@ -159,7 +312,7 @@
                 "diskTags": {
                     "type": "object",
                     "patternProperties": {
-                        "^[a-z]": {
+                        "^[a-zA-Z0-9]+([-_][a-zA-Z0-9]+)*$": {
                             "type": "string"
                         }
                     },
@@ -415,7 +568,7 @@
                     "minProperties": 1,
                     "properties": {
                         "orchestrationMode": {
-                            "enum":[
+                            "enum": [
                                 "Flexible",
                                 "Uniform"
                             ]
@@ -428,7 +581,7 @@
                             ]
                         },
                         "scaleInPolicy": {
-                            "type":"object",
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "rules": {
@@ -452,25 +605,12 @@
                     }
                 },
                 "virtualMachineScaleSetImage": {
-                    "enum": [
-                        {
-                            "publisher": "MicrosoftWindowsServer",
-                            "offer": "WindowsServer",
-                            "sku": "2022-datacenter-azure-edition",
-                            "version": "latest"
-                        },
-                        {
-                            "publisher": "MicrosoftWindowsServer",
-                            "offer": "WindowsServer",
-                            "sku": "2019-datacenter-azure-edition",
-                            "version": "latest"
-                        }
-                    ]
+                    "$ref": "#/definitions/virtual-machine-images"
                 },
                 "virtualMachineScaleSetTags": {
                     "type": "object",
                     "patternProperties": {
-                        "^[a-z]": {
+                        "^[a-zA-Z0-9]+([-_][a-zA-Z0-9]+)*$": {
                             "type": "string"
                         }
                     },
@@ -514,6 +654,27 @@
                 "StandardSSD_LRS",
                 "StandardSSD_ZRS",
                 "UltraSSD_LRS"
+            ]
+        },
+        "virtual-machine-images": {
+            "enum": [
+                {
+                    "publisher": "MicrosoftWindowsServer",
+                    "offer": "WindowsServer",
+                    "sku": "2022-datacenter-azure-edition",
+                    "version": "latest"
+                },
+                {
+                    "publisher": "MicrosoftWindowsServer",
+                    "offer": "WindowsServer",
+                    "sku": "2019-datacenter-azure-edition",
+                    "version": "latest"
+                }
+            ]
+        },
+        "virtual-machine-sizes": {
+            "enum": [
+                "Standard_B2s"
             ]
         }
     }

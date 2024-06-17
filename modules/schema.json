@@ -258,7 +258,7 @@
                 "serviceBusNamespaceTopicSubscriptions": {
                     "$ref": "./service-bus/parameters.json#/definitions/service-bus-namespace-topic-subscriptions"
                 },
-                 "notificationHubNamespace": {
+                "notificationHubNamespace": {
                     "$ref": "./notification-hub/parameters.json#/definitions/notification-hub-namespace"
                 },
                 "notificationHubNamespaces": {
@@ -449,18 +449,72 @@
                 "dnsResolvers": {
                     "$ref": "./dns-resolver/parameters.json#/definitions/dns-resolvers"
                 },
+                "publicDnsZone": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zone"
+                },
+                "publicDnsZones": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zones"
+                },
+                "publicDnsZoneAaaaRecord": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zone-aaaa-record"
+                },
+                "publicDnsZoneAaaaRecords": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zone-aaaa-records"
+                },
+                "publicDnsZoneAliasRecord": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zone-a-record"
+                },
+                "publicDnsZoneAliasRecords": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zone-a-records"
+                },
+                "publicDnsZoneCanonicalNameRecord": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zone-cname-record"
+                },
+                "publicDnsZoneCanonicalNameRecords": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zone-cname-records"
+                },
+                "publicDnsZoneMailExchangerRecord": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zone-mx-record"
+                },
+                "publicDnsZoneMailExchangerRecords": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zone-mx-records"
+                },
+                "publicDnsZoneNameServerRecord": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zone-ns-record"
+                },
+                "publicDnsZoneNameServerRecords": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zone-ns-records"
+                },
+                "publicDnsZonePointerRecord": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zone-ptr-record"
+                },
+                "publicDnsZonePointerRecords": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zone-ptr-records"
+                },
+                "publicDnsZoneServiceRecord": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zone-srv-record"
+                },
+                "publicDnsZoneServiceRecords": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zone-srv-records"
+                },
+                "publicDnsZoneTextRecord": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zone-txt-record"
+                },
+                "publicDnsZoneTextRecords": {
+                    "$ref": "./public-dns-zone/parameters.json#/definitions/public-dns-zone-txt-records"
+                },
                 "monitorPrivateLinkScope": {
                     "$ref": "./monitor-private-link-scope/parameters.json#/definitions/monitor-private-link-scope"
                 },
                 "monitorPrivateLinkScopes": {
                     "$ref": "./monitor-private-link-scope/parameters.json#/definitions/monitor-private-link-scopes"
                 },
-                // "virtualMachine": {
-                //     "$ref": "./virtual-machine/parameters.json#/definitions/virtual-machine"
-                // },
-                // "virtualMachines": {
-                //     "$ref": "./virtual-machine/parameters.json#/definitions/virtual-machines"
-                // },
+                "virtualMachine": {
+                    "$ref": "./virtual-machine/parameters.json#/definitions/virtual-machine"
+                },
+                "virtualMachines": {
+                    "$ref": "./virtual-machine/parameters.json#/definitions/virtual-machines"
+                },
                 "virtualMachineDisk": {
                     "$ref": "./virtual-machine/parameters.json#/definitions/virtual-machine-disk"
                 },
@@ -472,6 +526,12 @@
                 },
                 "virtualMachineScaleSets": {
                     "$ref": "./virtual-machine/parameters.json#/definitions/virtual-machine-scale-sets"
+                },
+                "containerInstance": {
+                    "$ref": "./container-instance/parameters.json#/definitions/container-instance"
+                },
+                "containerInstances": {
+                    "$ref": "./container-instance/parameters.json#/definitions/container-instances"
                 }
             }
         }

@@ -106,6 +106,12 @@ var authSettingAudiences = [
   for audience in authSettingsAudienceValues: formatName(audience, affix, environment, region)
 ]
 
+// known naming delimiter
+var delimiters = [
+  '-'
+  '_'
+]
+
 // 1. Get the existing App Service Plan to attach to the 
 // Note: All web service (Function & Web Apps) have App Service Plans even if it is consumption Y1 Plans
 resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' existing = {
@@ -115,7 +121,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' existing = {
 
 // 2. Get existing app storage account resource
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
-  name: formatName(appServiceStorageAccountName, affix, environment, region)
+  name: join(split(formatName(appServiceStorageAccountName, affix, environment, region), delimiters), '')
   scope: resourceGroup(formatName(appServiceStorageAccountResourceGroup, affix, environment, region))
 }
 
@@ -194,8 +200,20 @@ resource appService 'Microsoft.Web/sites@2023-01-01' = {
     properties: {
       cors: contains(appServiceSiteConfigs.webSettings, 'cors')
         ? contains(appServiceSiteConfigs.webSettings.cors, environment)
-            ? appServiceSiteConfigs.webSettings.cors[environment]
-            : appServiceSiteConfigs.webSettings.cors.default
+            ? {
+                supportCredentials: appServiceSiteConfigs.webSettings.cors[environment].?supportCredentials ?? false
+                allowedOrigins: map(
+                  appServiceSiteConfigs.webSettings.cors[environment].allowedOrigins,
+                  value => formatName(value, affix, environment, region)
+                )
+              }
+            : {
+                supportCredentials: appServiceSiteConfigs.webSettings.cors.default.?supportCredentials ?? false
+                allowedOrigins: map(
+                  appServiceSiteConfigs.webSettings.cors.default.allowedOrigins,
+                  value => formatName(value, affix, environment, region)
+                )
+              }
         : {}
       ftpsState: contains(appServiceSiteConfigs.webSettings, 'ftpsState')
         ? appServiceSiteConfigs.webSettings.ftpsState

@@ -79,16 +79,16 @@
                             "minProperties": 1,
                             "properties": {
                                 "demo": {
-                                     "$ref": "#/definitions/static-site-sku"
+                                    "$ref": "#/definitions/static-site-sku"
                                 },
                                 "stg": {
-                                     "$ref": "#/definitions/static-site-sku"
+                                    "$ref": "#/definitions/static-site-sku"
                                 },
                                 "sbx": {
-                                     "$ref": "#/definitions/static-site-sku"
+                                    "$ref": "#/definitions/static-site-sku"
                                 },
                                 "test": {
-                                     "$ref": "#/definitions/static-site-sku"
+                                    "$ref": "#/definitions/static-site-sku"
                                 },
                                 "dev": {
                                     "$ref": "#/definitions/static-site-sku"
@@ -109,10 +109,64 @@
                         }
                     ]
                 },
+                "staticSiteEnvironmentVariables": {
+                    "type": "object",
+                    "minProperties": 1,
+                    "patternProperties": {
+                        "^[a-zA-Z0-9]+([-_][a-zA-Z0-9]+)*$": {
+                            "oneOf": [
+                                {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "default": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "default"
+                                    ]
+                                },
+                                {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "minProperties": 1,
+                                    "properties": {
+                                        "demo": {
+                                            "type": "string"
+                                        },
+                                        "stg": {
+                                            "type": "string"
+                                        },
+                                        "sbx": {
+                                            "type": "string"
+                                        },
+                                        "test": {
+                                            "type": "string"
+                                        },
+                                        "dev": {
+                                            "type": "string"
+                                        },
+                                        "qa": {
+                                            "type": "string"
+                                        },
+                                        "uat": {
+                                            "type": "string"
+                                        },
+                                        "prd": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                            
+                        }
+                    }
+                },
                 "staticSiteTags": {
                     "type": "object",
                     "patternProperties": {
-                        "^[a-z]": {
+                        "^[a-zA-Z0-9]+([-_][a-zA-Z0-9]+)*$": {
                             "type": "string"
                         }
                     },

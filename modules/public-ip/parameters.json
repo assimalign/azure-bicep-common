@@ -114,10 +114,17 @@
                     },
                     "minProperties": 1
                 },
+                "publicIpDnsZoneAliasRecords": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "../public-dns-zone/parameters.json#/definitions/public-dns-zone-a-record-parameters-embedded"
+                    }
+                },
                 "publicIpTags": {
                     "type": "object",
                     "patternProperties": {
-                        "^[a-z]": {
+                        "^[a-zA-Z0-9]+([-_][a-zA-Z0-9]+)*$": {
                             "type": "string"
                         }
                     },
@@ -217,7 +224,7 @@
                 "publicIpPrefixTags": {
                     "type": "object",
                     "patternProperties": {
-                        "^[a-z]": {
+                        "^[a-zA-Z0-9]+([-_][a-zA-Z0-9]+)*$": {
                             "type": "string"
                         }
                     },

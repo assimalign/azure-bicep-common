@@ -181,7 +181,7 @@
                 "appServiceTags": {
                     "type": "object",
                     "patternProperties": {
-                        "^[a-z]": {
+                        "^[a-zA-Z0-9]+([-_][a-zA-Z0-9]+)*$": {
                             "type": "string"
                         }
                     },
@@ -350,7 +350,7 @@
                 "appServiceSlotTags": {
                     "type": "object",
                     "patternProperties": {
-                        "^[a-z]": {
+                        "^[a-zA-Z0-9]+([-_][a-zA-Z0-9]+)*$": {
                             "type": "string"
                         }
                     },
@@ -546,7 +546,7 @@
                 "appServicePlanTags": {
                     "type": "object",
                     "patternProperties": {
-                        "^[a-z]": {
+                        "^[a-zA-Z0-9]+([-_][a-zA-Z0-9]+)*$": {
                             "type": "string"
                         }
                     },

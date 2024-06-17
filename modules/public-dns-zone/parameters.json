@@ -1,0 +1,805 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "public-dns-zone": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/public-dns-zone-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zones": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/public-dns-zone-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zone-parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "publicDnsZoneName": {
+                    "type": "string"
+                },
+                "publicDnsZoneResourceGroup": {
+                    "type": "string"
+                },
+                "publicDnsZoneTextRecords": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "publicDnsZoneTextRecordName": {
+                                "type": "string"
+                            },
+                            "publicDnsZoneTextRecordValues": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "publicDnsZoneTextRecordTtl": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": [
+                            "publicDnsZoneTextRecordName",
+                            "publicDnsZoneTextRecordValues"
+                        ]
+                    }
+                },
+                "publicDnsZoneAliasRecords": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "publicDnsZoneAliasRecordName": {
+                                "type": "string"
+                            },
+                            "publicDnsZoneAliasRecordValues": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "publicDnsZoneAliasRecordTtl": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": [
+                            "publicDnsZoneAliasRecordName",
+                            "publicDnsZoneAliasRecordValues"
+                        ]
+                    }
+                },
+                "publicDnsZoneNameServerRecords": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "publicDnsZoneNameServerRecordName": {
+                                "type": "string"
+                            },
+                            "publicDnsZoneNameServerRecordValues": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "publicDnsZoneNameServerRecordTtl": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": [
+                            "publicDnsZoneNameServerRecordName",
+                            "publicDnsZoneNameServerRecordValues"
+                        ]
+                    }
+                },
+                "publicDnsZoneMailExchangerRecords": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "publicDnsZoneMailExchangerRecordName": {
+                                "type": "string"
+                            },
+                            "publicDnsZoneMailExchangerRecordValues": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "preference": {
+                                            "type": "number"
+                                        },
+                                        "exchange": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "preference",
+                                        "exchange"
+                                    ]
+                                }
+                            },
+                            "publicDnsZoneMailExchangerRecordTtl": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": [
+                            "publicDnsZoneMailExchangerRecordName",
+                            "publicDnsZoneMailExchangerRecordValues"
+                        ]
+                    }
+                },
+                "publicDnsZoneCanonicalNameRecords": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "publicDnsZoneCanonicalNameRecordName": {
+                                "type": "string"
+                            },
+                            "publicDnsZoneCanonicalNameRecordValue": {
+                                "type": "string"
+                            },
+                            "publicDnsZoneCanonicalNameRecordTtl": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": [
+                            "publicDnsZoneCanonicalNameRecordName",
+                            "publicDnsZoneCanonicalNameRecordValue"
+                        ]
+                    }
+                },
+                "publicDnsZonePointerRecords": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "publicDnsZonePointerRecordName": {
+                                "type": "string"
+                            },
+                            "publicDnsZonePointerRecordValues": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "publicDnsZonePointerRecordTtl": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": [
+                            "publicDnsZonePointerRecordName",
+                            "publicDnsZonePointerRecordValues"
+                        ]
+                    }
+                },
+                "publicDnsZoneServiceRecords": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "publicDnsZoneServiceRecordName": {
+                                "type": "string"
+                            },
+                            "publicDnsZoneServiceRecordValues": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "port": {
+                                            "type": "number"
+                                        },
+                                        "priority": {
+                                            "type": "number"
+                                        },
+                                        "weight": {
+                                            "type": "number"
+                                        },
+                                        "target": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "port",
+                                        "priority",
+                                        "weight",
+                                        "target"
+                                    ]
+                                }
+                            },
+                            "publicDnsZoneServiceRecordTtl": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": [
+                            "publicDnsZoneServiceRecordName",
+                            "publicDnsZoneServiceRecordValues"
+                        ]
+                    }
+                }
+            }
+        },
+        "public-dns-zone-a-record": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/public-dns-zone-a-record-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zone-a-records": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/public-dns-zone-a-record-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zone-a-record-parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "publicDnsZoneName": {
+                    "type": "string"
+                },
+                "publicDnsZoneResourceGroup": {
+                    "type": "string"
+                },
+                "publicDnsZoneAliasRecordName": {
+                    "type": "string"
+                },
+                "publicDnsZoneAliasRecordValues": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "publicDnsZoneAliasRecordTtl": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "publicDnsZoneName",
+                "publicDnsZoneAliasRecordName",
+                "publicDnsZoneAliasRecordValues"
+            ]
+        },
+        "public-dns-zone-a-record-parameters-embedded": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "publicDnsZoneName": {
+                    "type": "string"
+                },
+                "publicDnsZoneResourceGroup": {
+                    "type": "string"
+                },
+                "publicDnsZoneAliasRecordName": {
+                    "type": "string"
+                },
+                "publicDnsZoneAliasRecordTtl": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "publicDnsZoneName",
+                "publicDnsZoneAliasRecordName"
+            ]
+        },
+        "public-dns-zone-aaaa-record": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/public-dns-zone-aaaa-record-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zone-aaaa-records": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/public-dns-zone-aaaa-record-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zone-aaaa-record-parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "publicDnsZoneName": {
+                    "type": "string"
+                },
+                "publicDnsZoneResourceGroup": {
+                    "type": "string"
+                },
+                "publicDnsZoneAaaaRecordName": {
+                    "type": "string"
+                },
+                "publicDnsZoneAaaaRecordValues": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "publicDnsZoneAaaaRecordTtl": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "publicDnsZoneName",
+                "publicDnsZoneAaaaRecordName",
+                "publicDnsZoneAaaaRecordValues"
+            ]
+        },
+        "public-dns-zone-ns-record": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/public-dns-zone-ns-record-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zone-ns-records": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/public-dns-zone-ns-record-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zone-ns-record-parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "publicDnsZoneName": {
+                    "type": "string"
+                },
+                "publicDnsZoneResourceGroup": {
+                    "type": "string"
+                },
+                "publicDnsZoneNameServerRecordName": {
+                    "type": "string"
+                },
+                "publicDnsZoneNameServerRecordValues": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "publicDnsZoneNameServerRecordTtl": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "publicDnsZoneName",
+                "publicDnsZoneNameServerRecordName",
+                "publicDnsZoneNameServerRecordValues"
+            ]
+        },
+        "public-dns-zone-srv-record": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/public-dns-zone-srv-record-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zone-srv-records": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/public-dns-zone-srv-record-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zone-srv-record-parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "publicDnsZoneName": {
+                    "type": "string"
+                },
+                "publicDnsZoneResourceGroup": {
+                    "type": "string"
+                },
+                "publicDnsZoneServiceRecordName": {
+                    "type": "string"
+                },
+                "publicDnsZoneServiceRecordValues": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "port": {
+                                "type": "number"
+                            },
+                            "priority": {
+                                "type": "number"
+                            },
+                            "weight": {
+                                "type": "number"
+                            },
+                            "target": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "port",
+                            "priority",
+                            "weight",
+                            "target"
+                        ]
+                    }
+                },
+                "publicDnsZoneServiceRecordTtl": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "publicDnsZoneName",
+                "publicDnsZoneServiceRecordName",
+                "publicDnsZoneServiceRecordValues"
+            ]
+        },
+        "public-dns-zone-txt-record": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/public-dns-zone-txt-record-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zone-txt-records": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/public-dns-zone-txt-record-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zone-txt-record-parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "publicDnsZoneName": {
+                    "type": "string"
+                },
+                "publicDnsZoneResourceGroup": {
+                    "type": "string"
+                },
+                "publicDnsZoneTextRecordName": {
+                    "type": "string"
+                },
+                "publicDnsZoneTextRecordValues": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "publicDnsZoneTextRecordTtl": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "publicDnsZoneName",
+                "publicDnsZoneTextRecordName",
+                "publicDnsZoneTextRecordValues"
+            ]
+        },
+        "public-dns-zone-ptr-record": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/public-dns-zone-ptr-record-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zone-ptr-records": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/public-dns-zone-ptr-record-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zone-ptr-record-parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "publicDnsZoneName": {
+                    "type": "string"
+                },
+                "publicDnsZoneResourceGroup": {
+                    "type": "string"
+                },
+                "publicDnsZonePointerRecordName": {
+                    "type": "string"
+                },
+                "publicDnsZonePointerRecordValues": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "publicDnsZonePointerRecordTtl": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "publicDnsZoneName",
+                "publicDnsZonePointerRecordName",
+                "publicDnsZonePointerRecordValues"
+            ]
+        },
+        "public-dns-zone-cname-record": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/public-dns-zone-cname-record-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zone-cname-records": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/public-dns-zone-cname-record-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zone-cname-record-parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "publicDnsZoneName": {
+                    "type": "string"
+                },
+                "publicDnsZoneResourceGroup": {
+                    "type": "string"
+                },
+                "publicDnsZoneCanonicalNameRecordName": {
+                    "type": "string"
+                },
+                "publicDnsZoneCanonicalNameRecordValues": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "publicDnsZoneCanonicalNameRecordTtl": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "publicDnsZoneName",
+                "publicDnsZoneCanonicalNameRecordName",
+                "publicDnsZoneCanonicalNameRecordValues"
+            ]
+        },
+        "public-dns-zone-mx-record": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/public-dns-zone-mx-record-parameters"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zone-mx-records": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/public-dns-zone-mx-record-parameters"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "public-dns-zone-mx-record-parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "publicDnsZoneName": {
+                    "type": "string"
+                },
+                "publicDnsZoneResourceGroup": {
+                    "type": "string"
+                },
+                "publicDnsZoneMailExchangerRecordName": {
+                    "type": "string"
+                },
+                "publicDnsZoneMailExchangerRecordValues": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "preference": {
+                                "type": "number"
+                            },
+                            "exchange": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "preference",
+                            "exchange"
+                        ]
+                    }
+                },
+                "publicDnsZoneMailExchangerRecordTtl": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "publicDnsZoneName",
+                "publicDnsZoneMailExchangerRecordName",
+                "publicDnsZoneMailExchangerRecordValues"
+            ]
+        }
+    }
+}

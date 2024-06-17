@@ -106,6 +106,13 @@ var authSettingAudiences = [
   for audience in authSettingsAudienceValues: formatName(audience, affix, environment, region)
 ]
 
+// known naming delimiter
+var delimiters = [
+  '-'
+  '_'
+]
+
+
 // 1. Get the existing App Service Plan to attach to the 
 // Note: All web service (Function & Web Apps) have App Service Plans even if it is consumption Y1 Plans
 resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' existing = {
@@ -115,7 +122,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' existing = {
 
 // 2. Get existing app storage account resource
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
-  name: formatName(appServiceSlotStorageAccountName, affix, environment, region)
+  name: join(split(formatName(appServiceSlotStorageAccountName, affix, environment, region), delimiters), '')
   scope: resourceGroup(formatName(appServiceSlotStorageAccountResourceGroup, affix, environment, region))
 }
 

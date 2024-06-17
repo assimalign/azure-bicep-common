@@ -1,0 +1,67 @@
+{
+    "$schema": "../../modules/schema.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "containerInstances": {
+            "value": [
+                {
+                    "containerInstanceName": "test-net-@environment-est-us2-cnt-dnsf-01",
+                    "containerInstanceResourceGroup": "test-net-@environment-est-us2-rg-01",
+                    "containerInstanceOs": "Linux",
+                    "containerInstanceVirtualNetworkConfig": {
+                        "virtualNetwork": "test-net-@environment-est-us2-vnet-01",
+                        "virtualNetworkSubnet": "DNSForwarder",
+                        "virtualNetworkResourceGroup": "test-net-@environment-est-us2-rg-01",
+                        "virtualNetworkPrivateIp":{
+                            "default": "10.0.1.10"
+                        }
+                    },
+                    "containerInstanceImageConfig": {
+                        "imageName": "ghcr.io/whiteducksoftware/az-dns-forwarder/az-dns-forwarder:latest",
+                        "imageSize": {
+                            "default": {
+                                "cpuCount": 1,
+                                "memory": 1.5
+                            }
+                        }
+                    },
+                    "containerInstanceTags": {
+                        "project": "test2.0"
+                    }
+                },
+                {
+                    "containerInstanceName": "@affix-net-@environment-@region-cnt-dnsf-01",
+                    "containerInstanceResourceGroup": "@affix-net-@environment-@region-rg-01",
+                    "containerInstanceOs": "Linux",
+                    "containerInstanceVirtualNetworkConfig": {
+                        "virtualNetwork": "@affix-net-@environment-@region-vnet-01",
+                        "virtualNetworkSubnet": "DNSForwarder",
+                        "virtualNetworkResourceGroup": "@affix-net-@environment-@region-rg-01",
+                        "virtualNetworkPrivateIp":{
+                            "mint": {
+                                "default": "10.1.12.10"
+                            },
+                            "cnxx": {
+                                "default": "10.2.12.10"
+                            }
+                        }
+                    },
+                    "containerInstanceImageConfig": {
+                        "imageName": "ghcr.io/whiteducksoftware/az-dns-forwarder/az-dns-forwarder:latest",
+                        "imageSize": {
+                            "default": {
+                                "cpuCount": 1,
+                                "memory": 1.5
+                            }
+                        }
+                    },
+                    "containerInstanceTags": {
+                        "version": "@version",
+                        "client": "@client",
+                        "project": "test2.0"
+                    }
+                }
+            ]
+        }
+    }
+}

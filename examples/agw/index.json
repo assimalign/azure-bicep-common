@@ -1,0 +1,113 @@
+{
+    "$schema": "../../modules/schema.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appGateway": {
+            "value": {
+                "appGatewayName": "@affix-app-@environment-@region-agw-01",
+                "appGatewayResourceGroup": "@affix-app-@environment-@region-rg-01",
+                "appGatewayConfig": {
+                    "autoScaleMaxCapacity": 10
+                },
+                "appGatewaySku": {
+                    "default": {
+                        "tier": "Standard_v2",
+                        "capacity": 0
+                    }
+                },
+                "appGatewayZones": [
+                    "1",
+                    "2",
+                    "3"
+                ],
+                "appGatewayVirtualNetworkConfig": {
+                    "virtualNetwork": "@affix-net-@environment-@region-vnet-01",
+                    "virtualNetworkSubnet": "AppGatewaySubnet",
+                    "virtualNetworkResourceGroup": "@affix-net-@environment-@region-rg-01"
+                },
+                "appGatewayFrontend": {
+                    "frontendPublicIp": {
+                        "publicIpName": "@affix-net-@environment-@region-pip-02",
+                        "publicIpResourceGroup": "@affix-net-@environment-@region-rg-01"
+                    },
+                    "frontendPorts": [
+                        {
+                            "portName": "https-port",
+                            "portNumber": 443
+                        }
+                    ],
+                    "frontendListeners": [
+                        {
+                            "listenerName": "listener-api",
+                            "listenerUse": "PublicIP",
+                            "listenerPortName": "https-port",
+                            "listenerProtocol": "Https",
+                            "listenerHostName": {
+                                "default": "@affix-api.@environment.mint-ui-ehn.net"
+                            },
+                            "listenerCertificateName": "@affix-@environment-cert"
+                        },
+                        {
+                            "listenerName": "listener-web",
+                            "listenerUse": "PublicIP",
+                            "listenerPortName": "https-port",
+                            "listenerProtocol": "Https",
+                            "listenerHostName": {
+                                "default": "@affix.@environment.mint-ui-ehn.net"
+                            },
+                            "listenerCertificateName": "@affix-@environment-cert"
+                        }
+                    ]
+                },
+                "appGatewayBackendSettings": [
+                    {
+                        "settingsName": "settings-api",
+                        "settingsPort": 443,
+                        "settingsProtocol": "Https",
+                        "settingsUseHostNameFromBackendAddress": true,
+                        "settingsProbe": {
+                            "probePath": "/graphql",
+                            "probeProtocol": "Https"
+                        }
+                    },
+                    {
+                        "settingsName": "settings-web",
+                        "settingsPort": 443,
+                        "settingsProtocol": "Https",
+                        "settingsOverridePath": "/",
+                        "settingsUseHostNameFromBackendAddress": true,
+                        "settingsProbe": {
+                            "probePath": "/",
+                            "probeProtocol": "Https"
+                        }
+                    }
+                ],
+                "appGatewayBackendPools": [
+                    {
+                        "poolName": "pool-web",
+                        "staticSiteName": "",
+                        "staticSiteResourceGroup": ""
+                    },
+                    {
+                        "poolName": "pool-api",
+                        "appServiceName": "@affix-app-@environment-@region-app-01.azurewebsites.net",
+                        "appServiceResourceGroup": ""
+                    }
+                ],
+                "appGatewayRoutingRules": [
+                    {
+                        "routingRuleName": "route-api",
+                        "routingRuleFrontendListenerName": "listener-api",
+                        "routingRuleBackendPoolName": "pool-api",
+                        "routingRuleBackendSettingsName": "settings-api"
+                    }
+                ],
+                "appGatewayTags": {
+                    "version": "@version",
+                    "client": "@client",
+                    "project": "mint2.0"
+                }
+            }
+        }
+    }
+}

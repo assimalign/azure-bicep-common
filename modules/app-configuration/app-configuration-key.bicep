@@ -33,8 +33,8 @@ param appConfigurationLabels array = []
 @description('The content type of the configuration value')
 param appConfigurationContentType string = ''
 
-func formatName(name string, prefix string, environment string, region string) string =>
-  replace(replace(replace(name, '@prefix', prefix), '@environment', environment), '@region', region)
+func formatName(name string, affix string, environment string, region string) string =>
+  replace(replace(replace(name, '@affix', affix), '@environment', environment), '@region', region)
 
 var value = !empty(environment) && contains(appConfigurationValue, environment)
   ? appConfigurationValue[environment]
